@@ -1,32 +1,35 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3 mb-5">
+        <a class="navbar-brand" href="#">Project Lockdown</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
+            </li>
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/donate">Donate</router-link>
+            </li>
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/how-it-works">How it works</router-link>
+            </li>
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/about">About</router-link>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+<style scoped>
+.navbar {
+  border-radius: 10px;
 }
 </style>
