@@ -1,29 +1,20 @@
 <template>
   <div class="container">
     <div class="row">
-      <!-- <form>
-        <div class="form-group">
-          <label for="donorPhone">Phone</label>
-          <input id="donorPhone" class="form-control" type="tel">
-        </div>
-        <div class="form-group">
-          <label for="donorEmail">Email</label>
-          <input id="donorEmail" class="form-control" type="email">
-        </div>
-        <div class="form-group">
-          <label for="donorPassword">Password</label>
-          <input id="donorPassword" class="form-control" type="password">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form> -->
       <div class="col-md-8">
         <h2>Donate</h2>
         <form>
           <div class="form-group">
             <label for="donateAmount">Amount</label>
-            <input id="donateAmount" type="number" class="form-control">
+            <input
+              v-model.number="donation.amount"
+              id="donateAmount"
+              type="number"
+              class="form-control"
+              min="100"
+            >
           </div>
-          <button type="submit" class="btn btn-primary">Donate</button>
+          <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
         </form>
         <hr>
         <h3>Nominated beneficiaries</h3>
@@ -35,16 +26,50 @@
       <div class="col-md-4">
         <h3>My Stats</h3>
         <div>
-          <b>Account balance</b>: 10000
+          <b>Account balance</b>: {{ accountBalance }}
         </div>
         <div>
-          <b>Amount donated</b>: 5000
+          <b>Amount donated</b>: {{ amountDonated }}
         </div>
         <div>
-          <b>People donated to</b>: 5
+          <b>People donated to</b>: {{ peopleDonatedTo }}
         </div>
         <h3>Donation history</h3>
+        <ul class="list-group">
+          <li v-for="donation in donations" class="list-group-item" :key="donation._id">
+            {{ donation.amount }} to {{ donation.to }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
+<script>
+import { mapGetters, mapActions } from 'vuex';
+
+export default {
+  name: 'Donate',
+  data() {
+    return {
+      donation: {
+        amount: 0
+      }
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'amountDonated',
+      'accountBalance',
+      'peopleDonatedTo',
+      'donations'
+    ])
+  },
+  methods: {
+    ...mapActions(['depositToAccount']),
+    submitDonation() {
+      console.log('donation', this.donation);
+      this.depositToAccount(this.donation);
+    }
+  }
+}
+</script>
