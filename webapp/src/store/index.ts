@@ -62,13 +62,30 @@ export default new Vuex.Store({
           from: 'acc1',
           to: 'acc3'
         },
-      ] as Transaction[]
-    }
+      ] as Transaction[],
+      beneficiaries: [
+        {
+          _id: 'acc2',
+          phone: '705975787'
+        },
+        {
+          _id: 'acc3',
+          phone: '711153086'
+        },
+        {
+          _id: 'acc4',
+          phone: '726166685'
+        },
+      ]
+    },
   },
   mutations: {
     addTransaction(state, trx) {
       state.user.transactions.push(trx);
-    }
+    },
+    addBeneficiary(state, bnf) {
+      state.user.beneficiaries.push(bnf);
+    },
   },
   getters: {
     amountDeposited: ({ user: { transactions } }) => {
@@ -82,7 +99,7 @@ export default new Vuex.Store({
         .reduce((a, b) => a + b, 0);
     },
     accountBalance: ({ user: { transactions } }) => {
-      return transactions.map(t => t.amount).reduce((a, b) => a + b, 0);
+      return transactions.map(t => t.type === 'donation' ? -1 * t.amount : t.amount).reduce((a, b) => a + b, 0);
     },
     peopleDonatedTo: ({ user: { transactions } }) => {
       const recipients = transactions.filter(t => t.type == 'donation')
@@ -92,6 +109,9 @@ export default new Vuex.Store({
     },
     donations: ({ user: { transactions } }) => {
       return transactions.filter(t => t.type == 'donation');
+    },
+    beneficiaries: ({ user: { beneficiaries } }) => {
+      return beneficiaries
     }
   },
   actions: {
@@ -99,6 +119,11 @@ export default new Vuex.Store({
       console.log('Received amount', amount);
       const trx = await AccountService.deposit(state.user.accountId, amount);
       commit('addTransaction', trx);
+    },
+    async nominateBeneficiary({ state, commit }, { beneficiary }: { beneficiary: string }) {
+      console.log('Nominated beneficiary', beneficiary);
+      const bnf = await AccountService.nominateBeneficiary(state.user.accountId, beneficiary);
+      commit('addBeneficiary', bnf);
     }
   },
   modules: {
