@@ -5,13 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index"
+    "start": "nodemon dist/index"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
     "@types/mongodb": "^3.5.4",
     "@types/winston": "^2.4.4",
+    "nodemon": "^2.0.2",
     "typescript": "^3.8.3"
   },
   "dependencies": {
