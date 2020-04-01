@@ -66,7 +66,7 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 
 export default {
   name: 'Donate',
@@ -83,20 +83,20 @@ export default {
       'amountDonated',
       'accountBalance',
       'peopleDonatedTo',
-      'donations',
-      'beneficiaries'
+      'donations'
     ]),
+    ...mapState(['user', 'beneficiaries'])
   },
   methods: {
     ...mapActions(['depositToAccount', 'nominateBeneficiary']),
     submitDonation() {
       console.log('donation', this.donation);
-      this.depositToAccount(this.donation);
+      this.depositToAccount(this.user.accountId, this.donation);
     },
     submitBeneficiary() {
       console.log('beneficiary', this.beneficiary);
       if (this.beneficiary.length) {
-        this.nominateBeneficiary(this.beneficiary);
+        this.nominateBeneficiary(this.user.accountId, this.beneficiary);
       }
     }
   }

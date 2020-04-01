@@ -28,6 +28,22 @@
     <router-view />
   </div>
 </template>
+<script>
+import { mapActions } from 'vuex';
+export default {
+  methods: {
+    ...mapActions(['getUser', 'getBeneficiaries'])
+  },
+  watch: {
+    async $route(to) {
+      if (to === '/donate') {
+        await this.getUser();
+        await this.getBeneficiaries();
+      }
+    }
+  }
+}
+</script>
 <style scoped>
 .navbar {
   border-radius: 10px;
