@@ -29,16 +29,21 @@
   </div>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 export default {
+  computed: {
+    ...mapState(['user'])
+  },
   methods: {
-    ...mapActions(['getUser', 'getBeneficiaries'])
+    ...mapActions(['login', 'getBeneficiaries', 'getTransactions'])
   },
   watch: {
     async $route(to) {
-      if (to === '/donate') {
-        await this.getUser();
-        await this.getBeneficiaries();
+      if (to.name === 'donate') {
+        console.log('Navigating to /donate...');
+        await this.login('userid');
+        await this.getBeneficiaries(this.user.accountId);
+        await this.getTransactions(this.user.accountId);
       }
     }
   }

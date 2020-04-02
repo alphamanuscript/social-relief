@@ -1,12 +1,15 @@
 export const AccountService = {
-  async getUser(userId: string) {
-    const res = await fetch(`http://localhost:3000/users/${userId}`, {
-      method: 'GET',
+  async login(userId: string) {
+    const payload = {
+      uid: userId
+    };
+    const res = await fetch('http://localhost:3000/login', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify(payload)
     });
-    
     return res.json();
   },
   async deposit(accountId: string, amount: number) {
@@ -46,6 +49,17 @@ export const AccountService = {
   },
   async getBeneficiaries(accountId: string) {
     const res = await fetch('http://localhost:3000/beneficiaries', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accountId
+      }
+    });
+    
+    return res.json();
+  },
+  async getTransactions(accountId: string) {
+    const res = await fetch('http://localhost:3000/transactions', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

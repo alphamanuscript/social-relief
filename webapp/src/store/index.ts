@@ -53,6 +53,9 @@ export default new Vuex.Store({
     },
     setBeneficiaries(state, beneficiaries) {
       state.beneficiaries = beneficiaries
+    },
+    setTransactions(state, transactions) {
+      state.transactions = transactions
     }
   },
   getters: {
@@ -80,15 +83,23 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async getUser({ commit}, { userId}: { userId: string }) {
-      console.log('Getting user', userId);
-      const user = await AccountService.getUser(userId);
+    async login({ commit}, userId: string) {
+      console.log('Logging user in...', userId);
+      const user = await AccountService.login(userId);
+      console.log('user: ', user);
       commit('setUser', user);
     },
-    async getBeneficiaries({ commit}, { accountId }: { accountId: string }) {
+    async getBeneficiaries({ commit}, accountId: string) {
       console.log('Getting beneficiaries');
       const beneficiaries = await AccountService.getBeneficiaries(accountId);
+      console.log('beneficiaries: ', beneficiaries);
       commit('setBeneficiaries', beneficiaries);
+    },
+    async getTransactions({ commit}, accountId: string) {
+      console.log('Getting transactions');
+      const transactions = await AccountService.getTransactions(accountId);
+      console.log('transactions: ', transactions);
+      commit('setTransactions', transactions);
     },
     async depositToAccount({ commit }, { accountId, amount }: { accountId: string; amount: number }) {
       console.log('Received amount', amount);
