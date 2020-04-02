@@ -14,19 +14,22 @@ async function initDb() {
   await client.connect();
   db = client.db('lockdown');
 
-  await db.collection('users').findOneAndReplace({ userId: 'userId' }, {
+  await db.dropCollection('users');
+  await db.collection('users').insertOne({
     userId: 'userid',
     accountId: 'acc1',
     phone: '0711223344',
     email: 'john@mailer.com'
   });
 
-  await db.collection('beneficiaries').findOneAndReplace({ _id: 'beneficiaryid' }, {
+  await db.dropCollection('beneficiaries');
+  await db.collection('beneficiaries').insertOne({
     _id: 'beneficiaryid',
     phone: '0705975787',
     nominatedBy: 'acc1'
   });
 
+  await db.dropCollection('transactions');
   await db.collection('transactions').insertMany([
     {
       _id: 'tx1',
@@ -78,11 +81,11 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/users/:uid', async (req, res) => {
-  const userId = req.params.uid;
-  console.log('Getting user...');
-  const result = await db.collection('users').find({ userId });
-  return result;
+app.post('/login', async (req, res) => {
+  const userId = req.body.uid;
+  console.log('Logging user in...', userId);
+  const result = await db.collection('users').findOne({ userId });
+  return res.status(200).json(result);
 });
 
 app.post('/deposit', async (req, res) => {
@@ -93,25 +96,22 @@ app.post('/deposit', async (req, res) => {
 
 app.post('/beneficiaries', async (req, res) => {
   const beneficiary = req.body;
-  console.log('Nominating beneficiary', req.body);
   const result = await db.collection('beneficiaries').insert(req.body);
   return res.status(200).json(result.ops[0]);
 });
 
 app.get('/beneficiaries', async (req, res) => {
   const accountId = req.get('Authorization');
-  console.log('Getting beneficiaries');
-  const result = await db.collection('beneficiaries').find({ nominatedBy: accountId });
-  return result.toArray();
+  const result2 = await db.collection('beneficiaries').find({ nominatedBy: accountId }).toArray();
+  return res.status(200).json(result2);
 });
 
 app.get('/transactions', async (req, res) => {
   const accountId = req.get('Authorization');
-  console.log('Getting transactions');
   const result = await db.collection('transactions').find({ 
     $or: [{ from: accountId}, { to: accountId }]
-   });
-  return result.toArray();
+   }).toArray();
+  return res.status(200).json(result);
 });
 
 async function startApp() {
