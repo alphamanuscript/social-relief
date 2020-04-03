@@ -9,6 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+export const generateId = (): string => {
+  return Math.floor(Math.random() * 10000).toString();
+};
+
 async function initDb() {
   const client = new MongoClient(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
   await client.connect();
@@ -16,8 +20,7 @@ async function initDb() {
 
   await db.dropCollection('users');
   await db.collection('users').insertOne({
-    userId: 'userid',
-    accountId: 'acc1',
+    _id: 'userid',
     phone: '0711223344',
     email: 'john@mailer.com'
   });
@@ -26,52 +29,52 @@ async function initDb() {
   await db.collection('beneficiaries').insertOne({
     _id: 'beneficiaryid',
     phone: '0705975787',
-    nominatedBy: 'acc1'
+    nominatedBy: 'userid'
   });
 
   await db.dropCollection('transactions');
   await db.collection('transactions').insertMany([
     {
-      _id: 'tx1',
+      _id: generateId(),
       type: 'deposit',
       amount: 1000,
       from: '',
-      to: 'acc1'
+      to: 'userid'
     },
     {
-      _id: 'tx2',
+      _id: generateId(),
       type: 'deposit',
       amount: 500,
       from: '',
-      to: 'acc1'
+      to: 'userid'
     },
     {
-      _id: 'tx3',
+      _id: generateId(),
       type: 'donation',
       amount: 1000,
-      from: 'acc1',
-      to: 'acc2'
+      from: 'userid',
+      to: 'beneficiaryid'
     },
     {
-      _id: 'tx4',
+      _id: generateId(),
       type: 'deposit',
       amount: 6000,
       from: '',
-      to: 'acc1'
+      to: 'userid'
     },
     {
-      _id: 'tx5',
+      _id: generateId(),
       type: 'donation',
       amount: 1000,
-      from: 'acc1',
-      to: 'acc2'
+      from: 'userid',
+      to: 'beneficiaryid'
     },
     {
-      _id: 'tx6',
+      _id: generateId(),
       type: 'donation',
       amount: 500,
-      from: 'acc1',
-      to: 'acc3'
+      from: 'userid',
+      to: 'beneficiaryid'
     },
   ]);
 }
@@ -84,19 +87,34 @@ app.get('/', (req, res) => {
 app.post('/login', async (req, res) => {
   const userId = req.body.uid;
   console.log('Logging user in...', userId);
-  const result = await db.collection('users').findOne({ userId });
+  const result = await db.collection('users').findOne({ _id: userId });
   return res.status(200).json(result);
 });
 
 app.post('/deposit', async (req, res) => {
   console.log('Depositing', req.body);
-  const result = await db.collection('transactions').insert(req.body);
+  const result = await db.collection('transactions').insert({
+    _id: generateId(),
+    ...req.body
+  });
+  return res.status(200).json(result.ops[0]);
+});
+
+app.post('/donate', async (req, res) => {
+  console.log('Donating', req.body);
+  const result = await db.collection('transactions').insert({
+    _id: generateId(),
+    ...req.body
+  });
   return res.status(200).json(result.ops[0]);
 });
 
 app.post('/beneficiaries', async (req, res) => {
   const beneficiary = req.body;
-  const result = await db.collection('beneficiaries').insert(req.body);
+  const result = await db.collection('beneficiaries').insert({
+    _id: generateId(),
+    ...req.body
+  });
   return res.status(200).json(result.ops[0]);
 });
 
