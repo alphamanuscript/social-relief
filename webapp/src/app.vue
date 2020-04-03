@@ -13,7 +13,7 @@
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-              <router-link class="nav-link" to="/donate">Donate</router-link>
+              <router-link class="nav-link" to="/donate">Deposit/Donate</router-link>
             </li>
             <li class="nav-item active">
               <router-link class="nav-link" to="/how-it-works">How it works</router-link>
@@ -42,8 +42,8 @@ export default {
       if (to.name === 'donate') {
         console.log('Navigating to /donate...');
         await this.login('userid');
-        await this.getBeneficiaries(this.user.accountId);
-        await this.getTransactions(this.user.accountId);
+        await this.getBeneficiaries(this.user._id);
+        await this.getTransactions(this.user._id);
       }
     }
   }

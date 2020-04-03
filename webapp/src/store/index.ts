@@ -7,8 +7,7 @@ Vue.use(Vuex)
 type TransactionType = 'deposit' | 'donation';
 
 interface User {
-  userId: string;
-  accountId: string;
+  _id: string;
   phone: string;
   email: string;
 }
@@ -83,21 +82,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async login({ commit}, userId: string) {
-      console.log('Logging user in...', userId);
-      const user = await AccountService.login(userId);
+    async login({ commit}, _id: string) {
+      console.log('Logging user in...', _id);
+      const user = await AccountService.login(_id);
       console.log('user: ', user);
       commit('setUser', user);
     },
-    async getBeneficiaries({ commit}, accountId: string) {
+    async getBeneficiaries({ commit}, _id: string) {
       console.log('Getting beneficiaries');
-      const beneficiaries = await AccountService.getBeneficiaries(accountId);
+      const beneficiaries = await AccountService.getBeneficiaries(_id);
       console.log('beneficiaries: ', beneficiaries);
       commit('setBeneficiaries', beneficiaries);
     },
-    async getTransactions({ commit}, accountId: string) {
+    async getTransactions({ commit}, _id: string) {
       console.log('Getting transactions');
-      const transactions = await AccountService.getTransactions(accountId);
+      const transactions = await AccountService.getTransactions(_id);
       console.log('transactions: ', transactions);
       commit('setTransactions', transactions);
     },
@@ -106,9 +105,13 @@ export default new Vuex.Store({
       const trx = await AccountService.deposit(accountId, amount);
       commit('addTransaction', trx);
     },
-    async nominateBeneficiary({ commit }, { accountId, beneficiary }: { accountId: string; beneficiary: string }) {
+    async donate({ commit}, { from, to, amount }: {from: string; to: string; amount: number}) {
+      const trx = await AccountService.donate(from, to, amount);
+      commit('addTransaction', trx);
+    },
+    async nominateBeneficiary({ commit }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
       console.log('Nominated beneficiary', beneficiary);
-      const bnf = await AccountService.nominateBeneficiary(accountId, beneficiary);
+      const bnf = await AccountService.nominateBeneficiary(nominator, beneficiary);
       commit('addBeneficiary', bnf);
     }
   },

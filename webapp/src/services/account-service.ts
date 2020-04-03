@@ -1,8 +1,6 @@
 export const AccountService = {
-  async login(userId: string) {
-    const payload = {
-      uid: userId
-    };
+  async login(_id: string) {
+    const payload = { uid: _id };
     const res = await fetch('http://localhost:3000/login', {
       method: 'POST',
       headers: {
@@ -14,7 +12,6 @@ export const AccountService = {
   },
   async deposit(accountId: string, amount: number) {
     const payload = {
-      _id: Math.floor(Math.random() * 10000).toString(),
       from : '',
       to: accountId,
       amount,
@@ -30,17 +27,33 @@ export const AccountService = {
     
     return res.json();
   },
-  async nominateBeneficiary(accountId: string, beneficiary: string) {
+  async donate(from: string, to: string, amount: number) {
     const payload = {
-      _id: Math.floor(Math.random() * 10000).toString(),
+      from,
+      to,
+      amount,
+      type: 'donation'
+    };
+    const res = await fetch('http://localhost:3000/donate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  },
+  async nominateBeneficiary(nominator: string, beneficiary: string) {
+    const payload = {
       phone: beneficiary,
-      nominatedBy: accountId
+      nominatedBy: nominator
     };
     const res = await fetch('http://localhost:3000/beneficiaries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': accountId
+        'Authorization': nominator
       },
       body: JSON.stringify(payload)
     });
