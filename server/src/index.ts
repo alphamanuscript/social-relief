@@ -18,65 +18,78 @@ async function initDb() {
   await client.connect();
   db = client.db('lockdown');
 
-  await db.dropCollection('users');
-  await db.collection('users').insertOne({
-    _id: 'userid',
-    phone: '0711223344',
-    email: 'john@mailer.com'
-  });
+  const collections = await db.listCollections().toArray();
 
-  await db.dropCollection('beneficiaries');
-  await db.collection('beneficiaries').insertOne({
-    _id: 'beneficiaryid',
-    phone: '0705975787',
-    nominatedBy: 'userid'
-  });
-
-  await db.dropCollection('transactions');
-  await db.collection('transactions').insertMany([
-    {
-      _id: generateId(),
-      type: 'deposit',
-      amount: 1000,
-      from: '',
-      to: 'userid'
-    },
-    {
-      _id: generateId(),
-      type: 'deposit',
-      amount: 500,
-      from: '',
-      to: 'userid'
-    },
-    {
-      _id: generateId(),
-      type: 'donation',
-      amount: 1000,
-      from: 'userid',
-      to: 'beneficiaryid'
-    },
-    {
-      _id: generateId(),
-      type: 'deposit',
-      amount: 6000,
-      from: '',
-      to: 'userid'
-    },
-    {
-      _id: generateId(),
-      type: 'donation',
-      amount: 1000,
-      from: 'userid',
-      to: 'beneficiaryid'
-    },
-    {
-      _id: generateId(),
-      type: 'donation',
-      amount: 500,
-      from: 'userid',
-      to: 'beneficiaryid'
-    },
-  ]);
+  if (!collections.find(collection => collection.name === 'users')) {
+    await db.collection('users').insertOne({
+      _id: 'userid',
+      phone: '0711223344',
+      email: 'john@mailer.com'
+    });
+  }
+  
+  if (!collections.find(collection => collection.name === 'beneficiaries')) {
+    await db.collection('beneficiaries').insertOne({
+      _id: 'beneficiaryid',
+      phone: '0705975787',
+      nominatedBy: 'userid'
+    });
+  }
+  
+  if (!collections.find(collection => collection.name === 'middlemen')) {
+    await db.collection('middlemen').insertOne({
+      _id: 'middlemanid',
+      phone: '0704392038',
+      appointedBy: 'userid'
+    });
+  }
+  
+  if (!collections.find(collection => collection.name === 'transactions')) {
+    await db.collection('transactions').insertMany([
+      {
+        _id: generateId(),
+        type: 'deposit',
+        amount: 1000,
+        from: '',
+        to: 'userid'
+      },
+      {
+        _id: generateId(),
+        type: 'deposit',
+        amount: 500,
+        from: '',
+        to: 'userid'
+      },
+      {
+        _id: generateId(),
+        type: 'donation',
+        amount: 1000,
+        from: 'userid',
+        to: 'beneficiaryid'
+      },
+      {
+        _id: generateId(),
+        type: 'deposit',
+        amount: 6000,
+        from: '',
+        to: 'userid'
+      },
+      {
+        _id: generateId(),
+        type: 'donation',
+        amount: 1000,
+        from: 'userid',
+        to: 'beneficiaryid'
+      },
+      {
+        _id: generateId(),
+        type: 'donation',
+        amount: 500,
+        from: 'userid',
+        to: 'beneficiaryid'
+      },
+    ]);
+  }
 }
 
 app.get('/', (req, res) => {
@@ -93,7 +106,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/deposit', async (req, res) => {
   console.log('Depositing', req.body);
-  const result = await db.collection('transactions').insert({
+  const result = await db.collection('transactions').insertOne({
     _id: generateId(),
     ...req.body
   });
@@ -102,7 +115,7 @@ app.post('/deposit', async (req, res) => {
 
 app.post('/donate', async (req, res) => {
   console.log('Donating', req.body);
-  const result = await db.collection('transactions').insert({
+  const result = await db.collection('transactions').insertOne({
     _id: generateId(),
     ...req.body
   });
@@ -111,7 +124,7 @@ app.post('/donate', async (req, res) => {
 
 app.post('/beneficiaries', async (req, res) => {
   const beneficiary = req.body;
-  const result = await db.collection('beneficiaries').insert({
+  const result = await db.collection('beneficiaries').insertOne({
     _id: generateId(),
     ...req.body
   });
@@ -120,9 +133,26 @@ app.post('/beneficiaries', async (req, res) => {
 
 app.get('/beneficiaries', async (req, res) => {
   const accountId = req.get('Authorization');
-  const result2 = await db.collection('beneficiaries').find({ nominatedBy: accountId }).toArray();
-  return res.status(200).json(result2);
+  const result = await db.collection('beneficiaries').find({ nominatedBy: accountId }).toArray();
+  return res.status(200).json(result);
 });
+
+app.post('/middlemen', async (req, res) => {
+  const middleman = req.body;
+  const result = await db.collection('middlemen').insertOne({
+    _id: generateId(),
+    ...req.body
+  });
+  return res.status(200).json(result.ops[0]);
+});
+
+app.get('/middlemen', async (req, res) => {
+  const accountId = req.get('Authorization');
+  const result = await db.collection('middlemen').find({ appointedBy: accountId }).toArray();
+  return res.status(200).json(result);
+});
+
+
 
 app.get('/transactions', async (req, res) => {
   const accountId = req.get('Authorization');
