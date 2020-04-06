@@ -40,26 +40,16 @@
         <h2>Donate</h2>
         <form>
           <div class="row">
-            <div class="col-md-6 form-group">
+            <div class="col-md-12 form-group">
               <label for="donateAmount">Amount</label>
               <input
                 v-model.number="donation.amount"
                 id="donateAmount"
                 type="number"
                 class="form-control"
-                min="100"
+                min="200"
+                :max="accountBalance"
               >
-            </div>
-            <div class="col-md-6 form-group">
-              <label for="to">To</label>
-              <select v-model="donation.to" class="custom-select" id="to" required>
-                <option
-                  v-for="beneficiary in beneficiaries"
-                  :key="beneficiary._id" 
-                  :value="beneficiary._id">
-                  {{ beneficiary.phone }}
-                </option>
-              </select>
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
@@ -111,9 +101,27 @@
         <h3>Appoint trusted point person</h3>
         <p>You can appoint a trusted point person and they can nominate
           beneficiaries on your behalf</p>
+        <form>
+          <div class="form-group">
+            <label for="middleman">Middleman</label>
+            <input
+              v-model="middleman"
+              id="middleman"
+              type="text"
+              class="form-control"
+            >
+          </div>
+          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
+        </form>
       </div>
       <div class="col-md-4">
-        <hr>
+        <hr class="donation-history-separator">
+        <h3>Appointed point person(s)</h3>
+        <ul class="list-group">
+          <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
+            {{ middleman.phone }} ({{ middleman._id }})
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -127,10 +135,11 @@ export default {
     return {
       deposit: 0,
       donation: {
-        amount: 0,
+        amount: 200,
         to: 'beneficiaryid'
       },
-      beneficiary: ''
+      beneficiary: '',
+      middleman: ''
     }
   },
   computed: {
@@ -140,10 +149,10 @@ export default {
       'peopleDonatedTo',
       'donations'
     ]),
-    ...mapState(['user', 'beneficiaries'])
+    ...mapState(['user', 'beneficiaries', 'middlemen'])
   },
   methods: {
-    ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary']),
+    ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
     submitDeposit() {
       this.depositToAccount({ accountId: this.user._id, amount: this.deposit });
     },
@@ -157,6 +166,12 @@ export default {
       console.log('beneficiary', this.beneficiary);
       if (this.beneficiary.length) {
         this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
+      }
+    },
+    submitMiddleman() {
+      console.log('middleman', this.middleman);
+      if (this.middleman.length) {
+        this.appointMiddleman({appointer: this.user._id, middleman: this.middleman});
       }
     }
   }

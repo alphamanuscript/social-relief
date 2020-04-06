@@ -71,6 +71,33 @@ export const AccountService = {
     
     return res.json();
   },
+  async appointMiddleman(appointer: string, middleman: string) {
+    const payload = {
+      phone: middleman,
+      appointedBy: appointer
+    };
+    const res = await fetch('http://localhost:3000/middlemen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': appointer
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  },
+  async getMiddlemen(accountId: string) {
+    const res = await fetch('http://localhost:3000/middlemen', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accountId
+      }
+    });
+    
+    return res.json();
+  },
   async getTransactions(accountId: string) {
     const res = await fetch('http://localhost:3000/transactions', {
       method: 'GET',

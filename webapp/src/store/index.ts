@@ -18,6 +18,12 @@ interface Beneficiary {
   nominatedBy: string;
 }
 
+interface Middleman {
+  _id: string;
+  phone: string;
+  appointedBy: string;
+}
+
 interface Transaction {
   _id: string;
   type: TransactionType;
@@ -29,12 +35,14 @@ interface Transaction {
 interface AppState {
   user?: User;
   beneficiaries: Beneficiary[];
+  middlemen: Middleman[];
   transactions: Transaction[];
 }
 
 const state: AppState = {
   user: undefined,
   beneficiaries: [],
+  middlemen: [],
   transactions: []
 }
 
@@ -47,11 +55,17 @@ export default new Vuex.Store({
     addBeneficiary(state, bnf) {
       state.beneficiaries.push(bnf);
     },
+    addMiddleman(state, mdm) {
+      state.middlemen.push(mdm);
+    },
     setUser(state, user) {
       state.user = user
     },
     setBeneficiaries(state, beneficiaries) {
       state.beneficiaries = beneficiaries
+    },
+    setMiddlemen(state, middlemen) {
+      state.middlemen = middlemen
     },
     setTransactions(state, transactions) {
       state.transactions = transactions
@@ -94,6 +108,12 @@ export default new Vuex.Store({
       console.log('beneficiaries: ', beneficiaries);
       commit('setBeneficiaries', beneficiaries);
     },
+    async getMiddlemen({ commit}, _id: string) {
+      console.log('Getting middlemen');
+      const middlemen = await AccountService.getMiddlemen(_id);
+      console.log('middlemen: ', middlemen);
+      commit('setMiddlemen', middlemen);
+    },
     async getTransactions({ commit}, _id: string) {
       console.log('Getting transactions');
       const transactions = await AccountService.getTransactions(_id);
@@ -113,6 +133,11 @@ export default new Vuex.Store({
       console.log('Nominated beneficiary', beneficiary);
       const bnf = await AccountService.nominateBeneficiary(nominator, beneficiary);
       commit('addBeneficiary', bnf);
+    },
+    async appointMiddleman({ commit }, { appointer, middleman }: { appointer: string; middleman: string }) {
+      console.log('Appointed middleman', middleman);
+      const mdm = await AccountService.appointMiddleman(appointer, middleman);
+      commit('addMiddleman', mdm);
     }
   },
   modules: {

@@ -35,7 +35,7 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['login', 'getBeneficiaries', 'getTransactions'])
+    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen'])
   },
   watch: {
     async $route(to) {
@@ -43,6 +43,7 @@ export default {
         console.log('Navigating to /donate...');
         await this.login('userid');
         await this.getBeneficiaries(this.user._id);
+        await this.getMiddlemen(this.user._id);
         await this.getTransactions(this.user._id);
       }
     }
