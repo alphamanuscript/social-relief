@@ -16,12 +16,14 @@ interface Beneficiary {
   _id: string;
   phone: string;
   nominatedBy: string;
+  nominatedAt: Date;
 }
 
 interface Middleman {
   _id: string;
   phone: string;
   appointedBy: string;
+  appointedAt: Date;
 }
 
 interface Transaction {
@@ -30,6 +32,7 @@ interface Transaction {
   amount: number;
   from: string;
   to: string;
+  timestamp: Date;
 }
 
 interface AppState {

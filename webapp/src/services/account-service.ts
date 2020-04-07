@@ -15,7 +15,8 @@ export const AccountService = {
       from : '',
       to: accountId,
       amount,
-      type: 'deposit'
+      type: 'deposit',
+      timestamp: new Date()
     };
     const res = await fetch('http://localhost:3000/deposit', {
       method: 'POST',
@@ -32,7 +33,8 @@ export const AccountService = {
       from,
       to,
       amount,
-      type: 'donation'
+      type: 'donation',
+      timestamp: new Date()
     };
     const res = await fetch('http://localhost:3000/donate', {
       method: 'POST',
@@ -47,7 +49,9 @@ export const AccountService = {
   async nominateBeneficiary(nominator: string, beneficiary: string) {
     const payload = {
       phone: beneficiary,
-      nominatedBy: nominator
+      nominatedBy: nominator,
+      receivedThisMonth: 0,
+      nominatedAt: new Date()
     };
     const res = await fetch('http://localhost:3000/beneficiaries', {
       method: 'POST',
@@ -74,7 +78,8 @@ export const AccountService = {
   async appointMiddleman(appointer: string, middleman: string) {
     const payload = {
       phone: middleman,
-      appointedBy: appointer
+      appointedBy: appointer,
+      appointedAt: new Date()
     };
     const res = await fetch('http://localhost:3000/middlemen', {
       method: 'POST',

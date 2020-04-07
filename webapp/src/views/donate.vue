@@ -37,6 +37,95 @@
     <div v-if="user" class="row">
       <div class="col-md-8">
         <hr>
+        <h3>Nominated beneficiaries</h3>
+        <p>You can nominate up to x beneficiaries to the system</p>
+        <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
+          <div class="form-group">
+            <label for="beneficiary">Beneficiary</label>
+            <input
+              v-model="beneficiary"
+              id="beneficiary"
+              type="text"
+              class="form-control"
+              disabled
+            >
+          </div>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            @click.prevent="submitBeneficiary"
+            disabled
+          >
+          Nominate
+          </button>
+        </form>
+        <form v-else>
+          <div class="form-group">
+            <label for="beneficiary">Beneficiary</label>
+            <input
+              v-model="beneficiary"
+              id="beneficiary"
+              type="text"
+              class="form-control"
+              disabled
+            >
+          </div>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            @click.prevent="submitBeneficiary"
+            disabled
+          >
+          Nominate
+          </button>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <hr class="donation-history-separator">
+        <h3>Nominated beneficiaries</h3>
+        <ul class="list-group">
+          <li v-for="beneficiary in beneficiaries" class="list-group-item" :key="beneficiary._id">
+            {{ beneficiary.phone }} ({{ beneficiary._id }})
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div v-if="user" class="row">
+      <div class="col-md-8">
+        <hr>
+        <h3>Appoint trusted point person</h3>
+        <p>You can appoint a trusted point person and they can nominate
+          beneficiaries on your behalf</p>
+        <form>
+          <div class="form-group">
+            <label for="middleman">Middleman</label>
+            <input
+              v-model="middleman"
+              id="middleman"
+              type="text"
+              :class="classes"
+              required
+            >
+            <div class="invalid-feedback">
+              Please provide a valid phone number.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <hr class="donation-history-separator">
+        <h3>Appointed point person(s)</h3>
+        <ul class="list-group">
+          <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
+            {{ middleman.phone }} ({{ middleman._id }})
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div v-if="user" class="row">
+      <div class="col-md-8">
+        <hr>
         <h2>Donate</h2>
         <form>
           <div class="row">
@@ -67,63 +156,6 @@
         </ul>
       </div>
     </div>
-    <div v-if="user" class="row">
-      <div class="col-md-8">
-        <hr>
-        <h3>Nominated beneficiaries</h3>
-        <p>You can nominate up to x beneficiaries to the system</p>
-        <form>
-          <div class="form-group">
-            <label for="beneficiary">Beneficiary</label>
-            <input
-              v-model="beneficiary"
-              id="beneficiary"
-              type="text"
-              class="form-control"
-            >
-          </div>
-          <button type="submit" class="btn btn-primary" @click.prevent="submitBeneficiary">Nominate</button>
-        </form>
-      </div>
-      <div class="col-md-4">
-        <hr class="donation-history-separator">
-        <h3>Nominated beneficiaries</h3>
-        <ul class="list-group">
-          <li v-for="beneficiary in beneficiaries" class="list-group-item" :key="beneficiary._id">
-            {{ beneficiary.phone }} ({{ beneficiary._id }})
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div v-if="user" class="row">
-      <div class="col-md-8">
-        <hr>
-        <h3>Appoint trusted point person</h3>
-        <p>You can appoint a trusted point person and they can nominate
-          beneficiaries on your behalf</p>
-        <form>
-          <div class="form-group">
-            <label for="middleman">Middleman</label>
-            <input
-              v-model="middleman"
-              id="middleman"
-              type="text"
-              class="form-control"
-            >
-          </div>
-          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
-        </form>
-      </div>
-      <div class="col-md-4">
-        <hr class="donation-history-separator">
-        <h3>Appointed point person(s)</h3>
-        <ul class="list-group">
-          <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
-            {{ middleman.phone }} ({{ middleman._id }})
-          </li>
-        </ul>
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -133,13 +165,14 @@ export default {
   name: 'Donate',
   data() {
     return {
-      deposit: 0,
+      deposit: 100,
       donation: {
         amount: 200,
         to: 'beneficiaryid'
       },
       beneficiary: '',
-      middleman: ''
+      middleman: '',
+      isMiddlemanAppointedAlready: false
     }
   },
   computed: {
@@ -149,7 +182,19 @@ export default {
       'peopleDonatedTo',
       'donations'
     ]),
-    ...mapState(['user', 'beneficiaries', 'middlemen'])
+    ...mapState(['user', 'beneficiaries', 'middlemen']),
+    classes() {
+      return {
+        'form-control': true,
+        'is-invalid': this.isMiddlemanAppointedAlready
+      }
+    },
+    isThereEnoughDonationForAnotherBeneficiary() {
+      if (this.amountDonated === 0) {
+        return false;
+      }
+      return this.amountDonated / (this.beneficiaries.length + 1) >= 100; 
+    }
   },
   methods: {
     ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
@@ -171,7 +216,11 @@ export default {
     submitMiddleman() {
       console.log('middleman', this.middleman);
       if (this.middleman.length) {
+        this.isMiddlemanAppointedAlready = true;
         this.appointMiddleman({appointer: this.user._id, middleman: this.middleman});
+      }
+      else {
+        this.isMiddlemanAppointedAlready = true;
       }
     }
   }
