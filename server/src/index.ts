@@ -29,66 +29,15 @@ async function initDb() {
   }
   
   if (!collections.find(collection => collection.name === 'beneficiaries')) {
-    await db.collection('beneficiaries').insertOne({
-      _id: 'beneficiaryid',
-      phone: '0705975787',
-      nominatedBy: 'userid'
-    });
+    await db.createCollection('beneficiaries');
   }
-  
+
   if (!collections.find(collection => collection.name === 'middlemen')) {
-    await db.collection('middlemen').insertOne({
-      _id: 'middlemanid',
-      phone: '0704392038',
-      appointedBy: 'userid'
-    });
+    await db.createCollection('middlemen');
   }
-  
+
   if (!collections.find(collection => collection.name === 'transactions')) {
-    await db.collection('transactions').insertMany([
-      {
-        _id: generateId(),
-        type: 'deposit',
-        amount: 1000,
-        from: '',
-        to: 'userid'
-      },
-      {
-        _id: generateId(),
-        type: 'deposit',
-        amount: 500,
-        from: '',
-        to: 'userid'
-      },
-      {
-        _id: generateId(),
-        type: 'donation',
-        amount: 1000,
-        from: 'userid',
-        to: 'beneficiaryid'
-      },
-      {
-        _id: generateId(),
-        type: 'deposit',
-        amount: 6000,
-        from: '',
-        to: 'userid'
-      },
-      {
-        _id: generateId(),
-        type: 'donation',
-        amount: 1000,
-        from: 'userid',
-        to: 'beneficiaryid'
-      },
-      {
-        _id: generateId(),
-        type: 'donation',
-        amount: 500,
-        from: 'userid',
-        to: 'beneficiaryid'
-      },
-    ]);
+    await db.createCollection('transactions');
   }
 }
 
@@ -99,13 +48,11 @@ app.get('/', (req, res) => {
 
 app.post('/login', async (req, res) => {
   const userId = req.body.uid;
-  console.log('Logging user in...', userId);
   const result = await db.collection('users').findOne({ _id: userId });
   return res.status(200).json(result);
 });
 
 app.post('/deposit', async (req, res) => {
-  console.log('Depositing', req.body);
   const result = await db.collection('transactions').insertOne({
     _id: generateId(),
     ...req.body
@@ -114,7 +61,6 @@ app.post('/deposit', async (req, res) => {
 });
 
 app.post('/donate', async (req, res) => {
-  console.log('Donating', req.body);
   const result = await db.collection('transactions').insertOne({
     _id: generateId(),
     ...req.body
