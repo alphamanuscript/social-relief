@@ -24,10 +24,13 @@
       <div class="col-md-4">
         <h3>My Stats</h3>
         <div>
-          <b>Account balance</b>: {{ accountBalance }}
+          <b>Account balance</b>: {{ user.accountBalance }}
         </div>
         <div>
-          <b>Amount donated</b>: {{ amountDonated }}
+          <b>Donation balance</b>: {{ user.donationBalance }}
+        </div>
+        <div>
+          <b>Total amount donated</b>: {{ totalAmountDonated }}
         </div>
         <div>
           <b>People donated to</b>: {{ peopleDonatedTo }}
@@ -66,15 +69,16 @@
               v-model="beneficiary"
               id="beneficiary"
               type="text"
-              class="form-control"
-              disabled
+              :class="getClasses('beneficiary')"
             >
+            <div class="invalid-feedback">
+              {{ beneficiaryMessage }}
+            </div>
           </div>
           <button 
             type="submit" 
             class="btn btn-primary" 
             @click.prevent="submitBeneficiary"
-            disabled
           >
           Nominate
           </button>
@@ -103,11 +107,11 @@
               v-model="middleman"
               id="middleman"
               type="text"
-              :class="classes"
+              :class="getClasses('middleman')"
               required
             >
             <div class="invalid-feedback">
-              Please provide a valid phone number.
+              {{ middlemanMessage }}
             </div>
           </div>
           <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
@@ -115,7 +119,7 @@
       </div>
       <div class="col-md-4">
         <hr class="donation-history-separator">
-        <h3>Appointed point person(s)</h3>
+        <h3>Appointed middlemen</h3>
         <ul class="list-group">
           <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
             {{ middleman.phone }} ({{ middleman._id }})
@@ -127,7 +131,7 @@
       <div class="col-md-8">
         <hr>
         <h2>Donate</h2>
-        <form>
+        <form v-if="isThereEnoughForADonation">
           <div class="row">
             <div class="col-md-12 form-group">
               <label for="donateAmount">Amount</label>
@@ -137,11 +141,30 @@
                 type="number"
                 class="form-control"
                 min="200"
-                :max="accountBalance"
+                :max="user.accountBalance"
               >
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
+            </div>
+          </div>
+        </form>
+        <form v-else>
+          <div class="row">
+            <div class="col-md-12 form-group">
+              <label for="donateAmount">Amount</label>
+              <input
+                v-model.number="donation.amount"
+                id="donateAmount"
+                type="number"
+                class="form-control"
+                min="200"
+                :max="user.accountBalance"
+                disabled
+              >
+            </div>
+            <div class="col-md-6">
+              <button type="submit" class="btn btn-primary" @click.prevent="submitDonation" disabled>Donate</button>
             </div>
           </div>
         </form>
@@ -168,61 +191,85 @@ export default {
       deposit: 100,
       donation: {
         amount: 200,
-        to: 'beneficiaryid'
+        to: ''
       },
       beneficiary: '',
       middleman: '',
-      isMiddlemanAppointedAlready: false
+      isValidMiddleman: true,
+      isValidBeneficiary: true,
+      beneficiaryMessage: 'Please provide a valid phone number',
+      middlemanMessage: 'Please provide a valid phone number'
     }
   },
   computed: {
     ...mapGetters([
-      'amountDonated',
+      'totalAmountDonated',
       'accountBalance',
       'peopleDonatedTo',
       'donations'
     ]),
     ...mapState(['user', 'beneficiaries', 'middlemen']),
-    classes() {
-      return {
-        'form-control': true,
-        'is-invalid': this.isMiddlemanAppointedAlready
-      }
-    },
     isThereEnoughDonationForAnotherBeneficiary() {
-      if (this.amountDonated === 0) {
-        return false;
+      if (this.user.donationBalance === 0) {
+        return true;
       }
-      return this.amountDonated / (this.beneficiaries.length + 1) >= 100; 
+      return this.user.donationBalance / (this.beneficiaries.length + 1) >= 100; 
+    },
+    isThereEnoughForADonation() {
+      if (this.user.accountBalance && this.beneficiaries.length * 200 <= this.user.accountBalance) {
+        return true;
+      }
+      return false;
     }
   },
   methods: {
     ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
     submitDeposit() {
-      this.depositToAccount({ accountId: this.user._id, amount: this.deposit });
+      this.depositToAccount({ user: this.user, amount: this.deposit });
     },
     submitDonation() {
       this.donation.from = this.user._id;
       console.log('donation', this.donation);
-      this.donate({ from: this.user._id, to: this.donation.to, amount: this.donation.amount })
+      this.donate({ user: this.user, donation: this.donation });
+      // this.donate({ from: this.user._id, to: this.donation.to, amount: this.donation.amount });
       // this.depositToAccount(this.user.accountId, this.donation);
     },
     submitBeneficiary() {
       console.log('beneficiary', this.beneficiary);
-      if (this.beneficiary.length) {
+      if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
+        this.isValidBeneficiary = true;
         this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
+      }
+      else if (!this.beneficiary.length){
+        this.beneficiaryMessage = 'Please provide a valid phone';
+        this.isValidBeneficiary = false;
+      }
+      else if (this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
+        this.beneficiaryMessage = 'Beneficiary already nominated';
+        this.isValidBeneficiary = false;
       }
     },
     submitMiddleman() {
       console.log('middleman', this.middleman);
-      if (this.middleman.length) {
-        this.isMiddlemanAppointedAlready = true;
+      if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone)) {
+        this.isValidMiddleman = true;
         this.appointMiddleman({appointer: this.user._id, middleman: this.middleman});
       }
-      else {
-        this.isMiddlemanAppointedAlready = true;
+      else if(!this.middleman.length) {
+        this.middlemanMessage = 'Please provide a valid phone number'
+        this.isValidMiddleman = false;
       }
-    }
+      else if (this.middlemen.find(mdm => mdm.phone)) {
+        this.middlemanMessage = 'Middleman already appointed';
+        this.isValidMiddleman = false;
+      }
+    },
+    getClasses(nameOfInput) {
+      return {
+        'form-control': true,
+        'is-invalid': nameOfInput === 'middleman' ? !this.isValidMiddleman : !this.isValidBeneficiary
+      }
+    },
   }
 }
 </script>

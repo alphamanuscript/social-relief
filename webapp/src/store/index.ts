@@ -6,27 +6,29 @@ Vue.use(Vuex)
 
 type TransactionType = 'deposit' | 'donation';
 
-interface User {
+export interface User {
   _id: string;
   phone: string;
   email: string;
+  accountBalance: number;
+  donationBalance: number;
 }
 
-interface Beneficiary {
+export interface Beneficiary {
   _id: string;
   phone: string;
   nominatedBy: string;
   nominatedAt: Date;
 }
 
-interface Middleman {
+export interface Middleman {
   _id: string;
   phone: string;
   appointedBy: string;
   appointedAt: Date;
 }
 
-interface Transaction {
+export interface Transaction {
   _id: string;
   type: TransactionType;
   amount: number;
@@ -80,7 +82,7 @@ export default new Vuex.Store({
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
     },
-    amountDonated: ({ transactions }) => {
+    totalAmountDonated: ({ transactions }) => {
       return transactions.filter(t => t.type == 'donation' && t.amount > 0)
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
@@ -89,7 +91,7 @@ export default new Vuex.Store({
       return transactions.map(t => t.type === 'donation' ? -1 * t.amount : t.amount).reduce((a, b) => a + b, 0);
     },
     peopleDonatedTo: ({ transactions }) => {
-      const recipients = transactions.filter(t => t.type == 'donation')
+      const recipients = transactions.filter(t => t.type === 'donation' && t.to.length)
         .map(t => t.to);
       const uniqueRecipients = new Set(recipients);
       return uniqueRecipients.size;
@@ -123,14 +125,24 @@ export default new Vuex.Store({
       console.log('transactions: ', transactions);
       commit('setTransactions', transactions);
     },
-    async depositToAccount({ commit }, { accountId, amount }: { accountId: string; amount: number }) {
+    async depositToAccount({ commit }, { user, amount }: { user: User; amount: number }) {
       console.log('Received amount', amount);
-      const trx = await AccountService.deposit(accountId, amount);
+      const trx = await AccountService.deposit(user._id, amount);
+      const updatedUser = await AccountService.updateUser({
+        ...user,
+        accountBalance: user.accountBalance + amount
+      });
       commit('addTransaction', trx);
+      commit('setUser', updatedUser);
     },
-    async donate({ commit}, { from, to, amount }: {from: string; to: string; amount: number}) {
-      const trx = await AccountService.donate(from, to, amount);
+    async donate({ commit}, { user, donation }: { user: User; donation: any }) {
+      const trx = await AccountService.donate(donation);
+      const updatedUser = await AccountService.updateUser({
+        ...user,
+        donationBalance: user.donationBalance + donation.amount
+      });
       commit('addTransaction', trx);
+      commit('setUser', updatedUser);
     },
     async nominateBeneficiary({ commit }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
       console.log('Nominated beneficiary', beneficiary);

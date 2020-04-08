@@ -1,3 +1,5 @@
+import { User } from '../store/index';
+
 export const AccountService = {
   async login(_id: string) {
     const payload = { uid: _id };
@@ -21,25 +23,37 @@ export const AccountService = {
     const res = await fetch('http://localhost:3000/deposit', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': accountId
       },
       body: JSON.stringify(payload)
     });
     
     return res.json();
   },
-  async donate(from: string, to: string, amount: number) {
+  async updateUser(updatedUser: User) {
+    const res = await fetch('http://localhost:3000/users', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': updatedUser._id
+      },
+      body: JSON.stringify(updatedUser)
+    });
+    
+    return res.json();
+  },
+  async donate(donation: any) {
     const payload = {
-      from,
-      to,
-      amount,
+      ...donation,
       type: 'donation',
       timestamp: new Date()
     };
     const res = await fetch('http://localhost:3000/donate', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': donation.from
       },
       body: JSON.stringify(payload)
     });
