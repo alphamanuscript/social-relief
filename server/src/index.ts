@@ -24,7 +24,9 @@ async function initDb() {
     await db.collection('users').insertOne({
       _id: 'userid',
       phone: '0711223344',
-      email: 'john@mailer.com'
+      email: 'john@mailer.com',
+      accountBalance: 0,
+      donationBalance: 0
     });
   }
   
@@ -107,6 +109,18 @@ app.get('/transactions', async (req, res) => {
    }).toArray();
   return res.status(200).json(result);
 });
+
+app.put('/users', async(req, res) => {
+  const updatedUser = req.body;
+  const update: any = {
+      $set: { ...updatedUser }
+  };
+  const result = await db.collection('users').findOneAndUpdate({ _id: updatedUser._id }, update, {
+      upsert: true,
+      returnOriginal: false,
+  });
+  return res.status(200).json(result.value);
+})
 
 async function startApp() {
   try {
