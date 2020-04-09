@@ -40,7 +40,6 @@ export default {
   watch: {
     async $route(to) {
       if (to.name === 'donate') {
-        console.log('Navigating to /donate...');
         await this.login('userid');
         await this.getBeneficiaries(this.user._id);
         await this.getMiddlemen(this.user._id);

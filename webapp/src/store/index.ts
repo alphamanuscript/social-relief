@@ -102,31 +102,22 @@ export default new Vuex.Store({
   },
   actions: {
     async login({ commit}, _id: string) {
-      console.log('Logging user in...', _id);
       const user = await AccountService.login(_id);
-      console.log('user: ', user);
       commit('setUser', user);
     },
     async getBeneficiaries({ commit}, _id: string) {
-      console.log('Getting beneficiaries');
       const beneficiaries = await AccountService.getBeneficiaries(_id);
-      console.log('beneficiaries: ', beneficiaries);
       commit('setBeneficiaries', beneficiaries);
     },
     async getMiddlemen({ commit}, _id: string) {
-      console.log('Getting middlemen');
       const middlemen = await AccountService.getMiddlemen(_id);
-      console.log('middlemen: ', middlemen);
       commit('setMiddlemen', middlemen);
     },
     async getTransactions({ commit}, _id: string) {
-      console.log('Getting transactions');
       const transactions = await AccountService.getTransactions(_id);
-      console.log('transactions: ', transactions);
       commit('setTransactions', transactions);
     },
     async depositToAccount({ commit }, { user, amount }: { user: User; amount: number }) {
-      console.log('Received amount', amount);
       const trx = await AccountService.deposit(user._id, amount);
       const updatedUser = await AccountService.updateUser({
         ...user,
@@ -145,12 +136,10 @@ export default new Vuex.Store({
       commit('setUser', updatedUser);
     },
     async nominateBeneficiary({ commit }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
-      console.log('Nominated beneficiary', beneficiary);
       const bnf = await AccountService.nominateBeneficiary(nominator, beneficiary);
       commit('addBeneficiary', bnf);
     },
     async appointMiddleman({ commit }, { appointer, middleman }: { appointer: string; middleman: string }) {
-      console.log('Appointed middleman', middleman);
       const mdm = await AccountService.appointMiddleman(appointer, middleman);
       commit('addMiddleman', mdm);
     }

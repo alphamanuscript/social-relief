@@ -100,7 +100,23 @@
         <h3>Appoint trusted point person</h3>
         <p>You can appoint a trusted point person and they can nominate
           beneficiaries on your behalf</p>
-        <form>
+        <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
+          <div class="form-group">
+            <label for="middleman">Middleman</label>
+            <input
+              v-model="middleman"
+              id="middleman"
+              type="text"
+              :class="getClasses('middleman')"
+              disabled
+            >
+            <div class="invalid-feedback">
+              {{ middlemanMessage }}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman" disabled>Appoint</button>
+        </form>
+        <form v-else>
           <div class="form-group">
             <label for="middleman">Middleman</label>
             <input
@@ -140,7 +156,7 @@
                 id="donateAmount"
                 type="number"
                 class="form-control"
-                min="200"
+                min="100"
                 :max="user.accountBalance"
               >
             </div>
@@ -158,7 +174,7 @@
                 id="donateAmount"
                 type="number"
                 class="form-control"
-                min="200"
+                min="100"
                 :max="user.accountBalance"
                 disabled
               >
@@ -174,7 +190,7 @@
         <h3>Donation history</h3>
         <ul class="list-group">
           <li v-for="donation in donations" class="list-group-item" :key="donation._id">
-            {{ donation.amount }} to {{ donation.to }}
+            {{ donation.amount }} to {{ getDonationReceipient(donation) }}
           </li>
         </ul>
       </div>
@@ -190,7 +206,7 @@ export default {
     return {
       deposit: 100,
       donation: {
-        amount: 200,
+        amount: 100,
         to: ''
       },
       beneficiary: '',
@@ -216,7 +232,7 @@ export default {
       return this.user.donationBalance / (this.beneficiaries.length + 1) >= 100; 
     },
     isThereEnoughForADonation() {
-      if (this.user.accountBalance && this.beneficiaries.length * 200 <= this.user.accountBalance) {
+      if (this.user.accountBalance >= 100) {
         return true;
       }
       return false;
@@ -229,16 +245,13 @@ export default {
     },
     submitDonation() {
       this.donation.from = this.user._id;
-      console.log('donation', this.donation);
       this.donate({ user: this.user, donation: this.donation });
-      // this.donate({ from: this.user._id, to: this.donation.to, amount: this.donation.amount });
-      // this.depositToAccount(this.user.accountId, this.donation);
     },
     submitBeneficiary() {
-      console.log('beneficiary', this.beneficiary);
       if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
         this.isValidBeneficiary = true;
         this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
+        this.beneficiary = '';
       }
       else if (!this.beneficiary.length){
         this.beneficiaryMessage = 'Please provide a valid phone';
@@ -250,10 +263,10 @@ export default {
       }
     },
     submitMiddleman() {
-      console.log('middleman', this.middleman);
       if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone)) {
         this.isValidMiddleman = true;
         this.appointMiddleman({appointer: this.user._id, middleman: this.middleman});
+        this.middleman = '';
       }
       else if(!this.middleman.length) {
         this.middlemanMessage = 'Please provide a valid phone number'
@@ -270,6 +283,9 @@ export default {
         'is-invalid': nameOfInput === 'middleman' ? !this.isValidMiddleman : !this.isValidBeneficiary
       }
     },
+    getDonationReceipient(donation) {
+      return donation.to.length ? donation.to : 'system'
+    }
   }
 }
 </script>
