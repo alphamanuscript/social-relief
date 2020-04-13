@@ -26,13 +26,14 @@ async function initDb() {
       phone: '0711223344',
       email: 'john@mailer.com',
       accountBalance: 0,
-      donationBalance: 0
+      role: 'donor'
     });
   }
   
   if (!collections.find(collection => collection.name === 'beneficiaries')) {
     await db.createCollection('beneficiaries');
   }
+
 
   if (!collections.find(collection => collection.name === 'middlemen')) {
     await db.createCollection('middlemen');
@@ -52,14 +53,6 @@ app.post('/login', async (req, res) => {
   const userId = req.body.uid;
   const result = await db.collection('users').findOne({ _id: userId });
   return res.status(200).json(result);
-});
-
-app.post('/deposit', async (req, res) => {
-  const result = await db.collection('transactions').insertOne({
-    _id: generateId(),
-    ...req.body
-  });
-  return res.status(200).json(result.ops[0]);
 });
 
 app.post('/donate', async (req, res) => {
