@@ -12,15 +12,16 @@ export const AccountService = {
     });
     return res.json();
   },
-  async deposit(accountId: string, amount: number) {
+  async donate(accountId: string, amount: number) {
     const payload = {
       from : '',
       to: accountId,
       amount,
-      type: 'deposit',
+      type: 'donation',
       timestamp: new Date()
     };
-    const res = await fetch('http://localhost:3000/deposit', {
+    console.log('payload: ', payload);
+    const res = await fetch('http://localhost:3000/donate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,23 +44,23 @@ export const AccountService = {
     
     return res.json();
   },
-  async donate(donation: any) {
-    const payload = {
-      ...donation,
-      type: 'donation',
-      timestamp: new Date()
-    };
-    const res = await fetch('http://localhost:3000/donate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': donation.from
-      },
-      body: JSON.stringify(payload)
-    });
+  // async donate(donation: any) {
+  //   const payload = {
+  //     ...donation,
+  //     type: 'donation',
+  //     timestamp: new Date()
+  //   };
+  //   const res = await fetch('http://localhost:3000/donate', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': donation.from
+  //     },
+  //     body: JSON.stringify(payload)
+  //   });
     
-    return res.json();
-  },
+  //   return res.json();
+  // },
   async nominateBeneficiary(nominator: string, beneficiary: string) {
     const payload = {
       phone: beneficiary,

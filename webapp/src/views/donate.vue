@@ -1,45 +1,52 @@
 <template>
   <div class="container">
-    <div v-if="user" class="row">
-      <div class="col-md-8">
-        <h2>Deposit</h2>
+    <div v-if="user" class="row mb-md-5">
+      <div class="col-md-5">
+        <h2>Donate</h2>
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
-              <label for="depositAmount">Amount</label>
+              <label for="donateAmount">Amount</label>
               <input
-                v-model.number="deposit"
-                id="depositAmount"
+                v-model.number="donation"
+                id="donateAmount"
                 type="number"
                 class="form-control"
-                min="100"
+                min="2000"
               >
             </div>
             <div class="col-md-6">
-              <button type="submit" class="btn btn-primary" @click.prevent="submitDeposit">Deposit</button>
+              <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
             </div>
           </div>
         </form>
       </div>
-      <div class="col-md-4">
-        <h3>My Stats</h3>
-        <div>
-          <b>Account balance</b>: {{ user.accountBalance }}
-        </div>
-        <div>
-          <b>Donation balance</b>: {{ user.donationBalance }}
-        </div>
-        <div>
-          <b>Total amount donated</b>: {{ totalAmountDonated }}
-        </div>
-        <div>
-          <b>People donated to</b>: {{ peopleDonatedTo }}
+      <div class="col-md-3" style="text-align: center">
+        <div style="margin: auto; display: inline-block; text-align: left">
+          <h3>My Stats</h3>
+          <div>
+            <b>Account balance</b>: {{ user.accountBalance }}
+          </div>
+          <div>
+            <b>Total amount donated</b>: {{ totalAmountDonated }}
+          </div>
+          <div>
+            <b>People donated to</b>: {{ peopleDonatedTo }}
+          </div>
         </div>
       </div>
+      <div class="col-md-4">
+        <h3>Donation history</h3>
+        <ul class="list-group">
+          <li v-for="donation in donations" class="list-group-item" :key="donation._id">
+            {{ donation.amount }} @ {{ getDonationDate(donation) }}
+          </li>
+        </ul>
+      </div>
     </div>
-    <div v-if="user" class="row">
-      <div class="col-md-8">
-        <hr>
+    <hr>
+    <div v-if="user" class="row mb-md-5">
+      <div class="col-md-5">
         <h3>Nominated beneficiaries</h3>
         <p>You can nominate up to x beneficiaries to the system</p>
         <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
@@ -84,8 +91,8 @@
           </button>
         </form>
       </div>
+      <div class="col-md-3"></div>
       <div class="col-md-4">
-        <hr class="donation-history-separator">
         <h3>Nominated beneficiaries</h3>
         <ul class="list-group">
           <li v-for="beneficiary in beneficiaries" class="list-group-item" :key="beneficiary._id">
@@ -94,9 +101,9 @@
         </ul>
       </div>
     </div>
+    <hr>
     <div v-if="user" class="row">
-      <div class="col-md-8">
-        <hr>
+      <div class="col-md-5">
         <h3>Appoint trusted point person</h3>
         <p>You can appoint a trusted point person and they can nominate
           beneficiaries on your behalf</p>
@@ -133,8 +140,8 @@
           <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
         </form>
       </div>
+      <div class="col-md-3"></div>
       <div class="col-md-4">
-        <hr class="donation-history-separator">
         <h3>Appointed middlemen</h3>
         <ul class="list-group">
           <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
@@ -143,72 +150,17 @@
         </ul>
       </div>
     </div>
-    <div v-if="user" class="row">
-      <div class="col-md-8">
-        <hr>
-        <h2>Donate</h2>
-        <form v-if="isThereEnoughForADonation">
-          <div class="row">
-            <div class="col-md-12 form-group">
-              <label for="donateAmount">Amount</label>
-              <input
-                v-model.number="donation.amount"
-                id="donateAmount"
-                type="number"
-                class="form-control"
-                min="100"
-                :max="user.accountBalance"
-              >
-            </div>
-            <div class="col-md-6">
-              <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
-            </div>
-          </div>
-        </form>
-        <form v-else>
-          <div class="row">
-            <div class="col-md-12 form-group">
-              <label for="donateAmount">Amount</label>
-              <input
-                v-model.number="donation.amount"
-                id="donateAmount"
-                type="number"
-                class="form-control"
-                min="100"
-                :max="user.accountBalance"
-                disabled
-              >
-            </div>
-            <div class="col-md-6">
-              <button type="submit" class="btn btn-primary" @click.prevent="submitDonation" disabled>Donate</button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="col-md-4">
-        <hr>
-        <h3>Donation history</h3>
-        <ul class="list-group">
-          <li v-for="donation in donations" class="list-group-item" :key="donation._id">
-            {{ donation.amount }} to {{ getDonationReceipient(donation) }}
-          </li>
-        </ul>
-      </div>
-    </div>
   </div>
 </template>
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
+import moment from 'moment';
 
 export default {
   name: 'Donate',
   data() {
     return {
-      deposit: 100,
-      donation: {
-        amount: 100,
-        to: ''
-      },
+      donation: 2000,
       beneficiary: '',
       middleman: '',
       isValidMiddleman: true,
@@ -220,16 +172,24 @@ export default {
   computed: {
     ...mapGetters([
       'totalAmountDonated',
-      'accountBalance',
       'peopleDonatedTo',
-      'donations'
+      'donations',
+      'numberOfBeneficiariesOwed',
+      'numberOfBeneficiariesNotOwed',
     ]),
     ...mapState(['user', 'beneficiaries', 'middlemen']),
     isThereEnoughDonationForAnotherBeneficiary() {
-      if (this.user.donationBalance === 0) {
-        return true;
+      if (this.user.accountBalance < 2000) {
+        return false;
       }
-      return this.user.donationBalance / (this.beneficiaries.length + 1) >= 100; 
+      else {
+        const balanceAfterMoneyOwed = this.user.accountBalance - this.numberOfBeneficiariesOwed;
+        if (balanceAfterMoneyOwed >= 2000) {
+          if (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed) return true;
+          return false;
+        }
+        return false;
+      }
     },
     isThereEnoughForADonation() {
       if (this.user.accountBalance >= 100) {
@@ -240,12 +200,9 @@ export default {
   },
   methods: {
     ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
-    submitDeposit() {
-      this.depositToAccount({ user: this.user, amount: this.deposit });
-    },
+    moment,
     submitDonation() {
-      this.donation.from = this.user._id;
-      this.donate({ user: this.user, donation: this.donation });
+      this.donate({ user: this.user, amount: this.donation });
     },
     submitBeneficiary() {
       if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
@@ -285,6 +242,9 @@ export default {
     },
     getDonationReceipient(donation) {
       return donation.to.length ? donation.to : 'system'
+    },
+    getDonationDate(donation) {
+      return moment(donation.timestamp).format('MMMM Do YYYY, HH:mm:ss A')
     }
   }
 }

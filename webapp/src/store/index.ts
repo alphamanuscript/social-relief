@@ -11,7 +11,7 @@ export interface User {
   phone: string;
   email: string;
   accountBalance: number;
-  donationBalance: number;
+  role: string;
 }
 
 export interface Beneficiary {
@@ -19,6 +19,7 @@ export interface Beneficiary {
   phone: string;
   nominatedBy: string;
   nominatedAt: Date;
+  owed: number;
 }
 
 export interface Middleman {
@@ -90,15 +91,21 @@ export default new Vuex.Store({
     accountBalance: ({ transactions }) => {
       return transactions.map(t => t.type === 'donation' ? -1 * t.amount : t.amount).reduce((a, b) => a + b, 0);
     },
-    peopleDonatedTo: ({ transactions }) => {
-      const recipients = transactions.filter(t => t.type === 'donation' && t.to.length)
+    peopleDonatedTo: ({ transactions, user }) => {
+      const recipients = transactions.filter(t => t.type === 'donation' && (t.to.length && user && t.to !== user._id))
         .map(t => t.to);
       const uniqueRecipients = new Set(recipients);
       return uniqueRecipients.size;
     },
     donations: ({ transactions }) => {
-      return transactions.filter(t => t.type == 'donation');
-    }
+      return transactions.filter(t => t.type == 'donation').reverse();
+    },
+    numberOfBeneficiariesOwed: ({ beneficiaries }) => {
+      return beneficiaries.filter(bnf => bnf.owed > 0).length;
+    },
+    numberOfBeneficiariesNotOwed: ({ beneficiaries }) => {
+      return beneficiaries.filter(bnf => bnf.owed === 0).length;
+    },
   },
   actions: {
     async login({ commit}, _id: string) {
@@ -117,20 +124,11 @@ export default new Vuex.Store({
       const transactions = await AccountService.getTransactions(_id);
       commit('setTransactions', transactions);
     },
-    async depositToAccount({ commit }, { user, amount }: { user: User; amount: number }) {
-      const trx = await AccountService.deposit(user._id, amount);
+    async donate({ commit }, { user, amount }: { user: User; amount: number }) {
+      const trx = await AccountService.donate(user._id, amount);
       const updatedUser = await AccountService.updateUser({
         ...user,
         accountBalance: user.accountBalance + amount
-      });
-      commit('addTransaction', trx);
-      commit('setUser', updatedUser);
-    },
-    async donate({ commit}, { user, donation }: { user: User; donation: any }) {
-      const trx = await AccountService.donate(donation);
-      const updatedUser = await AccountService.updateUser({
-        ...user,
-        donationBalance: user.donationBalance + donation.amount
       });
       commit('addTransaction', trx);
       commit('setUser', updatedUser);
