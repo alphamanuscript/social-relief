@@ -103,6 +103,13 @@ app.get('/transactions', async (req, res) => {
   return res.status(200).json(result);
 });
 
+app.post('/transactions/query', async (req, res) => {
+  const accountId = req.get('Authorization');
+  const { pipeline } = req.body;
+  const result = await db.collection('transactions').aggregate(pipeline, { allowDiskUse: true }).toArray();
+  return res.status(200).json(result);
+});
+
 app.put('/users', async(req, res) => {
   const updatedUser = req.body;
   const update: any = {
