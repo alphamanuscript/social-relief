@@ -20,7 +20,6 @@ export const AccountService = {
       type: 'donation',
       timestamp: new Date()
     };
-    console.log('payload: ', payload);
     const res = await fetch('http://localhost:3000/donate', {
       method: 'POST',
       headers: {
@@ -65,8 +64,8 @@ export const AccountService = {
     const payload = {
       phone: beneficiary,
       nominatedBy: nominator,
-      receivedThisMonth: 0,
-      nominatedAt: new Date()
+      nominatedAt: new Date(),
+      owed: 0
     };
     const res = await fetch('http://localhost:3000/beneficiaries', {
       method: 'POST',
@@ -129,5 +128,40 @@ export const AccountService = {
     
     return res.json();
   },
+  async queryTransactions(donorsId: string, bnfId: string, ) {
+    const payload =  {
+      pipeline: [
+        {
+          $match: { to: bnfId }
+        },
+        {
+            $project: { 
+              type: 1, 
+              amount: 1, 
+              from: 1, 
+              to: 1, 
+              timestamp: 1, 
+              month: { "$month":  { $dateFromString: { dateString: "$timestamp" } } } 
+            }
+        },
+        {
+            $match: { month: new Date().getMonth() }
+        },
+        {
+            $project: { type: 1, amount: 1, from: 1, to: 1, timestamp: 1 }
+        }
+      ]
+    };
+    const res = await fetch('http://localhost:3000/transactons/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': donorsId
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  }
 
 };

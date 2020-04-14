@@ -17,15 +17,14 @@ export interface User {
 export interface Beneficiary {
   _id: string;
   phone: string;
-  nominatedBy: string;
+  nominatedBy: string[];
   nominatedAt: Date;
-  owed: number;
 }
 
 export interface Middleman {
   _id: string;
   phone: string;
-  appointedBy: string;
+  appointedBy: string[];
   appointedAt: Date;
 }
 
@@ -100,12 +99,29 @@ export default new Vuex.Store({
     donations: ({ transactions }) => {
       return transactions.filter(t => t.type == 'donation').reverse();
     },
-    numberOfBeneficiariesOwed: ({ beneficiaries }) => {
-      return beneficiaries.filter(bnf => bnf.owed > 0).length;
+    numberOfBeneficiariesOwed: ({ beneficiaries, user }) => {
+      return beneficiaries.filter(async(bnf) => {
+        if (user) {
+          const beneficiaryTransactions = await AccountService.queryTransactions(user._id, bnf._id);
+          return beneficiaryTransactions.length;
+        }
+        return false;
+      }).length;
     },
-    numberOfBeneficiariesNotOwed: ({ beneficiaries }) => {
-      return beneficiaries.filter(bnf => bnf.owed === 0).length;
+    numberOfBeneficiariesNotOwed: ({ beneficiaries, user }) => {
+      return beneficiaries.filter(async(bnf) => {
+        if (user) {
+          const beneficiaryTransactions = await AccountService.queryTransactions(user._id, bnf._id);
+          return beneficiaryTransactions.length;
+        }
+        return false;
+      }).length;
+      // return beneficiaries.filter(bnf => bnf.owed === 0).length;
     },
+    totalAmountOwedToBeneficiaries: ({ beneficiaries }) => {
+      console.log('beneficiaries: ', beneficiaries);
+      return beneficiaries.reduce((total, bnf) => { return total + bnf.owed }, 0);
+    }
   },
   actions: {
     async login({ commit}, _id: string) {
@@ -140,7 +156,12 @@ export default new Vuex.Store({
     async appointMiddleman({ commit }, { appointer, middleman }: { appointer: string; middleman: string }) {
       const mdm = await AccountService.appointMiddleman(appointer, middleman);
       commit('addMiddleman', mdm);
-    }
+    },
+    // async getNumberOfBeneficiariesOwed({ state }) {
+    //   return state.beneficiaries.filter(async (bnf) => {
+    //     await AccountService.queryTransactions().length
+    //   }).length;
+    // },
   },
   modules: {
   }

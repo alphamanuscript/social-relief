@@ -12,7 +12,7 @@
                 id="donateAmount"
                 type="number"
                 class="form-control"
-                min="2000"
+                min="100"
               >
             </div>
             <div class="col-md-6">
@@ -160,7 +160,7 @@ export default {
   name: 'Donate',
   data() {
     return {
-      donation: 2000,
+      donation: 100,
       beneficiary: '',
       middleman: '',
       isValidMiddleman: true,
@@ -176,6 +176,7 @@ export default {
       'donations',
       'numberOfBeneficiariesOwed',
       'numberOfBeneficiariesNotOwed',
+      'totalAmountOwedToBeneficiaries',
     ]),
     ...mapState(['user', 'beneficiaries', 'middlemen']),
     isThereEnoughDonationForAnotherBeneficiary() {
@@ -183,7 +184,9 @@ export default {
         return false;
       }
       else {
-        const balanceAfterMoneyOwed = this.user.accountBalance - this.numberOfBeneficiariesOwed;
+        console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
+        console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
+        const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
         if (balanceAfterMoneyOwed >= 2000) {
           if (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed) return true;
           return false;
