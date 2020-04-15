@@ -72,11 +72,31 @@ app.post('/beneficiaries', async (req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
+app.put('/beneficiaries', async (req, res) => {
+  const updatedBnf = req.body;
+  const update: any = {
+      $set: { ...updatedBnf }
+  };
+  const result = await db.collection('beneficiaries').findOneAndUpdate({ phone: updatedBnf.phone }, update, {
+      upsert: true,
+      returnOriginal: false,
+  });
+  return res.status(200).json(result.value);
+});
+
 app.get('/beneficiaries', async (req, res) => {
   const accountId = req.get('Authorization');
-  const result = await db.collection('beneficiaries').find({ nominatedBy: accountId }).toArray();
+  const result = await db.collection('beneficiaries').find({ 'nominatedBy.associatedDonorId': accountId }).toArray();
   return res.status(200).json(result);
 });
+
+app.post('/beneficiaries/query', async (req, res) => {
+  const accountId = req.get('Authorization');
+  const { phone } = req.body;
+  const result = await db.collection('beneficiaries').findOne({ phone });
+  return res.status(200).json(result);
+});
+
 
 app.post('/middlemen', async (req, res) => {
   const middleman = req.body;
@@ -87,12 +107,30 @@ app.post('/middlemen', async (req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
-app.get('/middlemen', async (req, res) => {
+app.put('/middlemen', async (req, res) => {
+  const updatedMdm = req.body;
+  const update: any = {
+      $set: { ...updatedMdm }
+  };
+  const result = await db.collection('middlemen').findOneAndUpdate({ phone: updatedMdm.phone }, update, {
+      upsert: true,
+      returnOriginal: false,
+  });
+  return res.status(200).json(result.value);
+});
+
+app.post('/middlemen/query', async (req, res) => {
   const accountId = req.get('Authorization');
-  const result = await db.collection('middlemen').find({ appointedBy: accountId }).toArray();
+  const { phone } = req.body;
+  const result = await db.collection('middlemen').findOne({ phone });
   return res.status(200).json(result);
 });
 
+app.get('/middlemen', async (req, res) => {
+  const accountId = req.get('Authorization');
+  const result = await db.collection('middlemen').find({ 'appointedBy._id': accountId }).toArray();
+  return res.status(200).json(result);
+});
 
 
 app.get('/transactions', async (req, res) => {
