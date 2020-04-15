@@ -1,4 +1,4 @@
-import { User } from '../store/index';
+import { User, Nominator, Appointer, Beneficiary, Middleman } from '../store/index';
 
 export const AccountService = {
   async login(_id: string) {
@@ -43,35 +43,18 @@ export const AccountService = {
     
     return res.json();
   },
-  // async donate(donation: any) {
-  //   const payload = {
-  //     ...donation,
-  //     type: 'donation',
-  //     timestamp: new Date()
-  //   };
-  //   const res = await fetch('http://localhost:3000/donate', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': donation.from
-  //     },
-  //     body: JSON.stringify(payload)
-  //   });
-    
-  //   return res.json();
-  // },
-  async nominateBeneficiary(nominator: string, beneficiary: string) {
+  async nominateBeneficiary(nominator: Nominator, beneficiary: string) {
     const payload = {
       phone: beneficiary,
-      nominatedBy: nominator,
-      nominatedAt: new Date(),
-      owed: 0
+      nominatedBy: [nominator],
+      owed: [0],
+      receivedThisMonth: 0
     };
     const res = await fetch('http://localhost:3000/beneficiaries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': nominator
+        'Authorization': nominator._id
       },
       body: JSON.stringify(payload)
     });
@@ -89,17 +72,49 @@ export const AccountService = {
     
     return res.json();
   },
-  async appointMiddleman(appointer: string, middleman: string) {
+  async getBeneficiary(beneficiary: string, accountId: string) {
+    const payload = { phone: beneficiary };
+    const res = await fetch('http://localhost:3000/beneficiaries/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accountId
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  },
+  async updateBeneficiary(nominator: Nominator, beneficiary: Beneficiary) {
+    const payload = {
+      _id: beneficiary._id,
+      phone: beneficiary.phone,
+      nominatedBy: [ ...beneficiary.nominatedBy, nominator],
+      owed: [ ...beneficiary.owed, 0],
+      receivedThisMonth: beneficiary.receivedThisMonth
+    };
+
+    const res = await fetch('http://localhost:3000/beneficiaries', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': nominator._id
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  },
+  async appointMiddleman(appointer: Appointer, middleman: string) {
     const payload = {
       phone: middleman,
-      appointedBy: appointer,
-      appointedAt: new Date()
+      appointedBy: [appointer]
     };
     const res = await fetch('http://localhost:3000/middlemen', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': appointer
+        'Authorization': appointer._id
       },
       body: JSON.stringify(payload)
     });
@@ -113,6 +128,37 @@ export const AccountService = {
         'Content-Type': 'application/json',
         'Authorization': accountId
       }
+    });
+    
+    return res.json();
+  },
+  async getMiddleman(middleman: string, accountId: string) {
+    const payload = { phone: middleman };
+    const res = await fetch('http://localhost:3000/middlemen/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': accountId
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    return res.json();
+  },
+  async updateMiddleman(appointer: Appointer, middleman: Middleman) {
+    const payload = {
+      _id: middleman._id,
+      phone: middleman.phone,
+      appointedBy: [ ...middleman.appointedBy, appointer],
+    };
+
+    const res = await fetch('http://localhost:3000/middlemen', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': appointer._id
+      },
+      body: JSON.stringify(payload)
     });
     
     return res.json();

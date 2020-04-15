@@ -14,18 +14,29 @@ export interface User {
   role: string;
 }
 
+export interface Nominator {
+  _id: string;
+  associatedDonorId: string;
+  timestamp: Date;
+}
+export interface Appointer {
+  _id: string;
+  associatedDonorId: string;
+  timestamp: Date;
+}
+
 export interface Beneficiary {
   _id: string;
   phone: string;
-  nominatedBy: string[];
-  nominatedAt: Date;
+  nominatedBy: Nominator[];
+  owed: number[];
+  receivedThisMonth: number;
 }
 
 export interface Middleman {
   _id: string;
   phone: string;
-  appointedBy: string[];
-  appointedAt: Date;
+  appointedBy: Appointer[];
 }
 
 export interface Transaction {
@@ -60,8 +71,14 @@ export default new Vuex.Store({
     addBeneficiary(state, bnf) {
       state.beneficiaries.push(bnf);
     },
+    updateBeneficiary(state, bnf) {
+      state.beneficiaries[state.beneficiaries.findIndex(beneficiary => beneficiary._id === bnf._id)] = bnf;
+    },
     addMiddleman(state, mdm) {
       state.middlemen.push(mdm);
+    },
+    updateMiddleman(state, mdm) {
+      state.middlemen[state.middlemen.findIndex(middleman => middleman._id === mdm._id)] = mdm;
     },
     setUser(state, user) {
       state.user = user
@@ -100,27 +117,30 @@ export default new Vuex.Store({
       return transactions.filter(t => t.type == 'donation').reverse();
     },
     numberOfBeneficiariesOwed: ({ beneficiaries, user }) => {
-      return beneficiaries.filter(async(bnf) => {
+      return beneficiaries.filter(bnf => {
         if (user) {
-          const beneficiaryTransactions = await AccountService.queryTransactions(user._id, bnf._id);
-          return beneficiaryTransactions.length;
+          const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
+          return bnf.owed[nominatorIndex];
         }
         return false;
       }).length;
     },
     numberOfBeneficiariesNotOwed: ({ beneficiaries, user }) => {
-      return beneficiaries.filter(async(bnf) => {
+      return beneficiaries.filter(bnf => {
         if (user) {
-          const beneficiaryTransactions = await AccountService.queryTransactions(user._id, bnf._id);
-          return beneficiaryTransactions.length;
+          const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
+          return !bnf.owed[nominatorIndex];
         }
         return false;
       }).length;
-      // return beneficiaries.filter(bnf => bnf.owed === 0).length;
     },
-    totalAmountOwedToBeneficiaries: ({ beneficiaries }) => {
-      console.log('beneficiaries: ', beneficiaries);
-      return beneficiaries.reduce((total, bnf) => { return total + bnf.owed }, 0);
+    totalAmountOwedToBeneficiaries: ({ beneficiaries, user }) => {
+      if (user) {
+        return beneficiaries.reduce((total, bnf) => { 
+          const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
+          return total + bnf.owed[nominatorIndex] 
+        }, 0);
+      }
     }
   },
   actions: {
@@ -149,19 +169,51 @@ export default new Vuex.Store({
       commit('addTransaction', trx);
       commit('setUser', updatedUser);
     },
-    async nominateBeneficiary({ commit }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
-      const bnf = await AccountService.nominateBeneficiary(nominator, beneficiary);
-      commit('addBeneficiary', bnf);
+    async nominateBeneficiary({ commit, state }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
+      if (state.user) {
+        const result = await AccountService.getBeneficiary(beneficiary, state.user._id);
+        let bnf;
+        if (result) {
+          bnf = await AccountService.updateBeneficiary({ 
+            _id: nominator,
+            associatedDonorId: state.user._id,
+            timestamp: new Date()
+          }, result);
+          commit('updateBeneficiary', bnf);
+        }
+        else {
+          bnf = await AccountService.nominateBeneficiary({
+            _id: nominator,
+            associatedDonorId: state.user._id,
+            timestamp: new Date()
+          }, beneficiary);
+          commit('addBeneficiary', bnf);
+        }
+        
+      }
     },
-    async appointMiddleman({ commit }, { appointer, middleman }: { appointer: string; middleman: string }) {
-      const mdm = await AccountService.appointMiddleman(appointer, middleman);
-      commit('addMiddleman', mdm);
+    async appointMiddleman({ commit, state }, { appointer, middleman }: { appointer: string; middleman: string }) {
+      if (state.user) {
+        const result = await AccountService.getMiddleman(middleman, state.user._id);
+        let mdm;
+        if (result) {
+          mdm = await AccountService.updateMiddleman({ 
+            _id: appointer,
+            associatedDonorId: state.user._id,
+            timestamp: new Date()
+          }, result);
+          commit('updateMiddleman', mdm);
+        }
+        else {
+          mdm = await AccountService.appointMiddleman({
+            _id: appointer,
+            associatedDonorId: state.user._id,
+            timestamp: new Date()
+          }, middleman);
+          commit('addMiddleman', mdm);
+        }
+      }
     },
-    // async getNumberOfBeneficiariesOwed({ state }) {
-    //   return state.beneficiaries.filter(async (bnf) => {
-    //     await AccountService.queryTransactions().length
-    //   }).length;
-    // },
   },
   modules: {
   }
