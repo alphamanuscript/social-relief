@@ -96,7 +96,7 @@
         <h3>Nominated beneficiaries</h3>
         <ul class="list-group">
           <li v-for="beneficiary in beneficiaries" class="list-group-item" :key="beneficiary._id">
-            {{ beneficiary.phone }} ({{ beneficiary._id }})
+            {{ beneficiary.phone }}
           </li>
         </ul>
       </div>
@@ -145,7 +145,7 @@
         <h3>Appointed middlemen</h3>
         <ul class="list-group">
           <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
-            {{ middleman.phone }} ({{ middleman._id }})
+            {{ middleman.phone }}
           </li>
         </ul>
       </div>
@@ -187,9 +187,8 @@ export default {
         console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
         console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
         const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
-        if (balanceAfterMoneyOwed >= 2000) {
-          if (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed) return true;
-          return false;
+        if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
+          return true;
         }
         return false;
       }
@@ -205,7 +204,7 @@ export default {
     ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
     moment,
     submitDonation() {
-      this.donate({ user: this.user, amount: this.donation });
+      this.donate({ amount: this.donation });
     },
     submitBeneficiary() {
       if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {

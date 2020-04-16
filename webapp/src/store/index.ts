@@ -160,14 +160,16 @@ export default new Vuex.Store({
       const transactions = await AccountService.getTransactions(_id);
       commit('setTransactions', transactions);
     },
-    async donate({ commit }, { user, amount }: { user: User; amount: number }) {
-      const trx = await AccountService.donate(user._id, amount);
-      const updatedUser = await AccountService.updateUser({
-        ...user,
-        accountBalance: user.accountBalance + amount
-      });
-      commit('addTransaction', trx);
-      commit('setUser', updatedUser);
+    async donate({ commit, state }, { amount }: { amount: number }) {
+      if (state.user) {
+        const trx = await AccountService.donate(state.user._id, amount);
+        const updatedUser = await AccountService.updateUser({
+          ...state.user,
+          accountBalance: state.user.accountBalance + amount
+        });
+        commit('addTransaction', trx);
+        commit('setUser', updatedUser);
+      }
     },
     async nominateBeneficiary({ commit, state }, { nominator, beneficiary }: { nominator: string; beneficiary: string }) {
       if (state.user) {
