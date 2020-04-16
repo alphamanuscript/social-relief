@@ -42,6 +42,11 @@ async function initDb() {
   if (!collections.find(collection => collection.name === 'transactions')) {
     await db.createCollection('transactions');
   }
+
+  if (!collections.find(collection => collection.name === 'invitations')) {
+    await db.createCollection('invitations');
+    db.collection('invitations').createIndex({ timestamp: 1 }, { expireAfterSeconds: 86400 });
+  }
 }
 
 app.get('/', (req, res) => {
@@ -158,7 +163,16 @@ app.put('/users', async(req, res) => {
       returnOriginal: false,
   });
   return res.status(200).json(result.value);
-})
+});
+
+app.post('/invitations', async(req, res) => {
+  const invitation = req.body;
+  const result = await db.collection('invitations').insertOne({
+    _id: generateId(),
+    ...req.body
+  });
+  return res.status(200).json(result.ops[0]);
+});
 
 async function startApp() {
   try {
