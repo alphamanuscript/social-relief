@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 import { AccountService } from '@/services';
 
 Vue.use(Vuex)
@@ -48,18 +48,29 @@ export interface Transaction {
   timestamp: Date;
 }
 
+export interface Invitation {
+  _id: string;
+  inviter: string;
+  invitee: string;
+  code: number;
+  generatedLink: string;
+  timestamp: Date;
+}
+
 interface AppState {
   user?: User;
   beneficiaries: Beneficiary[];
   middlemen: Middleman[];
   transactions: Transaction[];
+  invitations: Invitation[];
 }
 
 const state: AppState = {
   user: undefined,
   beneficiaries: [],
   middlemen: [],
-  transactions: []
+  transactions: [],
+  invitations: []
 }
 
 export default new Vuex.Store({
@@ -67,6 +78,9 @@ export default new Vuex.Store({
   mutations: {
     addTransaction(state, trx) {
       state.transactions.push(trx);
+    },
+    addInvitation(state, invt) {
+      state.invitations.push(invt);
     },
     addBeneficiary(state, bnf) {
       state.beneficiaries.push(bnf);
@@ -91,7 +105,10 @@ export default new Vuex.Store({
     },
     setTransactions(state, transactions) {
       state.transactions = transactions
-    }
+    },
+    setInvitations(state, invitations) {
+      state.invitations = invitations
+    },
   },
   getters: {
     amountDeposited: ({ transactions }) => {
@@ -160,6 +177,12 @@ export default new Vuex.Store({
       const transactions = await AccountService.getTransactions(_id);
       commit('setTransactions', transactions);
     },
+    async getInvitations({ commit, state}) {
+      if (state.user) {
+        const invitations = await AccountService.getTransactions(state.user.phone);
+        commit('setInvitations', invitations);
+      }
+    },
     async donate({ commit, state }, { amount }: { amount: number }) {
       if (state.user) {
         const trx = await AccountService.donate(state.user._id, amount);
@@ -194,13 +217,13 @@ export default new Vuex.Store({
         
       }
     },
-    async appointMiddleman({ commit, state }, { appointer, middleman }: { appointer: string; middleman: string }) {
+    async appointMiddleman({ commit, state }, { middleman }: { middleman: string }) {
       if (state.user) {
         const result = await AccountService.getMiddleman(middleman, state.user._id);
         let mdm;
         if (result) {
           mdm = await AccountService.updateMiddleman({ 
-            _id: appointer,
+            _id: state.user._id,
             associatedDonorId: state.user._id,
             timestamp: new Date()
           }, result);
@@ -208,12 +231,15 @@ export default new Vuex.Store({
         }
         else {
           mdm = await AccountService.appointMiddleman({
-            _id: appointer,
+            _id: state.user._id,
             associatedDonorId: state.user._id,
             timestamp: new Date()
           }, middleman);
           commit('addMiddleman', mdm);
         }
+        const invt = await AccountService.sendInvitation(state.user, middleman);
+        console.log('invt: ', invt);
+        commit('addInvitation', invt);
       }
     },
   },

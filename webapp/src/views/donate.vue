@@ -145,7 +145,14 @@
         <h3>Appointed middlemen</h3>
         <ul class="list-group">
           <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
-            {{ middleman.phone }}
+            <div class="row">
+              <div class="col-md-4">
+                {{ middleman.phone }} 
+              </div>
+              <div class="col-md-8">
+                <button type="submit" class="btn btn-primary" @click.prevent="">Resend Invitation</button>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
@@ -178,7 +185,7 @@ export default {
       'numberOfBeneficiariesNotOwed',
       'totalAmountOwedToBeneficiaries',
     ]),
-    ...mapState(['user', 'beneficiaries', 'middlemen']),
+    ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations']),
     isThereEnoughDonationForAnotherBeneficiary() {
       if (this.user.accountBalance < 2000) {
         return false;
@@ -201,7 +208,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman']),
+    ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman', 'getInvitations']),
     moment,
     submitDonation() {
       this.donate({ amount: this.donation });
@@ -222,16 +229,16 @@ export default {
       }
     },
     submitMiddleman() {
-      if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone)) {
+      if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone === this.middleman)) {
         this.isValidMiddleman = true;
-        this.appointMiddleman({appointer: this.user._id, middleman: this.middleman});
+        this.appointMiddleman({ middleman: this.middleman});
         this.middleman = '';
       }
       else if(!this.middleman.length) {
         this.middlemanMessage = 'Please provide a valid phone number'
         this.isValidMiddleman = false;
       }
-      else if (this.middlemen.find(mdm => mdm.phone)) {
+      else if (this.middlemen.find(mdm => mdm.phone === this.middleman)) {
         this.middlemanMessage = 'Middleman already appointed';
         this.isValidMiddleman = false;
       }

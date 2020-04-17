@@ -35,7 +35,7 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen'])
+    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations'])
   },
   watch: {
     async $route(to) {
@@ -44,6 +44,7 @@ export default {
         await this.getBeneficiaries(this.user._id);
         await this.getMiddlemen(this.user._id);
         await this.getTransactions(this.user._id);
+        await this.getInvitations();
       }
     }
   }
