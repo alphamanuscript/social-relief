@@ -77,12 +77,13 @@ app.post('/beneficiaries', async (req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
-app.put('/beneficiaries', async (req, res) => {
+app.put('/beneficiaries/:bid', async (req, res) => {
+  const bid = req.params.bid;
   const updatedBnf = req.body;
   const update: any = {
       $set: { ...updatedBnf }
   };
-  const result = await db.collection('beneficiaries').findOneAndUpdate({ phone: updatedBnf.phone }, update, {
+  const result = await db.collection('beneficiaries').findOneAndUpdate({ _id: bid }, update, {
       upsert: true,
       returnOriginal: false,
   });
@@ -95,10 +96,11 @@ app.get('/beneficiaries', async (req, res) => {
   return res.status(200).json(result);
 });
 
-app.post('/beneficiaries/query', async (req, res) => {
+app.get('/beneficiaries/:bnfPhone', async (req, res) => {
+  const bnfPhone = req.params.bnfPhone;
   const accountId = req.get('Authorization');
   const { phone } = req.body;
-  const result = await db.collection('beneficiaries').findOne({ phone });
+  const result = await db.collection('beneficiaries').findOne({ _id: bnfPhone });
   return res.status(200).json(result);
 });
 
@@ -112,22 +114,24 @@ app.post('/middlemen', async (req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
-app.put('/middlemen', async (req, res) => {
+app.put('/middlemen/:mid', async (req, res) => {
+  const mid = req.params.mid
   const updatedMdm = req.body;
   const update: any = {
       $set: { ...updatedMdm }
   };
-  const result = await db.collection('middlemen').findOneAndUpdate({ phone: updatedMdm.phone }, update, {
+  const result = await db.collection('middlemen').findOneAndUpdate({ _id: mid }, update, {
       upsert: true,
       returnOriginal: false,
   });
   return res.status(200).json(result.value);
 });
 
-app.post('/middlemen/query', async (req, res) => {
+app.get('/middlemen/:mdmPhone', async (req, res) => {
+  const mdmPhone = req.params.mdmPhone;
   const accountId = req.get('Authorization');
   const { phone } = req.body;
-  const result = await db.collection('middlemen').findOne({ phone });
+  const result = await db.collection('middlemen').findOne({ phone: mdmPhone });
   return res.status(200).json(result);
 });
 
@@ -153,12 +157,13 @@ app.post('/transactions/query', async (req, res) => {
   return res.status(200).json(result);
 });
 
-app.put('/users', async(req, res) => {
+app.put('/users/:uid', async(req, res) => {
+  const uid = req.params.uid;
   const updatedUser = req.body;
   const update: any = {
       $set: { ...updatedUser }
   };
-  const result = await db.collection('users').findOneAndUpdate({ _id: updatedUser._id }, update, {
+  const result = await db.collection('users').findOneAndUpdate({ _id: uid }, update, {
       upsert: true,
       returnOriginal: false,
   });
@@ -172,6 +177,12 @@ app.post('/invitations', async(req, res) => {
     ...req.body
   });
   return res.status(200).json(result.ops[0]);
+});
+
+app.delete('/invitations/:invt_code', async(req, res) => {
+  const invt_code = req.params.invt_code;
+  const result = await db.collection('invitations').findOneAndDelete({ code: invt_code });
+  return res.status(200).json(result.value);
 });
 
 async function startApp() {
