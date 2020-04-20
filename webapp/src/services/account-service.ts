@@ -305,17 +305,27 @@ export const AccountService = {
     return res.json();
   },
   async sendInvitation(donor: User, invitee: string) {
-    const invtCode = generateId();
     const res = await axios({
       method: 'POST',
       url: `${API_URL}/invitations`,
       data: {
         inviter: donor.phone,
         invitee,
-        code: invtCode,
-        generatedLink: `${API_URL}/invitations/${invtCode}`,
+        code: generateId(),
+        generatedLink: `${API_URL}/invitations/${generateId()}`,
         timestamp: new Date()
       },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': donor._id
+      }
+    });
+    return res.data
+  },
+  async deleteInvitation(donor: User, invitationLink: string) {
+    const res = await axios({
+      method: 'DELETE',
+      url: invitationLink,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': donor._id

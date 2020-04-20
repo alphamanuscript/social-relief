@@ -150,7 +150,7 @@
                 {{ middleman.phone }} 
               </div>
               <div class="col-md-8">
-                <button type="submit" class="btn btn-primary" @click.prevent="">Resend Invitation</button>
+                <button class="btn btn-primary" @click.prevent="resendInvitation(middleman.phone)">Resend Invitation</button>
               </div>
             </div>
           </li>
@@ -208,7 +208,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['depositToAccount', 'donate', 'nominateBeneficiary', 'appointMiddleman', 'getInvitations']),
+    ...mapActions([
+      'depositToAccount', 
+      'donate', 
+      'nominateBeneficiary', 
+      'appointMiddleman', 
+      'getInvitations',
+      'resendInvitation'
+    ]),
     moment,
     submitDonation() {
       this.donate({ amount: this.donation });
@@ -242,6 +249,10 @@ export default {
         this.middlemanMessage = 'Middleman already appointed';
         this.isValidMiddleman = false;
       }
+    },
+    resendInvitation(middleman) {
+      console.log('Inside resend invitation: ', middleman);
+      this.resendInvitation({ middleman });
     },
     getClasses(nameOfInput) {
       return {

@@ -109,6 +109,10 @@ export default new Vuex.Store({
     setInvitations(state, invitations) {
       state.invitations = invitations
     },
+    removeInvitation(state, phone) {
+      const index = state.invitations.findIndex(invt => invt.invitee === phone);
+      if (index > - 1) state.invitations.splice(index, 1); 
+    }
   },
   getters: {
     amountDeposited: ({ transactions }) => {
@@ -242,6 +246,23 @@ export default new Vuex.Store({
         commit('addInvitation', invt);
       }
     },
+    async resendInvitation({ commit, state }, { middleman }: { middleman: string }) {
+      if (state.user) {
+        const index = state.invitations.findIndex(invt => invt.invitee === middleman);
+        console.log('index: ', index);
+        console.log('state.invitations: ', state.invitations);
+        let invt;
+        if (index > - 1) {
+          invt = await AccountService.deleteInvitation(state.user, state.invitations[index].generatedLink);
+          console.log('deleted invt: ', invt);
+          commit('removeInvitation', middleman);
+        }
+
+        invt = await AccountService.sendInvitation(state.user, middleman);
+        console.log('resent invt: ', invt);
+        commit('addInvitation', invt);
+      } 
+    }
   },
   modules: {
   }
