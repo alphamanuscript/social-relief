@@ -34,7 +34,6 @@ async function initDb() {
     await db.createCollection('beneficiaries');
   }
 
-
   if (!collections.find(collection => collection.name === 'middlemen')) {
     await db.createCollection('middlemen');
   }
