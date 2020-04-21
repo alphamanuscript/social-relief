@@ -8,6 +8,7 @@ import {
 } from '../store/index';
 
 const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080';
 const generateId = (): string => {
   return Math.floor(Math.random() * 10000).toString();
 };
@@ -314,7 +315,7 @@ export const AccountService = {
         inviter: donor.phone,
         invitee,
         code: generateId(),
-        generatedLink: `${API_URL}/invitations/${generateId()}`,
+        generatedLink: `${BASE_URL}/invitations/${generateId()}`,
         timestamp: new Date()
       },
       headers: {

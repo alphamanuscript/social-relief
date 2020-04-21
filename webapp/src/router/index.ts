@@ -21,17 +21,22 @@ const routes = [
   {
     path: '/donate',
     name: 'donate',
-    component: () => import(/* webpackChunkName: "about" */ '../views/donate.vue')
+    component: () => import(/* webpackChunkName: "donate" */ '../views/donate.vue')
   },
   {
     path: '/how-it-works',
     name: 'how-it-works',
-    component: () => import(/* webpackChunkName: "about" */ '../views/how-it-works.vue')
+    component: () => import(/* webpackChunkName: "how-it-works" */ '../views/how-it-works.vue')
   },
   {
     path: '/donor-signup',
     name: 'donor-signup',
-    component: () => import(/* webpackChunkName: "about" */ '../views/donor-signup.vue')
+    component: () => import(/* webpackChunkName: "donor-signup" */ '../views/donor-signup.vue')
+  },
+  {
+    path: '/invitations/:link_code',
+    name: 'accept-invitation',
+    component: () => import(/* webpackChunkName: "accept-invitation" */ '../views/accept-invitation.vue')
   }
 ]
 

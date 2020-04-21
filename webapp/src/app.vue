@@ -7,7 +7,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div v-if="showNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
@@ -31,6 +31,11 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 export default {
+  data() {
+    return {
+      showNavigation: true
+    }
+  },
   computed: {
     ...mapState(['user'])
   },
@@ -40,11 +45,16 @@ export default {
   watch: {
     async $route(to) {
       if (to.name === 'donate') {
+        this.showNavigation = true;
         await this.login('userid');
         await this.getBeneficiaries(this.user._id);
         await this.getMiddlemen(this.user._id);
         await this.getTransactions(this.user._id);
         await this.getInvitations();
+      }
+      else if(to.name === 'accept-invitation') {
+        console.log('to: ', to);
+        this.showNavigation = false;
       }
     }
   }
