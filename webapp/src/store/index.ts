@@ -183,7 +183,8 @@ export default new Vuex.Store({
     },
     async getInvitations({ commit, state}) {
       if (state.user) {
-        const invitations = await AccountService.getTransactions(state.user.phone);
+        const invitations = await AccountService.getInvitations(state.user.phone);
+        console.log('Inside getInvitations: ', invitations);
         commit('setInvitations', invitations);
       }
     },
@@ -244,6 +245,7 @@ export default new Vuex.Store({
         const invt = await AccountService.sendInvitation(state.user, middleman);
         console.log('invt: ', invt);
         commit('addInvitation', invt);
+        console.log('state.invitations: ', state.invitations);
       }
     },
     async resendInvitation({ commit, state }, { middleman }: { middleman: string }) {
@@ -253,8 +255,9 @@ export default new Vuex.Store({
         console.log('state.invitations: ', state.invitations);
         let invt;
         if (index > - 1) {
-          invt = await AccountService.deleteInvitation(state.user, state.invitations[index].generatedLink);
+          invt = await AccountService.deleteInvitation(state.user, state.invitations[index]._id);
           console.log('deleted invt: ', invt);
+
           commit('removeInvitation', middleman);
         }
 

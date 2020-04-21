@@ -259,15 +259,6 @@ export const AccountService = {
       }
     });
     return res.data;
-    // const res = await fetch('http://localhost:3000/transactions', {
-    //   method: 'GET',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': accountId
-    //   }
-    // });
-    
-    // return res.json();
   },
   async queryTransactions(donorsId: string, bnfId: string, ) {
     const payload =  {
@@ -304,6 +295,17 @@ export const AccountService = {
     
     return res.json();
   },
+  async getInvitations(inviter: string) {
+    const res = await axios({
+      method: 'GET',
+      url: `${API_URL}/invitations`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': inviter
+      }
+    });
+    return res.data;
+  },
   async sendInvitation(donor: User, invitee: string) {
     const res = await axios({
       method: 'POST',
@@ -322,10 +324,10 @@ export const AccountService = {
     });
     return res.data
   },
-  async deleteInvitation(donor: User, invitationLink: string) {
+  async deleteInvitation(donor: User, invtId: string) {
     const res = await axios({
       method: 'DELETE',
-      url: invitationLink,
+      url: `${API_URL}/invitations/${invtId}`,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': donor._id

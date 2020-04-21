@@ -150,7 +150,7 @@
                 {{ middleman.phone }} 
               </div>
               <div class="col-md-8">
-                <button class="btn btn-primary" @click.prevent="resendInvitation(middleman.phone)">Resend Invitation</button>
+                <button class="btn btn-primary" @click.prevent="reinvite(middleman.phone)">Resend Invitation</button>
               </div>
             </div>
           </li>
@@ -250,7 +250,7 @@ export default {
         this.isValidMiddleman = false;
       }
     },
-    resendInvitation(middleman) {
+    reinvite(middleman) {
       console.log('Inside resend invitation: ', middleman);
       this.resendInvitation({ middleman });
     },
