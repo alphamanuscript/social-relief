@@ -29,7 +29,7 @@ async function initDb() {
       role: 'donor'
     });
   }
-  
+
   if (!collections.find(collection => collection.name === 'beneficiaries')) {
     await db.createCollection('beneficiaries');
   }
@@ -169,6 +169,12 @@ app.put('/users/:uid', async(req, res) => {
   return res.status(200).json(result.value);
 });
 
+app.get('/invitations', async(req, res) => {
+  const inviter = req.get('Authorization');
+  const result = await db.collection('invitations').find({ inviter }).toArray();
+  return res.status(200).json(result);
+});
+
 app.post('/invitations', async(req, res) => {
   const invitation = req.body;
   const result = await db.collection('invitations').insertOne({
@@ -178,9 +184,9 @@ app.post('/invitations', async(req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
-app.delete('/invitations/:invt_code', async(req, res) => {
-  const invt_code = req.params.invt_code;
-  const result = await db.collection('invitations').findOneAndDelete({ code: invt_code });
+app.delete('/invitations/:invt_id', async(req, res) => {
+  const _id = req.params.invt_id;
+  const result = await db.collection('invitations').findOneAndDelete({ _id });
   return res.status(200).json(result.value);
 });
 
