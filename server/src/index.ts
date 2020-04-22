@@ -184,6 +184,12 @@ app.post('/invitations', async(req, res) => {
   return res.status(200).json(result.ops[0]);
 });
 
+app.get('/invitations/:link_code', async(req, res) => {
+  const link_code = req.params.link_code;
+  const result = await db.collection('invitations').findOne({ generatedLink: new RegExp(`${link_code}$`)  });
+  return res.status(200).json(result);
+});
+
 app.delete('/invitations/:invt_id', async(req, res) => {
   const _id = req.params.invt_id;
   const result = await db.collection('invitations').findOneAndDelete({ _id });
