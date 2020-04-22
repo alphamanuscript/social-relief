@@ -30,6 +30,8 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
+import { BASE_URL } from './urls';
+
 export default {
   data() {
     return {
@@ -40,7 +42,7 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations'])
+    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation'])
   },
   watch: {
     async $route(to) {
@@ -53,8 +55,9 @@ export default {
         await this.getInvitations();
       }
       else if(to.name === 'accept-invitation') {
-        console.log('to: ', to);
         this.showNavigation = false;
+        console.log('to: ', to);
+        await this.getInvitation({ path: `${to.path}`});
       }
     }
   }

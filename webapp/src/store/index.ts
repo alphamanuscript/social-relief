@@ -63,6 +63,7 @@ interface AppState {
   middlemen: Middleman[];
   transactions: Transaction[];
   invitations: Invitation[];
+  invitation?: Invitation; 
 }
 
 const state: AppState = {
@@ -70,7 +71,8 @@ const state: AppState = {
   beneficiaries: [],
   middlemen: [],
   transactions: [],
-  invitations: []
+  invitations: [],
+  invitation: undefined
 }
 
 export default new Vuex.Store({
@@ -112,6 +114,9 @@ export default new Vuex.Store({
     removeInvitation(state, phone) {
       const index = state.invitations.findIndex(invt => invt.invitee === phone);
       if (index > - 1) state.invitations.splice(index, 1); 
+    },
+    setInvitation(state, invitation) {
+      state.invitation = invitation
     }
   },
   getters: {
@@ -265,7 +270,17 @@ export default new Vuex.Store({
         console.log('resent invt: ', invt);
         commit('addInvitation', invt);
       } 
-    }
+    },
+    async getInvitation({ commit, state }, { path }: { path: string }) {
+      console.log('path in getInvitation: ', path);
+      const invitation = await AccountService.getInvitation(path);
+      commit('setInvitation', invitation);
+    },
+    async deleteInvitation({ commit, state }, { _id }: { _id: string }) {
+      console.log('_id in deleteInvitation: ', _id);
+      // const invitation = await AccountService.deleteInvitation(_id);
+      commit('setInvitation', null);
+    },
   },
   modules: {
   }

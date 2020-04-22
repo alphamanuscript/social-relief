@@ -6,9 +6,8 @@ import {
   Beneficiary, 
   Middleman
 } from '../store/index';
+import { API_URL, BASE_URL } from '../urls';
 
-const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:3000';
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8080';
 const generateId = (): string => {
   return Math.floor(Math.random() * 10000).toString();
 };
@@ -335,5 +334,13 @@ export const AccountService = {
       }
     });
     return res.data
+  },
+  async getInvitation(path: string) {
+    console.log('path in AccountService.getInvitation: ', path);
+    const res = await axios({
+      method: 'GET',
+      url: `${API_URL}${path}`
+    });
+    return res.data;
   }
 };
