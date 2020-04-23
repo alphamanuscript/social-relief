@@ -349,5 +349,12 @@ export const AccountService = {
       url: `${API_URL}/invitations/${invtId}`,
     });
     return res.data
+  },
+  async getUser(phone: string) {
+    const res = await axios({
+      method: 'GET',
+      url: `${API_URL}/users/:phone`,
+    });
+    return res.data;
   }
 };

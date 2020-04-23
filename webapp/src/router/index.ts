@@ -41,22 +41,22 @@ const routes = [
   {
     path: '/sign-in',
     name: 'sign-in',
-    component: () => import(/* webpackChunkName: "accept-invitation" */ '../views/sign-in.vue')
+    component: () => import(/* webpackChunkName: "sign-in" */ '../views/sign-in.vue')
   },
   {
     path: '/sign-in/:phone',
     name: 'sign-in',
-    component: () => import(/* webpackChunkName: "accept-invitation" */ '../views/sign-in.vue')
+    component: () => import(/* webpackChunkName: "sign-in" */ '../views/sign-in.vue')
   },
   {
     path: '/sign-up',
     name: 'sign-up',
-    component: () => import(/* webpackChunkName: "accept-invitation" */ '../views/sign-up.vue')
+    component: () => import(/* webpackChunkName: "sign-up" */ '../views/sign-up.vue')
   },
   {
     path: '/sign-up/:phone',
     name: 'sign-up',
-    component: () => import(/* webpackChunkName: "accept-invitation" */ '../views/sign-up.vue')
+    component: () => import(/* webpackChunkName: "sign-up" */ '../views/sign-up.vue')
   }
 ]
 

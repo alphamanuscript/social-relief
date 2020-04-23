@@ -55,8 +55,13 @@ export default {
       }
       else if(to.name === 'accept-invitation') {
         this.showNavigation = false;
-        console.log('to: ', to);
         await this.getInvitation({ path: `${to.path}`});
+      }
+      else if(to.name === 'sign-up') {
+        this.showNavigation = false;
+        if (to.params.phone) {
+          await this.doesUserExist({ phone: to.params.phone});
+        }
       }
     }
   }

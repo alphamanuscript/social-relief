@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { AccountService } from '@/services';
+import router from '../router';
 
 Vue.use(Vuex)
 
@@ -281,6 +282,13 @@ export default new Vuex.Store({
       await AccountService.acceptInvitation(_id);
       commit('setInvitation', null);
     },
+    async doesUserExist({ commit }, { phone }: { phone: string }) {
+      console.log('phone in doesUserExist: ', phone);
+      const user = await AccountService.getUser(phone);
+      if (user) {
+        router.push({ name: 'sign-in', params: { phone } });
+      }
+    }
   },
   modules: {
   }
