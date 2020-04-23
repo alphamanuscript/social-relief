@@ -30,7 +30,6 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import { BASE_URL } from './urls';
 
 export default {
   data() {

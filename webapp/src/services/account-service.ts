@@ -342,5 +342,12 @@ export const AccountService = {
       url: `${API_URL}${path}`
     });
     return res.data;
+  },
+  async acceptInvitation(invtId: string) {
+    const res = await axios({
+      method: 'DELETE',
+      url: `${API_URL}/invitations/${invtId}`,
+    });
+    return res.data
   }
 };

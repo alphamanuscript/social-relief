@@ -271,14 +271,14 @@ export default new Vuex.Store({
         commit('addInvitation', invt);
       } 
     },
-    async getInvitation({ commit, state }, { path }: { path: string }) {
+    async getInvitation({ commit }, { path }: { path: string }) {
       console.log('path in getInvitation: ', path);
       const invitation = await AccountService.getInvitation(path);
       commit('setInvitation', invitation);
     },
-    async deleteInvitation({ commit, state }, { _id }: { _id: string }) {
+    async acceptInvitation({ commit }, { _id }: { _id: string }) {
       console.log('_id in deleteInvitation: ', _id);
-      // const invitation = await AccountService.deleteInvitation(_id);
+      await AccountService.acceptInvitation(_id);
       commit('setInvitation', null);
     },
   },
