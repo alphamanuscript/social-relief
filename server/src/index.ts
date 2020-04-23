@@ -196,6 +196,12 @@ app.delete('/invitations/:invt_id', async(req, res) => {
   return res.status(200).json(result.value);
 });
 
+app.get('/users/:phone', async(req, res) => {
+  const phone = req.params.phone;
+  const result = await db.collection('users').findOne({ phone });
+  return res.status(200).json(result);
+});
+
 async function startApp() {
   try {
     await initDb();
