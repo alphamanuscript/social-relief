@@ -41,7 +41,7 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation'])
+    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation', 'doesUserExist'])
   },
   watch: {
     async $route(to) {
@@ -59,6 +59,7 @@ export default {
       }
       else if(to.name === 'sign-up') {
         this.showNavigation = false;
+        console.log('to: ', to);
         if (to.params.phone) {
           await this.doesUserExist({ phone: to.params.phone});
         }

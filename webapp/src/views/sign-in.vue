@@ -8,11 +8,25 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
 export default {
   name: 'sign-in',
   data() {
     return {
-
+      phone: '',
+      password: '',
+      phoneMessage: 'Please provide a valid phone',
+      passwordMessage: 'Please provide a valid password',
+    }
+  },
+  computed: {
+    ...mapState(['signinPhone']),
+  },
+  watch: {
+    async signinPhone(oldVal, newVal) {
+      if(newVal) {
+        this.phone = this.signinPhone;
+      }
     }
   }
 }

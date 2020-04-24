@@ -64,7 +64,9 @@ interface AppState {
   middlemen: Middleman[];
   transactions: Transaction[];
   invitations: Invitation[];
-  invitation?: Invitation; 
+  invitation?: Invitation;
+  signinPhone?: string;
+  signupPhone?: string;
 }
 
 const state: AppState = {
@@ -73,7 +75,9 @@ const state: AppState = {
   middlemen: [],
   transactions: [],
   invitations: [],
-  invitation: undefined
+  invitation: undefined,
+  signinPhone: '',
+  signupPhone: '',
 }
 
 export default new Vuex.Store({
@@ -118,6 +122,12 @@ export default new Vuex.Store({
     },
     setInvitation(state, invitation) {
       state.invitation = invitation
+    },
+    setSigninPhone(state, phone) {
+      state.signinPhone = phone;
+    },
+    setSignupPhone(state, phone) {
+      state.signupPhone = phone;
     }
   },
   getters: {
@@ -286,7 +296,22 @@ export default new Vuex.Store({
       console.log('phone in doesUserExist: ', phone);
       const user = await AccountService.getUser(phone);
       if (user) {
+        commit('setSigninPhone', phone);
         router.push({ name: 'sign-in', params: { phone } });
+      }
+      else {
+        commit('setSignupPhone', phone);
+      }
+    },
+    async createUser({ commit }, { phone, email, role }: { phone: string; email: string; role: string }) {
+      console.log('In createUser: ', phone, email, role);
+      const user = await AccountService.createUser(phone, email, role);
+      if (user) {
+        commit('setSigninPhone', phone);
+        router.push({ name: 'sign-in', params: { phone } });
+      }
+      else {
+        commit('setSignupPhone', phone);
       }
     }
   },

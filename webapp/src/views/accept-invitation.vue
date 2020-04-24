@@ -37,7 +37,7 @@
       <div class="col">
         <h2>Invitation successfully accepted</h2>
         <p>You have successfully accepted the invitation to become a middleman. 
-           Proceed by <router-link :to="{ name: 'sign-up', params: { phone  } }">signing up</router-link> 
+           Proceed by <router-link :to="{ name: 'sign-up', params: { phone } }">signing up</router-link> 
            if you do not have an account yet. 
            Otherwise, <router-link :to="{ name: 'sign-in', params: { phone } }">sign in</router-link> </p>
       </div>
