@@ -200,6 +200,14 @@ app.get('/users/:phone', async(req, res) => {
   return res.status(200).json(result);
 });
 
+app.post('/users', async(req, res) => {
+  const result = await db.collection('users').insertOne({
+    _id: generateId(),
+    ...req.body
+  });
+  return res.status(200).json(result.ops[0]);
+});
+
 async function startApp() {
   try {
     await initDb();
