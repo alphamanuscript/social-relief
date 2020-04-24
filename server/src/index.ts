@@ -98,7 +98,6 @@ app.get('/beneficiaries', async (req, res) => {
 app.get('/beneficiaries/:bnfPhone', async (req, res) => {
   const bnfPhone = req.params.bnfPhone;
   const accountId = req.get('Authorization');
-  const { phone } = req.body;
   const result = await db.collection('beneficiaries').findOne({ _id: bnfPhone });
   return res.status(200).json(result);
 });
@@ -129,7 +128,6 @@ app.put('/middlemen/:mid', async (req, res) => {
 app.get('/middlemen/:mdmPhone', async (req, res) => {
   const mdmPhone = req.params.mdmPhone;
   const accountId = req.get('Authorization');
-  const { phone } = req.body;
   const result = await db.collection('middlemen').findOne({ phone: mdmPhone });
   return res.status(200).json(result);
 });
