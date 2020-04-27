@@ -13,8 +13,8 @@ const generateId = (): string => {
 };
 
 export const AccountService = {
-  async login(_id: string) {
-    const args = { uid: _id };
+  async login(phone: string, password: string) {
+    const args = { phone, password };
     const res = await axios.post<User>(`${API_URL}/login`, args);
     return res.data;
   },

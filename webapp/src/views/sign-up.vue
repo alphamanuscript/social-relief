@@ -9,7 +9,7 @@
               <label for="phone">Phone</label>
               <input
                 v-if="signupPhone.length"
-                v-model="phone"
+                :value="signupPhone"
                 id="phone"
                 type="text"
                 :class="getClasses('phone')"

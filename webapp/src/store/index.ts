@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { AccountService } from '@/services';
+import { AccountService, Auth } from '@/services';
 import router from '../router';
 
 Vue.use(Vuex)
@@ -181,10 +181,6 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async login({ commit}, _id: string) {
-      const user = await AccountService.login(_id);
-      commit('setUser', user);
-    },
     async getBeneficiaries({ commit}, _id: string) {
       const beneficiaries = await AccountService.getBeneficiaries(_id);
       commit('setBeneficiaries', beneficiaries);
@@ -313,7 +309,17 @@ export default new Vuex.Store({
       else {
         commit('setSignupPhone', phone);
       }
-    }
+    },
+    async signUserIn({ commit }, { phone, password }: { phone: string; password: string }) {
+      console.log('In signUserIn: ', phone, password);
+      const user = await AccountService.login(phone, password);
+      if (user) {
+        commit('setUser', user);
+        const token = JSON.stringify({ phone, password });
+        Auth.setAccessToken(token);
+        if (router.currentRoute.name !== 'donate') router.push({ name: 'donate' });
+      }
+    },
   },
   modules: {
   }

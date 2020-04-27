@@ -30,6 +30,7 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
+import { Auth } from './services'
 
 export default {
   data() {
@@ -41,17 +42,23 @@ export default {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['login', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation', 'doesUserExist'])
+    ...mapActions(['signUserIn', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation', 'doesUserExist'])
   },
   watch: {
     async $route(to) {
       if (to.name === 'donate') {
-        this.showNavigation = true;
-        await this.login('userid');
-        await this.getBeneficiaries(this.user._id);
-        await this.getMiddlemen(this.user._id);
-        await this.getTransactions(this.user._id);
-        await this.getInvitations();
+        if(Auth.isAuthenticated()) {
+          this.showNavigation = true;
+          const { phone, password } = JSON.parse(Auth.getAccessToken());
+          await this.signUserIn({ phone, password });
+          await this.getBeneficiaries(this.user._id);
+          await this.getMiddlemen(this.user._id);
+          await this.getTransactions(this.user._id);
+          await this.getInvitations();
+        }
+        else {
+          this.$router.push({ name: 'sign-in' });
+        }
       }
       else if(to.name === 'accept-invitation') {
         this.showNavigation = false;
@@ -63,6 +70,9 @@ export default {
         if (to.params.phone) {
           await this.doesUserExist({ phone: to.params.phone});
         }
+      }
+      else if(to.name === 'sign-up') {
+        this.showNavigation = false;
       }
     }
   }
