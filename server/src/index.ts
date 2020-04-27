@@ -24,6 +24,7 @@ async function initDb() {
     await db.collection('users').insertOne({
       _id: 'userid',
       phone: '0711223344',
+      password: 'kiragi',
       email: 'john@mailer.com',
       accountBalance: 0,
       role: 'donor'
@@ -54,8 +55,8 @@ app.get('/', (req, res) => {
 
 
 app.post('/login', async (req, res) => {
-  const userId = req.body.uid;
-  const result = await db.collection('users').findOne({ _id: userId });
+  const { phone, password } = req.body;
+  const result = await db.collection('users').findOne({ phone, password });
   return res.status(200).json(result);
 });
 
