@@ -162,120 +162,119 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import DonorInterface from './donor-interface.vue';
 import MiddlemanInterface from './middleman-interface.vue';
-import moment from 'moment';
 
 export default {
-  name: 'Donate',
-  data() {
-    return {
-      donation: 100,
-      beneficiary: '',
-      middleman: '',
-      isValidMiddleman: true,
-      isValidBeneficiary: true,
-      beneficiaryMessage: 'Please provide a valid phone number',
-      middlemanMessage: 'Please provide a valid phone number'
-    }
-  },
+  name: 'home',
+  // data() {
+  //   return {
+  //     donation: 100,
+  //     beneficiary: '',
+  //     middleman: '',
+  //     isValidMiddleman: true,
+  //     isValidBeneficiary: true,
+  //     beneficiaryMessage: 'Please provide a valid phone number',
+  //     middlemanMessage: 'Please provide a valid phone number'
+  //   }
+  // },
   components: {  DonorInterface, MiddlemanInterface }, 
   computed: {
-    ...mapGetters([
-      'totalAmountDonated',
-      'peopleDonatedTo',
-      'donations',
-      'numberOfBeneficiariesOwed',
-      'numberOfBeneficiariesNotOwed',
-      'totalAmountOwedToBeneficiaries',
-    ]),
-    ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations']),
-    isThereEnoughDonationForAnotherBeneficiary() {
-      if (this.user.accountBalance < 2000) {
-        return false;
-      }
-      else {
-        console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
-        console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
-        const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
-        if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
-          return true;
-        }
-        return false;
-      }
-    },
-    isThereEnoughForADonation() {
-      if (this.user.accountBalance >= 100) {
-        return true;
-      }
-      return false;
-    }
+    // ...mapGetters([
+    //   'totalAmountDonated',
+    //   'peopleDonatedTo',
+    //   'donations',
+    //   'numberOfBeneficiariesOwed',
+    //   'numberOfBeneficiariesNotOwed',
+    //   'totalAmountOwedToBeneficiaries',
+    // ]),
+    ...mapState(['user']),
+    // isThereEnoughDonationForAnotherBeneficiary() {
+    //   if (this.user.accountBalance < 2000) {
+    //     return false;
+    //   }
+    //   else {
+    //     console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
+    //     console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
+    //     const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
+    //     if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
+    //       return true;
+    //     }
+    //     return false;
+    //   }
+    // },
+    // isThereEnoughForADonation() {
+    //   if (this.user.accountBalance >= 100) {
+    //     return true;
+    //   }
+    //   return false;
+    // }
   },
-  methods: {
-    ...mapActions([
-      'depositToAccount', 
-      'donate', 
-      'nominateBeneficiary', 
-      'appointMiddleman', 
-      'getInvitations',
-      'resendInvitation'
-    ]),
-    moment,
-    submitDonation() {
-      this.donate({ amount: this.donation });
-    },
-    submitBeneficiary() {
-      if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
-        this.isValidBeneficiary = true;
-        this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
-        this.beneficiary = '';
-      }
-      else if (!this.beneficiary.length){
-        this.beneficiaryMessage = 'Please provide a valid phone';
-        this.isValidBeneficiary = false;
-      }
-      else if (this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
-        this.beneficiaryMessage = 'Beneficiary already nominated';
-        this.isValidBeneficiary = false;
-      }
-    },
-    submitMiddleman() {
-      if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone === this.middleman)) {
-        this.isValidMiddleman = true;
-        this.appointMiddleman({ middleman: this.middleman});
-        this.middleman = '';
-      }
-      else if(!this.middleman.length) {
-        this.middlemanMessage = 'Please provide a valid phone number'
-        this.isValidMiddleman = false;
-      }
-      else if (this.middlemen.find(mdm => mdm.phone === this.middleman)) {
-        this.middlemanMessage = 'Middleman already appointed';
-        this.isValidMiddleman = false;
-      }
-    },
-    reinvite(middleman) {
-      console.log('Inside resend invitation: ', middleman);
-      this.resendInvitation({ middleman });
-    },
-    getClasses(nameOfInput) {
-      return {
-        'form-control': true,
-        'is-invalid': nameOfInput === 'middleman' ? !this.isValidMiddleman : !this.isValidBeneficiary
-      }
-    },
-    getDonationReceipient(donation) {
-      return donation.to.length ? donation.to : 'system'
-    },
-    getDonationDate(donation) {
-      return moment(donation.timestamp).format('MMMM Do YYYY, HH:mm:ss A')
-    }
-  }
+  // methods: {
+  //   ...mapActions([
+  //     'depositToAccount', 
+  //     'donate', 
+  //     'nominateBeneficiary', 
+  //     'appointMiddleman', 
+  //     'getInvitations',
+  //     'resendInvitation'
+  //   ]),
+  //   moment,
+  //   submitDonation() {
+  //     this.donate({ amount: this.donation });
+  //   },
+  //   submitBeneficiary() {
+  //     if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
+  //       this.isValidBeneficiary = true;
+  //       this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
+  //       this.beneficiary = '';
+  //     }
+  //     else if (!this.beneficiary.length){
+  //       this.beneficiaryMessage = 'Please provide a valid phone';
+  //       this.isValidBeneficiary = false;
+  //     }
+  //     else if (this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
+  //       this.beneficiaryMessage = 'Beneficiary already nominated';
+  //       this.isValidBeneficiary = false;
+  //     }
+  //   },
+  //   submitMiddleman() {
+  //     if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone === this.middleman)) {
+  //       this.isValidMiddleman = true;
+  //       this.appointMiddleman({ middleman: this.middleman});
+  //       this.middleman = '';
+  //     }
+  //     else if(!this.middleman.length) {
+  //       this.middlemanMessage = 'Please provide a valid phone number'
+  //       this.isValidMiddleman = false;
+  //     }
+  //     else if (this.middlemen.find(mdm => mdm.phone === this.middleman)) {
+  //       this.middlemanMessage = 'Middleman already appointed';
+  //       this.isValidMiddleman = false;
+  //     }
+  //   },
+  //   reinvite(middleman) {
+  //     console.log('Inside resend invitation: ', middleman);
+  //     this.resendInvitation({ middleman });
+  //   },
+  //   getClasses(nameOfInput) {
+  //     return {
+  //       'form-control': true,
+  //       'is-invalid': nameOfInput === 'middleman' ? !this.isValidMiddleman : !this.isValidBeneficiary
+  //     }
+  //   },
+  //   getDonationReceipient(donation) {
+  //     return donation.to.length ? donation.to : 'system'
+  //   },
+  //   getDonationDate(donation) {
+  //     return moment(donation.timestamp).format('MMMM Do YYYY, HH:mm:ss A')
+  //   }
+  // }
 }
 </script>
-<style lang="scss">
-  .my-stats-separator {
-    margin-top: 73px;
-  }
+<style lang="scss" scoped>
+  .container {
+    border: 1px solid #000;
+  }  
 </style>

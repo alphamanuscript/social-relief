@@ -317,7 +317,7 @@ export default new Vuex.Store({
         commit('setUser', user);
         const token = JSON.stringify({ phone, password });
         Auth.setAccessToken(token);
-        if (router.currentRoute.name !== 'donate') router.push({ name: 'donate' });
+        if (router.currentRoute.name !== 'home') router.push({ name: 'home' });
       }
     },
   },

@@ -13,9 +13,6 @@
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
             </li>
             <li class="nav-item active">
-              <router-link class="nav-link" to="/donate">Donate</router-link>
-            </li>
-            <li class="nav-item active">
               <router-link class="nav-link" to="/how-it-works">How it works</router-link>
             </li>
             <li class="nav-item active">
@@ -46,7 +43,7 @@ export default {
   },
   watch: {
     async $route(to) {
-      if (to.name === 'donate') {
+      if (to.name === 'home') {
         if(Auth.isAuthenticated()) {
           this.showNavigation = true;
           const { phone, password } = JSON.parse(Auth.getAccessToken());

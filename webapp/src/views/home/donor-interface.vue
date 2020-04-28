@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <DonorInterface v-if="user && user.role === 'donor'" />
-    <MiddlemanInterface v-else-if="user && user.role === 'middleman'" />
-    <!-- <div v-if="user" class="row mb-md-5">
+    <div v-if="user" class="row mb-md-5">
       <div class="col-md-5">
         <h2>Donate</h2>
         <form>
@@ -158,17 +156,14 @@
           </li>
         </ul>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
-import DonorInterface from './donor-interface.vue';
-import MiddlemanInterface from './middleman-interface.vue';
 import moment from 'moment';
-
 export default {
-  name: 'Donate',
+  name: 'donor-interface',
   data() {
     return {
       donation: 100,
@@ -180,7 +175,6 @@ export default {
       middlemanMessage: 'Please provide a valid phone number'
     }
   },
-  components: {  DonorInterface, MiddlemanInterface }, 
   computed: {
     ...mapGetters([
       'totalAmountDonated',
