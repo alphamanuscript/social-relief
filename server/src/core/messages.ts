@@ -4,3 +4,5 @@ export const ERROR_LOGIN_FAILED = 'Login failed';
 export const ERROR_INVALID_ACCESS_TOKEN = 'Invalid access token';
 export const ERROR_RESOURCE_NOT_FOUND = 'Resource not found';
 export const ERROR_USER_NOT_FOUND = 'User not found';
+export const ERROR_SERVER_ERROR = 'Server error occurred';
+export const ERROR_ROUTE_NOT_FOUND = 'Route does not exist';

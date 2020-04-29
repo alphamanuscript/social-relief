@@ -16,7 +16,8 @@ export type ErrorCode =
   | 'dbConnectionFailed'
   | 'loginFailed'
   | 'invalidToken'
-  | 'resourceNotFound';
+  | 'resourceNotFound'
+  | 'serverError';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);

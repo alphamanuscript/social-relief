@@ -7,4 +7,5 @@ export interface App {
 export interface AppConfig {
   dbUri: string;
   dbName: string;
+  port: number;
 };
