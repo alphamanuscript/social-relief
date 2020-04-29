@@ -2,7 +2,7 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import * as messages from '../messages';
 import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
-import { AppError, throwDbOpFailedError, throwLoginError, throwInvalidAccessTokenError, throwResourceNotFoundError } from '../error/app-error';
+import { AppError, throwDbOpFailedError, throwLoginError, throwInvalidAccessTokenError, throwResourceNotFoundError } from '../error';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';

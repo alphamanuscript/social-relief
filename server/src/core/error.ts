@@ -1,4 +1,4 @@
-import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND } from '../messages';
+import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND } from './messages';
 
 export class AppError extends Error {
   readonly code: ErrorCode;

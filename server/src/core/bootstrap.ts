@@ -1,7 +1,7 @@
 import { AppConfig, App } from './app';
 import { Users } from './user';
 import { MongoClient } from 'mongodb';
-import { throwAppError } from './error/app-error';
+import { throwAppError } from './error';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
