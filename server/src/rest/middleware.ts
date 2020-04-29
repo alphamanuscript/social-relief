@@ -29,7 +29,14 @@ export const errorHandler = (): ErrorRequestHandler =>
         return sendErrorResponse(res, statusCodes.STATUS_UNAUTHORIZED, error);
       case 'resourceNotFound':
         return sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, error);
+      case 'uniquenessFailed':
+        return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
       default:
+        if (error instanceof SyntaxError) {
+          return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST,
+            `Invalid syntax in request body: ${error.message}`);
+        }
+
         return sendServerError(res);
     }
   };

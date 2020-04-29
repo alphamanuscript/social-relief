@@ -1,7 +1,10 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
-import { AppError, createDbOpFailedError, createLoginError, createInvalidAccessTokenError, createResourceNotFoundError } from '../error';
+import * as messages from '../messages';
+import { AppError, createDbOpFailedError, createLoginError,
+  createInvalidAccessTokenError, createResourceNotFoundError,
+  createUniquenessFailedError } from '../error';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -26,13 +29,32 @@ export class Users implements UserService {
   private db: Db;
   private collection: Collection<DbUser>;
   private tokenCollection: Collection<AccessToken>;
+  private indexesCreated: boolean;
 
   constructor(db: Db) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
+    this.indexesCreated = false;
   }
 
+  async createIndexes(): Promise<void> {
+    if (this.indexesCreated) return;
+
+    try {
+      // unique phone index
+      await this.collection.createIndex({ 'phone': 1 }, { unique: true, sparse: false });
+      // ttl collection for access token expiry
+      await this.tokenCollection.createIndex({ expiresAt: 1},
+        { expireAfterSeconds: 1 });
+      
+      this.indexesCreated = true;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+  
   async create(args: UserCreateArgs): Promise<User> {
     const now = new Date();
     const user = {
@@ -49,6 +71,10 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
+      if (e.code == 11000 && RegExp(args.phone).test(e.message)) {
+        throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+      }
+
       throw createDbOpFailedError(e.message);
     }
   }

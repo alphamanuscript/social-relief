@@ -8,6 +8,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const db = client.db(config.dbName);
 
   const users = new Users(db);
+  await users.createIndexes();
 
   return {
     users

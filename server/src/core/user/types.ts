@@ -35,9 +35,38 @@ export interface UserLoginResult {
 
 
 export interface UserService {
+  /**
+   * ensures that all required database indexes
+   * for this service are created.
+   * This method is idempotent
+   */
+  createIndexes(): Promise<void>;
+  /**
+   * creates a user
+   * @param args 
+   */
   create(args: UserCreateArgs): Promise<User>;
+  /**
+   * logs in the user if the credentials are valid,
+   * generates a temporary access token for the user
+   * @param args 
+   */
   login(args: UserLoginArgs): Promise<UserLoginResult>;
+  /**
+   * retrieves the user who owns the token, provided
+   * the token is valid
+   * @param token 
+   */
   getByToken(token: string): Promise<User>;
+  /**
+   * invalidates the specified access token
+   * @param token 
+   */
   logout(token: string): Promise<void>;
+  /**
+   * invalidates all access tokens belonging to the
+   * specified user
+   * @param user 
+   */
   logoutAll(user: string): Promise<void>;
 };

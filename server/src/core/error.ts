@@ -17,6 +17,7 @@ export type ErrorCode =
   | 'loginFailed'
   | 'invalidToken'
   | 'resourceNotFound'
+  | 'uniquenessFailed'
   | 'serverError';
 
 export function throwAppError(message: string, code: ErrorCode) {
@@ -41,4 +42,8 @@ export function createInvalidAccessTokenError(message: string = ERROR_INVALID_AC
 
 export function createResourceNotFoundError(message: string = ERROR_RESOURCE_NOT_FOUND) {
   return createAppError(message, 'resourceNotFound');
+}
+
+export function createUniquenessFailedError(message: string) {
+  return createAppError(message, 'uniquenessFailed');
 }
