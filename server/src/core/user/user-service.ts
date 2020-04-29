@@ -34,7 +34,7 @@ export class Users implements UserService {
     const now = new Date();
     const user = {
       _id: generateId(),
-      password: hashPassword(args.password),
+      password: await hashPassword(args.password),
       phone: args.phone,
       createdAt: now,
       updatedAt: now
