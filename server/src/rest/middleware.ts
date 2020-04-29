@@ -1,6 +1,7 @@
 import { RequestHandler, ErrorRequestHandler } from 'express';
-import { AppRequest, statusCodes } from '../server';
 import { AppError, messages } from '../core';
+import { createResourceNotFoundError } from '../core/error';
+import { AppRequest, statusCodes } from '../server';
 import { sendServerError, sendErrorResponse, getAccessToken } from './util';
 
 export const requireAuth = (): RequestHandler =>
@@ -35,7 +36,7 @@ export const errorHandler = (): ErrorRequestHandler =>
 
 export const error404Handler = (message: string): RequestHandler =>
   (req, res) =>
-    sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, message);
+    sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, createResourceNotFoundError(message));
 
 
 interface WrappedHandler {

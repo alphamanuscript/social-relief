@@ -1,8 +1,7 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
-import * as messages from '../messages';
 import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
-import { AppError, throwDbOpFailedError, throwLoginError, throwInvalidAccessTokenError, throwResourceNotFoundError } from '../error';
+import { AppError, createDbOpFailedError, createLoginError, createInvalidAccessTokenError, createResourceNotFoundError } from '../error';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -46,15 +45,11 @@ export class Users implements UserService {
 
     try {
       const res = await this.collection.insertOne(user);
-      if (res.insertedCount !== 1) {
-        throwDbOpFailedError(messages.ERROR_CREATE_USER_FAILED);
-      }
-
       return getSafeUser(res.ops[0]);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -64,7 +59,7 @@ export class Users implements UserService {
 
       const passwordCorrect = await verifyPassword(user.password, args.password);
       if (!passwordCorrect) {
-        throwLoginError();
+        throw createLoginError();
       }
 
       const token = await this.createAccessToken(user._id);
@@ -75,23 +70,23 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 
   async getByToken(tokenId: string): Promise<User> {
     try {
       const token = await this.tokenCollection.findOne({ _id: tokenId, expiresAt: { $gt: new Date() } });
-      if (!token) throwInvalidAccessTokenError();
+      if (!token) throw createInvalidAccessTokenError();
 
       const user = await this.collection.findOne({ _id: token.user });
-      if (!user) throwResourceNotFoundError();
+      if (!user) throw createResourceNotFoundError();
 
       return getSafeUser(user);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -101,11 +96,11 @@ export class Users implements UserService {
         _id: token
       });
       // TODO: what's the point of throwing an exception if the token was not valid?
-      if (res.deletedCount !== 1) throwInvalidAccessTokenError();
+      if (res.deletedCount !== 1) throw createInvalidAccessTokenError();
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -114,7 +109,7 @@ export class Users implements UserService {
       await this.tokenCollection.deleteMany({ user });
     }
     catch (e) {
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -135,7 +130,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throwDbOpFailedError(e.message);
+      throw createDbOpFailedError(e.message);
     }
   }
 }

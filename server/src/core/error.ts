@@ -23,18 +23,22 @@ export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
 }
 
-export function throwDbOpFailedError(message: string) {
-  throwAppError(message, 'dbOpFailed');
+export function createAppError(message: string, code: ErrorCode): AppError {
+  return new AppError(message, code);
 }
 
-export function throwLoginError(message: string = ERROR_LOGIN_FAILED) {
-  throwAppError(message, 'loginFailed');
+export function createDbOpFailedError(message: string) {
+  return createAppError(message, 'dbOpFailed');
 }
 
-export function throwInvalidAccessTokenError(message: string = ERROR_INVALID_ACCESS_TOKEN) {
-  throwAppError(message, 'invalidToken');
+export function createLoginError(message: string = ERROR_LOGIN_FAILED) {
+  return createAppError(message, 'loginFailed');
 }
 
-export function throwResourceNotFoundError(message: string = ERROR_RESOURCE_NOT_FOUND) {
-  throwAppError(message, 'resourceNotFound');
+export function createInvalidAccessTokenError(message: string = ERROR_INVALID_ACCESS_TOKEN) {
+  return createAppError(message, 'invalidToken');
+}
+
+export function createResourceNotFoundError(message: string = ERROR_RESOURCE_NOT_FOUND) {
+  return createAppError(message, 'resourceNotFound');
 }
