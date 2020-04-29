@@ -31,13 +31,13 @@ function setupApi(app: App) {
   server.post('/users', async (req, res) => {
     app.users.create(req.body)
     .then(user => res.status(201).send(user))
-    .catch(err => res.status(400).send(err));
+    .catch(err => res.status(400).json(err));
   });
   
   server.post('/login', async (req, res) => {
-    const { phone, password } = req.body;
-    const result = await db.collection('users').findOne({ phone, password });
-    return res.status(200).json(result);
+    app.users.login(req.body)
+    .then(result => res.status(200).send(result))
+    .catch(err => res.status(401).json(err));
   });
   
   server.post('/donate', async (req, res) => {

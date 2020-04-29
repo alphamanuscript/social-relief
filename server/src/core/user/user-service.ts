@@ -1,10 +1,12 @@
 import { Db, Collection } from 'mongodb';
-import { generateId, hashPassword } from '../util';
+import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import * as messages from '../messages';
-import { User, DbUser, UserCreateArgs, UserService} from './types';
-import { AppError, throwDbOpFailedError } from '../error/app-error';
+import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
+import { AppError, throwDbOpFailedError, throwLoginError, throwInvalidAccessTokenError, throwResourceNotFoundError } from '../error/app-error';
 
 const COLLECTION = 'users';
+const TOKEN_COLLECTION = 'access_tokens';
+const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 
 /**
  * removes fields that should
@@ -24,10 +26,12 @@ function getSafeUser(user: DbUser): User {
 export class Users implements UserService {
   private db: Db;
   private collection: Collection<DbUser>;
+  private tokenCollection: Collection<AccessToken>;
 
   constructor(db: Db) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
+    this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
   }
 
   async create(args: UserCreateArgs): Promise<User> {
@@ -47,6 +51,87 @@ export class Users implements UserService {
       }
 
       return getSafeUser(res.ops[0]);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throwDbOpFailedError(e.message);
+    }
+  }
+
+  async login(args: UserLoginArgs): Promise<UserLoginResult> {
+    try {
+      const user = await this.collection.findOne({ phone: args.phone });
+
+      const passwordCorrect = await verifyPassword(user.password, args.password);
+      if (!passwordCorrect) {
+        throwLoginError();
+      }
+
+      const token = await this.createAccessToken(user._id);
+      return {
+        user: getSafeUser(user),
+        token
+      };
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throwDbOpFailedError(e.message);
+    }
+  }
+
+  async getByToken(tokenId: string): Promise<User> {
+    try {
+      const token = await this.tokenCollection.findOne({ _id: tokenId, expiresAt: { $gt: new Date() } });
+      if (!token) throwInvalidAccessTokenError();
+
+      const user = await this.collection.findOne({ _id: token.user });
+      if (!user) throwResourceNotFoundError();
+
+      return getSafeUser(user);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throwDbOpFailedError(e.message);
+    }
+  }
+
+  async logout(token: string): Promise<void> {
+    try {
+      const res = await this.tokenCollection.deleteOne({
+        _id: token
+      });
+      // TODO: what's the point of throwing an exception if the token was not valid?
+      if (res.deletedCount !== 1) throwInvalidAccessTokenError();
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throwDbOpFailedError(e.message);
+    }
+  }
+
+  async logoutAll(user: string): Promise<void> {
+    try {
+      await this.tokenCollection.deleteMany({ user });
+    }
+    catch (e) {
+      throwDbOpFailedError(e.message);
+    }
+  }
+
+  private async createAccessToken(user: string): Promise<AccessToken> {
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + TOKEN_VALIDITY_MILLIS);
+    const token = {
+      _id: generateToken(),
+      createdAt: now,
+      updatedAt: now,
+      expiresAt,
+      user
+    };
+
+    try {
+      const res = await this.tokenCollection.insertOne(token);
+      return res.ops[0];
     }
     catch (e) {
       if (e instanceof AppError) throw e;
