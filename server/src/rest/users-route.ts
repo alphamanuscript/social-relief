@@ -21,3 +21,6 @@ users.post('/logout-all', requireAuth(), wrapResponse(
 
 users.get('/me', requireAuth(), wrapResponse(
   req => Promise.resolve(req.user)));
+
+users.post('/beneficiaries', requireAuth(), wrapResponse(
+  req => req.core.users.nominate(req.body)));
