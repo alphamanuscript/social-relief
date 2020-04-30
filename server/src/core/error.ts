@@ -18,7 +18,8 @@ export type ErrorCode =
   | 'invalidToken'
   | 'resourceNotFound'
   | 'uniquenessFailed'
-  | 'serverError';
+  | 'serverError'
+  | 'atApiError';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);

@@ -16,6 +16,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "africastalking": "^0.4.5",
     "argon2": "^0.26.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
