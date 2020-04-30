@@ -87,7 +87,7 @@ export class Users implements UserService {
     }
   }
 
-  async nominate(args: UserNominateArgs): Promise<any> {
+  async nominate(args: UserNominateArgs): Promise<User> {
     const { phone, nominator } = args;
     try {
       const user = await this.collection.findOne({ phone });
