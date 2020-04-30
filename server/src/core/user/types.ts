@@ -1,3 +1,5 @@
+import { Transaction } from '../transaction';
+
 export interface User {
   _id: string,
   phone: string,
@@ -33,6 +35,9 @@ export interface UserLoginResult {
   token: AccessToken
 };
 
+export interface InitiateDonationArgs {
+  amount: number
+};
 
 export interface UserService {
   /**
@@ -69,4 +74,10 @@ export interface UserService {
    * @param user 
    */
   logoutAll(user: string): Promise<void>;
+  /**
+   * initiates a donation from the specified user
+   * @param user 
+   * @param args 
+   */
+  initiateDonation(user: string, args: InitiateDonationArgs): Promise<Transaction>
 };
