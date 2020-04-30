@@ -1,10 +1,15 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
-import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
+import { 
+  User, DbUser, UserCreateArgs, UserService, 
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs
+} from './types';
 import * as messages from '../messages';
-import { AppError, createDbOpFailedError, createLoginError,
+import { 
+  AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError } from '../error';
+  createUniquenessFailedError, createNominateFailedError
+} from '../error';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -61,6 +66,9 @@ export class Users implements UserService {
       _id: generateId(),
       password: await hashPassword(args.password),
       phone: args.phone,
+      addedBy: args.addedBy,
+      donors: args.role === 'donor' ? [] : [args.addedBy],
+      roles: [args.role],
       createdAt: now,
       updatedAt: now
     };
@@ -75,6 +83,40 @@ export class Users implements UserService {
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
 
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async nominate(args: UserNominateArgs): Promise<any> {
+    const { phone, nominator } = args;
+    try {
+      const user = await this.collection.findOne({ phone });
+
+      if (user && 'beneficiary' in user.roles) {
+        const result = await this.collection.findOneAndUpdate(
+          { phone }, 
+          { $addToSet: { donors: nominator }, $currentDate: { updatedAt: true } },
+          { upsert: true, returnOriginal: false }
+        );
+        return getSafeUser(user);
+      }
+      else if (user && 'middleman' in user.roles) {
+        const result = await this.collection.findOneAndUpdate(
+          { phone }, 
+          { $addToSet: { donors: nominator, roles: 'beneficiary' }, $currentDate: { updatedAt: true } }, 
+          { upsert: true, returnOriginal: false }
+        );
+        return getSafeUser(user);
+      }
+      else if (user && 'donor' in user.roles) {
+        throw createNominateFailedError();
+      }
+      else {
+        return await this.create({ phone, password: '', addedBy: nominator, role: 'beneficiary' });
+      }
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
       throw createDbOpFailedError(e.message);
     }
   }

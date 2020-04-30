@@ -17,7 +17,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
 
 async function getDbConnection(connectionUrl: string) {
   try {
-    const client = await MongoClient.connect(connectionUrl);
+    const client = await MongoClient.connect(connectionUrl, { useUnifiedTopology: true });
     return client;
   }
   catch (e)

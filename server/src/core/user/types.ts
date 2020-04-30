@@ -1,6 +1,11 @@
+export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+
 export interface User {
   _id: string,
   phone: string,
+  addedBy: string,
+  donors: string[],
+  roles: UserRole[],
   createdAt: Date,
   updatedAt: Date
 };
@@ -20,7 +25,14 @@ export interface AccessToken {
 
 export interface UserCreateArgs {
   phone: string,
-  password: string
+  password: string,
+  addedBy: string,
+  role: UserRole
+};
+
+export interface UserNominateArgs {
+  phone: string,
+  nominator: string,
 };
 
 export interface UserLoginArgs {
@@ -46,6 +58,14 @@ export interface UserService {
    * @param args 
    */
   create(args: UserCreateArgs): Promise<User>;
+  /**
+   * nominates an exisiting user as a beneficiary
+   * only if they're not a donor. If user does not
+   * exist, however, a user account is created 
+   * with the role 'beneficiary'
+   * @param args 
+   */
+  nominate(args: UserNominateArgs): Promise<User>;
   /**
    * logs in the user if the credentials are valid,
    * generates a temporary access token for the user

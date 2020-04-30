@@ -1,4 +1,4 @@
-import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND } from './messages';
+import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND, ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY } from './messages';
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -18,7 +18,8 @@ export type ErrorCode =
   | 'invalidToken'
   | 'resourceNotFound'
   | 'uniquenessFailed'
-  | 'serverError';
+  | 'serverError'
+  | 'nominateFailed';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
@@ -46,4 +47,8 @@ export function createResourceNotFoundError(message: string = ERROR_RESOURCE_NOT
 
 export function createUniquenessFailedError(message: string) {
   return createAppError(message, 'uniquenessFailed');
+}
+
+export function createNominateFailedError(message: string = ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY) {
+  return createAppError(message, 'nominateFailed');
 }
