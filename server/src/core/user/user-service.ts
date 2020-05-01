@@ -21,10 +21,13 @@ const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, createdAt, updatedAt } = user;
+  const { _id, phone, addedBy, donors, roles, createdAt, updatedAt } = user;
   return {
     _id,
     phone,
+    addedBy,
+    donors,
+    roles,
     createdAt,
     updatedAt
   };
