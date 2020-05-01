@@ -2,7 +2,7 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
-  AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -90,7 +90,7 @@ export class Users implements UserService {
     }
   }
 
-  async nominate(args: UserNominateArgs): Promise<User> {
+  async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
     const { phone, nominator } = args;
     try {
       const user = await this.collection.findOne({ phone });

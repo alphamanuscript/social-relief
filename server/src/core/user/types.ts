@@ -30,7 +30,7 @@ export interface UserCreateArgs {
   role: UserRole
 };
 
-export interface UserNominateArgs {
+export interface UserNominateBeneficiaryArgs {
   phone: string,
   nominator: string,
 };
@@ -65,7 +65,7 @@ export interface UserService {
    * with the role 'beneficiary'
    * @param args 
    */
-  nominate(args: UserNominateArgs): Promise<User>;
+  nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User>;
   /**
    * logs in the user if the credentials are valid,
    * generates a temporary access token for the user
