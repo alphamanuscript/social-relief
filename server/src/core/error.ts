@@ -19,7 +19,7 @@ export type ErrorCode =
   | 'resourceNotFound'
   | 'uniquenessFailed'
   | 'serverError'
-  | 'nominateFailed';
+  | 'nominationFailed';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
@@ -49,6 +49,6 @@ export function createUniquenessFailedError(message: string) {
   return createAppError(message, 'uniquenessFailed');
 }
 
-export function createNominateFailedError(message: string = ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY) {
-  return createAppError(message, 'nominateFailed');
+export function createNominationFailedError(message: string = ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY) {
+  return createAppError(message, 'nominationFailed');
 }

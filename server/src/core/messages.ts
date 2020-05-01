@@ -7,4 +7,4 @@ export const ERROR_USER_NOT_FOUND = 'User not found';
 export const ERROR_SERVER_ERROR = 'Server error occurred';
 export const ERROR_ROUTE_NOT_FOUND = 'Route does not exist';
 export const ERROR_PHONE_ALREADY_IN_USE = 'The specified phone number is already in use';
-export const ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY = 'The specified user cannot be both a donor and beneficiary';
+export const ERROR_USER_CANNOT_BE_DONOR_AND_BENEFICIARY = 'The user cannot be both a donor and beneficiary';
