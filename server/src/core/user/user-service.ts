@@ -103,19 +103,18 @@ export class Users implements UserService {
             password: '', 
             phone, 
             addedBy: nominator, 
-            donors: [nominator], 
-            roles: ['beneficiary'], 
-            createdAt: new Date(), 
-            updatedAt: new Date()
+            createdAt: new Date(),
           } 
         },
         { upsert: true, returnOriginal: false }
       );
-      if (!result) throw createNominationFailedError();
-      else return getSafeUser(result.value);
+      return getSafeUser(result.value);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
+      if (e.code == 11000 && RegExp(phone).test(e.message)) {
+        throw createNominationFailedError();
+      }
       throw createDbOpFailedError(e.message);
     }
   }
