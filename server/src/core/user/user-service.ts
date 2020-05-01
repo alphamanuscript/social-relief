@@ -94,17 +94,17 @@ export class Users implements UserService {
     const { phone, nominator } = args;
     try {
       const result = await this.collection.findOneAndUpdate(
-        { phone, roles: { $in: ['beneficiary', 'middleman'] } }, 
+        { phone, roles: { $nin: ['donor'] } }, 
         { 
-          $addToSet: { roles: { $each: [ 'beneficiary', 'middleman' ] }, donors: nominator }, 
+          $addToSet: { roles: 'beneficiary', donors: nominator }, 
           $currentDate: { updatedAt: true }, 
           $setOnInsert: { 
             _id: generateId(), 
-            password: await hashPassword(''), 
+            password: '', 
             phone, 
-            addedBy: '', 
-            donors: [], 
-            roles: ['donor'], 
+            addedBy: nominator, 
+            donors: [nominator], 
+            roles: ['beneficiary'], 
             createdAt: new Date(), 
             updatedAt: new Date()
           } 
