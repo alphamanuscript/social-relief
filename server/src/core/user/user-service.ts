@@ -8,7 +8,7 @@ import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createNominateFailedError
+  createUniquenessFailedError, createNominationFailedError
 } from '../error';
 
 const COLLECTION = 'users';
@@ -93,30 +93,26 @@ export class Users implements UserService {
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
     const { phone, nominator } = args;
     try {
-      const user = await this.collection.findOne({ phone });
-
-      if (user && 'beneficiary' in user.roles) {
-        const result = await this.collection.findOneAndUpdate(
-          { phone }, 
-          { $addToSet: { donors: nominator }, $currentDate: { updatedAt: true } },
-          { upsert: true, returnOriginal: false }
-        );
-        return getSafeUser(user);
-      }
-      else if (user && 'middleman' in user.roles) {
-        const result = await this.collection.findOneAndUpdate(
-          { phone }, 
-          { $addToSet: { donors: nominator, roles: 'beneficiary' }, $currentDate: { updatedAt: true } }, 
-          { upsert: true, returnOriginal: false }
-        );
-        return getSafeUser(user);
-      }
-      else if (user && 'donor' in user.roles) {
-        throw createNominateFailedError();
-      }
-      else {
-        return await this.create({ phone, password: '', addedBy: nominator, role: 'beneficiary' });
-      }
+      const result = await this.collection.findOneAndUpdate(
+        { phone, roles: { $in: ['beneficiary', 'middleman'] } }, 
+        { 
+          $addToSet: { roles: { $each: [ 'beneficiary', 'middleman' ] }, donors: nominator }, 
+          $currentDate: { updatedAt: true }, 
+          $setOnInsert: { 
+            _id: generateId(), 
+            password: await hashPassword(''), 
+            phone, 
+            addedBy: '', 
+            donors: [], 
+            roles: ['donor'], 
+            createdAt: new Date(), 
+            updatedAt: new Date()
+          } 
+        },
+        { upsert: true, returnOriginal: false }
+      );
+      if (!result) throw createNominationFailedError();
+      else return getSafeUser(result.value);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
