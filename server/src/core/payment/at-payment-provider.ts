@@ -1,6 +1,6 @@
 import createAtClient, { PaymentsService as AtPaymentService, MobileCheckoutArgs } from 'africastalking';
 import { PaymentProvider, PaymentRequestResult } from './types';
-import { createAppError } from '../error';
+import { createAppError, AppError, createPaymentRequestFailedError } from '../error';
 import { User } from '../user/types';
 
 export interface AtArgs {
@@ -41,22 +41,18 @@ export class AtPaymentProvider implements PaymentProvider {
 
     try {
       const res = await this.payments.mobileCheckout(args);
-      console.log('RES', res);
-      /*
-      {
-        description: 'Waiting for user input',
-        providerChannel: '525900',
-        status: 'PendingConfirmation',
-        transactionId: 'ATPid_67ece6ce47375daad33db06f2f4b6139'
+
+      if (res.status === 'PendingConfirmation') {
+        return {
+          providerTransactionId: res.transactionId,
+          status: 'paymentRequested'
+        };
       }
-      */
-     return {
-       providerTransactionId: res.transactionId,
-       status: 'paymentRequested'
-     };
+      
+      throw createPaymentRequestFailedError(res.description);
     }
     catch (e) {
-      console.error('AT ERROR', e);
+      if (e instanceof AppError) throw e;
       throw createAppError(e.message, 'atApiError');
     }
   }

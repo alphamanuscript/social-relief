@@ -18,6 +18,7 @@ export type ErrorCode =
   | 'invalidToken'
   | 'resourceNotFound'
   | 'uniquenessFailed'
+  | 'paymentRequestFailed'
   | 'serverError'
   | 'atApiError';
 
@@ -47,4 +48,8 @@ export function createResourceNotFoundError(message: string = ERROR_RESOURCE_NOT
 
 export function createUniquenessFailedError(message: string) {
   return createAppError(message, 'uniquenessFailed');
+}
+
+export function createPaymentRequestFailedError(message: string) {
+  return createAppError(message, 'paymentRequestFailed');
 }
