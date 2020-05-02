@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon dist/index"
+    "start": "nodemon -r dotenv/config dist/index"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
@@ -19,6 +19,7 @@
     "africastalking": "^0.4.5",
     "argon2": "^0.26.2",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongodb": "^3.5.5",
     "winston": "^3.2.1"
