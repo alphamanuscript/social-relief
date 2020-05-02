@@ -5,8 +5,7 @@ import * as messages from '../messages';
 import { AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError } from '../error';
-import { TransactionService, TransactionCreateArgs, Transaction } from '../transaction';
-import { PaymentService } from '../payment';
+import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs } from '../payment';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -29,7 +28,6 @@ function getSafeUser(user: DbUser): User {
 
 export interface UsersArgs {
   transactions: TransactionService,
-  payments: PaymentService
 };
 
 export class Users implements UserService {
@@ -38,14 +36,12 @@ export class Users implements UserService {
   private tokenCollection: Collection<AccessToken>;
   private indexesCreated: boolean;
   private transactions: TransactionService;
-  private payments: PaymentService;
 
   constructor(db: Db, args: UsersArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
     this.indexesCreated = false;
-    this.payments = args.payments;
     this.transactions = args.transactions;
   }
 
@@ -184,20 +180,12 @@ export class Users implements UserService {
     }
   }
 
-  async initiateDonation(userId: string, args: import("./types").InitiateDonationArgs): Promise<Transaction> {
-    const trxArgs: TransactionCreateArgs = {
-      amount: args.amount,
-      to: userId,
-      from: '',
-      fromExternal: true,
-      toExternal: false,
-      type: 'donation',
-    };
+  async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
+    
 
     try {
       const user = await this.getById(userId);
-      const trx = await this.transactions.create(trxArgs);
-      await this.payments.initiatePaymentFromUser(user, trx);
+      const trx = await this.transactions.initiateDonation(user, args);
       return trx;
     }
     catch (e) {

@@ -5,7 +5,12 @@ export interface App {
 };
 
 export interface AppConfig {
+  port: number;
   dbUri: string;
   dbName: string;
-  port: number;
+  atUsername: string;
+  atApiKey: string;
+  atPaymentsProductName: string;
+  atPaymentsProviderChannel: string;
+  atWebhooksRoot: string;
 };

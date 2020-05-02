@@ -1,7 +1,6 @@
 import { AppConfig, App } from './app';
 import { Users } from './user';
-import { Transactions } from './transaction';
-import { Payments } from './payment';
+import { Transactions, AtPaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
 import { throwAppError } from './error';
 
@@ -9,11 +8,16 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
   const db = client.db(config.dbName);
 
-  const payments = new Payments();
-  const transactions = new Transactions(db);
+  console.log('CONFIG', config);
+  const paymentProvider = new AtPaymentProvider({
+    username: config.atUsername,
+    apiKey: config.atApiKey,
+    paymentsProductName: config.atPaymentsProductName,
+    paymentsProviderChannel: config.atPaymentsProviderChannel
+  });
+  const transactions = new Transactions(db, { paymentProvider });
   const users = new Users(db, {
     transactions,
-    payments
   });
   await users.createIndexes();
 

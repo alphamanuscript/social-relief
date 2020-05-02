@@ -1,4 +1,4 @@
-import { Transaction } from '../transaction';
+import { Transaction, InitiateDonationArgs } from '../payment';
 
 export interface User {
   _id: string,
@@ -33,10 +33,6 @@ export interface UserLoginArgs {
 export interface UserLoginResult {
   user: User,
   token: AccessToken
-};
-
-export interface InitiateDonationArgs {
-  amount: number
 };
 
 export interface UserService {
