@@ -1,6 +1,5 @@
-// TODO declare module 'africastalking' in .d.ts file
-const AfricasTalking = require('africastalking');
-import { PaymentProvider, Transaction, PaymentRequestResult } from './types';
+import createAtClient, { PaymentsService as AtPaymentService, MobileCheckoutArgs } from 'africastalking';
+import { PaymentProvider, PaymentRequestResult } from './types';
 import { createAppError } from '../error';
 import { User } from '../user/types';
 
@@ -13,12 +12,12 @@ export interface AtArgs {
 
 export class AtPaymentProvider implements PaymentProvider {
   private atClient: any;
-  private payments: any;
+  private payments: AtPaymentService;
   private productName: string;
   private providerChannel: string;
 
   constructor(args: AtArgs) {
-    this.atClient = AfricasTalking({ username: args.username, apiKey: args.apiKey });
+    this.atClient = createAtClient({ username: args.username, apiKey: args.apiKey });
     this.payments = this.atClient.PAYMENTS;
     this.productName = args.paymentsProductName;
     this.providerChannel = args.paymentsProviderChannel;
@@ -29,7 +28,7 @@ export class AtPaymentProvider implements PaymentProvider {
   }
 
   async requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult> {
-    const args = {
+    const args: MobileCheckoutArgs = {
       productName: this.productName,
       providerChannel: this.providerChannel,
       phoneNumber: `+${user.phone}`,
