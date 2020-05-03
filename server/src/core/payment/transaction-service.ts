@@ -1,8 +1,9 @@
 import { Db, Collection } from 'mongodb';
 import { Transaction, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs } from './types';
 import { generateId } from '../util';
-import { createDbOpFailedError, AppError } from '../error';
+import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
+import * as messages from '../messages';
 
 const COLLECTION = 'transactions';
 
@@ -21,9 +22,19 @@ export class Transactions implements TransactionService {
     this.provider = args.paymentProvider;
   }
 
+  async getAllByUser(userId: string): Promise<Transaction[]> {
+    try {
+      const result = await this.collection.find({ user: userId }).toArray();
+      return result;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction> {
     const trxArgs: TransactionCreateArgs = {
-      amount: args.amount,
+      expectedAmount: args.amount,
       to: user._id,
       from: '',
       fromExternal: true,
@@ -45,22 +56,56 @@ export class Transactions implements TransactionService {
     }
   }
 
-  async handleProviderNotification(payload: any): Promise<void> {
+  async handleProviderNotification(payload: any): Promise<Transaction> {
     try {
       const now = new Date();
       const result = await this.provider.handlePaymentNotification(payload);
-      // TODO what if the trx does not exist in the database?
-      // should create trx here
-      await this.collection.findOneAndUpdate(
+
+      const updateRes = await this.collection.findOneAndUpdate(
         { providerTransactionId: result.providerTransactionId, provider: this.provider.name() },
         {
           $set: {
             status: result.status,
             failureReason: result.failureReason,
             metadata: result.metadata,
-            updatedAt: now
+            updatedAt: now,
+            amount: result.amount
           },
         });
+      
+      if (!updateRes.value) {
+        // TODO: handle notifications that don't correspond to transactions
+        // these are transactions that were not initiated for the app by a user
+        throw createResourceNotFoundError(messages.ERROR_TRANSACTION_REQUESTED);
+      }
+
+      return updateRes.value;
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction> {
+    try {
+      const trx = await this.collection.findOne({ _id: transactionId, $or: [{ from: userId }, { to: userId }] });
+      if (!trx) throw createResourceNotFoundError(messages.ERROR_TRANSACTION_NOT_FOUND);
+      const providerResult = await this.provider.getTransaction(trx.providerTransactionId);
+      const updatedRes = await this.collection.findOneAndUpdate(
+        { _id: trx._id }, 
+        {
+          $set: {
+            status: providerResult.status,
+            failureReason: providerResult.failureReason,
+            metadata: providerResult.metadata,
+            updatedAt: new Date(),
+            amount: providerResult.amount
+        }
+      }, { returnOriginal: false });
+      
+      if (!updatedRes.value) throw createResourceNotFoundError(messages.ERROR_TRANSACTION_NOT_FOUND);
+      return updatedRes.value;
     }
     catch (e) {
       if (e instanceof AppError) throw e;
@@ -73,6 +118,7 @@ export class Transactions implements TransactionService {
     const tx: Transaction = {
       _id: generateId(),
       ...args,
+      amount: 0,
       providerTransactionId: args.providerTransactionId || '',
       status: args.status || 'pending',
       createdAt: now,

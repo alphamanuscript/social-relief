@@ -14,6 +14,11 @@ declare module 'africastalking-types' {
      * @param args 
      */
     mobileCheckout(args: MobileCheckoutArgs): Promise<MobileCheckoutResult>;
+    /**
+     * Find a particular transaction
+     * @param args 
+     */
+    findTransaction(args: FindTransactionArgs): Promise<FindTransactionResult>;
   }
 
   interface MobileCheckoutArgs {
@@ -180,6 +185,19 @@ declare module 'africastalking-types' {
      * The date and time (according to the payment provider) when a successful transaction was completed. This is only provided for successful transactions
      */
     transactionDate?: string;
+  }
+
+  export interface FindTransactionArgs {
+    /**
+     * Transaction ID returned on charge request
+     */
+    transactionId: string;
+  }
+
+  export interface FindTransactionResult {
+    status: 'Success' | 'Failed';
+    errorMessage?: string;
+    data: PaymentNotification;
   }
 }
 

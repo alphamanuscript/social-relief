@@ -1,7 +1,7 @@
 import createAtClient = require('africastalking');
 import { PaymentsService as AtPaymentService, MobileCheckoutArgs, PaymentNotification } from 'africastalking-types';
 import { PaymentProvider, PaymentRequestResult, PaymentNotificationResult } from './types';
-import { createAppError, AppError, createPaymentRequestFailedError } from '../error';
+import { createAppError, AppError, createPaymentRequestFailedError, throwAppError } from '../error';
 import { User } from '../user/types';
 
 export interface AtArgs {
@@ -36,7 +36,7 @@ export class AtPaymentProvider implements PaymentProvider {
       amount,
       currencyCode: 'KES',
       metadata: {
-        user: user._id
+        fromUser: user._id
       }
     };
 
@@ -59,17 +59,39 @@ export class AtPaymentProvider implements PaymentProvider {
   }
 
   handlePaymentNotification(payload: any): Promise<PaymentNotificationResult> {
-    const notification = payload as PaymentNotification;
+    return Promise.resolve(this.extractTransactionInfo(payload));
+  }
+
+  async getTransaction(id: string): Promise<PaymentNotificationResult> {
+    try {
+      const result = await this.payments.findTransaction({ transactionId: id });
+      if (result.status !== 'Success') throwAppError(result.errorMessage, 'atApiError');
+
+      return this.extractTransactionInfo(result.data);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createAppError(e.message, 'atApiError');
+    }
+  }
+
+  private extractTransactionInfo(notification: PaymentNotification): PaymentNotificationResult {
     const result: PaymentNotificationResult = {
       status: notification.status === 'Success' ? 'success' : 'failed',
       providerTransactionId: notification.transactionId,
-      metadata: notification
+      metadata: notification,
+      amount: Number(notification.value.split(' ')[1]),
+      userData: {}
     };
+
+    if (notification.sourceType === 'PhoneNumber') {
+      result.userData.phone = notification.source.substr(1);
+    }
 
     if (notification.status !== 'Success') {
       result.failureReason = notification.description;
     }
 
-    return Promise.resolve(result);
+    return result;
   }
 }

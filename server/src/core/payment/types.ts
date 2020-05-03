@@ -9,6 +9,7 @@ export interface Transaction {
   updatedAt: Date,
   status: TransactionStatus,
   failureReason?: string,
+  expectedAmount: number,
   amount: number,
   from: string,
   to: string,
@@ -21,7 +22,7 @@ export interface Transaction {
 };
 
 export interface TransactionCreateArgs {
-  amount: number,
+  expectedAmount: number,
   from: string,
   to: string,
   type: TransactionType,
@@ -38,7 +39,9 @@ export interface InitiateDonationArgs {
 
 export interface TransactionService {
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
-  handleProviderNotification(payload: any): Promise<void>;
+  handleProviderNotification(payload: any): Promise<Transaction>;
+  getAllByUser(userId: string): Promise<Transaction[]>;
+  checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;
 }
 
 export interface PaymentRequestResult {
@@ -48,6 +51,10 @@ export interface PaymentRequestResult {
 
 export interface PaymentNotificationResult {
   status: TransactionStatus;
+  amount: number;
+  userData: {
+    phone?: string,
+  },
   failureReason?: string;
   providerTransactionId: string;
   metadata: any;
@@ -57,4 +64,5 @@ export interface PaymentProvider {
   name(): string;
   requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult>;
   handlePaymentNotification(payload: any): Promise<PaymentNotificationResult>;
+  getTransaction(id: string): Promise<PaymentNotificationResult>;
 }
