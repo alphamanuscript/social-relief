@@ -1,5 +1,6 @@
-import createAtClient, { PaymentsService as AtPaymentService, MobileCheckoutArgs } from 'africastalking';
-import { PaymentProvider, PaymentRequestResult } from './types';
+import createAtClient = require('africastalking');
+import { PaymentsService as AtPaymentService, MobileCheckoutArgs, PaymentNotification } from 'africastalking-types';
+import { PaymentProvider, PaymentRequestResult, PaymentNotificationResult } from './types';
 import { createAppError, AppError, createPaymentRequestFailedError } from '../error';
 import { User } from '../user/types';
 
@@ -24,7 +25,7 @@ export class AtPaymentProvider implements PaymentProvider {
   }
 
   name() {
-    return "africastalking-mpesa";
+    return 'africastalking-mpesa';
   }
 
   async requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult> {
@@ -55,5 +56,20 @@ export class AtPaymentProvider implements PaymentProvider {
       if (e instanceof AppError) throw e;
       throw createAppError(e.message, 'atApiError');
     }
+  }
+
+  handlePaymentNotification(payload: any): Promise<PaymentNotificationResult> {
+    const notification = payload as PaymentNotification;
+    const result: PaymentNotificationResult = {
+      status: notification.status === 'Success' ? 'success' : 'failed',
+      providerTransactionId: notification.transactionId,
+      metadata: notification
+    };
+
+    if (notification.status !== 'Success') {
+      result.failureReason = notification.description;
+    }
+
+    return Promise.resolve(result);
   }
 }

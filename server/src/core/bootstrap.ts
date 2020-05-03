@@ -8,7 +8,6 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
   const db = client.db(config.dbName);
 
-  console.log('CONFIG', config);
   const paymentProvider = new AtPaymentProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
@@ -22,7 +21,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   await users.createIndexes();
 
   return {
-    users
+    users,
+    transactions
   };
 }
 

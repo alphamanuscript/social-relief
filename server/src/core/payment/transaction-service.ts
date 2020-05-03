@@ -45,6 +45,29 @@ export class Transactions implements TransactionService {
     }
   }
 
+  async handleProviderNotification(payload: any): Promise<void> {
+    try {
+      const now = new Date();
+      const result = await this.provider.handlePaymentNotification(payload);
+      // TODO what if the trx does not exist in the database?
+      // should create trx here
+      await this.collection.findOneAndUpdate(
+        { providerTransactionId: result.providerTransactionId, provider: this.provider.name() },
+        {
+          $set: {
+            status: result.status,
+            failureReason: result.failureReason,
+            metadata: result.metadata,
+            updatedAt: now
+          },
+        });
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   private async create(args: TransactionCreateArgs): Promise<Transaction> {
     const now = new Date();
     const tx: Transaction = {
@@ -65,4 +88,5 @@ export class Transactions implements TransactionService {
       throw createDbOpFailedError(e.message);
     }
   }
+
 }
