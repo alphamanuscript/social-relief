@@ -10,3 +10,5 @@ export const ERROR_SERVER_ERROR = 'Server error occurred';
 export const ERROR_ROUTE_NOT_FOUND = 'Route does not exist';
 export const ERROR_PHONE_ALREADY_IN_USE = 'The specified phone number is already in use';
 export const ERROR_AT_API_ERROR = 'AfricasTalking error occurred';
+export const ERROR_BENEFICIARY_NOMINATION_FAILED = 'Failed to nominate the specified user as a beneficiary';
+export const ERROR_USER_CANNOT_BE_BENEFICIARY = 'The specified used cannot be nominated as beneficiary';
