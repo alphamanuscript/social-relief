@@ -1,7 +1,7 @@
 import createAtClient = require('africastalking');
 import { PaymentsService as AtPaymentService, MobileCheckoutArgs, PaymentNotification } from 'africastalking-types';
 import { PaymentProvider, PaymentRequestResult, PaymentNotificationResult } from './types';
-import { createAppError, AppError, createPaymentRequestFailedError, throwAppError } from '../error';
+import { AppError, createPaymentRequestFailedError, createAtApiError } from '../error';
 import { User } from '../user/types';
 
 export interface AtArgs {
@@ -54,7 +54,7 @@ export class AtPaymentProvider implements PaymentProvider {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throw createAppError(e.message, 'atApiError');
+      throw createAtApiError(e.message);
     }
   }
 
@@ -65,13 +65,13 @@ export class AtPaymentProvider implements PaymentProvider {
   async getTransaction(id: string): Promise<PaymentNotificationResult> {
     try {
       const result = await this.payments.findTransaction({ transactionId: id });
-      if (result.status !== 'Success') throwAppError(result.errorMessage, 'atApiError');
+      if (result.status !== 'Success') throw createAtApiError(result.errorMessage);
 
       return this.extractTransactionInfo(result.data);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      throw createAppError(e.message, 'atApiError');
+      throw createAtApiError(e.message);
     }
   }
 

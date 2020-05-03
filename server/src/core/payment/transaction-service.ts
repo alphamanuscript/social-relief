@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs } from './types';
 import { generateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
@@ -11,20 +11,41 @@ export interface TransactionsArgs {
   paymentProvider: PaymentProvider;
 }
 
+const isFinalStatus = (status: TransactionStatus) =>
+  status === 'failed' || status === 'success';
+
 export class Transactions implements TransactionService {
   private db: Db;
   private collection: Collection<Transaction>;
   private provider: PaymentProvider;
+  private indexesCreated: boolean;
 
   constructor(db: Db, args: TransactionsArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.provider = args.paymentProvider;
+    this.indexesCreated = false;
+  }
+
+  async createIndexes(): Promise<void> {
+    if (this.indexesCreated) return;
+
+    try {
+      // unique provider transaction id
+      await this.collection.createIndex({ providerTransactionId: 1, provider: 1 }, { unique: true });
+      // ttl collection for access token expiry
+      await this.collection.createIndex({ from: 1 });
+      
+      this.indexesCreated = true;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
   }
 
   async getAllByUser(userId: string): Promise<Transaction[]> {
     try {
-      const result = await this.collection.find({ user: userId }).toArray();
+      const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).toArray();
       return result;
     }
     catch (e) {
@@ -91,6 +112,11 @@ export class Transactions implements TransactionService {
     try {
       const trx = await this.collection.findOne({ _id: transactionId, $or: [{ from: userId }, { to: userId }] });
       if (!trx) throw createResourceNotFoundError(messages.ERROR_TRANSACTION_NOT_FOUND);
+      
+      if (isFinalStatus(trx.status)) {
+        return trx;
+      }
+
       const providerResult = await this.provider.getTransaction(trx.providerTransactionId);
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id }, 

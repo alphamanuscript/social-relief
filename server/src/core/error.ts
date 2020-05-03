@@ -1,4 +1,4 @@
-import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND } from './messages';
+import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND, ERROR_AT_API_ERROR } from './messages';
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -52,4 +52,8 @@ export function createUniquenessFailedError(message: string) {
 
 export function createPaymentRequestFailedError(message: string) {
   return createAppError(message, 'paymentRequestFailed');
+}
+
+export function createAtApiError(message: string = ERROR_AT_API_ERROR) {
+  return createAppError(message, 'atApiError');
 }

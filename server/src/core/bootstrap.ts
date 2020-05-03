@@ -18,7 +18,9 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const users = new Users(db, {
     transactions,
   });
+
   await users.createIndexes();
+  await transactions.createIndexes();
 
   return {
     users,

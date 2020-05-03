@@ -172,7 +172,7 @@ export class Users implements UserService {
       const user = await this.collection.findOne({ _id: id });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
-      return user;
+      return getSafeUser(user);
     }
     catch (e) {
       if (e instanceof AppError) throw e;
@@ -181,8 +181,6 @@ export class Users implements UserService {
   }
 
   async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
-    
-
     try {
       const user = await this.getById(userId);
       const trx = await this.transactions.initiateDonation(user, args);
