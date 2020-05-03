@@ -2,7 +2,8 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
-  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs,
+  UserRole
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -65,13 +66,13 @@ export class Users implements UserService {
   
   async create(args: UserCreateArgs): Promise<User> {
     const now = new Date();
-    const user = {
+    const user: DbUser = {
       _id: generateId(),
       password: await hashPassword(args.password),
       phone: args.phone,
-      addedBy: args.addedBy,
-      donors: args.role === 'donor' ? [] : [args.addedBy],
-      roles: [args.role],
+      addedBy: '',
+      donors: [],
+      roles: ['donor'],
       createdAt: now,
       updatedAt: now
     };
@@ -93,6 +94,14 @@ export class Users implements UserService {
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
     const { phone, nominator } = args;
     try {
+      /**
+      * If phone number does not exist, a new user is created
+      * with a beneficiary role and the nominator as their donor.
+      * If, on the other hand, the phone number already exists,
+      * the user linked to that number must not be a donor 
+      * simply because a user can not be both a donor and 
+      * a beneficiary.
+      */
       const result = await this.collection.findOneAndUpdate(
         { phone, roles: { $nin: ['donor'] } }, 
         { 
@@ -113,7 +122,7 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (e.code == 11000 && RegExp(phone).test(e.message)) {
-        throw createNominationFailedError();
+        throw createNominationFailedError('user cannot be donor and beneficiary');
       }
       throw createDbOpFailedError(e.message);
     }

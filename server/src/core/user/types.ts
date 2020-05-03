@@ -26,8 +26,6 @@ export interface AccessToken {
 export interface UserCreateArgs {
   phone: string,
   password: string,
-  addedBy: string,
-  role: UserRole
 };
 
 export interface UserNominateBeneficiaryArgs {
@@ -59,7 +57,7 @@ export interface UserService {
    */
   create(args: UserCreateArgs): Promise<User>;
   /**
-   * nominates an exisiting user as a beneficiary
+   * nominates an existing user as a beneficiary
    * only if they're not a donor. If user does not
    * exist, however, a user account is created 
    * with the role 'beneficiary'

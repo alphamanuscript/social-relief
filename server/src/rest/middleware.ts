@@ -32,7 +32,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'uniquenessFailed':
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
       case 'nominationFailed':
-        return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
+        return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       default:
         if (error instanceof SyntaxError) {
           return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST,
