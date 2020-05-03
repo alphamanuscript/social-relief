@@ -3,13 +3,12 @@ import { generateId, hashPassword, verifyPassword, generateToken } from '../util
 import { 
   User, DbUser, UserCreateArgs, UserService, 
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs,
-  UserRole
 } from './types';
 import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createNominationFailedError
+  createUniquenessFailedError, createBeneficiaryNominationFailedError
 } from '../error';
 
 const COLLECTION = 'users';
@@ -94,13 +93,13 @@ export class Users implements UserService {
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
     const { phone, nominator } = args;
     try {
-      /**
-      * If phone number does not exist, a new user is created
-      * with a beneficiary role and the nominator as their donor.
-      * If, on the other hand, the phone number already exists,
-      * the user linked to that number must not be a donor 
-      * simply because a user can not be both a donor and 
-      * a beneficiary.
+      /*
+       If phone number does not exist, a new user is created
+       with a beneficiary role and the nominator as their donor.
+       If, on the other hand, the phone number already exists,
+       the user linked to that number must not be a donor 
+       simply because a user can not be both a donor and 
+       a beneficiary.
       */
       const result = await this.collection.findOneAndUpdate(
         { phone, roles: { $nin: ['donor'] } }, 
@@ -122,7 +121,7 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (e.code == 11000 && RegExp(phone).test(e.message)) {
-        throw createNominationFailedError('user cannot be donor and beneficiary');
+        throw createBeneficiaryNominationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }
