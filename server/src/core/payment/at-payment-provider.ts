@@ -1,6 +1,6 @@
 import createAtClient = require('africastalking');
-import { PaymentsService as AtPaymentService, MobileCheckoutArgs, PaymentNotification } from 'africastalking-types';
-import { PaymentProvider, PaymentRequestResult, PaymentNotificationResult } from './types';
+import { PaymentsService as AtPaymentService, MobileCheckoutArgs, TransactionInfo } from 'africastalking-types';
+import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo } from './types';
 import { AppError, createPaymentRequestFailedError, createAtApiError } from '../error';
 import { User } from '../user/types';
 
@@ -58,11 +58,11 @@ export class AtPaymentProvider implements PaymentProvider {
     }
   }
 
-  handlePaymentNotification(payload: any): Promise<PaymentNotificationResult> {
+  handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
     return Promise.resolve(this.extractTransactionInfo(payload));
   }
 
-  async getTransaction(id: string): Promise<PaymentNotificationResult> {
+  async getTransaction(id: string): Promise<ProviderTransactionInfo> {
     try {
       const result = await this.payments.findTransaction({ transactionId: id });
       if (result.status !== 'Success') throw createAtApiError(result.errorMessage);
@@ -75,8 +75,8 @@ export class AtPaymentProvider implements PaymentProvider {
     }
   }
 
-  private extractTransactionInfo(notification: PaymentNotification): PaymentNotificationResult {
-    const result: PaymentNotificationResult = {
+  private extractTransactionInfo(notification: TransactionInfo): ProviderTransactionInfo {
+    const result: ProviderTransactionInfo = {
       status: notification.status === 'Success' ? 'success' : 'failed',
       providerTransactionId: notification.transactionId,
       metadata: notification,

@@ -50,7 +50,7 @@ export interface PaymentRequestResult {
   status: TransactionStatus
 };
 
-export interface PaymentNotificationResult {
+export interface ProviderTransactionInfo {
   status: TransactionStatus;
   amount: number;
   userData: {
@@ -64,6 +64,6 @@ export interface PaymentNotificationResult {
 export interface PaymentProvider {
   name(): string;
   requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult>;
-  handlePaymentNotification(payload: any): Promise<PaymentNotificationResult>;
-  getTransaction(id: string): Promise<PaymentNotificationResult>;
+  handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo>;
+  getTransaction(id: string): Promise<ProviderTransactionInfo>;
 }

@@ -74,7 +74,7 @@ declare module 'africastalking-types' {
     transactionId: string
   }
 
-  export interface PaymentNotification {
+  export interface TransactionInfo {
     /**
      * A unique transactionId that we generate for every payment sent and received through our APIs.
      */
@@ -197,7 +197,7 @@ declare module 'africastalking-types' {
   export interface FindTransactionResult {
     status: 'Success' | 'Failed';
     errorMessage?: string;
-    data: PaymentNotification;
+    data: TransactionInfo;
   }
 }
 

@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { PaymentNotification } from 'africastalking-types';
 import { AppRequest } from '../server';
 
 export const atRoutes = express.Router();
