@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { statusCodes } from '../server';
-import { wrapResponse, requireAuth } from './middleware';
-import { getAccessToken } from './util';
+import { statusCodes } from '../../server';
+import { wrapResponse, requireAuth } from '../middleware';
+import { getAccessToken } from '../util';
 
 export const users = Router();
 

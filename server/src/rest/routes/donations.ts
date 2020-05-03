@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { wrapResponse, requireAuth } from './middleware';
+import { wrapResponse, requireAuth } from '../middleware';
 
 export const donations = Router();
 donations.use(requireAuth());
