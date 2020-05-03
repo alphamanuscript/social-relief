@@ -1,10 +1,16 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
-import { User, DbUser, UserCreateArgs, UserService, AccessToken, UserLoginArgs, UserLoginResult} from './types';
+import { 
+  User, DbUser, UserCreateArgs, UserService, 
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs,
+  UserRole
+} from './types';
 import * as messages from '../messages';
-import { AppError, createDbOpFailedError, createLoginError,
+import { 
+  AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError } from '../error';
+  createUniquenessFailedError, createNominationFailedError
+} from '../error';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -16,10 +22,13 @@ const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, createdAt, updatedAt } = user;
+  const { _id, phone, addedBy, donors, roles, createdAt, updatedAt } = user;
   return {
     _id,
     phone,
+    addedBy,
+    donors,
+    roles,
     createdAt,
     updatedAt
   };
@@ -57,10 +66,13 @@ export class Users implements UserService {
   
   async create(args: UserCreateArgs): Promise<User> {
     const now = new Date();
-    const user = {
+    const user: DbUser = {
       _id: generateId(),
       password: await hashPassword(args.password),
       phone: args.phone,
+      addedBy: '',
+      donors: [],
+      roles: ['donor'],
       createdAt: now,
       updatedAt: now
     };
@@ -75,6 +87,43 @@ export class Users implements UserService {
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
 
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
+    const { phone, nominator } = args;
+    try {
+      /**
+      * If phone number does not exist, a new user is created
+      * with a beneficiary role and the nominator as their donor.
+      * If, on the other hand, the phone number already exists,
+      * the user linked to that number must not be a donor 
+      * simply because a user can not be both a donor and 
+      * a beneficiary.
+      */
+      const result = await this.collection.findOneAndUpdate(
+        { phone, roles: { $nin: ['donor'] } }, 
+        { 
+          $addToSet: { roles: 'beneficiary', donors: nominator }, 
+          $currentDate: { updatedAt: true }, 
+          $setOnInsert: { 
+            _id: generateId(), 
+            password: '', 
+            phone, 
+            addedBy: nominator, 
+            createdAt: new Date(),
+          } 
+        },
+        { upsert: true, returnOriginal: false }
+      );
+      return getSafeUser(result.value);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      if (e.code == 11000 && RegExp(phone).test(e.message)) {
+        throw createNominationFailedError('user cannot be donor and beneficiary');
+      }
       throw createDbOpFailedError(e.message);
     }
   }
