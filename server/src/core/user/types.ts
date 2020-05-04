@@ -1,3 +1,5 @@
+import { Transaction, InitiateDonationArgs } from '../payment';
+
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 
 export interface User {
@@ -43,7 +45,6 @@ export interface UserLoginResult {
   token: AccessToken
 };
 
-
 export interface UserService {
   /**
    * ensures that all required database indexes
@@ -87,4 +88,10 @@ export interface UserService {
    * @param user 
    */
   logoutAll(user: string): Promise<void>;
+  /**
+   * initiates a donation from the specified user
+   * @param user 
+   * @param args 
+   */
+  initiateDonation(user: string, args: InitiateDonationArgs): Promise<Transaction>
 };

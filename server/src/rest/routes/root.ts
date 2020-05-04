@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { statusCodes } from '../server';
+import { statusCodes } from '../../server';
 
 export const root = Router();
 

@@ -1,13 +1,14 @@
 import { Express, Router } from 'express';
 import { messages } from '../core';
 import { errorHandler, error404Handler } from './middleware';
-import { users } from './users-route';
-import { root } from './root-route';
+import { root, users, donations, transactions } from './routes';
 
 export function mountRestApi(server: Express, apiRoot: string) {
   const router = Router();
 
   router.use('/users', users);
+  router.use('/donations', donations);
+  router.use('/transactions', transactions);
   router.use('/', root);
 
   router.use(errorHandler());

@@ -8,8 +8,8 @@ import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createBeneficiaryNominationFailedError
-} from '../error';
+  createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
+import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs } from '../payment';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -33,17 +33,23 @@ function getSafeUser(user: DbUser): User {
   };
 }
 
+export interface UsersArgs {
+  transactions: TransactionService,
+};
+
 export class Users implements UserService {
   private db: Db;
   private collection: Collection<DbUser>;
   private tokenCollection: Collection<AccessToken>;
   private indexesCreated: boolean;
+  private transactions: TransactionService;
 
-  constructor(db: Db) {
+  constructor(db: Db, args: UsersArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
     this.indexesCreated = false;
+    this.transactions = args.transactions;
   }
 
   async createIndexes(): Promise<void> {
@@ -201,6 +207,31 @@ export class Users implements UserService {
     try {
       const res = await this.tokenCollection.insertOne(token);
       return res.ops[0];
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async getById(id: string): Promise<User> {
+    try {
+      const user = await this.collection.findOne({ _id: id });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return getSafeUser(user);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
+    try {
+      const user = await this.getById(userId);
+      const trx = await this.transactions.initiateDonation(user, args);
+      return trx;
     }
     catch (e) {
       if (e instanceof AppError) throw e;

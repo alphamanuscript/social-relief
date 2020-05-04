@@ -31,6 +31,7 @@ export const errorHandler = (): ErrorRequestHandler =>
         return sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, error);
       case 'uniquenessFailed':
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
+      case 'paymentRequestFailed':
       case 'nominationFailed':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       default:

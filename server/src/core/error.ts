@@ -1,4 +1,4 @@
-import { ERROR_LOGIN_FAILED, ERROR_INVALID_ACCESS_TOKEN, ERROR_RESOURCE_NOT_FOUND, ERROR_BENEFICIARY_NOMINATION_FAILED } from './messages';
+import * as messages from './messages';
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -18,6 +18,9 @@ export type ErrorCode =
   | 'invalidToken'
   | 'resourceNotFound'
   | 'uniquenessFailed'
+  | 'paymentRequestFailed'
+  | 'serverError'
+  | 'atApiError'
   | 'serverError'
   | 'nominationFailed';
 
@@ -33,15 +36,15 @@ export function createDbOpFailedError(message: string) {
   return createAppError(message, 'dbOpFailed');
 }
 
-export function createLoginError(message: string = ERROR_LOGIN_FAILED) {
+export function createLoginError(message: string = messages.ERROR_LOGIN_FAILED) {
   return createAppError(message, 'loginFailed');
 }
 
-export function createInvalidAccessTokenError(message: string = ERROR_INVALID_ACCESS_TOKEN) {
+export function createInvalidAccessTokenError(message: string = messages.ERROR_INVALID_ACCESS_TOKEN) {
   return createAppError(message, 'invalidToken');
 }
 
-export function createResourceNotFoundError(message: string = ERROR_RESOURCE_NOT_FOUND) {
+export function createResourceNotFoundError(message: string = messages.ERROR_RESOURCE_NOT_FOUND) {
   return createAppError(message, 'resourceNotFound');
 }
 
@@ -49,6 +52,13 @@ export function createUniquenessFailedError(message: string) {
   return createAppError(message, 'uniquenessFailed');
 }
 
-export function createBeneficiaryNominationFailedError (message: string = ERROR_BENEFICIARY_NOMINATION_FAILED) {
+export function createPaymentRequestFailedError(message: string) {
+  return createAppError(message, 'paymentRequestFailed');
+}
+
+export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
+  return createAppError(message, 'atApiError');
+}
+export function createBeneficiaryNominationFailedError (message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
 }
