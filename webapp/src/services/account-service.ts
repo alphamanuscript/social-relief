@@ -15,7 +15,7 @@ const generateId = (): string => {
 export const AccountService = {
   async login(phone: string, password: string) {
     const args = { phone, password };
-    const res = await axios.post<User>(`${API_URL}/login`, args);
+    const res = await axios.post<User>(`${API_URL}/users/login`, args);
     return res.data;
   },
   async donate(accountId: string, amount: number) {

@@ -27,18 +27,6 @@
               </div>
             </div>
             <div class="col-md-12 form-group">
-              <label for="email">Email</label>
-              <input
-                v-model="email"
-                id="email"
-                type="email"
-                :class="getClasses('email')"
-              >
-              <div class="invalid-feedback">
-                {{ emailMessage }}
-              </div>
-            </div>
-            <div class="col-md-12 form-group">
               <label for="password">Password</label>
               <input
                 v-model="password"
@@ -61,16 +49,6 @@
               <div class="invalid-feedback">
                 {{ confirmedPasswordMessage }}
               </div>
-            </div>
-            <div class="col-md-12 form-group">
-              <label for="role">Role</label>
-              <select v-if="role === 'donor'" id="role" v-model="role" class="form-control">
-                <option selected value="donor">Donor</option>
-                <option value="middleman">Middleman</option>
-              </select>
-              <select v-else v-model="role" class="form-control">
-                <option value="middleman">Middleman</option>
-              </select>
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="signup">Sign Up</button>
@@ -95,11 +73,9 @@ export default {
       confirmedPassword: '',
       role: 'donor',
       phoneMessage: 'Please provide a valid phone',
-      emailMessage: 'Please provide a valid email',
       passwordMessage: 'Please provide a valid password',
       confirmedPasswordMessage: 'Please provide a valid password',
       isValidPhone: true,
-      isValidEmail: true,
       isValidPassword: true,
       isValidConfirmedPassword: true
     }
@@ -115,11 +91,6 @@ export default {
           return {
             'form-control': true,
             'is-invalid': !this.isValidPhone
-          }
-        case 'email': 
-          return {
-            'form-control': true,
-            'is-invalid': !this.isValidEmail
           }
         case 'password': 
           return {
@@ -137,29 +108,22 @@ export default {
     },
     signup() {
       console.log('Phone: ', this.phone);
-      console.log('Email: ', this.email);
       console.log('Password: ', this.password);
       console.log('Confirmed Password: ', this.confirmedPassword);
       console.log('Role: ', this.role);
 
-      if (this.phone.length && this.email.length && this.password.length && this.confirmedPassword.length && 
+      if (this.phone.length && this.password.length && this.confirmedPassword.length && 
           this.password === this.confirmedPassword && this.canSignup()) {
         console.log('All test cases pass');
         this.isValidPhone = true;
-        this.isValidEmail = true;
         this.isValidPassword = true;
         this.isValidConfirmedPassword = true;
-        this.createUser({ phone: this.phone, email: this.email, role: this.role });
+        this.createUser({ phone: this.phone, role: this.role });
       }
       else if (!this.phone.length) {
         console.log('Invalid phone');
         this.phoneMessage = 'Please provide a valid phone';
         this.isValidPhone = false;
-      }
-      else if (!this.email.length) {
-        console.log('Invalid email');
-        this.emailMessage = 'Please provide a valid email';
-        this.isValidEmail = false;
       }
       else if (!this.password.length) {
         console.log('Invalid password');
