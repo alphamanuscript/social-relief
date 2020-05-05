@@ -45,8 +45,8 @@ describe('DonationDistributor', () => {
         { _id: 'donor1', balance: 3330 },
         // 2500 - 600
         { _id: 'donor2', balance: 1900 },
-        // 4000 - 1400 - 1200
-        { _id: 'donor3', balance: 1400 }
+        // 4000 + 200 - 1400 - 1200
+        { _id: 'donor3', balance: 1600 }
       ]);
     });
   });

@@ -107,6 +107,12 @@ export const transactions = [
     updatedAt: thirtyDaysAgo
   },
   {
+    to: 'donor3',
+    amount: 200,
+    status: 'success',
+    updatedAt: yesterday
+  },
+  {
     from: 'donor1',
     to: 'beneficiary1',
     amount: 500,
