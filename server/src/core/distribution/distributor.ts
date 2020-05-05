@@ -6,6 +6,18 @@ import { User } from '../user';
 const USERS_COLL = 'users';
 const TRANSACTIONS_COLL = 'transactions';
 
+interface EligibleBeneficiary {
+  _id: string;
+  donors: string[];
+  total: number;
+  remaining: number;
+};
+
+interface DonorBalance {
+  _id: string;
+  balance: number;
+}
+
 /*
 PSEUDO CODE
 
@@ -53,9 +65,9 @@ export class Distributor implements DonationDistributor {
  * @param periodLimit maximum amount of donations per period
  * @param periodLength duration of a period in days
  */
-export async function findEligibleBeneficiaries(users: Collection<User>, periodLimit: number, periodLength: number) {
+export async function findEligibleBeneficiaries(users: Collection<User>, periodLimit: number, periodLength: number): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
-  const result = await users.aggregate([
+  const result = await users.aggregate<EligibleBeneficiary>([
     { 
       $match: { roles: 'beneficiary' }
     },
@@ -69,13 +81,20 @@ export async function findEligibleBeneficiaries(users: Collection<User>, periodL
               $expr: {
                 $and: [
                   { $eq: ['$to', '$$user']},
-                  { $eq: ['$status', 'success']},
+                  // we take a conservative approach and assume that any distribution
+                  // that has not failed will potentially succeed
+                  // if it's a pending transaction that eventually fails, then this
+                  // means that the beneficiary will be entitled to less funds than they're supposed to
+                  // in that case, then hopefully the status will updated by the time the next distribution runs
+                  // it's better than giving the beneficiary more money (in case the transaction succeeds)
+                  // because that's practically irreversible
+                  { $ne: ['$status', 'failed']},
                   { $lt: [{ $subtract: [new Date(), '$updatedAt'] }, periodMilliseconds]}
                 ]
               }
             },
           },
-          { $group: { _id: null, total: { $sum: '$amount' } } },
+          { $group: { _id: null, totalReceived: { $sum: '$amount' } } },
           { $project: { _id: 0 } }
         ],
         as: 'transactions'
@@ -84,11 +103,74 @@ export async function findEligibleBeneficiaries(users: Collection<User>, periodL
     {
       $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
     },
+    // only take beneficiaries who have not exceeded their period limit
     {
-      $project: { _id: 1, donors: 1, total: 1, remaining: { $subtract: [periodLimit, '$total' ]} }
+      $match: { totalReceived: { $lt: periodLimit } }
     },
     {
-      $match: { total: { $lt: periodLimit } }
+      $project: { _id: 1, donors: 1, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
+    }
+  ]);
+
+  return result.toArray();
+}
+
+export async function computeDonorsBalances(users: Collection<User>, donors: string[]): Promise<DonorBalance[]> {
+  const result = await users.aggregate<DonorBalance>([
+    {
+      $match: { _id: { $in: donors }, roles: 'donor' }
+    },
+    {
+      $lookup: {
+        from: TRANSACTIONS_COLL,
+        let: { user: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  {
+                    // for the transactions to the user's account
+                    // any non-successful transaction (e.g. pending)
+                    // will potentially fail and should not be added to the balance
+                    $and: [
+                      { $eq: ['$to', '$$user'] },
+                      { $eq: ['$status', 'success'] }
+                    ]
+                  },
+                  {
+                    // for transactions from the user
+                    // any transaction that has not yet failed
+                    // will potentially succeed and should be deducted from the balance calculation
+                    $and: [
+                      { $eq: ['$from', '$$user'] },
+                      { $ne: ['$status', 'failed'] }
+                    ]
+                  }
+                ]
+              }
+            },
+          },
+          {
+            $group: {
+              _id: {
+                $cond: { if: { $eq: ['$to', '$$user'] }, then: 1, else: -1 }
+              },
+              total: { $sum: '$amount' }
+            }
+          },
+          {
+            $group: { _id: null, balance: { $sum: { $multiply: ['$_id', '$total'] } } }
+          }
+        ],
+        as: 'transactions'
+      }
+    },
+    {
+      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
+    },
+    {
+      $project: { _id: 1, balance: 1 }
     }
   ]);
 

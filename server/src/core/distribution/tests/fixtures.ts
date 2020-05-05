@@ -18,6 +18,10 @@ export const users = [
     roles: ['donor']
   },
   {
+    _id: 'donor4',
+    roles: ['donor']
+  },
+  {
     _id: 'beneficiary1',
     roles: ['beneficiary'],
     donors: ['donor1']
@@ -46,9 +50,14 @@ export const users = [
 
 export const transactions = [
   {
-    from: 'donor1',
-    to: 'beneficiary1',
-    amount: 1000,
+    to: 'donor4',
+    amount: 2500,
+    status: 'success',
+    updatedAt: longTimeAgo
+  },
+  {
+    to: 'donor1',
+    amount: 5000,
     status: 'success',
     updatedAt: longTimeAgo
   },
@@ -56,8 +65,46 @@ export const transactions = [
     from: 'donor1',
     to: 'beneficiary1',
     amount: 1000,
+    status: 'success',
+    updatedAt: longTimeAgo
+  },
+  {
+    to: 'donor1',
+    amount: 4000,
+    status: 'failed',
+    updatedAt: thirtyDaysAgo
+  },
+  {
+    from: 'donor1',
+    to: 'beneficiary1',
+    amount: 1000,
     status: 'failed',
     updatedAt: yesterday
+  },
+  {
+    to: 'donor1',
+    amount: 1000,
+    status: 'pending',
+    updatedAt: thirtyDaysAgo
+  },
+  {
+    to: 'donor2',
+    amount: 2500,
+    status: 'success',
+    updatedAt: thirtyDaysAgo
+  },
+  // pending transactions to donors do not count towards their balance
+  {
+    to: 'donor3',
+    amount: 6000,
+    status: 'pending',
+    updatedAt: yesterday
+  },
+  {
+    to: 'donor3',
+    amount: 4000,
+    status: 'success',
+    updatedAt: thirtyDaysAgo
   },
   {
     from: 'donor1',
@@ -73,11 +120,13 @@ export const transactions = [
     status: 'success',
     updatedAt: twoWeeksAgo
   },
+  // pending transactions to beneficiaries count towards their limit
+  // and towards the donors balance
   {
     from: 'donor3',
     to: 'beneficiary2',
     amount: 1400,
-    status: 'success',
+    status: 'pending',
     updatedAt: yesterday
   },
   {
