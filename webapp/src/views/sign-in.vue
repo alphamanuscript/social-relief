@@ -8,15 +8,6 @@
             <div class="col-md-12 form-group">
               <label for="phone">Phone</label>
               <input
-                v-if="signinPhone.length"
-                :value="signinPhone"
-                id="phone"
-                type="text"
-                :class="getClasses('phone')"
-                disabled
-              >
-              <input
-                v-else
                 v-model="signinCreds.phone"
                 id="phone"
                 type="text"
@@ -70,7 +61,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['signinPhone']),
+    ...mapState(['user']),
   },
   methods: {
     ...mapActions(['signUserIn']),
@@ -91,23 +82,37 @@ export default {
           return {}
       }
     },
-    signin() {
+    async signin() {
       console.log('Phone: ', this.signinCreds.phone);
       console.log('Password: ', this.signinCreds.password);
+      this.validationMessages = [
+        'Invalid Phone number. Must be 11 digit long',
+        'Invalid password. Must be at least one character long'
+      ];
       this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        this.signUserIn({ phone: this.signinCreds.phone, password: this.signinCreds.password });
+        await this.signUserIn({ phone: this.signinCreds.phone, password: this.signinCreds.password });
+        if (!this.user) {
+          this.validationMessages = [
+            'Incorrect Phone',
+            'Incorrect password'
+          ];
+          this.validationResults = [false, false];
+        }
       }
     },
   },
   watch: {
-    async signinPhone(newVal) {
-      console.log('Watching signinPhone: ', newVal);
-      if(newVal) {
-        this.creds.phone = this.signinPhone;
-      }
-    }
+    // async user (newVal, oldVal) {
+
+    // }
+    // async signinPhone(newVal) {
+    //   console.log('Watching signinPhone: ', newVal);
+    //   if(newVal) {
+    //     this.creds.phone = this.signinPhone;
+    //   }
+    // }
   }
 }
 </script>

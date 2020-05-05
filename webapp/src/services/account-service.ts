@@ -4,9 +4,11 @@ import {
   Nominator, 
   Appointer, 
   Beneficiary, 
-  Middleman
+  Middleman,
+  LoginResult
 } from '../store/index';
 import { API_URL, BASE_URL } from '../urls';
+import { Auth } from './auth';
 
 const generateId = (): string => {
   return Math.floor(Math.random() * 10000).toString();
@@ -15,8 +17,9 @@ const generateId = (): string => {
 export const AccountService = {
   async login(phone: string, password: string) {
     const args = { phone, password };
-    const res = await axios.post<User>(`${API_URL}/users/login`, args);
-    return res.data;
+    const res = await axios.post<LoginResult>(`${API_URL}/users/login`, args);
+    Auth.setAccessToken(res.data.token._id);
+    return res.data.user;
   },
   async donate(accountId: string, amount: number) {
     const res = await axios({

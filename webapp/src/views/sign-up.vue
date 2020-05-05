@@ -8,46 +8,37 @@
             <div class="col-md-12 form-group">
               <label for="phone">Phone</label>
               <input
-                v-if="signupPhone.length"
-                :value="signupPhone"
-                id="phone"
-                type="text"
-                :class="getClasses('phone')"
-                disabled
-              >
-              <input
-                v-else
-                v-model="phone"
+                v-model="signUpCreds.phone"
                 id="phone"
                 type="text"
                 :class="getClasses('phone')"
               >
               <div class="invalid-feedback">
-                {{ phoneMessage }}
+                {{ validationMessages[0] }}
               </div>
             </div>
             <div class="col-md-12 form-group">
               <label for="password">Password</label>
               <input
-                v-model="password"
+                v-model="signUpCreds.password"
                 id="password"
                 type="password"
                 :class="getClasses('password')"
               >
               <div class="invalid-feedback">
-                {{ passwordMessage }}
+                {{ validationMessages[1] }}
               </div>
             </div>
             <div class="col-md-12 form-group">
               <label for="confirmedPassword">Confirm Password</label>
               <input
-                v-model="confirmedPassword"
+                v-model="signUpCreds.confirmedPassword"
                 id="confirmedPassword"
                 type="password"
                 :class="getClasses('confirmedPassword')"
               >
               <div class="invalid-feedback">
-                {{ confirmedPasswordMessage }}
+                {{ validationMessages[2] }}
               </div>
             </div>
             <div class="col-md-6">
@@ -62,91 +53,85 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { AccountService } from '@/services';
+import { validateObj } from './util';
 
 export default {
   name: 'sign-up',
   data() {
     return {
-      phone: '',
-      email: '',
-      password: '',
-      confirmedPassword: '',
-      role: 'donor',
-      phoneMessage: 'Please provide a valid phone',
-      passwordMessage: 'Please provide a valid password',
-      confirmedPasswordMessage: 'Please provide a valid password',
-      isValidPhone: true,
-      isValidPassword: true,
-      isValidConfirmedPassword: true
+      signUpCreds: {
+        phone: '',
+        password: '',
+        confirmedPassword: '',
+        role: 'donor'
+      },
+      validationMessages: [
+        'Invalid Phone number. Must be 1O digit long',
+        'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character',
+        'Confirmed password does not match with password'
+      ],
+      validationRules: [
+        { test: (creds) => /^(?=.*\d)(?=.{10,10}$)/.test(creds.phone) },
+        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*])(?=.{8,18}$)[a-zA-Z][a-zA-Z\d]*[~!@#$%^&*?<>]*$/.test(creds.password) },
+        { test: (creds) => creds.confirmedPassword === creds.password }
+      ],
+      validationResults: [true, true, true],
+      // phone: '',
+      // email: '',
+      // password: '',
+      // confirmedPassword: '',
+      // role: 'donor',
+      // phoneMessage: 'Please provide a valid phone',
+      // passwordMessage: 'Please provide a valid password',
+      // confirmedPasswordMessage: 'Please provide a valid password',
+      // isValidPhone: true,
+      // isValidPassword: true,
+      // isValidConfirmedPassword: true
     }
   },
   computed: {
-    ...mapState(['signupPhone'])
+    ...mapState(['user'])
   },
   methods: {
     ...mapActions(['createUser']),
+    validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
         case 'phone': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidPhone
+            'is-invalid': !this.validationResults[0]
           }
         case 'password': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidPassword
+            'is-invalid': !this.validationResults[1]
           }
         case 'confirmedPassword': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidConfirmedPassword
+            'is-invalid': !this.validationResults[2]
           }
         default: 
           return {}
       }
     },
-    signup() {
-      console.log('Phone: ', this.phone);
-      console.log('Password: ', this.password);
-      console.log('Confirmed Password: ', this.confirmedPassword);
-      console.log('Role: ', this.role);
+    async signup() {
+      console.log('Phone: ', this.signUpCreds.phone);
+      console.log('Password: ', this.signUpCreds.password);
+      console.log('Confirmed Password: ', this.signUpCreds.confirmedPassword);
+      console.log('Role: ', this.signUpCreds.role);
+      this.validationMessages[0] ='Invalid Phone number. Must be 1O digit long';
+      this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
 
-      if (this.phone.length && this.password.length && this.confirmedPassword.length && 
-          this.password === this.confirmedPassword && this.canSignup()) {
+      if (!this.validationResults.includes(false)) {
         console.log('All test cases pass');
-        this.isValidPhone = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = true;
-        this.createUser({ phone: this.phone, role: this.role });
-      }
-      else if (!this.phone.length) {
-        console.log('Invalid phone');
-        this.phoneMessage = 'Please provide a valid phone';
-        this.isValidPhone = false;
-      }
-      else if (!this.password.length) {
-        console.log('Invalid password');
-        this.passwordMessage = 'Please provide a valid password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = false;
-      }
-      else if (!this.confirmedPassword.length) {
-        console.log('Invalid confirmed password');
-        this.confirmedPasswordMessage = 'Please provide a valid password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = false;
-      }
-      else if (this.password !== this.confirmedPassword) {
-        console.log('Confirmed password does not match with password');
-        this.confirmedPasswordMessage = 'Confirmed password does not match with password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = false;
+        await this.createUser({ phone: this.signUpCreds.phone, password: this.signUpCreds.password });
+        if (!this.user) {
+          console.log('Creating user failed');
+          this.validationMessages[0] = 'The specified phone number is already in use';
+          this.validationResults[0] = false;
+        }
       }
     },
     async canSignup() {
@@ -165,13 +150,13 @@ export default {
     }
   },
   watch: {
-    async signupPhone(newVal) {
-      console.log('Watching signupPhone: ', newVal);
-      if(newVal) {
-        this.phone = this.signupPhone;
-        this.role = 'middleman';
-      }
-    }
+    // async signupPhone(newVal) {
+    //   console.log('Watching signupPhone: ', newVal);
+    //   if(newVal) {
+    //     this.signUpCreds.phone = this.signupPhone;
+    //     this.signUpCreds.role = 'middleman';
+    //   }
+    // }
   }
 }
 </script>
