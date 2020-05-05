@@ -22,7 +22,8 @@ export type ErrorCode =
   | 'serverError'
   | 'atApiError'
   | 'serverError'
-  | 'nominationFailed';
+  | 'nominationFailed'
+  | 'validationError';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
