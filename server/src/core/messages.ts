@@ -12,3 +12,4 @@ export const ERROR_PHONE_ALREADY_IN_USE = 'The specified phone number is already
 export const ERROR_AT_API_ERROR = 'AfricasTalking error occurred';
 export const ERROR_BENEFICIARY_NOMINATION_FAILED = 'Failed to nominate the specified user as a beneficiary';
 export const ERROR_USER_CANNOT_BE_BENEFICIARY = 'The specified user cannot be nominated as beneficiary';
+export const ERROR_ADD_TO_BATCH_QUEUE_AFTER_EOF = 'Cannot add data to queue after eof has been signaled';

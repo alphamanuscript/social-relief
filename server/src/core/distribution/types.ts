@@ -1,3 +1,16 @@
+import { UserService } from '../user';
+
+export interface DonationDistributionArgs {
+  /**
+   * maximum funds a beneficiary can receive in a given period
+   */
+  periodLimit: number;
+  /**
+   * length of a period in days
+   */
+  periodLength: number;
+  users: UserService;
+}
 
 export interface DonationDistributionEvent {
   donor: string;
@@ -19,7 +32,7 @@ export interface DonationDistributionResults {
 }
 
 export interface DonationDistributor {
-  start(): Promise<DonationDistributionResults>
+  run(): Promise<DonationDistributionEvent[]>
 }
 
 export interface DonationDistributionService {

@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DonationDistributor, DonationDistributionResults, DonationDistributionService, DonationDistributionEvent  } from './types';
+import { DonationDistributor, DonationDistributionResults, DonationDistributionService, DonationDistributionEvent, DonationDistributionArgs  } from './types';
 import { Transaction, TransactionService } from '../payment';
 import { User, UserService } from '../user';
 import { BatchJobQueue } from '../batch-job-queue';
@@ -75,15 +75,25 @@ async function distributeDonations() {
 */
 
 export class Distributor implements DonationDistributor {
-  private transactions: Collection<Transaction>;
-  private users: Collection<User>;
+  private db: Db;
+  private periodLimit: number;
+  private periodLength: number;
+  private userService: UserService;
 
-  constructor(db: Db) {
-    this.transactions = db.collection(USERS_COLL);
-    this.users = db.collection(USERS_COLL);
+  constructor(db: Db, args: DonationDistributionArgs) {
+    this.db = db;
+    this.periodLength = args.periodLength;
+    this.periodLimit = args.periodLimit;
+    this.userService = args.users;
   }
-  start(): Promise<DonationDistributionResults> {
-    throw new Error('Not implemented');
+
+  async run(): Promise<DonationDistributionEvent[]> {
+    const beneficiaries = await findEligibleBeneficiaries(this.db, this.periodLimit, this.periodLength);
+    const donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...b.donors], []);
+    const donors = await computeDonorsBalances(this.db, Array.from(new Set(donorIds)));
+    const plan = createDistributionPlan(beneficiaries, donors);
+    const result = await executeDistributionPlan(this.userService, plan.transfers);
+    return result;
   }
 }
 
@@ -94,9 +104,9 @@ export class Distributor implements DonationDistributor {
  * @param periodLimit maximum amount of donations per period
  * @param periodLength duration of a period in days
  */
-export async function findEligibleBeneficiaries(users: Collection<User>, periodLimit: number, periodLength: number): Promise<EligibleBeneficiary[]> {
+export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
-  const result = await users.aggregate<EligibleBeneficiary>([
+  const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
     { 
       $match: { roles: 'beneficiary' }
     },
@@ -144,8 +154,8 @@ export async function findEligibleBeneficiaries(users: Collection<User>, periodL
   return result.toArray();
 }
 
-export async function computeDonorsBalances(users: Collection<User>, donors: string[]): Promise<DonorBalance[]> {
-  const result = await users.aggregate<DonorBalance>([
+export async function computeDonorsBalances(db: Db, donors: string[]): Promise<DonorBalance[]> {
+  const result = db.collection(USERS_COLL).aggregate<DonorBalance>([
     {
       $match: { _id: { $in: donors }, roles: 'donor' }
     },

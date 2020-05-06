@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { createAppError } from '../error';
 
 export interface BatchJobQueueOpts {
   batchSize: number;
@@ -62,7 +63,7 @@ export class BatchJobQueue<T> extends EventEmitter {
    */
   push (data: T) {
     if (this.eof) {
-      throw new Error('Cannot add data to queue after eof has been signaled');
+      throw createAppError('Cannot add data to queue after eof has been signaled', 'batchQueueError');
     }
     this.buffer.push(data);
     if (this.hasEnoughData) {
