@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs } from './types';
 import { generateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
@@ -25,9 +25,6 @@ export class Transactions implements TransactionService {
     this.collection = this.db.collection(COLLECTION);
     this.provider = args.paymentProvider;
     this.indexesCreated = false;
-  }
-  sendDonation(from: User, to: User, args: import("./types").SendDonationArgs): Promise<Transaction> {
-    throw new Error("Method not implemented.");
   }
 
   async createIndexes(): Promise<void> {
@@ -71,6 +68,29 @@ export class Transactions implements TransactionService {
       const requestResult = await this.provider.requestPaymentFromUser(user, args.amount);
       trxArgs.providerTransactionId = requestResult.providerTransactionId;
       trxArgs.status = requestResult.status;
+      const result = await this.create(trxArgs);
+      return result;
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
+    const trxArgs: TransactionCreateArgs = {
+      expectedAmount: args.amount,
+      to: to._id,
+      from: from._id,
+      fromExternal: false,
+      toExternal: true,
+      type: 'distribution',
+      provider: this.provider.name()
+    };
+
+    try {
+      // MAKE B2C request to payment provider
+      trxArgs.status = 'pending';
       const result = await this.create(trxArgs);
       return result;
     }
