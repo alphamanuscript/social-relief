@@ -12,7 +12,10 @@ export interface BatchJobQueueHandler<T> {
  * Implements a job queue than executes jobs in batches of a configurable batch size.
  * Jobs are represented as data items that are pushed to the queue. Each item will
  * be processed by a handler that is provided to the constructor. A `done` event is emitted
- * when all items have been processed.
+ * when all items have been processed. The purpose of this queue is to control
+ * how many asynchronous jobs are executed concurrently at any given time. If the batch size
+ * is too small, you'll have low throughput, if it's too high, you might block the event loop
+ * and/or run out of memory.
  *
  * The queue has the following properties:
  * - Data items the same batch are processed concurrently.
@@ -24,11 +27,11 @@ export interface BatchJobQueueHandler<T> {
  *  If you want all data items to be completed based insertion order, then set a batch size of 1.
  */
 export class BatchJobQueue<T> extends EventEmitter {
-  eof = false;
-  busy = false;
-  buffer: T[];
-  batchSize: number;
-  handler: BatchJobQueueHandler<T>;
+  private eof = false;
+  private busy = false;
+  private buffer: T[];
+  private batchSize: number;
+  private handler: BatchJobQueueHandler<T>;
 
   /**
    * @param handler asynchronous function used to process items in the queue.
@@ -67,12 +70,12 @@ export class BatchJobQueue<T> extends EventEmitter {
     }
   }
 
-  takeNextBatch () {
+  private takeNextBatch () {
     const batch = this.buffer.splice(0, this.batchSize);
     return batch;
   }
 
-  processNextBatch () {
+  private processNextBatch () {
     if (this.busy) {
         return;
     }
@@ -91,11 +94,11 @@ export class BatchJobQueue<T> extends EventEmitter {
     });
   }
 
-  get isEmpty () {
+  private get isEmpty () {
     return !this.buffer.length;
   }
 
-  get hasEnoughData () {
+  private get hasEnoughData () {
     return this.buffer.length >= this.batchSize;
   }
 }

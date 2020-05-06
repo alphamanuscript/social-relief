@@ -51,6 +51,9 @@ export class Users implements UserService {
     this.indexesCreated = false;
     this.transactions = args.transactions;
   }
+  sendDonation(from: string, to: string, args: import("../payment").SendDonationArgs): Promise<Transaction> {
+    throw new Error("Method not implemented.");
+  }
 
   async createIndexes(): Promise<void> {
     if (this.indexesCreated) return;

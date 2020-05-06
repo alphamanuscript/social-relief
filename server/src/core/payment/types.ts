@@ -37,9 +37,14 @@ export interface InitiateDonationArgs {
   amount: number
 };
 
+export interface SendDonationArgs {
+  amount: number;
+}
+
 export interface TransactionService {
   createIndexes(): Promise<void>;
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
+  sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction>;
   handleProviderNotification(payload: any): Promise<Transaction>;
   getAllByUser(userId: string): Promise<Transaction[]>;
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;

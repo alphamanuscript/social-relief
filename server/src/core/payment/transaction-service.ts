@@ -26,6 +26,9 @@ export class Transactions implements TransactionService {
     this.provider = args.paymentProvider;
     this.indexesCreated = false;
   }
+  sendDonation(from: User, to: User, args: import("./types").SendDonationArgs): Promise<Transaction> {
+    throw new Error("Method not implemented.");
+  }
 
   async createIndexes(): Promise<void> {
     if (this.indexesCreated) return;

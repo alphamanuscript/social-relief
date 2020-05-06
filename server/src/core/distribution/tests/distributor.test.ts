@@ -1,6 +1,8 @@
 import { createDbUtils } from '../../test-util';
 import { users, transactions } from './fixtures';
-import { findEligibleBeneficiaries, computeDonorsBalances, createDistributionPlan } from '../distributor';
+import { findEligibleBeneficiaries, computeDonorsBalances, createDistributionPlan, executeDistributionPlan } from '../distributor';
+import { UserService } from '../../user';
+import { createAppError } from '../../error';
 
 const DB = '_crowd_relief_distribution_tests_';
 const USERS_COLL = 'users';
@@ -91,6 +93,105 @@ describe('DonationDistributor', () => {
           'b4': { toReceive: 0, remainingEligible: 2000 }
         }
       });
+    });
+  });
+
+  describe('executeDistributionPlan', () => {
+    test('should execute all transfers in the plan and return result summary for each transfer', async () => {
+      // @ts-ignore
+      const userService = {
+        sendDonation: jest.fn().mockImplementation((from, to, args) => Promise.resolve({ _id: `t_${from}_${to}`, from, to, amount: args.amount }))
+      } as UserService;
+
+      const plan = [
+        { donor: 'd1', beneficiary: 'b2', amount: 500 },
+        { donor: 'd2', beneficiary: 'b3', amount: 1000 },
+        { donor: 'd1', beneficiary: 'b4', amount: 1000 },
+        { donor: 'd3', beneficiary: 'b1', amount: 500 },
+        { donor: 'd2', beneficiary: 'b7', amount: 100 },
+        { donor: 'd1', beneficiary: 'b4', amount: 1000 },
+        { donor: 'd3', beneficiary: 'b9', amount: 500 },
+        { donor: 'd2', beneficiary: 'b10', amount: 100 },
+        { donor: 'd1', beneficiary: 'b11', amount: 1000 },
+        { donor: 'd3', beneficiary: 'b6', amount: 500 },
+        { donor: 'd2', beneficiary: 'b3', amount: 100 },
+        { donor: 'd1', beneficiary: 'b9', amount: 1000 },
+        { donor: 'd3', beneficiary: 'b1', amount: 500 },
+        { donor: 'd2', beneficiary: 'b7', amount: 100 },
+      ];
+
+      const results = await executeDistributionPlan(userService, plan);
+      expect(results.length).toEqual(plan.length);
+
+      plan.forEach(transfer =>
+        expect(userService.sendDonation).toHaveBeenCalledWith(transfer.donor, transfer.beneficiary, { amount: transfer.amount }));
+
+      plan.forEach(transfer => expect(results).toContainEqual({
+        transaction: `t_${transfer.donor}_${transfer.beneficiary}`,
+        amount: transfer.amount,
+        donor: transfer.donor,
+        beneficiary: transfer.beneficiary,
+        success: true,
+        error: null
+      }));
+    });
+
+    test('should return error results for transactions that fail to be created', async () => {
+      // @ts-ignore
+      const userService = {
+        sendDonation: jest.fn()
+          .mockResolvedValueOnce({ _id: 't1', donor: 'd1', beneficiary: 'b2', amount: 500 })
+          .mockRejectedValueOnce(createAppError('Error 1', 'atApiError'))
+          .mockResolvedValueOnce({ _id: 't2', donor: 'd1', beneficiary: 'b4', amount: 1000 })
+          .mockRejectedValue(createAppError('Error 2', 'dbOpFailed'))
+      } as UserService;
+
+      const plan = [
+        { donor: 'd1', beneficiary: 'b2', amount: 500 },
+        { donor: 'd2', beneficiary: 'b3', amount: 1000 },
+        { donor: 'd1', beneficiary: 'b4', amount: 1000 },
+        { donor: 'd3', beneficiary: 'b1', amount: 500 }
+      ];
+
+      const results = await executeDistributionPlan(userService, plan);
+      expect(results.length).toEqual(plan.length);
+      
+      const expectedResults = [
+        {
+          transaction: 't1',
+          donor: 'd1',
+          beneficiary: 'b2',
+          amount: 500,
+          success: true,
+          error: null as any
+        },
+        {
+          transaction: null,
+          donor: 'd2',
+          beneficiary: 'b3',
+          amount: 1000,
+          success: false,
+          error: { code: 'atApiError', message: 'Error 1' }
+        },
+        {
+          transaction: 't2',
+          donor: 'd1',
+          beneficiary: 'b4',
+          amount: 1000,
+          success: true,
+          error: null as any
+        },
+        {
+          transaction: null,
+          donor: 'd3',
+          beneficiary: 'b1',
+          amount: 500,
+          success: false,
+          error: { code: 'dbOpFailed', message: 'Error 2' }
+        },
+      ];
+
+      expectedResults.forEach(expected => expect(results).toContainEqual(expected));
     });
   });
 });

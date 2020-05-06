@@ -1,7 +1,8 @@
 import { Db, Collection } from 'mongodb';
-import { DonationDistributor, DonationDistributionResults  } from './types';
-import { Transaction } from '../payment';
-import { User } from '../user';
+import { DonationDistributor, DonationDistributionResults, DonationDistributionService, DonationDistributionEvent  } from './types';
+import { Transaction, TransactionService } from '../payment';
+import { User, UserService } from '../user';
+import { BatchJobQueue } from '../batch-job-queue';
 
 const USERS_COLL = 'users';
 const TRANSACTIONS_COLL = 'transactions';
@@ -38,8 +39,10 @@ interface DistributionPlanBeneficiariesSummaries {
   }
 }
 
-interface DistributionPlan {
-  transfers: DistributionPlanTransfer[],
+type DistributionPlan = DistributionPlanTransfer[];
+
+interface CreateDistributionPlanResult {
+  transfers: DistributionPlan,
   donorsSummaries: DistributionPlanDonorsSummaries;
   beneficiariesSummaries:DistributionPlanBeneficiariesSummaries;
 }
@@ -203,7 +206,7 @@ export async function computeDonorsBalances(users: Collection<User>, donors: str
   return result.toArray();
 }
 
-export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], donors: DonorBalance[]): DistributionPlan {
+export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], donors: DonorBalance[]): CreateDistributionPlanResult {
   const transfers: DistributionPlanTransfer[] = [];
 
   const beneficiariesSummaries = beneficiaries.reduce((acc, b) => ({
@@ -242,4 +245,48 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
     donorsSummaries,
     transfers
   };
+}
+
+export function executeDistributionPlan(userService: UserService, plan: DistributionPlan): Promise<DonationDistributionEvent[]> {
+  const events: DonationDistributionEvent[] = [];
+  const queue = new BatchJobQueue<DistributionPlanTransfer>(async (transfer) => {
+    const event = await executeTransfer(userService, transfer);
+    events.push(event);
+  });
+  
+  return new Promise((resolve) => {
+    queue.on('done', () => {
+      resolve(events);
+    });
+
+    plan.forEach(transfer => queue.push(transfer));
+    queue.signalEof();
+  });
+}
+
+async function executeTransfer(userService: UserService, transfer: DistributionPlanTransfer): Promise<DonationDistributionEvent> {
+  try {
+    const trx = await userService.sendDonation(transfer.donor, transfer.beneficiary, { amount: transfer.amount });
+    return {
+      donor: transfer.donor,
+      beneficiary: transfer.beneficiary,
+      amount: transfer.amount,
+      transaction: trx._id,
+      success: true,
+      error: null
+    };
+  }
+  catch (e) {
+    return {
+      donor: transfer.donor,
+      beneficiary: transfer.beneficiary,
+      amount: transfer.amount,
+      transaction: null,
+      success: false,
+      error: {
+        code: e.code,
+        message: e.message
+      }
+    };
+  }
 }

@@ -5,7 +5,10 @@ export interface DonationDistributionEvent {
   amount: number;
   transaction: string;
   success: boolean;
-  error: string;
+  error: {
+    code: string;
+    message: string;
+  };
 }
 
 export interface DonationDistributionResults {
