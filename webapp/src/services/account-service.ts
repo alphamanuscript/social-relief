@@ -6,8 +6,8 @@ import {
   Beneficiary, 
   Middleman,
   LoginResult
-} from '../store/index';
-import { API_URL, BASE_URL } from '../urls';
+} from '../types';
+import { API_URL, BASE_URL } from '../api-urls';
 import { Auth } from './auth';
 
 const generateId = (): string => {

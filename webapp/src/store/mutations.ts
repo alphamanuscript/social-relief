@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex';
-import { AppState } from './';
+import { AppState } from '../types';
 
 const mutations: MutationTree<AppState> = {
   addTransaction(state, trx) {
@@ -41,6 +41,9 @@ const mutations: MutationTree<AppState> = {
   },
   setInvitation(state, invitation) {
     state.invitation = invitation
+  },
+  setMessage(state, message) {
+    state.message = message
   }
 };
 

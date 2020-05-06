@@ -76,21 +76,10 @@ export default {
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
       validationResults: [true, true, true],
-      // phone: '',
-      // email: '',
-      // password: '',
-      // confirmedPassword: '',
-      // role: 'donor',
-      // phoneMessage: 'Please provide a valid phone',
-      // passwordMessage: 'Please provide a valid password',
-      // confirmedPasswordMessage: 'Please provide a valid password',
-      // isValidPhone: true,
-      // isValidPassword: true,
-      // isValidConfirmedPassword: true
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user', 'message'])
   },
   methods: {
     ...mapActions(['createUser']),
@@ -127,11 +116,6 @@ export default {
       if (!this.validationResults.includes(false)) {
         console.log('All test cases pass');
         await this.createUser({ phone: this.signUpCreds.phone, password: this.signUpCreds.password });
-        if (!this.user) {
-          console.log('Creating user failed');
-          this.validationMessages[0] = 'The specified phone number is already in use';
-          this.validationResults[0] = false;
-        }
       }
     },
     async canSignup() {
@@ -150,13 +134,12 @@ export default {
     }
   },
   watch: {
-    // async signupPhone(newVal) {
-    //   console.log('Watching signupPhone: ', newVal);
-    //   if(newVal) {
-    //     this.signUpCreds.phone = this.signupPhone;
-    //     this.signUpCreds.role = 'middleman';
-    //   }
-    // }
+    async message(newVal) {
+      if (newVal.type === 'error' && newVal.message === 'The specified phone number is already in use') {
+        this.validationMessages[0] = newVal.message;
+        this.validationResults[0] = false;
+      }
+    }
   }
 }
 </script>

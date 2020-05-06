@@ -1,7 +1,7 @@
 import { ActionTree, ActionContext } from 'vuex';
 import { Auth } from '../services';
 import router from '../router';
-import { AppState } from '../store';
+import { AppState } from '../types';
 
 /* eslint-disable */
 function setErrorMessage (e: any, commit: any) {
