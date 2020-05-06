@@ -9,13 +9,39 @@ const TRANSACTIONS_COLL = 'transactions';
 interface EligibleBeneficiary {
   _id: string;
   donors: string[];
-  total: number;
+  totalReceived: number;
   remaining: number;
 };
 
 interface DonorBalance {
   _id: string;
   balance: number;
+}
+
+interface DistributionPlanTransfer {
+  donor: string,
+  beneficiary: string,
+  amount: number
+}
+
+interface DistributionPlanDonorsSummaries {
+  [id: string]: {
+    toSpend: number;
+    remainingBalance: number;
+  }
+}
+
+interface DistributionPlanBeneficiariesSummaries {
+  [id: string]: {
+    toReceive: number;
+    remainingEligible: number;
+  }
+}
+
+interface DistributionPlan {
+  transfers: DistributionPlanTransfer[],
+  donorsSummaries: DistributionPlanDonorsSummaries;
+  beneficiariesSummaries:DistributionPlanBeneficiariesSummaries;
 }
 
 /*
@@ -175,4 +201,45 @@ export async function computeDonorsBalances(users: Collection<User>, donors: str
   ]);
 
   return result.toArray();
+}
+
+export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], donors: DonorBalance[]): DistributionPlan {
+  const transfers: DistributionPlanTransfer[] = [];
+
+  const beneficiariesSummaries = beneficiaries.reduce((acc, b) => ({
+    ...acc,
+    [b._id]: { toReceive: 0, remainingEligible: b.remaining }
+  }), {} as DistributionPlanBeneficiariesSummaries);
+
+  const donorsSummaries = donors.reduce((acc, d) => ({
+    ...acc,
+    [d._id]: { toSpend: 0, remainingBalance: d.balance }
+  }), {} as DistributionPlanDonorsSummaries);
+
+  beneficiaries.forEach((beneficiary) => {
+    beneficiary.donors.forEach((donor) => {
+      const beneficiarySummary = beneficiariesSummaries[beneficiary._id];
+      const donorSummary = donorsSummaries[donor];
+
+      const amount = Math.min(beneficiarySummary.remainingEligible, donorSummary.remainingBalance);
+      if (amount === 0) return;
+
+      beneficiarySummary.remainingEligible -= amount;
+      beneficiarySummary.toReceive += amount;
+      donorSummary.remainingBalance -= amount;
+      donorSummary.toSpend += amount;
+
+      transfers.push({
+        beneficiary: beneficiary._id,
+        donor,
+        amount
+      });
+    });
+  })
+
+  return {
+    beneficiariesSummaries,
+    donorsSummaries,
+    transfers
+  };
 }

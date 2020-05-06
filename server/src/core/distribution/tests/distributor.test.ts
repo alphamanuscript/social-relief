@@ -1,6 +1,6 @@
 import { createDbUtils } from '../../test-util';
 import { users, transactions } from './fixtures';
-import { findEligibleBeneficiaries, computeDonorsBalances } from '../distributor';
+import { findEligibleBeneficiaries, computeDonorsBalances, createDistributionPlan } from '../distributor';
 
 const DB = '_crowd_relief_distribution_tests_';
 const USERS_COLL = 'users';
@@ -48,6 +48,49 @@ describe('DonationDistributor', () => {
         // 4000 + 200 - 1400 - 1200
         { _id: 'donor3', balance: 1600 }
       ]);
+    });
+  });
+
+  describe('createDistributionPlan', () => {
+    test('should create plan to transfer to funds from donors to their beneficiaries without exceeding donor balance or beneficiary limit', () => {
+      const beneficiaries = [
+        { _id: 'b1', donors: ['d1'], totalReceived: 1500, remaining: 500 },
+        { _id: 'b2', donors: ['d1', 'd2'], totalReceived: 1370, remaining: 630 },
+        { _id: 'b3', donors: ['d1', 'd3'], totalReceived: 0, remaining: 2000 },
+        { _id: 'b4', donors: ['d1'], totalReceived: 0, remaining: 2000 }
+      ];
+      const donors = [
+        { _id: 'd1', balance: 1000 },
+        { _id: 'd2', balance: 1900 },
+        { _id: 'd3', balance: 1600 },
+        { _id: 'd4', balance: 1000 }
+      ];
+
+      const result = createDistributionPlan(beneficiaries, donors);
+      expect(result).toEqual({
+        transfers: [
+          // transfers are done in a greedy fashion
+          // a donor will transfer as much as possible to one beneficiary, before moving to the next
+          { donor: 'd1', beneficiary: 'b1', amount: 500 },
+          { donor: 'd1', beneficiary: 'b2', amount: 500 },
+          { donor: 'd2', beneficiary: 'b2', amount: 130 },
+          { donor: 'd3', beneficiary: 'b3', amount: 1600 }
+        ],
+        // the summaries are returned for sanity checking
+        // to help to debug and verify the implementation's is correctness
+        donorsSummaries: {
+          'd1': { toSpend: 1000, remainingBalance: 0 },
+          'd2': { toSpend: 130, remainingBalance: 1770 },
+          'd3': { toSpend: 1600, remainingBalance: 0 },
+          'd4': { toSpend: 0, remainingBalance: 1000 }
+        },
+        beneficiariesSummaries: {
+          'b1': { toReceive: 500, remainingEligible: 0 },
+          'b2': { toReceive: 630, remainingEligible: 0 },
+          'b3': { toReceive: 1600, remainingEligible: 400 },
+          'b4': { toReceive: 0, remainingEligible: 2000 }
+        }
+      });
     });
   });
 });
