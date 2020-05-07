@@ -15,6 +15,11 @@ declare module 'africastalking-types' {
      */
     mobileCheckout(args: MobileCheckoutArgs): Promise<MobileCheckoutResult>;
     /**
+     * Send mobile money to consumer
+     * @param args 
+     */
+    mobileB2C(args: MobileB2CArgs): Promise<MobileB2CResult>;
+    /**
      * Find a particular transaction
      * @param args 
      */
@@ -47,7 +52,7 @@ declare module 'africastalking-types' {
      * this metadata will also be included in the notification
      */
     metadata?: {
-      [property: string]: any
+      [property: string]: string
     }
   }
 
@@ -72,6 +77,127 @@ declare module 'africastalking-types' {
      * A unique id that our API generates for successful requests. This transactionId will be sent along with the payment notification.
      */
     transactionId: string
+  }
+
+  export interface MobileB2CArgs {
+    /**
+     * Your payment product
+     */
+    productName: string;
+    /**
+     * A list of consumers that will receive the money
+     */
+    recipients: MobileB2CRecipient[];
+  }
+
+  export interface MobileB2CRecipient {
+    /**
+     * Name of the B2C transaction recipient
+     */
+    name?: string;
+    /**
+     * Phone number of the B2C transaction recipient
+     */
+    phoneNumber: string;
+    /**
+     * 3-digit ISO format currency code for the value of this transaction (e.g KES, UGX, USD, …)
+     */
+    currencyCode: string;
+    /**
+     * Amount - in the provided currency - that the client is expected to confirm.
+     */
+    amount: string;
+    /**
+     * The channel the payment will be made from e.g a paybill numbe
+     */
+    providerChannel?: string;
+    /**
+     * Purpose of the payment. If set, it should contain one of:
+     * - SalaryPayment
+     * - SalaryPaymentWithWithdrawalChargePaid
+     * - BusinessPayment
+     * - BusinessPaymentWithWithdrawalChargePaid
+     * - PromotionPayment
+     */
+    reason?: 'SalaryPayment' | 'SalaryPaymentWithWithdrawalChargePaid' | 'BusinessPayment' | 'BusinessPaymentWithWithdrawalChargePaid' | 'PromotionPayment',
+    /**
+     * A map of any metadata that you would like us to associate with the request.
+     * Use this field to send data that will map notifications to B2C requests.
+     * It will be included in the notification we send once the B2C request is complete.
+     */
+    metadata: {
+      [key: string]: string;
+    }
+  }
+
+  export interface MobileB2CResult {
+    /**
+     * The number of B2C transactions that were successfully queued.
+     */
+    numQueued: number;
+    /**
+     * The total value of all the transactions that were successfully queued.
+     * The format of this string is: (3-digit Currency Code)(space)(Decimal Value) e.g KES 100.50
+     */
+    totalValue?: string;
+    /**
+     * The total transaction fee charged for all the transactions that were successfully queued.
+     * The format of this string is: (3-digit Currency Code)(space)(Decimal Value) e.g KES 100.50
+     */
+    totalTransactionFee: string;
+    /**
+     * A list of B2C entries
+     */
+    entries: MobileB2CResultEntry[];
+    /**
+     * Error message if the ENTIRE request was rejected by the API.
+     * e.g Having too many requests or having duplicate numbers in the request.
+     */
+    errorMessage?: string;
+  }
+
+  export interface MobileB2CResultEntry {
+    /**
+     * The phone number of the B2C transaction recipient
+     */
+    phoneNumber: string;
+    /**
+     * The status of the B2C transaction: Possible values are:
+     * - Queued: The transaction has been accepted and queued for processing by the payment provider.
+     * - InvalidRequest: We could not accept the request because one of the fields was invalid. The errorMessage field will contain a detailed description of the requests status.
+     * - NotSupported: B2C requests to the provided phone number is not supported.
+     * - Failed: The request failed for some other reason. The errorMessage field will contain a detailed description of the request status.
+     */
+    status: 'Queued' | 'InvalidRequest' | 'NotSupported' | 'Failed';
+    /**
+     * A unique id that our API generates for successful requests. This transactionId will be sent along with the payment notification.
+     */
+    transactionId: string;
+    /**
+     * The provider that will be used to process the B2C request. Only sent back for Queued transactions
+     */
+    provider?: 'Mpesa' | 'Segovia' | 'Athena';
+    /**
+     * The channel that will be used to process the B2C request.
+     * The value will typically be the channel mapped to the payment product used for this request.
+     * An example is a PayBill or BuyGoods number mapped to your account.
+     */
+    providerChannel?: string;
+    /**
+     * The value to be sent to the mobile subscriber.
+     * The format of this string is: (3-digit Currency Code)(space)(Decimal Value) e.g KES 100.50
+     */
+    value?: string;
+    /**
+     * The transaction fee charged by Africa’s Talking for this transaction.
+     * Please note: The transaction fee will be deducted from your Africa’s Talking credits NOT your payment wallet.
+     * The format of this string is: (3-digit Currency Code)(space)(Decimal Value) e.g KES 1.50
+     */
+    transactionFee?: string;
+    /**
+     * A more descriptive error message for the status of this transaction
+     */
+    errorMessage?: string;
   }
 
   export interface TransactionInfo {
