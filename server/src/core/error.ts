@@ -19,6 +19,7 @@ export type ErrorCode =
   | 'resourceNotFound'
   | 'uniquenessFailed'
   | 'paymentRequestFailed'
+  | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
   | 'serverError'
@@ -56,6 +57,10 @@ export function createUniquenessFailedError(message: string) {
 
 export function createPaymentRequestFailedError(message: string) {
   return createAppError(message, 'paymentRequestFailed');
+}
+
+export function createFundsToUserFailedError(message: string) {
+  return createAppError(message, 'b2cRequestFailed');
 }
 
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
