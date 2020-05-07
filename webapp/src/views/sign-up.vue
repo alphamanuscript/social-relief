@@ -114,8 +114,7 @@ export default {
       this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        console.log('All test cases pass');
-        await this.createUser({ phone: this.signUpCreds.phone, password: this.signUpCreds.password });
+        this.createUser({ phone: this.signUpCreds.phone, password: this.signUpCreds.password });
       }
     },
     async canSignup() {
@@ -137,7 +136,7 @@ export default {
     async message(newVal) {
       if (newVal.type === 'error' && newVal.message === 'The specified phone number is already in use') {
         this.validationMessages[0] = newVal.message;
-        this.validationResults[0] = false;
+        this.validationResults= [false, true, true];
       }
     }
   }

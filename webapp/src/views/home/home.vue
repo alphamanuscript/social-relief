@@ -1,7 +1,10 @@
 <template>
   <div class="container">
-    <DonorInterface v-if="user && user.role === 'donor'" />
-    <MiddlemanInterface v-else-if="user && user.role === 'middleman'" />
+    <DonorSection v-if="user" />
+    <MiddlemanSection v-else-if="user && 'middleman' in user.roles" />
+    <div v-else>
+      For some reason user is undefined
+    </div>
     <!-- <div v-if="user" class="row mb-md-5">
       <div class="col-md-5">
         <h2>Donate</h2>
@@ -163,8 +166,8 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import DonorInterface from './donor-interface.vue';
-import MiddlemanInterface from './middleman-interface.vue';
+import DonorSection from './donor-section.vue';
+import MiddlemanSection from './middleman-section.vue';
 
 export default {
   name: 'home',
@@ -179,7 +182,7 @@ export default {
   //     middlemanMessage: 'Please provide a valid phone number'
   //   }
   // },
-  components: {  DonorInterface, MiddlemanInterface }, 
+  components: {  DonorSection, MiddlemanSection }, 
   computed: {
     // ...mapGetters([
     //   'totalAmountDonated',

@@ -7,7 +7,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div v-if="showNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div v-if="showNavigation()" class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
@@ -27,52 +27,68 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import { Auth } from './services'
+import { Auth } from './services';
 
 export default {
-  data() {
-    return {
-      showNavigation: true
-    }
-  },
   computed: {
     ...mapState(['user'])
   },
   methods: {
-    ...mapActions(['signUserIn', 'getBeneficiaries', 'getTransactions', 'getMiddlemen', 'getInvitations', 'getInvitation', 'doesUserExist'])
-  },
-  watch: {
-    async $route(to) {
-      if (to.name === 'home') {
-        if(Auth.isAuthenticated()) {
-          this.showNavigation = true;
-          const { phone, password } = JSON.parse(Auth.getAccessToken());
-          await this.signUserIn({ phone, password });
-          await this.getBeneficiaries(this.user._id);
-          await this.getMiddlemen(this.user._id);
-          await this.getTransactions(this.user._id);
-          await this.getInvitations();
+    ...mapActions([
+      'signUserIn', 'getBeneficiaries', 'getTransactions', 
+      'getMiddlemen', 'getInvitations', 'getInvitation', 
+      'doesUserExist', 'getCurrentUser'
+    ]),
+    async showNavigation () {
+      if (this.$route.name === 'home') {
+        if(Auth.isAuthenticated() && !this.user) {
+          await this.getCurrentUser();
+          return true;
         }
-        else {
-          this.$router.push({ name: 'sign-in' });
-        }
+        this.$router.push({ name: 'sign-in' });
       }
-      else if(to.name === 'accept-invitation') {
-        this.showNavigation = false;
-        await this.getInvitation({ path: `${to.path}`});
-      }
-      else if(to.name === 'sign-up') {
-        this.showNavigation = false;
-        console.log('to: ', to);
-        if (to.params.phone) {
-          await this.doesUserExist({ phone: to.params.phone});
+      else if (this.$route.name === 'sign-in'){
+        if(Auth.isAuthenticated() && !this.user) {
+          await this.getCurrentUser();
+          this.$router.push({ name: 'home' });
+          return true;
         }
       }
-      else if(to.name === 'sign-up') {
-        this.showNavigation = false;
-      }
+      return false;
     }
-  }
+  },
+  // watch: {
+  //   async $route(to) {
+  //     if (to.name === 'home') {
+  //       console.log('Routing to Home page');
+  //       this.showNavigation = true;
+  //       if(Auth.isAuthenticated()) {
+  //         await this.getCurrentUser();
+  //         // await this.getBeneficiaries(this.user._id);
+  //         // await this.getMiddlemen(this.user._id);
+  //         // await this.getTransactions(this.user._id);
+  //         // await this.getInvitations();
+  //       }
+  //       else {
+  //         this.$router.push({ name: 'sign-in' });
+  //       }
+  //     }
+  //     else if(to.name === 'accept-invitation') {
+  //       this.showNavigation = false;
+  //       // await this.getInvitation({ path: `${to.path}`});
+  //     }
+  //     else if(to.name === 'sign-in') {
+  //       this.showNavigation = false;
+  //       // console.log('to: ', to);
+  //       // if (to.params.phone) {
+  //       //   await this.doesUserExist({ phone: to.params.phone});
+  //       // }
+  //     }
+  //     else if(to.name === 'sign-up') {
+  //       this.showNavigation = false;
+  //     }
+  //   }
+  // }
 }
 </script>
 <style scoped>
