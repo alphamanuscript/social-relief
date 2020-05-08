@@ -72,7 +72,7 @@ export function createBeneficiaryNominationFailedError (message: string = messag
   return createAppError(message, 'nominationFailed');
 }
 
-export function createSystemLockBusyError(message: string = messages.ERROR_SYSTEM_LOCK_BUSY) {
+export function createSystemLockBusyError(message: string = messages.ERROR_CONFLICTING_OPERATION_IN_PROGRESS) {
   return createAppError(message, 'systemLockLocked');
 }
 

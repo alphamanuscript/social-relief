@@ -4,6 +4,7 @@ import { Transactions, AtPaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
 import { throwAppError } from './error';
 import { DonationDistributions } from './distribution';
+import { SystemLocks } from './system-lock';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -15,12 +16,14 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     paymentsProductName: config.atPaymentsProductName,
     paymentsProviderChannel: config.atPaymentsProviderChannel
   });
+  const systemLocks = new SystemLocks(db);
   const transactions = new Transactions(db, { paymentProvider });
   const users = new Users(db, {
     transactions,
   });
   const donationDistributions = new DonationDistributions(db, {
     users,
+    systemLocks,
     periodLength: config.distributionPeriodLength,
     periodLimit: config.distributionPeriodLimit
   });

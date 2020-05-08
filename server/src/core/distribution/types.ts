@@ -1,4 +1,5 @@
 import { UserService } from '../user';
+import { SystemLockService } from '../system-lock';
 
 export interface DonationDistributionArgs {
   /**
@@ -10,6 +11,7 @@ export interface DonationDistributionArgs {
    */
   periodLength: number;
   users: UserService;
+  systemLocks: SystemLockService;
 }
 
 export interface DonationDistributionEvent {
