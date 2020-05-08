@@ -1,7 +1,5 @@
 import { Db, Collection } from 'mongodb';
 import { SystemLockService, SystemLock, SystemLockRecord } from './types';
-import { createSystemLockBusyError, AppError, createDbOpFailedError, createSystemLockInvalidStateError } from '../error';
-import * as messages from '../messages';
 import { SystemLockManager } from './system-lock';
 
 const COLLECTION = 'system_locks';

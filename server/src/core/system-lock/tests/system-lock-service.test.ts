@@ -1,7 +1,7 @@
 import { createDbUtils, expectAsyncAppError } from '../../test-util';
 import { SystemLocks } from '../system-lock-service';
 
-const DB = '_system_locks_tests_';
+const DB = '_system_lock_service_tests_';
 const COLLECTION = 'system_locks';
 
 describe('SystemLockService tests', () => {
@@ -20,14 +20,14 @@ describe('SystemLockService tests', () => {
       const locks = new SystemLocks(dbUtils.getDb());
 
       await locks.distribution().ensureUnlocked();
-      // error when unlocking lock that's not locked
+      // can't unlocking lock that's not locked
       await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
 
       await locks.distribution().lock();
       // can't lock a lock that's already locked
       await expectAsyncAppError(() => locks.distribution().lock(), 'systemLockLocked');
       await expectAsyncAppError(() => locks.distribution().ensureUnlocked(), 'systemLockLocked');
-  
+
       await locks.distribution().unlock();
       await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
       await locks.distribution().ensureUnlocked();
