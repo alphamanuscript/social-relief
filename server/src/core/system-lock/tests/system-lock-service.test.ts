@@ -1,6 +1,5 @@
-import { createDbUtils } from '../../test-util';
-import { systemLocks } from './fixtures';
-import { createSystemLock } from '../system-lock-service';
+import { createDbUtils, expectAsyncAppError } from '../../test-util';
+import { SystemLocks } from '../system-lock-service';
 
 const DB = '_system_locks_tests_';
 const COLLECTION = 'system_locks';
@@ -16,93 +15,32 @@ describe('SystemLockService tests', () => {
     await dbUtils.tearDown();
   });
 
-  beforeEach(async () => {
-    await dbUtils.resetCollectionWith(systemLocks);
-  });
+  describe('distribution lock', () => {
+    test('distribution lock', async () => {
+      const locks = new SystemLocks(dbUtils.getDb());
 
-  describe('SystemLock', () => {
-    describe('lock', () => {
-      test('should set locked:true on lock record', async () => {
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        await lock.lock();
-        const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
-        expect(record.locked).toBe(true);
-      });
+      await locks.distribution().ensureUnlocked();
+      // error when unlocking lock that's not locked
+      await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
 
-      test('should create lock record with locked:true if record does not exist', async () => {
-        await dbUtils.dropCollection();
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        await lock.lock();
-        const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
-        expect(record.locked).toBe(true);
-      });
+      await locks.distribution().lock();
+      // can't lock a lock that's already locked
+      await expectAsyncAppError(() => locks.distribution().lock(), 'systemLockLocked');
+      await expectAsyncAppError(() => locks.distribution().ensureUnlocked(), 'systemLockLocked');
+  
+      await locks.distribution().unlock();
+      await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
+      await locks.distribution().ensureUnlocked();
 
-      test('should throw error if already locked', async () => {
-        const lock = createSystemLock('lock1', dbUtils.getCollection());
-        try {
-          await lock.lock();
-        }
-        catch (e) {
-          expect(e.code).toBe('systemLockLocked');
-        }
-      });
-    });
-
-    describe('unlock', () => {
-      test('should set locked to false if locked', async () => {
-        const lock = createSystemLock('lock1', dbUtils.getCollection());
-        await lock.unlock();
-        const record = await dbUtils.getCollection().findOne({ _id: 'lock1' });
-        expect(record.locked).toBe(false);
-      });
-      
-      test('should throw invalid state error if not locked', async () => {
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        try {
-          await lock.unlock();
-        }
-        catch (e) {
-          expect(e.code).toBe('systemLockInvalidState');
-        }
-      });
-
-      test('should throw invalid state error if lock does not exist', async () => {
-        await dbUtils.dropCollection();
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        try {
-          await lock.unlock();
-        }
-        catch (e) {
-          expect(e.code).toBe('systemLockInvalidState');
-        }
-      });
-    });
-
-    describe('ensureUnlocked', () => {
-      test('should succeed if lock is not locked', async () => {
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        await lock.ensureUnlocked();
-        const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
-        expect(record.locked).toBe(false);
-      });
-
-      test('should succeed if lock does not exist', async () => {
-        await dbUtils.dropCollection();
-        const lock = createSystemLock('lock2', dbUtils.getCollection());
-        await lock.ensureUnlocked();
-        const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
-        expect(record).toBeFalsy();
-      });
-
-      test('should throw error if lock is locked', async () => {
-        const lock = createSystemLock('lock1', dbUtils.getCollection());
-        try {
-          await lock.ensureUnlocked();
-        }
-        catch (e) {
-          expect(e.code).toBe('systemLockLocked');
-        }
-      })
+      // repeating the same scenarios just to be sure it works :)
+      await locks.distribution().ensureUnlocked();
+      await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
+      await locks.distribution().lock();
+      await expectAsyncAppError(() => locks.distribution().lock(), 'systemLockLocked');
+      await expectAsyncAppError(() => locks.distribution().ensureUnlocked(), 'systemLockLocked');
+      await locks.distribution().unlock();
+      await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
+      await locks.distribution().ensureUnlocked();
     });
   });
 });

@@ -27,7 +27,7 @@ export function getUtcDate (year: number, month: number, date: number, hour?: nu
  * @param errorCode optional error code to test for
  * @param message optional error message to test for
  */
-export function testCoreError (testFn: Function, errorCode?: ErrorCode, message: string = '') {
+export function expectAppError (testFn: Function, errorCode?: ErrorCode, message: string = '') {
     try {
         testFn();
         fail('should throw error');
@@ -49,7 +49,7 @@ export function testCoreError (testFn: Function, errorCode?: ErrorCode, message:
  * @param errorCode optional error code to test for
  * @param message optional error message to test for
  */
-export async function testAsyncCoreError (asyncTestFn: () => Promise<any>, errorCode?: ErrorCode, message: string = '') {
+export async function expectAsyncAppError (asyncTestFn: () => Promise<any>, errorCode?: ErrorCode, message: string = '') {
     try {
         await asyncTestFn();
         fail('should throw error');
@@ -72,7 +72,7 @@ export async function testAsyncCoreError (asyncTestFn: () => Promise<any>, error
  * @param message optional error message to test for
  */
 export function testValidationError (validateCallback: Function, message: string = '') {
-    testCoreError(validateCallback, 'validationError', message);
+    expectAppError(validateCallback, 'validationError', message);
 }
 
 /**
