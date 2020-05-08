@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node -r dotenv/config dist/index",
+    "start": "node -r dotenv/config dist/start-server",
+    "worker": "node -r dotenv/config dist/start-worker",
     "test": "jest"
   },
   "devDependencies": {

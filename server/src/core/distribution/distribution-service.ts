@@ -17,7 +17,7 @@ export class DonationDistributions implements DonationDistributionService {
     this.args = args;
   }
 
-  async distributionDonations(): Promise<DonationDistributionResults> {
+  async distributeDonations(): Promise<DonationDistributionResults> {
     try {
       const startedAt = new Date();
       const distributor = new Distributor(this.db, this.args);

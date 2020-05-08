@@ -36,5 +36,5 @@ export interface DonationDistributor {
 }
 
 export interface DonationDistributionService {
-  distributionDonations(): Promise<DonationDistributionResults>;
+  distributeDonations(): Promise<DonationDistributionResults>;
 }

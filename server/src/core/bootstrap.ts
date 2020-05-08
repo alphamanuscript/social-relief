@@ -3,6 +3,7 @@ import { Users } from './user';
 import { Transactions, AtPaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
 import { throwAppError } from './error';
+import { DonationDistributions } from './distribution';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -18,13 +19,19 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const users = new Users(db, {
     transactions,
   });
+  const donationDistributions = new DonationDistributions(db, {
+    users,
+    periodLength: config.distributionPeriodLength,
+    periodLimit: config.distributionPeriodLimit
+  });
 
   await users.createIndexes();
   await transactions.createIndexes();
 
   return {
     users,
-    transactions
+    transactions,
+    donationDistributions
   };
 }
 
