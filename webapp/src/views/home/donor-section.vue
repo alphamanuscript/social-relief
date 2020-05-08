@@ -25,7 +25,7 @@
         <div style="margin: auto; display: inline-block; text-align: left">
           <h3>My Stats</h3>
           <div>
-            <b>Account balance</b>: {{ user.accountBalance }}
+            <b>Account balance</b>: {{ totalAmountDonated - totalAmountDistributed }}
           </div>
           <div>
             <b>Total amount donated</b>: {{ totalAmountDonated }}
@@ -37,11 +37,12 @@
       </div>
       <div class="col-md-4">
         <h3>Donation history</h3>
-        <ul class="list-group">
+        <ul v-if="donations.length" class="list-group">
           <li v-for="donation in donations" class="list-group-item" :key="donation._id">
             {{ donation.amount }} @ {{ getDonationDate(donation) }}
           </li>
         </ul>
+        <p v-else>No donations made as of yet</p>
       </div>
     </div>
     <hr>
@@ -178,6 +179,7 @@ export default {
   computed: {
     ...mapGetters([
       'totalAmountDonated',
+      'totalAmountDistributed',
       'peopleDonatedTo',
       'donations',
       'numberOfBeneficiariesOwed',
@@ -186,7 +188,7 @@ export default {
     ]),
     ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations']),
     isThereEnoughDonationForAnotherBeneficiary() {
-      if (this.user.accountBalance < 2000) {
+      if ((this.totalAmountDonated - this.totalAmountDistributed) < 2000) {
         return false;
       }
       else {
@@ -200,9 +202,7 @@ export default {
       }
     },
     isThereEnoughForADonation() {
-      if (this.user.accountBalance >= 100) {
-        return true;
-      }
+      if ((this.totalAmountDonated - this.totalAmountDistributed) >= 100) return true;
       return false;
     }
   },

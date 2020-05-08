@@ -6,7 +6,7 @@
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
-              <label for="phone">Phone</label>
+              <label for="phone">Phone (7xxxxxxxx)</label>
               <input
                 v-model="signUpCreds.phone"
                 id="phone"
@@ -66,12 +66,12 @@ export default {
         role: 'donor'
       },
       validationMessages: [
-        'Invalid Phone number. Must be 1O digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
         'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character',
         'Confirmed password does not match with password'
       ],
       validationRules: [
-        { test: (creds) => /^(?=.*\d)(?=.{10,10}$)/.test(creds.phone) },
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*])(?=.{8,18}$)[a-zA-Z][a-zA-Z\d]*[~!@#$%^&*?<>]*$/.test(creds.password) },
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
@@ -110,11 +110,11 @@ export default {
       console.log('Password: ', this.signUpCreds.password);
       console.log('Confirmed Password: ', this.signUpCreds.confirmedPassword);
       console.log('Role: ', this.signUpCreds.role);
-      this.validationMessages[0] ='Invalid Phone number. Must be 1O digit long';
+      this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
       this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        this.createUser({ phone: this.signUpCreds.phone, password: this.signUpCreds.password });
+        this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
       }
     },
     async canSignup() {

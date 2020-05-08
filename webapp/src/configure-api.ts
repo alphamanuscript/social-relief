@@ -7,7 +7,7 @@ function configureApi (baseUrl: string, client: AxiosInstance) {
     const headers = config.headers || {};
     if (Auth.isAuthenticated()) {
       const token = Auth.getAccessToken();
-      const commonHeaders = Object.assign({}, headers.common, { Authorization: token });
+      const commonHeaders = Object.assign({}, headers.common, { Authorization: `Bearer ${token}` });
       headers.common = commonHeaders;
     }
     const newConfig = Object.assign({

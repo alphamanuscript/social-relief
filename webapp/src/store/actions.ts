@@ -101,6 +101,7 @@ const actions = wrapActions({
   },
   async createUser({ commit }, { phone, password }: { phone: string; password: string }) {
     const user = await Users.createUser({ phone, password });
+    await Users.login({ phone, password });
     commit('setUser', user);
     if (user) {
       router.push({ name: 'home' });
@@ -113,32 +114,23 @@ const actions = wrapActions({
       if (router.currentRoute.name !== 'home') router.push({ name: 'home' });
     }
   },
+  async signUserOut({ dispatch }) {
+    await Users.logout();
+    dispatch('clearData');
+    router.push({ name: 'sign-in' });
+  },
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();
-    if (user) {
-      commit('setUser', user);
-    }
+    if (user) commit('setUser', user);
   },
   async clearData({ commit }) {
     [
       'unsetUser',
-      'unsetProject',
-      'unsetProjects',
-      'unsetUserDataLoaded',
+      'unsetBeneficiaries',
+      'unsetMiddlemen',
+      'unsetTransactions',
+      'unsetInvitations',
       'unsetMessage',
-      'unsetProjectEntities',
-      'unsetProjectFile',
-      'unsetProjectFileImport',
-      'unsetProjectTables',
-      'unsetDatabaseEmpty',
-      'unsetQueryFilters',
-      'unsetCurrentQuery',
-      'unsetChartXAxis',
-      'unsetChartYAxis',
-      'unsetAggregatedEntities',
-      'unsetDataSourceProviders',
-      'unsetDataSourceConnections',
-      'unsetDataSourceConnection'
     ].forEach((mutation) => commit(mutation));
   }
 });

@@ -23,17 +23,32 @@ const mutations: MutationTree<AppState> = {
   setUser(state, user) {
     state.user = user
   },
+  unsetUser(state) {
+    state.user = undefined
+  },
   setBeneficiaries(state, beneficiaries) {
     state.beneficiaries = beneficiaries
+  },
+  unsetBeneficiaries(state) {
+    state.beneficiaries = []
   },
   setMiddlemen(state, middlemen) {
     state.middlemen = middlemen
   },
+  unsetMiddlemen(state) {
+    state.middlemen = []
+  },
   setTransactions(state, transactions) {
     state.transactions = transactions
   },
+  unsetTransactions(state) {
+    state.transactions = []
+  },
   setInvitations(state, invitations) {
     state.invitations = invitations
+  },
+  unsetInvitations(state) {
+    state.invitations = []
   },
   removeInvitation(state, phone) {
     const index = state.invitations.findIndex(invt => invt.invitee === phone);
@@ -44,6 +59,9 @@ const mutations: MutationTree<AppState> = {
   },
   setMessage(state, message) {
     state.message = message
+  },
+  unsetMessage(state) {
+    state.message = { type: '', message: '' }
   }
 };
 

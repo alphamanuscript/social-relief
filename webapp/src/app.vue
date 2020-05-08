@@ -7,7 +7,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div v-if="showNavigation()" class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div v-if="showNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
@@ -17,6 +17,9 @@
             </li>
             <li class="nav-item active">
               <router-link class="nav-link" to="/about">About</router-link>
+            </li>
+            <li class="nav-item active" @click="signout">
+              <router-link class="nav-link" to="#">Sign out</router-link>
             </li>
           </ul>
         </div>
@@ -31,64 +34,32 @@ import { Auth } from './services';
 
 export default {
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user', 'message']),
+    showNavigation () {
+      this.showPageOrRedirect();
+      if (this.$route.name === 'home') return true;
+      return false;
+    }
   },
   methods: {
     ...mapActions([
       'signUserIn', 'getBeneficiaries', 'getTransactions', 
       'getMiddlemen', 'getInvitations', 'getInvitation', 
-      'doesUserExist', 'getCurrentUser'
+      'doesUserExist', 'getCurrentUser', 'signUserOut'
     ]),
-    async showNavigation () {
-      if (this.$route.name === 'home') {
-        if(Auth.isAuthenticated() && !this.user) {
-          await this.getCurrentUser();
-          return true;
-        }
-        this.$router.push({ name: 'sign-in' });
+    async showPageOrRedirect () {
+      if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) await this.getCurrentUser();
+      else if (this.$route.name === 'home' && !Auth.isAuthenticated()) this.$router.push({ name: 'sign-in' });
+      else if (this.$route.name === 'sign-in' && Auth.isAuthenticated() && !this.user) {
+        await this.getCurrentUser();
+        this.$router.push({ name: 'home' });
       }
-      else if (this.$route.name === 'sign-in'){
-        if(Auth.isAuthenticated() && !this.user) {
-          await this.getCurrentUser();
-          this.$router.push({ name: 'home' });
-          return true;
-        }
-      }
-      return false;
+    },
+    async signout() {
+      console.log('Signing out...');
+      await this.signUserOut();
     }
-  },
-  // watch: {
-  //   async $route(to) {
-  //     if (to.name === 'home') {
-  //       console.log('Routing to Home page');
-  //       this.showNavigation = true;
-  //       if(Auth.isAuthenticated()) {
-  //         await this.getCurrentUser();
-  //         // await this.getBeneficiaries(this.user._id);
-  //         // await this.getMiddlemen(this.user._id);
-  //         // await this.getTransactions(this.user._id);
-  //         // await this.getInvitations();
-  //       }
-  //       else {
-  //         this.$router.push({ name: 'sign-in' });
-  //       }
-  //     }
-  //     else if(to.name === 'accept-invitation') {
-  //       this.showNavigation = false;
-  //       // await this.getInvitation({ path: `${to.path}`});
-  //     }
-  //     else if(to.name === 'sign-in') {
-  //       this.showNavigation = false;
-  //       // console.log('to: ', to);
-  //       // if (to.params.phone) {
-  //       //   await this.doesUserExist({ phone: to.params.phone});
-  //       // }
-  //     }
-  //     else if(to.name === 'sign-up') {
-  //       this.showNavigation = false;
-  //     }
-  //   }
-  // }
+  }
 }
 </script>
 <style scoped>

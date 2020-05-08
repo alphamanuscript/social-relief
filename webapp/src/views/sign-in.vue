@@ -6,7 +6,7 @@
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
-              <label for="phone">Phone</label>
+              <label for="phone">Phone (7xxxxxxxx)</label>
               <input
                 v-model="signinCreds.phone"
                 id="phone"
@@ -50,11 +50,11 @@ export default {
         password: ''
       },
       validationMessages: [
-        'Invalid Phone number. Must be 11 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
         'Invalid password. Must be at least one character long'
       ],
       validationRules: [
-        { test: (creds) => creds.phone.length === 10, },
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
       validationResults: [true, true],
@@ -86,13 +86,13 @@ export default {
       console.log('Phone: ', this.signinCreds.phone);
       console.log('Password: ', this.signinCreds.password);
       this.validationMessages = [
-        'Invalid Phone number. Must be 11 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
         'Invalid password. Must be at least one character long'
       ];
       this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        await this.signUserIn({ phone: this.signinCreds.phone, password: this.signinCreds.password });
+        await this.signUserIn({ phone: `254${this.signinCreds.phone}`, password: this.signinCreds.password });
         if (!this.user) {
           this.validationMessages = [
             'Incorrect Phone',

@@ -22,10 +22,10 @@ function setErrorMessage (e: any, commit: any) {
 export function handleActionError (error: any, { commit, dispatch }: ActionContext<AppState, AppState>) {
   if (error.response && error.response.status === 401) {
     const data = error.response.data;
-    if (data && /Access token is invalid/.test(data.message)) {
+    if (data && /Invalid access token/.test(data.message)) {
       dispatch('clearData');
       Auth.deleteAccessToken();
-      router.push({ name: 'login'});
+      router.push({ name: 'sign-in'});
     }
   }
   setErrorMessage(error, commit);

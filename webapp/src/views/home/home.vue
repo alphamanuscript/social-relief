@@ -2,9 +2,6 @@
   <div class="container">
     <DonorSection v-if="user" />
     <MiddlemanSection v-else-if="user && 'middleman' in user.roles" />
-    <div v-else>
-      For some reason user is undefined
-    </div>
     <!-- <div v-if="user" class="row mb-md-5">
       <div class="col-md-5">
         <h2>Donate</h2>
@@ -276,8 +273,5 @@ export default {
   // }
 }
 </script>
-<style lang="scss" scoped>
-  .container {
-    border: 1px solid #000;
-  }  
+<style lang="scss" scoped>  
 </style>
