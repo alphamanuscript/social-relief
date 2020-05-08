@@ -25,7 +25,9 @@ export type ErrorCode =
   | 'serverError'
   | 'nominationFailed'
   | 'validationError'
-  | 'batchQueueError';
+  | 'batchQueueError'
+  | 'systemLockLocked'
+  | 'systemLockInvalidState';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
@@ -68,4 +70,12 @@ export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) 
 }
 export function createBeneficiaryNominationFailedError (message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
+}
+
+export function createSystemLockBusyError(message: string = messages.ERROR_SYSTEM_LOCK_BUSY) {
+  return createAppError(message, 'systemLockLocked');
+}
+
+export function createSystemLockInvalidStateError(message: string) {
+  return createAppError(message, 'systemLockInvalidState');
 }
