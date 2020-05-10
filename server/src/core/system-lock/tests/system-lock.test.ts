@@ -2,7 +2,7 @@ import { createDbUtils } from '../../test-util';
 import { systemLocks } from './fixtures';
 import { SystemLockManager } from '../system-lock';
 
-const DB = '_system_lock_tests_';
+const DB = '_crowd_relief_system_lock_tests_';
 const COLLECTION = 'system_locks';
 
 describe('SystemLock tests', () => {

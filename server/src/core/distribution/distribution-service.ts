@@ -1,6 +1,6 @@
 import { Db, Collection } from 'mongodb';
 import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs } from './types';
-import { Distributor } from './distributor';
+import { runDonationDistribution } from './run-distribution';
 import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
 
@@ -21,8 +21,7 @@ export class DonationDistributions implements DonationDistributionService {
     try {
       await this.args.systemLocks.distribution().lock();
       const startedAt = new Date();
-      const distributor = new Distributor(this.db, this.args);
-      const distributions = await distributor.run();
+      const distributions = await runDonationDistribution(this.db, this.args);
       const finishedAt = new Date();
 
       const results: DonationDistributionResults = {

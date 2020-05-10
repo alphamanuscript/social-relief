@@ -1,6 +1,6 @@
 import { createDbUtils } from '../../test-util';
 import { users, transactions } from './fixtures';
-import { findEligibleBeneficiaries, computeDonorsBalances, createDistributionPlan, executeDistributionPlan } from '../distributor';
+import { findEligibleBeneficiaries, computeDonorsBalances, createDistributionPlan, executeDistributionPlan } from '../run-distribution';
 import { UserService } from '../../user';
 import { createAppError } from '../../error';
 
@@ -8,7 +8,7 @@ const DB = '_crowd_relief_distribution_tests_';
 const USERS_COLL = 'users';
 const TRANSACTIONS_COLL = 'transactions';
 
-describe('DonationDistributor', () => {
+describe('Donation distribution steps', () => {
   const dbUtils = createDbUtils(DB, USERS_COLL);
 
   beforeAll(async () => {

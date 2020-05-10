@@ -1,7 +1,6 @@
-import { Db, Collection } from 'mongodb';
-import { DonationDistributor, DonationDistributionResults, DonationDistributionService, DonationDistributionEvent, DonationDistributionArgs  } from './types';
-import { Transaction, TransactionService } from '../payment';
-import { User, UserService } from '../user';
+import { Db } from 'mongodb';
+import { DonationDistributionEvent, DonationDistributionArgs  } from './types';
+import { UserService } from '../user';
 import { BatchJobQueue } from '../batch-job-queue';
 
 const USERS_COLL = 'users';
@@ -47,27 +46,15 @@ interface CreateDistributionPlanResult {
   beneficiariesSummaries:DistributionPlanBeneficiariesSummaries;
 }
 
-export class Distributor implements DonationDistributor {
-  private db: Db;
-  private periodLimit: number;
-  private periodLength: number;
-  private userService: UserService;
+export async function runDonationDistribution(db: Db, args: DonationDistributionArgs): Promise<DonationDistributionEvent[]> {
+  const { periodLength, periodLimit, users } = args;
 
-  constructor(db: Db, args: DonationDistributionArgs) {
-    this.db = db;
-    this.periodLength = args.periodLength;
-    this.periodLimit = args.periodLimit;
-    this.userService = args.users;
-  }
-
-  async run(): Promise<DonationDistributionEvent[]> {
-    const beneficiaries = await findEligibleBeneficiaries(this.db, this.periodLimit, this.periodLength);
-    const donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...b.donors], []);
-    const donors = await computeDonorsBalances(this.db, Array.from(new Set(donorIds)));
-    const plan = createDistributionPlan(beneficiaries, donors);
-    const result = await executeDistributionPlan(this.userService, plan.transfers);
-    return result;
-  }
+  const beneficiaries = await findEligibleBeneficiaries(db, periodLimit, periodLength);
+  const donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...b.donors], []);
+  const donors = await computeDonorsBalances(db, Array.from(new Set(donorIds)));
+  const plan = createDistributionPlan(beneficiaries, donors);
+  const result = await executeDistributionPlan(users, plan.transfers);
+  return result;
 }
 
 /**

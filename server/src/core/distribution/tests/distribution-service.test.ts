@@ -1,10 +1,9 @@
 import { createDbUtils, expectAsyncAppError } from '../../test-util';
-import { UserService, User } from '../../user';
+import { UserService } from '../../user';
 import { DonationDistributions } from '../distribution-service';
 import { users, transactions } from './fixtures';
 import { DonationDistributionResults } from '../types';
 import { SystemLocks, SystemLockService } from '../../system-lock';
-import { createSystemLockBusyError } from '../../error';
 
 const DB = '_crowd_relief_distribution_service_tests_';
 const COLL = 'donation_distributions';

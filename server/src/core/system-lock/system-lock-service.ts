@@ -1,6 +1,6 @@
 import { Db, Collection } from 'mongodb';
 import { SystemLockService, SystemLock, SystemLockRecord } from './types';
-import { SystemLockManager } from './system-lock';
+import { SystemLockManager as SystemLockHandle } from './system-lock';
 
 const COLLECTION = 'system_locks';
 const DISTRIBUTION_LOCK = 'donationDistributionLock';
@@ -15,7 +15,7 @@ export class SystemLocks implements SystemLockService {
 
   distribution(): SystemLock {
     if (!this.distributionLock) {
-      this.distributionLock = new SystemLockManager(DISTRIBUTION_LOCK, this.collection);
+      this.distributionLock = new SystemLockHandle(DISTRIBUTION_LOCK, this.collection);
     }
 
     return this.distributionLock;
