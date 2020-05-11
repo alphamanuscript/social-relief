@@ -152,6 +152,8 @@ describe('DonationDistributionService tests', () => {
         await expectAsyncAppError(() => systemLockService.distribution().ensureUnlocked(), 'systemLockLocked');
         // simulate concurrent operations that attempt to acquire lock
         await expectAsyncAppError(() => systemLockService.distribution().lock(), 'systemLockLocked');
+        // cannot run two distribution processes simultaneously
+        await expectAsyncAppError(() => distributionService.distributeDonations(), 'systemLockLocked');
 
         // call the callbacks to complete distributions
         callbacks.forEach(cb => cb());
