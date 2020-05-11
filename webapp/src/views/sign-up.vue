@@ -106,10 +106,6 @@ export default {
       }
     },
     async signup() {
-      console.log('Phone: ', this.signUpCreds.phone);
-      console.log('Password: ', this.signUpCreds.password);
-      console.log('Confirmed Password: ', this.signUpCreds.confirmedPassword);
-      console.log('Role: ', this.signUpCreds.role);
       this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
       this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
 

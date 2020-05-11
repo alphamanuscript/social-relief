@@ -52,7 +52,7 @@
         <p>You can nominate up to x beneficiaries to the system</p>
         <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
           <div class="form-group">
-            <label for="beneficiary">Beneficiary</label>
+            <label for="beneficiary">Beneficiary ()</label>
             <input
               v-model="beneficiary"
               id="beneficiary"
@@ -167,6 +167,20 @@ export default {
   name: 'donor-interface',
   data() {
     return {
+      // creds: {
+      //   donation: 100,
+      //   beneficiary: '',
+      //   middleman: '',
+      // },
+      // valdationMessages: [
+      //   'Insufficient amount. Donations must be 100 and more',
+      //   'Invalid Phone number. Must start with 7 and be 9 digit long',
+      //   'Beneficiary already nominated',
+      //   'Middleman already appointed'
+      // ],
+      // validationRules: [
+      //   { test: (creds) => creds.donation >= 100 }
+      // ]
       donation: 100,
       beneficiary: '',
       middleman: '',
@@ -217,7 +231,8 @@ export default {
     ]),
     moment,
     submitDonation() {
-      this.donate({ amount: this.donation });
+      console.log('this.donation: ', this.donation);
+      // this.donate({ amount: this.donation });
     },
     submitBeneficiary() {
       if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
