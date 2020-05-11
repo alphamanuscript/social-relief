@@ -5,13 +5,18 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node -r dotenv/config dist/index"
+    "start": "node -r dotenv/config dist/start-server",
+    "worker": "node -r dotenv/config dist/start-worker",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
+    "@types/jest": "^25.2.1",
     "@types/mongodb": "^3.5.4",
     "@types/winston": "^2.4.4",
+    "jest": "^26.0.1",
+    "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {

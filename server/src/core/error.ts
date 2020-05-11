@@ -19,10 +19,15 @@ export type ErrorCode =
   | 'resourceNotFound'
   | 'uniquenessFailed'
   | 'paymentRequestFailed'
+  | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
   | 'serverError'
-  | 'nominationFailed';
+  | 'nominationFailed'
+  | 'validationError'
+  | 'batchQueueError'
+  | 'systemLockLocked'
+  | 'systemLockInvalidState';
 
 export function throwAppError(message: string, code: ErrorCode) {
   throw new AppError(message, code);
@@ -56,9 +61,21 @@ export function createPaymentRequestFailedError(message: string) {
   return createAppError(message, 'paymentRequestFailed');
 }
 
+export function createFundsToUserFailedError(message: string) {
+  return createAppError(message, 'b2cRequestFailed');
+}
+
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
   return createAppError(message, 'atApiError');
 }
 export function createBeneficiaryNominationFailedError (message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
+}
+
+export function createSystemLockBusyError(message: string = messages.ERROR_CONFLICTING_OPERATION_IN_PROGRESS) {
+  return createAppError(message, 'systemLockLocked');
+}
+
+export function createSystemLockInvalidStateError(message: string) {
+  return createAppError(message, 'systemLockInvalidState');
 }

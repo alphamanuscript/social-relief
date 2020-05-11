@@ -1,6 +1,6 @@
 
 import { User } from '../user/types';
-export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
+export type TransactionStatus = 'pending' | 'paymentRequested' | 'paymentQueued' |'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution';
 
 export interface Transaction {
@@ -37,9 +37,14 @@ export interface InitiateDonationArgs {
   amount: number
 };
 
+export interface SendDonationArgs {
+  amount: number;
+}
+
 export interface TransactionService {
   createIndexes(): Promise<void>;
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
+  sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction>;
   handleProviderNotification(payload: any): Promise<Transaction>;
   getAllByUser(userId: string): Promise<Transaction[]>;
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;
@@ -61,9 +66,15 @@ export interface ProviderTransactionInfo {
   metadata: any;
 }
 
+export interface SendFundsResult {
+  providerTransactionId: string;
+  status: TransactionStatus;
+}
+
 export interface PaymentProvider {
   name(): string;
   requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult>;
   handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo>;
   getTransaction(id: string): Promise<ProviderTransactionInfo>;
+  sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult>;
 }

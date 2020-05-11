@@ -9,11 +9,13 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
-import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs } from '../payment';
+import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
+
+const SAFE_USER_PROJECTION = { _id: 1, phone: 1, addedBy: 1, donors: 1, roles: 1, createdAt: 1, updatedAt: 1 };
 
 /**
  * removes fields that should
@@ -232,6 +234,20 @@ export class Users implements UserService {
       const user = await this.getById(userId);
       const trx = await this.transactions.initiateDonation(user, args);
       return trx;
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction> {
+    try {
+      const users = await this.collection.find({ _id: { $in: [from, to] } }, { projection: SAFE_USER_PROJECTION } ).toArray();
+      const donor = users.find(u => u._id === from);
+      const beneficiary = users.find(u => u._id === to);
+      const result = await this.transactions.sendDonation(donor, beneficiary, args);
+      return result;
     }
     catch (e) {
       if (e instanceof AppError) throw e;

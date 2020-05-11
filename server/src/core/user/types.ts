@@ -1,4 +1,4 @@
-import { Transaction, InitiateDonationArgs } from '../payment';
+import { Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 
@@ -93,5 +93,11 @@ export interface UserService {
    * @param user 
    * @param args 
    */
-  initiateDonation(user: string, args: InitiateDonationArgs): Promise<Transaction>
+  initiateDonation(user: string, args: InitiateDonationArgs): Promise<Transaction>;
+  /**
+   * 
+   * @param from 
+   * @param to 
+   */
+  sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
 };

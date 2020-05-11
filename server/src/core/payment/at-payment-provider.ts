@@ -1,7 +1,7 @@
 import createAtClient = require('africastalking');
-import { PaymentsService as AtPaymentService, MobileCheckoutArgs, TransactionInfo } from 'africastalking-types';
-import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo } from './types';
-import { AppError, createPaymentRequestFailedError, createAtApiError } from '../error';
+import { PaymentsService as AtPaymentService, MobileCheckoutArgs, TransactionInfo, MobileB2CArgs } from 'africastalking-types';
+import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult } from './types';
+import { AppError, createPaymentRequestFailedError, createAtApiError, createFundsToUserFailedError } from '../error';
 import { User } from '../user/types';
 
 export interface AtArgs {
@@ -56,6 +56,46 @@ export class AtPaymentProvider implements PaymentProvider {
       if (e instanceof AppError) throw e;
       throw createAtApiError(e.message);
     }
+  }
+
+  async sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
+    const args: MobileB2CArgs = {
+      productName: this.productName,
+      recipients: [
+        {
+          phoneNumber: user.phone,
+          amount: String(amount),
+          currencyCode: 'KES',
+          metadata: {
+            user: user._id,
+            ...metadata
+          }
+        }
+      ]
+    };
+
+    try {
+      const res = await this.payments.mobileB2C(args);
+
+      if (!res.numQueued || res.errorMessage || !res.entries.length) {
+        throw createFundsToUserFailedError(res.errorMessage);
+      }
+
+      const [entry] = res.entries;
+      if (entry.status !== 'Queued') {
+        throw createFundsToUserFailedError(`${entry.status}: ${entry.errorMessage}`);
+      }
+
+      return {
+        providerTransactionId: entry.transactionId,
+        status: 'paymentQueued'
+      };
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createAtApiError(e.message);
+    }
+
   }
 
   handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
