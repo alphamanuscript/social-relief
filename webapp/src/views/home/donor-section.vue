@@ -167,20 +167,24 @@ export default {
   name: 'donor-interface',
   data() {
     return {
-      // creds: {
-      //   donation: 100,
-      //   beneficiary: '',
-      //   middleman: '',
-      // },
-      // valdationMessages: [
-      //   'Insufficient amount. Donations must be 100 and more',
-      //   'Invalid Phone number. Must start with 7 and be 9 digit long',
-      //   'Beneficiary already nominated',
-      //   'Middleman already appointed'
-      // ],
-      // validationRules: [
-      //   { test: (creds) => creds.donation >= 100 }
-      // ]
+      creds: {
+        donation: 100,
+        beneficiary: '',
+        middleman: '',
+      },
+      valdationMessages: [
+        'Insufficient amount. Donations must be 100 and more',
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Beneficiary already nominated',
+        'Middleman already appointed'
+      ],
+      validationRules: [
+        { test: (creds) => creds.donation >= 100 },
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => !creds.beneficiaries.map(beneficiary => creds.beneficiary === beneficiary).length },
+        { test: (creds) => !creds.middlemen.map(middleman => creds.middleman === middleman).length }
+      ],
+      validationResults: [true, true, true, true],
       donation: 100,
       beneficiary: '',
       middleman: '',
@@ -231,8 +235,12 @@ export default {
     ]),
     moment,
     submitDonation() {
+      this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
+      this.validationResults = this.validateObj(this.creds, [this.validationRules[0]]);
+      if (!this.validationResults.includes(false)) {
+        // this.donate({ amount: this.donation });
+      }
       console.log('this.donation: ', this.donation);
-      // this.donate({ amount: this.donation });
     },
     submitBeneficiary() {
       if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
