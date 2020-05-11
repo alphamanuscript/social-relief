@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs } from './types';
 import { generateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
@@ -77,6 +77,66 @@ export class Transactions implements TransactionService {
     }
   }
 
+  async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
+    const trxArgs: TransactionCreateArgs = {
+      expectedAmount: args.amount,
+      to: to._id,
+      from: from._id,
+      fromExternal: false,
+      toExternal: true,
+      type: 'distribution',
+      provider: this.provider.name()
+    };
+
+    let trx: Transaction;
+
+    try {
+      trxArgs.status = 'pending';
+      // Create local transaction before making call to provider
+      // that way if transaction is queued at the provider but a network
+      // error occurs before we get the response, the transaction record
+      // will ensure that those funds are not used for another transaction
+      // that would result in a double-spend
+      // If, one the other hand, the transaction record is created but an
+      // error occurs before the provider queues it, then the system
+      // will think it has less money that it actually has available. This is
+      // an easier problem to deal with than a double-spend. If we notice
+      // that this transaction record become stale, we
+      // can check the logs at the provider site and if we don't find a matching
+      // transaction, then we'll simply mark this transaction record as failed
+      // and that's enough to synchronize the system
+      trx = await this.create(trxArgs);
+      const providerResult = await this.provider.sendFundsToUser(to, args.amount, { transaction: trx._id });
+      const updatedRes = await this.collection.findOneAndUpdate(
+        { _id: trx._id },
+        { 
+          $set: {
+            providerTransactionId: providerResult.providerTransactionId,
+            status: providerResult.status,
+            updatedAt: new Date()
+          }
+        },
+        { returnOriginal: false });
+      
+      return updatedRes.value;
+    }
+    catch (e) {
+      if (e instanceof AppError) {
+        if (e.code === 'b2cRequestFailed' && trx) {
+          // transaction record was created but was not queued by provider
+          // we can delete it (should we mark it as failed instead?)
+          try {
+            await this.collection.deleteOne({ _id: trx._id})
+          } catch (e) {};
+        }
+
+        throw e;
+      }
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async handleProviderNotification(payload: any): Promise<Transaction> {
     try {
       const now = new Date();
@@ -92,7 +152,7 @@ export class Transactions implements TransactionService {
             updatedAt: now,
             amount: result.amount
           },
-        });
+        }, { returnOriginal: false });
       
       if (!updateRes.value) {
         // TODO: handle notifications that don't correspond to transactions
