@@ -8,12 +8,15 @@
             <div class="col-md-12 form-group">
               <label for="donateAmount">Amount</label>
               <input
-                v-model.number="donation"
+                v-model.number="input.donation"
                 id="donateAmount"
                 type="number"
-                class="form-control"
+                :class="getClasses('donation')"
                 min="100"
               >
+              <div class="invalid-feedback">
+                {{ validationMessages[0] }}
+              </div>
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="submitDonation">Donate</button>
@@ -52,9 +55,9 @@
         <p>You can nominate up to x beneficiaries to the system</p>
         <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
           <div class="form-group">
-            <label for="beneficiary">Beneficiary ()</label>
+            <label for="beneficiary">Beneficiary (7xxxxxxxx)</label>
             <input
-              v-model="beneficiary"
+              v-model="input.beneficiary"
               id="beneficiary"
               type="text"
               class="form-control"
@@ -72,15 +75,15 @@
         </form>
         <form v-else>
           <div class="form-group">
-            <label for="beneficiary">Beneficiary</label>
+            <label for="beneficiary">Beneficiary (7xxxxxxxx)</label>
             <input
-              v-model="beneficiary"
+              v-model="input.beneficiary"
               id="beneficiary"
               type="text"
               :class="getClasses('beneficiary')"
             >
             <div class="invalid-feedback">
-              {{ beneficiaryMessage }}
+              {{ !validationResults[1] ? validationMessages[1] : validationMessages[3] }}
             </div>
           </div>
           <button 
@@ -110,32 +113,29 @@
           beneficiaries on your behalf</p>
         <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
           <div class="form-group">
-            <label for="middleman">Middleman</label>
+            <label for="middleman">Middleman (7xxxxxxxx)</label>
             <input
-              v-model="middleman"
+              v-model="input.middleman"
               id="middleman"
               type="text"
               :class="getClasses('middleman')"
               disabled
             >
-            <div class="invalid-feedback">
-              {{ middlemanMessage }}
-            </div>
           </div>
           <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman" disabled>Appoint</button>
         </form>
         <form v-else>
           <div class="form-group">
-            <label for="middleman">Middleman</label>
+            <label for="middleman">Middleman (7xxxxxxxx)</label>
             <input
-              v-model="middleman"
+              v-model="input.middleman"
               id="middleman"
               type="text"
               :class="getClasses('middleman')"
               required
             >
             <div class="invalid-feedback">
-              {{ middlemanMessage }}
+              {{ !validationResults[2] ? validationMessages[1] : validationMessages[3] }}
             </div>
           </div>
           <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
@@ -163,35 +163,31 @@
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
 import moment from 'moment';
+import { validateObj } from '../util';
+
 export default {
   name: 'donor-interface',
   data() {
     return {
-      creds: {
+      input: {
         donation: 100,
         beneficiary: '',
         middleman: '',
       },
-      valdationMessages: [
+      validationMessages: [
         'Insufficient amount. Donations must be 100 and more',
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid phone number. Must start with 7 and be 9 digit long',
         'Beneficiary already nominated',
         'Middleman already appointed'
       ],
       validationRules: [
-        { test: (creds) => creds.donation >= 100 },
-        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => !creds.beneficiaries.map(beneficiary => creds.beneficiary === beneficiary).length },
-        { test: (creds) => !creds.middlemen.map(middleman => creds.middleman === middleman).length }
+        { test: (input) => input.donation >= 100 },
+        { test: (input) => input.beneficiary[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(input.beneficiary) },
+        { test: (input) => input.middleman[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(input.middleman) },
+        { test: (input) => !input.beneficiaries.map(beneficiary => beneficiary.phone === `254${input.beneficiary}`).length },
+        { test: (input) => !input.middlemen.map(middleman => middleman.phone === `254${input.middleman}`).length }
       ],
-      validationResults: [true, true, true, true],
-      donation: 100,
-      beneficiary: '',
-      middleman: '',
-      isValidMiddleman: true,
-      isValidBeneficiary: true,
-      beneficiaryMessage: 'Please provide a valid phone number',
-      middlemanMessage: 'Please provide a valid phone number'
+      validationResults: [true, true, true, true, true],
     }
   },
   computed: {
@@ -206,18 +202,19 @@ export default {
     ]),
     ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations']),
     isThereEnoughDonationForAnotherBeneficiary() {
-      if ((this.totalAmountDonated - this.totalAmountDistributed) < 2000) {
-        return false;
-      }
-      else {
-        console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
-        console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
-        const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
-        if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
-          return true;
-        }
-        return false;
-      }
+      // if ((this.totalAmountDonated - this.totalAmountDistributed) < 2000) {
+      //   return false;
+      // }
+      // else {
+      //   console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
+      //   console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
+      //   const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
+      //   if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
+      //     return true;
+      //   }
+      //   return false;
+      // }
+      return true;
     },
     isThereEnoughForADonation() {
       if ((this.totalAmountDonated - this.totalAmountDistributed) >= 100) return true;
@@ -234,42 +231,47 @@ export default {
       'resendInvitation'
     ]),
     moment,
+    validateObj,
     submitDonation() {
-      this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
-      this.validationResults = this.validateObj(this.creds, [this.validationRules[0]]);
+      this.validationResults = [
+        this.validateObj(this.input, [this.validationRules[0]])[0],
+        true,
+        true,
+        true,
+        true
+      ]
       if (!this.validationResults.includes(false)) {
+        console.log('this.input.donation: ', this.input.donation);
+        console.log('Validation for donation passed')
         // this.donate({ amount: this.donation });
       }
-      console.log('this.donation: ', this.donation);
     },
     submitBeneficiary() {
-      if (this.beneficiary.length && !this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
-        this.isValidBeneficiary = true;
-        this.nominateBeneficiary({nominator: this.user._id, beneficiary: this.beneficiary});
-        this.beneficiary = '';
-      }
-      else if (!this.beneficiary.length){
-        this.beneficiaryMessage = 'Please provide a valid phone';
-        this.isValidBeneficiary = false;
-      }
-      else if (this.beneficiaries.find(bnf => bnf.phone === this.beneficiary)) {
-        this.beneficiaryMessage = 'Beneficiary already nominated';
-        this.isValidBeneficiary = false;
+      this.validationResults = [
+        true,
+        this.validateObj(this.input, [this.validationRules[1]])[0],
+        true,
+        this.validateObj({ ...this.input, beneficiaries: this.beneficiaries }, [this.validationRules[3]])[0],
+        true
+      ]
+      if (!this.validationResults.includes(false)) {
+        console.log('Validation for middleman passed')
+        // this.nominateBeneficiary({nominator: this.user._id, beneficiary: `254${this.input.beneficiary}`});
+        this.input.beneficiary = '';
       }
     },
     submitMiddleman() {
-      if (this.middleman.length && !this.middlemen.find(mdm => mdm.phone === this.middleman)) {
-        this.isValidMiddleman = true;
-        this.appointMiddleman({ middleman: this.middleman});
-        this.middleman = '';
-      }
-      else if(!this.middleman.length) {
-        this.middlemanMessage = 'Please provide a valid phone number'
-        this.isValidMiddleman = false;
-      }
-      else if (this.middlemen.find(mdm => mdm.phone === this.middleman)) {
-        this.middlemanMessage = 'Middleman already appointed';
-        this.isValidMiddleman = false;
+      this.validationResults = [
+        true,
+        true,
+        this.validateObj(this.input, [this.validationRules[2]])[0],
+        true,
+        this.validateObj({ ...this.input, middlemen: this.middlemen }, [this.validationRules[4]])[0]
+      ]
+      if (!this.validationResults.includes(false)) {
+        console.log('Validation for middleman passed')
+        // this.appointMiddleman({ middleman: this.middleman});
+        // this.input.middleman = '';
       }
     },
     reinvite(middleman) {
@@ -277,9 +279,24 @@ export default {
       this.resendInvitation({ middleman });
     },
     getClasses(nameOfInput) {
-      return {
-        'form-control': true,
-        'is-invalid': nameOfInput === 'middleman' ? !this.isValidMiddleman : !this.isValidBeneficiary
+      switch(nameOfInput) {
+        case 'donation': 
+          return {
+            'form-control': true,
+            'is-invalid': !this.validationResults[0]
+          }
+        case 'beneficiary': 
+          return {
+            'form-control': true,
+            'is-invalid': !this.validationResults[1] || !this.validationResults[3]
+          }
+        case 'middleman': 
+          return {
+            'form-control': true,
+            'is-invalid': !this.validationResults[2] || !this.validationResults[4]
+          }
+        default: 
+          return {}
       }
     },
     getDonationReceipient(donation) {
