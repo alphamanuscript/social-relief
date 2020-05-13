@@ -22,6 +22,10 @@ export const Users = {
     const res = await axios.post<User>('/users/beneficiaries', args);
     return res.data;
   },
+  async getBeneficiaries() {
+    const res = await axios.get<User>('/users/beneficiaries');
+    return res.data;
+  },
   async getCurrentUser () {
     const res = await axios.get<User>('/users/me');
     return res.data;

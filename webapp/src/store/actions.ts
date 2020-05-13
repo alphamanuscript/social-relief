@@ -3,8 +3,8 @@ import { AccountService, Users, Transactions, Donations } from '../services';
 import router from '../router';
 
 const actions = wrapActions({
-  async getBeneficiaries({ commit }, _id: string) {
-    const beneficiaries = await AccountService.getBeneficiaries(_id);
+  async getBeneficiaries({ commit }) {
+    const beneficiaries = await Users.getBeneficiaries();
     commit('setBeneficiaries', beneficiaries);
   },
   async getMiddlemen({ commit}, _id: string) {

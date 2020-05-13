@@ -243,7 +243,7 @@ export default {
       if (!this.validationResults.includes(false)) {
         console.log('this.input.donation: ', this.input.donation);
         console.log('Validation for donation passed')
-        // this.donate({ amount: this.donation });
+        this.donate({ amount: this.input.donation });
       }
     },
     submitBeneficiary() {

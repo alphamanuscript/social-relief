@@ -48,7 +48,11 @@ export default {
       'doesUserExist', 'getCurrentUser', 'signUserOut'
     ]),
     async showPageOrRedirect () {
-      if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) await this.getCurrentUser();
+      if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
+        await this.getCurrentUser();
+        await this.getTransactions();
+        await this.getBeneficiaries();
+      } 
       else if (this.$route.name === 'home' && !Auth.isAuthenticated()) this.$router.push({ name: 'sign-in' });
       else if (this.$route.name === 'sign-in' && Auth.isAuthenticated() && !this.user) {
         await this.getCurrentUser();
