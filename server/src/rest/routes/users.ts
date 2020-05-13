@@ -24,3 +24,6 @@ users.get('/me', requireAuth(), wrapResponse(
 
 users.post('/beneficiaries', requireAuth(), wrapResponse(
   req => req.core.users.nominateBeneficiary(req.body)));
+
+users.get('/beneficiaries', requireAuth(), wrapResponse(
+  req => req.core.users.getAllBeneficiariesByUser(req.user._id)));
