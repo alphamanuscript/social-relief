@@ -20,33 +20,7 @@ const getters: GetterTree<AppState, AppState> = {
   },
   donations: ({ transactions }) => {
     return transactions.filter(t => t.type == 'donation').reverse();
-  },
-  // numberOfBeneficiariesOwed: ({ beneficiaries, user }) => {
-  //   return beneficiaries.filter(bnf => {
-  //     if (user) {
-  //       const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
-  //       return bnf.owed[nominatorIndex];
-  //     }
-  //     return false;
-  //   }).length;
-  // },
-  // numberOfBeneficiariesNotOwed: ({ beneficiaries, user }) => {
-  //   return beneficiaries.filter(bnf => {
-  //     if (user) {
-  //       const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
-  //       return !bnf.owed[nominatorIndex];
-  //     }
-  //     return false;
-  //   }).length;
-  // },
-  // totalAmountOwedToBeneficiaries: ({ beneficiaries, user }) => {
-  //   if (user) {
-  //     return beneficiaries.reduce((total, bnf) => { 
-  //       const nominatorIndex = bnf.nominatedBy.findIndex(nominator => nominator._id === user._id);
-  //       return total + bnf.owed[nominatorIndex] 
-  //     }, 0);
-  //   }
-  // }
+  }
 }
 
 export default getters;

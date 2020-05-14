@@ -37,15 +37,14 @@ export default {
     ...mapState(['user', 'message']),
     showNavigation () {
       this.showPageOrRedirect();
-      if (this.$route.name === 'home') return true;
+      if (this.$route.name === 'home' || this.$route.name === 'how-it-works' || this.$route.name === 'about') return true;
       return false;
     }
   },
   methods: {
     ...mapActions([
-      'signUserIn', 'getBeneficiaries', 'getTransactions', 
-      'getMiddlemen', 'getInvitations', 'getInvitation', 
-      'doesUserExist', 'getCurrentUser', 'signUserOut'
+      'signUserIn', 'getBeneficiaries', 'getTransactions',
+      'getCurrentUser', 'signUserOut'
     ]),
     async showPageOrRedirect () {
       if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {

@@ -53,27 +53,7 @@
       <div class="col-md-5">
         <h3>Nominated beneficiaries</h3>
         <p>You can nominate up to x beneficiaries to the system</p>
-        <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
-          <div class="form-group">
-            <label for="beneficiary">Beneficiary (7xxxxxxxx)</label>
-            <input
-              v-model="input.beneficiary"
-              id="beneficiary"
-              type="text"
-              class="form-control"
-              disabled
-            >
-          </div>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
-            @click.prevent="submitBeneficiary"
-            disabled
-          >
-          Nominate
-          </button>
-        </form>
-        <form v-else>
+        <form>
           <div class="form-group">
             <label for="beneficiary">Beneficiary (7xxxxxxxx)</label>
             <input
@@ -83,7 +63,7 @@
               :class="getClasses('beneficiary')"
             >
             <div class="invalid-feedback">
-              {{ !validationResults[1] ? validationMessages[1] : validationMessages[3] }}
+              {{ !validationResults[1] ? validationMessages[1] : validationMessages[2] }}
             </div>
           </div>
           <button 
@@ -106,7 +86,7 @@
       </div>
     </div>
     <hr>
-    <div v-if="user" class="row">
+    <!-- <div v-if="user" class="row">
       <div class="col-md-5">
         <h3>Appoint trusted point person</h3>
         <p>You can appoint a trusted point person and they can nominate
@@ -157,7 +137,7 @@
           </li>
         </ul>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -184,8 +164,8 @@ export default {
         { test: (input) => input.donation >= 100 },
         { test: (input) => input.beneficiary[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(input.beneficiary) },
         { test: (input) => input.middleman[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(input.middleman) },
-        { test: (input) => !input.beneficiaries.map(beneficiary => beneficiary.phone === `254${input.beneficiary}`).length },
-        { test: (input) => !input.middlemen.map(middleman => middleman.phone === `254${input.middleman}`).length }
+        { test: (input) => !input.beneficiaries.filter(beneficiary => beneficiary.phone === `254${input.beneficiary}`).length },
+        { test: (input) => !input.middlemen.filter(middleman => middleman.phone === `254${input.middleman}`).length }
       ],
       validationResults: [true, true, true, true, true],
     }
@@ -196,30 +176,8 @@ export default {
       'totalAmountDistributed',
       'peopleDonatedTo',
       'donations',
-      'numberOfBeneficiariesOwed',
-      'numberOfBeneficiariesNotOwed',
-      'totalAmountOwedToBeneficiaries',
     ]),
-    ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations']),
-    isThereEnoughDonationForAnotherBeneficiary() {
-      // if ((this.totalAmountDonated - this.totalAmountDistributed) < 2000) {
-      //   return false;
-      // }
-      // else {
-      //   console.log('this.totalAmountOwedToBeneficiaries: ', this.totalAmountOwedToBeneficiaries);
-      //   console.log('this.numberOfBeneficiariesNotOwed: ', this.numberOfBeneficiariesNotOwed);
-      //   const balanceAfterMoneyOwed = this.user.accountBalance - this.totalAmountOwedToBeneficiaries;
-      //   if (balanceAfterMoneyOwed >= 2000 && (balanceAfterMoneyOwed / 2000 > this.numberOfBeneficiariesNotOwed)) {
-      //     return true;
-      //   }
-      //   return false;
-      // }
-      return true;
-    },
-    isThereEnoughForADonation() {
-      if ((this.totalAmountDonated - this.totalAmountDistributed) >= 100) return true;
-      return false;
-    }
+    ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations'])
   },
   methods: {
     ...mapActions([
@@ -241,8 +199,6 @@ export default {
         true
       ]
       if (!this.validationResults.includes(false)) {
-        console.log('this.input.donation: ', this.input.donation);
-        console.log('Validation for donation passed')
         this.donate({ amount: this.input.donation });
       }
     },
@@ -255,8 +211,7 @@ export default {
         true
       ]
       if (!this.validationResults.includes(false)) {
-        console.log('Validation for middleman passed')
-        // this.nominateBeneficiary({nominator: this.user._id, beneficiary: `254${this.input.beneficiary}`});
+        this.nominateBeneficiary({nominator: this.user._id, beneficiary: `254${this.input.beneficiary}`});
         this.input.beneficiary = '';
       }
     },
@@ -269,7 +224,6 @@ export default {
         this.validateObj({ ...this.input, middlemen: this.middlemen }, [this.validationRules[4]])[0]
       ]
       if (!this.validationResults.includes(false)) {
-        console.log('Validation for middleman passed')
         // this.appointMiddleman({ middleman: this.middleman});
         // this.input.middleman = '';
       }
