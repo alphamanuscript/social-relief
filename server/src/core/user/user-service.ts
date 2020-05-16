@@ -135,6 +135,16 @@ export class Users implements UserService {
     }
   }
 
+  async getAllBeneficiariesByUser(userId: string): Promise<User[]> {
+    try {
+      const result = await this.collection.find({ donors: { $in: [userId] } }).toArray();
+      return result;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
     try {
       const user = await this.collection.findOne({ phone: args.phone });

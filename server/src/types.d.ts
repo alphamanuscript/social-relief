@@ -106,7 +106,7 @@ declare module 'africastalking-types' {
     /**
      * Amount - in the provided currency - that the client is expected to confirm.
      */
-    amount: string;
+    amount: number;
     /**
      * The channel the payment will be made from e.g a paybill numbe
      */

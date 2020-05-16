@@ -32,7 +32,16 @@ export class Transactions implements TransactionService {
 
     try {
       // unique provider transaction id
-      await this.collection.createIndex({ providerTransactionId: 1, provider: 1 }, { unique: true });
+      await this.collection.createIndex(
+        {
+          providerTransactionId: 1, provider: 1
+        },
+        {
+          unique: true,
+          partialFilterExpression: {
+            providerTransactionId: { $exists: true }
+          }
+        });
       // ttl collection for access token expiry
       await this.collection.createIndex({ from: 1 });
       
@@ -205,12 +214,15 @@ export class Transactions implements TransactionService {
       _id: generateId(),
       ...args,
       amount: 0,
-      providerTransactionId: args.providerTransactionId || '',
       status: args.status || 'pending',
       createdAt: now,
       updatedAt: now,
       metadata: {}
     };
+
+    if (args.providerTransactionId) {
+      tx.providerTransactionId = args.providerTransactionId
+    }
 
     try {
       const res = await this.collection.insertOne(tx);

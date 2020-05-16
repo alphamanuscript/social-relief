@@ -6,17 +6,8 @@
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
-              <label for="phone">Phone</label>
+              <label for="phone">Phone (7xxxxxxxx)</label>
               <input
-                v-if="signinPhone.length"
-                :value="signinPhone"
-                id="phone"
-                type="text"
-                :class="getClasses('phone')"
-                disabled
-              >
-              <input
-                v-else
                 v-model="signinCreds.phone"
                 id="phone"
                 type="text"
@@ -59,18 +50,18 @@ export default {
         password: ''
       },
       validationMessages: [
-        'Invalid Phone number. Must be 11 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
         'Invalid password. Must be at least one character long'
       ],
       validationRules: [
-        { test: (creds) => creds.phone.length === 10, },
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
       validationResults: [true, true],
     }
   },
   computed: {
-    ...mapState(['signinPhone']),
+    ...mapState(['user']),
   },
   methods: {
     ...mapActions(['signUserIn']),
@@ -91,24 +82,25 @@ export default {
           return {}
       }
     },
-    signin() {
-      console.log('Phone: ', this.signinCreds.phone);
-      console.log('Password: ', this.signinCreds.password);
+    async signin() {
+      this.validationMessages = [
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid password. Must be at least one character long'
+      ];
       this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        this.signUserIn({ phone: this.signinCreds.phone, password: this.signinCreds.password });
+        await this.signUserIn({ phone: `254${this.signinCreds.phone}`, password: this.signinCreds.password });
+        if (!this.user) {
+          this.validationMessages = [
+            'Incorrect Phone',
+            'Incorrect password'
+          ];
+          this.validationResults = [false, false];
+        }
       }
     },
   },
-  watch: {
-    async signinPhone(newVal) {
-      console.log('Watching signinPhone: ', newVal);
-      if(newVal) {
-        this.creds.phone = this.signinPhone;
-      }
-    }
-  }
 }
 </script>
 <style lang="scss" scoped>
