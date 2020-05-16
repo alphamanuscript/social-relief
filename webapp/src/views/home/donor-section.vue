@@ -86,58 +86,6 @@
       </div>
     </div>
     <hr>
-    <!-- <div v-if="user" class="row">
-      <div class="col-md-5">
-        <h3>Appoint trusted point person</h3>
-        <p>You can appoint a trusted point person and they can nominate
-          beneficiaries on your behalf</p>
-        <form v-if="!isThereEnoughDonationForAnotherBeneficiary">
-          <div class="form-group">
-            <label for="middleman">Middleman (7xxxxxxxx)</label>
-            <input
-              v-model="input.middleman"
-              id="middleman"
-              type="text"
-              :class="getClasses('middleman')"
-              disabled
-            >
-          </div>
-          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman" disabled>Appoint</button>
-        </form>
-        <form v-else>
-          <div class="form-group">
-            <label for="middleman">Middleman (7xxxxxxxx)</label>
-            <input
-              v-model="input.middleman"
-              id="middleman"
-              type="text"
-              :class="getClasses('middleman')"
-              required
-            >
-            <div class="invalid-feedback">
-              {{ !validationResults[2] ? validationMessages[1] : validationMessages[3] }}
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary" @click.prevent="submitMiddleman">Appoint</button>
-        </form>
-      </div>
-      <div class="col-md-3"></div>
-      <div class="col-md-4">
-        <h3>Appointed middlemen</h3>
-        <ul class="list-group">
-          <li v-for="middleman in middlemen" class="list-group-item" :key="middleman._id">
-            <div class="row">
-              <div class="col-md-4">
-                {{ middleman.phone }} 
-              </div>
-              <div class="col-md-8">
-                <button class="btn btn-primary" @click.prevent="reinvite(middleman.phone)">Resend Invitation</button>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
@@ -177,16 +125,13 @@ export default {
       'peopleDonatedTo',
       'donations',
     ]),
-    ...mapState(['user', 'beneficiaries', 'middlemen', 'invitations'])
+    ...mapState(['user', 'beneficiaries', 'middlemen'])
   },
   methods: {
     ...mapActions([
-      'depositToAccount', 
       'donate', 
       'nominateBeneficiary', 
-      'appointMiddleman', 
-      'getInvitations',
-      'resendInvitation'
+      'appointMiddleman',
     ]),
     moment,
     validateObj,
@@ -214,23 +159,6 @@ export default {
         this.nominateBeneficiary({nominator: this.user._id, beneficiary: `254${this.input.beneficiary}`});
         this.input.beneficiary = '';
       }
-    },
-    submitMiddleman() {
-      this.validationResults = [
-        true,
-        true,
-        this.validateObj(this.input, [this.validationRules[2]])[0],
-        true,
-        this.validateObj({ ...this.input, middlemen: this.middlemen }, [this.validationRules[4]])[0]
-      ]
-      if (!this.validationResults.includes(false)) {
-        // this.appointMiddleman({ middleman: this.middleman});
-        // this.input.middleman = '';
-      }
-    },
-    reinvite(middleman) {
-      console.log('Inside resend invitation: ', middleman);
-      this.resendInvitation({ middleman });
     },
     getClasses(nameOfInput) {
       switch(nameOfInput) {

@@ -52,7 +52,6 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { AccountService } from '@/services';
 import { validateObj } from './util';
 
 export default {
@@ -112,20 +111,6 @@ export default {
       if (!this.validationResults.includes(false)) {
         this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
       }
-    },
-    async canSignup() {
-      const user = await AccountService.getUser(this.phone);
-      if(!user) {
-        if (this.role === 'middleman') {
-          const middleman = await AccountService.getMiddleman(this.phone);
-          return !middleman ? false : true;
-        }
-        else {
-          const beneficiary = await AccountService.getBeneficiary(this.phone);
-          return !beneficiary ? true : false;
-        }
-      }
-      return true;
     }
   },
   watch: {

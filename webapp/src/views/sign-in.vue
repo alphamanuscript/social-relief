@@ -103,17 +103,6 @@ export default {
       }
     },
   },
-  watch: {
-    // async user (newVal, oldVal) {
-
-    // }
-    // async signinPhone(newVal) {
-    //   console.log('Watching signinPhone: ', newVal);
-    //   if(newVal) {
-    //     this.creds.phone = this.signinPhone;
-    //   }
-    // }
-  }
 }
 </script>
 <style lang="scss" scoped>

@@ -1,4 +1,4 @@
-export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+export type UserRole = 'donor' | 'beneficiary';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution';
 
@@ -77,22 +77,6 @@ export interface Beneficiary {
   owed: number[];
   receivedThisMonth: number;
 }
-
-export interface Middleman {
-  _id: string;
-  phone: string;
-  appointedBy: Appointer[];
-}
-
-export interface Invitation {
-  _id: string;
-  inviter: string;
-  invitee: string;
-  code: number;
-  generatedLink: string;
-  timestamp: Date;
-}
-
 export interface AppMessage {
   type: string;
   message: string;
@@ -101,9 +85,6 @@ export interface AppMessage {
 export interface AppState {
   user?: User;
   beneficiaries: User[];
-  middlemen: User[];
   transactions: Transaction[];
-  invitations: Invitation[];
-  invitation?: Invitation;
   message: AppMessage;
 }
