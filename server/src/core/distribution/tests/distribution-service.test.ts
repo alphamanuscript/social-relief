@@ -83,6 +83,14 @@ describe('DonationDistributionService tests', () => {
           transaction: 't_donor1_beneficiary3',
           success: true,
           error: null
+        },
+        {
+          donor: 'donor3',
+          beneficiary: 'beneficiary4',
+          amount: 1600,
+          transaction: 't_donor3_beneficiary4',
+          success: true,
+          error: null
         }
       ]);
 

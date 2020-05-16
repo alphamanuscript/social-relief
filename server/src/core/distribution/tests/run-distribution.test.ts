@@ -33,7 +33,11 @@ describe('Donation distribution steps', () => {
         // 500 + 1000
         { _id: 'beneficiary1', donors: ['donor1'], totalReceived: 500, remaining: 1500 },
         // 1200 + 170
-        { _id: 'beneficiary3', donors: ['donor1', 'donor2'], totalReceived: 1370, remaining: 630 }
+        { _id: 'beneficiary3', donors: ['donor1', 'donor2'], totalReceived: 1370, remaining: 630 },
+        // has no transactions, therefore totalReceived == 0
+        { _id: 'beneficiary4', donors: ['donor3'], totalReceived: 0, remaining: 2000 },
+        // has no transactions
+        { _id: 'beneficiary5', donors: [], totalReceived: 0, remaining: 2000 }
       ]);
     });
   });

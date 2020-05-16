@@ -55,7 +55,7 @@ export interface Transaction {
   fromExternal: boolean,
   toExternal: boolean,
   provider: string,
-  providerTransactionId: string,
+  providerTransactionId?: string,
   metadata: any
 }
 

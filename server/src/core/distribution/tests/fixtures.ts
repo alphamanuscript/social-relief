@@ -36,11 +36,13 @@ export const users = [
     roles: ['beneficiary'],
     donors: ['donor1', 'donor2']
   },
+  // this beneficiary has no associated transactions
   {
     _id: 'beneficiary4',
     roles: ['beneficiary'],
     donors: ['donor3']
   },
+  // this beneficiary has neither donors nor transactions
   {
     _id: 'beneficiary5',
     roles: ['beneficiary'],
