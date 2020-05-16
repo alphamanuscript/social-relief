@@ -34,7 +34,7 @@ import { Auth } from './services';
 
 export default {
   computed: {
-    ...mapState(['user', 'message']),
+    ...mapState(['user', 'message', 'transactions']),
     showNavigation () {
       this.showPageOrRedirect();
       if (this.$route.name === 'home' || this.$route.name === 'how-it-works' || this.$route.name === 'about') return true;
@@ -47,7 +47,8 @@ export default {
       'getCurrentUser', 'signUserOut'
     ]),
     async showPageOrRedirect () {
-      if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
+      const hasDataBeenFetched = this.user && this.transactions.length > 0;
+      if (this.$route.name === 'home' && Auth.isAuthenticated() && !hasDataBeenFetched) {
         await this.getCurrentUser();
         await this.getTransactions();
         await this.getBeneficiaries();

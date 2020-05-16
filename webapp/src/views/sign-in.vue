@@ -83,8 +83,6 @@ export default {
       }
     },
     async signin() {
-      console.log('Phone: ', this.signinCreds.phone);
-      console.log('Password: ', this.signinCreds.password);
       this.validationMessages = [
         'Invalid Phone number. Must start with 7 and be 9 digit long',
         'Invalid password. Must be at least one character long'
