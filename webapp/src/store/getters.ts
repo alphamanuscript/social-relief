@@ -3,12 +3,12 @@ import { AppState } from '../types';
 
 const getters: GetterTree<AppState, AppState> = {
   totalAmountDonated: ({ transactions }) => {
-    return transactions.filter(t => t.type == 'donation' && t.amount > 0)
+    return transactions.filter(t => t.type === 'donation' && t.status === 'success' && t.amount > 0)
       .map(t => t.amount)
       .reduce((a, b) => a + b, 0);
   },
   totalAmountDistributed: ({ transactions, user }) => {
-    return transactions.filter(t => t.type === 'distribution' && user && t.to === user._id)
+    return transactions.filter(t => t.type === 'distribution' && t.status === 'success' && user && t.from === user._id)
       .map(t => t.amount)
       .reduce((a, b) => a + b, 0);
   },
