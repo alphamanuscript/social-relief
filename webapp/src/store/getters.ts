@@ -13,7 +13,7 @@ const getters: GetterTree<AppState, AppState> = {
       .reduce((a, b) => a + b, 0);
   },
   peopleDonatedTo: ({ transactions, user }) => {
-    const recipients = transactions.filter(t => t.type === 'distribution' && (user && t.to !== user._id))
+    const recipients = transactions.filter(t => t.type === 'distribution' && t.status === 'success' && (user && t.to !== user._id))
       .map(t => t.to);
     const uniqueRecipients = new Set(recipients);
     return uniqueRecipients.size;
