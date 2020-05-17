@@ -1,0 +1,67 @@
+name: Deploy to review1
+
+on:
+  push:
+    branches:
+      - review1
+      - master
+      - release
+
+jobs:
+  deploy-server:
+    name: "Deploy Server"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - id: selector
+        name: 'Select target app'
+        uses: ./.github/actions/app-selector
+        with:
+          heroku-review1: ${{ secrets.HEROKU_REVIEW1_APP }}
+          heroku-staging: ${{ secrets.HEROKU_STAGING_APP }}
+          heroku-production: ${{ secrets.HEROKU_PRODUCTION_APP }}
+          firebase-review1: ${{ secrets.FIREBASE_REVIEW1_APP }}
+          firebase-staging: ${{ secrets.FIREBASE_STAGING_APP }}
+          firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
+      - name: 'Deploy to Heroku'
+        run: |
+          heroku config:set NPM_PRODUCTION=false YARN_PRODUCTION=false --app ${{ steps.selector.outputs.heroku-app }}
+          git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ steps.selector.outputs.heroku-app }}.git review1:master
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+  deploy-client:
+    name: "Deploy client"
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - id: selector
+        name: 'Select target app'
+        uses: ./.github/actions/app-selector
+        with:
+          heroku-review1: ${{ secrets.HEROKU_REVIEW1_APP }}
+          heroku-staging: ${{ secrets.HEROKU_STAGING_APP }}
+          heroku-production: ${{ secrets.HEROKU_PRODUCTION_APP }}
+          firebase-review1: ${{ secrets.FIREBASE_REVIEW1_APP }}
+          firebase-staging: ${{ secrets.FIREBASE_STAGING_APP }}
+          firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: 'Build client'
+        # ensure dev dependencies are installed, they're needed in the build process
+        run: |
+          cd webapp
+          yarn install --production=false
+          yarn build
+        env:
+          NODE_ENV: production
+          VUE_APP_API_URL: https://${{ steps.selector.outputs.heroku-app }}.herokuapp.com/api
+          VUE_APP_BASE_URL: https://${{ steps.selector.outputs.firebase-app }}.web.app
+      - name: 'Deploy to Firebase'
+        run: |
+          npm install -g firebase-tools
+          cd webapp
+          firebase deploy -P ${{ steps.selector.outputs.firebase-app }} --token ${{ secrets.FIREBASE_TOKEN }}
