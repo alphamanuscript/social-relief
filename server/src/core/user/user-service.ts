@@ -90,7 +90,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && RegExp(args.phone).test(e.message)) {
+      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
 
@@ -128,7 +128,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && RegExp(phone).test(e.message)) {
+      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
         throw createBeneficiaryNominationFailedError();
       }
       throw createDbOpFailedError(e.message);
