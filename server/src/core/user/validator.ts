@@ -3,7 +3,7 @@ import { throwValidationError } from '../error';
 import * as joi from '@hapi/joi'
 
 const userCreateSchema = joi.object().keys({
-  phone: joi.string().required(),
+  phone: joi.string().required().pattern(new RegExp(/^(\([254]{3}\))(?=.*\d)(?=.{9,9}$)/)),
   password: joi.string().required()
 });
 
