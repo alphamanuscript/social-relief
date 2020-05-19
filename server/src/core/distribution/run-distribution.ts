@@ -100,7 +100,7 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
       }
     },
     {
-      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
+      $replaceRoot: { newRoot: { $mergeObjects: [ { totalReceived: 0 }, { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
     },
     // only take beneficiaries who have not exceeded their period limit
     {
