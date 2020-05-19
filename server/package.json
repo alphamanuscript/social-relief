@@ -12,7 +12,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
-    "@types/hapi__joi": "^17.1.0",
     "@types/helmet": "^0.0.47",
     "@types/jest": "^25.2.1",
     "@types/mongodb": "^3.5.4",
@@ -22,7 +21,6 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@hapi/joi": "^17.1.1",
     "africastalking": "^0.4.5",
     "argon2": "^0.26.2",
     "cors": "^2.8.5",
