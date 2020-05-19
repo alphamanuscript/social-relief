@@ -29,10 +29,6 @@ export type ErrorCode =
   | 'systemLockLocked'
   | 'systemLockInvalidState';
 
-export function throwAppError(message: string, code: ErrorCode) {
-  throw new AppError(message, code);
-}
-
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
 }
@@ -78,4 +74,8 @@ export function createSystemLockBusyError(message: string = messages.ERROR_CONFL
 
 export function createSystemLockInvalidStateError(message: string) {
   return createAppError(message, 'systemLockInvalidState');
+}
+
+export function throwValidationError (message: string = 'Invalid arguments') {
+  return createAppError(message, 'validationError');
 }
