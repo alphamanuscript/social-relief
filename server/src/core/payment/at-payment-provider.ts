@@ -64,7 +64,7 @@ export class AtPaymentProvider implements PaymentProvider {
       recipients: [
         {
           phoneNumber: user.phone,
-          amount: String(amount),
+          amount,
           currencyCode: 'KES',
           metadata: {
             user: user._id,

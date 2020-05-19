@@ -6,71 +6,40 @@
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
-              <label for="phone">Phone</label>
+              <label for="phone">Phone (7xxxxxxxx)</label>
               <input
-                v-if="signupPhone.length"
-                :value="signupPhone"
-                id="phone"
-                type="text"
-                :class="getClasses('phone')"
-                disabled
-              >
-              <input
-                v-else
-                v-model="phone"
+                v-model="signUpCreds.phone"
                 id="phone"
                 type="text"
                 :class="getClasses('phone')"
               >
               <div class="invalid-feedback">
-                {{ phoneMessage }}
-              </div>
-            </div>
-            <div class="col-md-12 form-group">
-              <label for="email">Email</label>
-              <input
-                v-model="email"
-                id="email"
-                type="email"
-                :class="getClasses('email')"
-              >
-              <div class="invalid-feedback">
-                {{ emailMessage }}
+                {{ validationMessages[0] }}
               </div>
             </div>
             <div class="col-md-12 form-group">
               <label for="password">Password</label>
               <input
-                v-model="password"
+                v-model="signUpCreds.password"
                 id="password"
                 type="password"
                 :class="getClasses('password')"
               >
               <div class="invalid-feedback">
-                {{ passwordMessage }}
+                {{ validationMessages[1] }}
               </div>
             </div>
             <div class="col-md-12 form-group">
               <label for="confirmedPassword">Confirm Password</label>
               <input
-                v-model="confirmedPassword"
+                v-model="signUpCreds.confirmedPassword"
                 id="confirmedPassword"
                 type="password"
                 :class="getClasses('confirmedPassword')"
               >
               <div class="invalid-feedback">
-                {{ confirmedPasswordMessage }}
+                {{ validationMessages[2] }}
               </div>
-            </div>
-            <div class="col-md-12 form-group">
-              <label for="role">Role</label>
-              <select v-if="role === 'donor'" id="role" v-model="role" class="form-control">
-                <option selected value="donor">Donor</option>
-                <option value="middleman">Middleman</option>
-              </select>
-              <select v-else v-model="role" class="form-control">
-                <option value="middleman">Middleman</option>
-              </select>
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="signup">Sign Up</button>
@@ -83,129 +52,72 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { AccountService } from '@/services';
+import { validateObj } from './util';
 
 export default {
   name: 'sign-up',
   data() {
     return {
-      phone: '',
-      email: '',
-      password: '',
-      confirmedPassword: '',
-      role: 'donor',
-      phoneMessage: 'Please provide a valid phone',
-      emailMessage: 'Please provide a valid email',
-      passwordMessage: 'Please provide a valid password',
-      confirmedPasswordMessage: 'Please provide a valid password',
-      isValidPhone: true,
-      isValidEmail: true,
-      isValidPassword: true,
-      isValidConfirmedPassword: true
+      signUpCreds: {
+        phone: '',
+        password: '',
+        confirmedPassword: '',
+        role: 'donor'
+      },
+      validationMessages: [
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character',
+        'Confirmed password does not match with password'
+      ],
+      validationRules: [
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*])(?=.{8,18}$)[a-zA-Z][a-zA-Z\d]*[~!@#$%^&*?<>]*$/.test(creds.password) },
+        { test: (creds) => creds.confirmedPassword === creds.password }
+      ],
+      validationResults: [true, true, true],
     }
   },
   computed: {
-    ...mapState(['signupPhone'])
+    ...mapState(['user', 'message'])
   },
   methods: {
     ...mapActions(['createUser']),
+    validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
         case 'phone': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidPhone
-          }
-        case 'email': 
-          return {
-            'form-control': true,
-            'is-invalid': !this.isValidEmail
+            'is-invalid': !this.validationResults[0]
           }
         case 'password': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidPassword
+            'is-invalid': !this.validationResults[1]
           }
         case 'confirmedPassword': 
           return {
             'form-control': true,
-            'is-invalid': !this.isValidConfirmedPassword
+            'is-invalid': !this.validationResults[2]
           }
         default: 
           return {}
       }
     },
-    signup() {
-      console.log('Phone: ', this.phone);
-      console.log('Email: ', this.email);
-      console.log('Password: ', this.password);
-      console.log('Confirmed Password: ', this.confirmedPassword);
-      console.log('Role: ', this.role);
+    async signup() {
+      this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
+      this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
 
-      if (this.phone.length && this.email.length && this.password.length && this.confirmedPassword.length && 
-          this.password === this.confirmedPassword && this.canSignup()) {
-        console.log('All test cases pass');
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = true;
-        this.createUser({ phone: this.phone, email: this.email, role: this.role });
+      if (!this.validationResults.includes(false)) {
+        this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
       }
-      else if (!this.phone.length) {
-        console.log('Invalid phone');
-        this.phoneMessage = 'Please provide a valid phone';
-        this.isValidPhone = false;
-      }
-      else if (!this.email.length) {
-        console.log('Invalid email');
-        this.emailMessage = 'Please provide a valid email';
-        this.isValidEmail = false;
-      }
-      else if (!this.password.length) {
-        console.log('Invalid password');
-        this.passwordMessage = 'Please provide a valid password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = false;
-      }
-      else if (!this.confirmedPassword.length) {
-        console.log('Invalid confirmed password');
-        this.confirmedPasswordMessage = 'Please provide a valid password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = false;
-      }
-      else if (this.password !== this.confirmedPassword) {
-        console.log('Confirmed password does not match with password');
-        this.confirmedPasswordMessage = 'Confirmed password does not match with password';
-        this.isValidPhone = true;
-        this.isValidEmail = true;
-        this.isValidPassword = true;
-        this.isValidConfirmedPassword = false;
-      }
-    },
-    async canSignup() {
-      const user = await AccountService.getUser(this.phone);
-      if(!user) {
-        if (this.role === 'middleman') {
-          const middleman = await AccountService.getMiddleman(this.phone);
-          return !middleman ? false : true;
-        }
-        else {
-          const beneficiary = await AccountService.getBeneficiary(this.phone);
-          return !beneficiary ? true : false;
-        }
-      }
-      return true;
     }
   },
   watch: {
-    async signupPhone(newVal) {
-      console.log('Watching signupPhone: ', newVal);
-      if(newVal) {
-        this.phone = this.signupPhone;
-        this.role = 'middleman';
+    async message(newVal) {
+      if (newVal.type === 'error' && newVal.message === 'The specified phone number is already in use') {
+        this.validationMessages[0] = newVal.message;
+        this.validationResults= [false, true, true];
       }
     }
   }

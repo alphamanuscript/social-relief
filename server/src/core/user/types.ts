@@ -66,6 +66,12 @@ export interface UserService {
    */
   nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User>;
   /**
+   * retrieves all the users 
+   * nominated by the specified user
+   * @param user
+   */
+  getAllBeneficiariesByUser(user: string): Promise<User[]>;
+  /**
    * logs in the user if the credentials are valid,
    * generates a temporary access token for the user
    * @param args 
