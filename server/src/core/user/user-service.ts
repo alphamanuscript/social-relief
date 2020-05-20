@@ -10,6 +10,7 @@ import {
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import { validatesCreate, validatesNominateBeneficiary, validatesLogin } from '.'
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -72,6 +73,7 @@ export class Users implements UserService {
   }
   
   async create(args: UserCreateArgs): Promise<User> {
+    validatesCreate(args);
     const now = new Date();
     const user: DbUser = {
       _id: generateId(),
@@ -99,6 +101,7 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
+    validatesNominateBeneficiary(args);
     const { phone, nominator } = args;
     try {
       /*
@@ -146,6 +149,7 @@ export class Users implements UserService {
   }
 
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
+    validatesLogin(args);
     try {
       const user = await this.collection.findOne({ phone: args.phone });
 

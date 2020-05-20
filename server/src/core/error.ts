@@ -76,6 +76,6 @@ export function createSystemLockInvalidStateError(message: string) {
   return createAppError(message, 'systemLockInvalidState');
 }
 
-export function throwValidationError (message: string = 'Invalid arguments') {
+export function createValidationError (message: string = 'Invalid arguments') {
   return createAppError(message, 'validationError');
 }

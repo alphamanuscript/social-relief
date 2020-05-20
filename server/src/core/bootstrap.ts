@@ -2,7 +2,7 @@ import { AppConfig, App } from './app';
 import { Users } from './user';
 import { Transactions, AtPaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
-import { throwAppError } from './error';
+import { createAppError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 
@@ -45,6 +45,6 @@ async function getDbConnection(connectionUrl: string) {
   }
   catch (e)
   {
-    throwAppError(e.message, 'dbConnectionFailed');
+    createAppError(e.message, 'dbConnectionFailed');
   }
 }

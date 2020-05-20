@@ -33,6 +33,7 @@ export const errorHandler = (): ErrorRequestHandler =>
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
       case 'paymentRequestFailed':
       case 'nominationFailed':
+      case 'validationError':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       default:
         if (error instanceof SyntaxError) {

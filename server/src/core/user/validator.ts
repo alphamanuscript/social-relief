@@ -1,15 +1,18 @@
-import { UserCreateArgs } from './types'
-import { throwValidationError } from '../error';
-import * as joi from '@hapi/joi'
-
-const userCreateSchema = joi.object().keys({
-  phone: joi.string().required().pattern(new RegExp(/^(\([254]{3}\))(?=.*\d)(?=.{9,9}$)/)),
-  password: joi.string().required()
-});
+import { UserCreateArgs, UserNominateBeneficiaryArgs, UserLoginArgs } from './types'
+import { createValidationError } from '../error';
+import { userCreateSchema, userNominateBeneficiary, userLoginSchema } from './schema';
 
 export const validatesCreate = (args: UserCreateArgs) => {
-  const result = userCreateSchema.validate(args);
-  if (result.error) {
-    throwValidationError('Invalid phone or password');
-  }
+  const { error } = userCreateSchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const validatesLogin = (args: UserLoginArgs) => {
+  const { error } = userCreateSchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const validatesNominateBeneficiary = (args: UserNominateBeneficiaryArgs) => {
+  const { error } = userNominateBeneficiary.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
 }
