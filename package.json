@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "heroku-postbuild": "cd server && yarn && yarn build"
+  },
+  "cacheDirectories": ["server/node_modules"],
+  "engines": {
+    "node": "12.x",
+    "yarn": "1.22.4"
+  }
+}

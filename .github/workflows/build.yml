@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build-server:
+    name: Build and test server
+    runs-on: ubuntu-18.04
+
+    services:
+      mongo:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - run: yarn --frozen-lockfile
+        working-directory: server
+      - run: yarn test
+        working-directory: server
+      - run: yarn build
+        working-directory: server
+  build-webapp:
+    name: Build web client app
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - run: yarn --frozen-lockfile
+        working-directory: webapp
+      - run: yarn build
+        working-directory: webapp

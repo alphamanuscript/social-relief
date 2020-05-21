@@ -1,0 +1,29 @@
+name: 'Deploy'
+description: 'Chooses with Heroku and Firebase app to use as deployment target based on the branch'
+inputs:
+  heroku-review1:
+    description: 'Heroku review1 app'
+    required: true
+  heroku-staging:
+    description: 'Heroku staging app'
+    required: true
+  heroku-production:
+    description: 'Heroku production app'
+    required: true
+  firebase-review1:
+    description: 'Firebase review1 app'
+    required: true
+  firebase-staging:
+    description: 'Firebase staging app'
+    required: true
+  firebase-production:
+    description: 'Firebase production app'
+    required: true
+outputs:
+  heroku-app:
+    description: 'Selected heroku app'
+  firebase-app:
+    description: 'Selected firebase app'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
