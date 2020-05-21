@@ -21,11 +21,35 @@ const userCreateAndLoginSchema = joi.object().keys({
     })
 }); 
 
+const userTokenIdSchema = joi.object().keys({
+  tokenId: joi.string()
+    .required()
+    .pattern(new RegExp(/^[a-fA-F0-9]{64}$/))
+    .messages({
+      'any.required': `tokenId is required`,
+      'string.base': 'Invalid type, tokenId must be a string',
+      'string.empty': `Please enter tokenId`,
+      'string.pattern.base': `Invalid tokenId. Must contain hexadecimals only and be 64 characters long`
+    }),
+})
+
+const userIdSchema = joi.object().keys({
+  userId: joi.string()
+    .required()
+    .pattern(new RegExp(/^[a-fA-F0-9]{16}$/))
+    .messages({
+      'any.required': `userId is required`,
+      'string.base': 'Invalid type, userId must be a string',
+      'string.empty': `Please enter userId`,
+      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
+    }),
+})
+
 export const userCreateSchema = userCreateAndLoginSchema; 
 
 export const userLoginSchema = userCreateAndLoginSchema;
 
-export const userNominateBeneficiary = joi.object().keys({
+export const userNominateBeneficiarySchema = joi.object().keys({
   phone: joi.string()
     .required()
     .pattern(new RegExp(/^2547\d{8}$/)) // Starts with 2547 and ends with 8 digits
@@ -44,4 +68,12 @@ export const userNominateBeneficiary = joi.object().keys({
       'string.empty': `Please enter nominator's phone number`,
       'string.pattern.base': `Invalid nominator's phone number. Must start with 2547 and be 12 digit long`
     }),
-})
+});
+
+export const userGetAllBeneficiariesSchema = userIdSchema;
+
+export const userLogout = userTokenIdSchema;
+
+export const userGetByToken = userTokenIdSchema;
+
+export const userLogoutAll = userIdSchema;

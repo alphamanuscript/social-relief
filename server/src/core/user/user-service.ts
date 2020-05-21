@@ -10,7 +10,7 @@ import {
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
-import { validatesCreate, validatesNominateBeneficiary, validatesLogin } from '.'
+import { Validator } from '.'
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -73,7 +73,7 @@ export class Users implements UserService {
   }
   
   async create(args: UserCreateArgs): Promise<User> {
-    validatesCreate(args);
+    Validator.validatesCreate(args);
     const now = new Date();
     const user: DbUser = {
       _id: generateId(),
@@ -101,7 +101,7 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
-    validatesNominateBeneficiary(args);
+    Validator.validatesNominateBeneficiary(args);
     const { phone, nominator } = args;
     try {
       /*
@@ -139,6 +139,7 @@ export class Users implements UserService {
   }
 
   async getAllBeneficiariesByUser(userId: string): Promise<User[]> {
+    Validator.validatesGetAllBeneficiariesByUser(userId);
     try {
       const result = await this.collection.find({ donors: { $in: [userId] } }).toArray();
       return result;
@@ -149,7 +150,7 @@ export class Users implements UserService {
   }
 
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
-    validatesLogin(args);
+    Validator.validatesLogin(args);
     try {
       const user = await this.collection.findOne({ phone: args.phone });
 
@@ -171,6 +172,7 @@ export class Users implements UserService {
   }
 
   async getByToken(tokenId: string): Promise<User> {
+    Validator.validatesGetByToken(tokenId);
     try {
       const token = await this.tokenCollection.findOne({ _id: tokenId, expiresAt: { $gt: new Date() } });
       if (!token) throw createInvalidAccessTokenError();
@@ -187,6 +189,7 @@ export class Users implements UserService {
   }
 
   async logout(token: string): Promise<void> {
+    Validator.validatesLogout(token);
     try {
       const res = await this.tokenCollection.deleteOne({
         _id: token
@@ -201,6 +204,7 @@ export class Users implements UserService {
   }
 
   async logoutAll(user: string): Promise<void> {
+    Validator.validatesLogoutAll(user);
     try {
       await this.tokenCollection.deleteMany({ user });
     }
