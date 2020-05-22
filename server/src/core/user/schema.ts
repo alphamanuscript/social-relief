@@ -24,24 +24,24 @@ const userCreateAndLoginSchema = joi.object().keys({
 const userTokenIdSchema = joi.object().keys({
   tokenId: joi.string()
     .required()
-    .pattern(new RegExp(/^[a-fA-F0-9]{64}$/))
+    .pattern(new RegExp(/^[a-fA-F0-9]{128}$/))
     .messages({
-      'any.required': `tokenId is required`,
+      'string.required': `tokenId is required`,
       'string.base': 'Invalid type, tokenId must be a string',
       'string.empty': `Please enter tokenId`,
-      'string.pattern.base': `Invalid tokenId. Must contain hexadecimals only and be 64 characters long`
+      'string.pattern.base': `Invalid tokenId. Must contain hexadecimals only and be 128 characters long`
     }),
 })
 
 const userIdSchema = joi.object().keys({
   userId: joi.string()
     .required()
-    .pattern(new RegExp(/^[a-fA-F0-9]{16}$/))
+    .pattern(new RegExp(/^[a-fA-F0-9]{32}$/))
     .messages({
       'any.required': `userId is required`,
       'string.base': 'Invalid type, userId must be a string',
       'string.empty': `Please enter userId`,
-      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
+      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 32 characters long`
     }),
 })
 
@@ -77,3 +77,23 @@ export const userLogout = userTokenIdSchema;
 export const userGetByToken = userTokenIdSchema;
 
 export const userLogoutAll = userIdSchema;
+
+export const userInitiateDonation = joi.object().keys({
+  userId: joi.string()
+    .required()
+    .pattern(new RegExp(/^[a-fA-F0-9]{32}$/))
+    .messages({
+      'any.required': `userId is required`,
+      'string.base': 'Invalid type, userId must be a string',
+      'string.empty': `Please enter userId`,
+      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
+    }),
+  amount: joi.number()
+    .required()
+    .min(100)
+    .messages({
+      'any.required': `amount is required`,
+      'number.base': 'Invalid type, amount must be a number',
+      'number.min': `amount must be 100 or more`,
+    })
+});
