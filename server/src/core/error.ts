@@ -76,6 +76,10 @@ export function createSystemLockInvalidStateError(message: string) {
   return createAppError(message, 'systemLockInvalidState');
 }
 
-export function createValidationError (message: string = 'Invalid arguments') {
+export function createValidationError (message: string = messages.ERROR_INVALID_ARGUMENTS) {
   return createAppError(message, 'validationError');
+}
+
+export function createDbConnectionFailedError (message: string = messages.ERROR_DB_CONNECTION_FAILED) {
+  return createAppError(message, 'dbConnectionFailed');
 }

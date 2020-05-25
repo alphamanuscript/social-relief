@@ -3,7 +3,7 @@ import * as joi from '@hapi/joi';
 const userCreateAndLoginSchema = joi.object().keys({
   phone: joi.string()
     .required()
-    .pattern(new RegExp(/^2547\d{8}$/)) // Starts with 2547 and ends with 8 digits
+    .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
     .messages({
       'any.required': 'Phone is required',
       'string.base': 'Invalid type, phone must be a string',
@@ -12,19 +12,19 @@ const userCreateAndLoginSchema = joi.object().keys({
     }),
   password: joi.string()
     .required()
-    .pattern(new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*])(?=.{8,18}$)[a-zA-Z][a-zA-Z\d]*[~!@#$%^&*?<>]*$/))
+    .pattern(/^.{8,18}$/)
     .messages({
       'any.required': 'Password is required',
       'string.base': 'Invalid type, password must be a string',
       'string.empty': 'Please enter your password',
-      'string.pattern.base': 'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character'
+      'string.pattern.base': 'Invalid password. Must range between 8 and 18 characters'
     })
 }); 
 
 const userTokenIdSchema = joi.object().keys({
   tokenId: joi.string()
     .required()
-    .pattern(new RegExp(/^[a-fA-F0-9]{128}$/))
+    .pattern(/^[a-fA-F0-9]{128}$/)
     .messages({
       'string.required': `tokenId is required`,
       'string.base': 'Invalid type, tokenId must be a string',
@@ -36,7 +36,7 @@ const userTokenIdSchema = joi.object().keys({
 const userIdSchema = joi.object().keys({
   userId: joi.string()
     .required()
-    .pattern(new RegExp(/^[a-fA-F0-9]{32}$/))
+    .pattern(/^[a-fA-F0-9]{32}$/)
     .messages({
       'any.required': `userId is required`,
       'string.base': 'Invalid type, userId must be a string',
@@ -52,7 +52,7 @@ export const userLoginSchema = userCreateAndLoginSchema;
 export const userNominateBeneficiarySchema = joi.object().keys({
   phone: joi.string()
     .required()
-    .pattern(new RegExp(/^2547\d{8}$/)) // Starts with 2547 and ends with 8 digits
+    .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
     .messages({
       'any.required': 'Phone is required',
       'string.base': 'Invalid type, phone must be a string',
@@ -61,7 +61,7 @@ export const userNominateBeneficiarySchema = joi.object().keys({
     }),
   nominator: joi.string()
     .required()
-    .pattern(new RegExp(/^2547\d{8}$/))
+    .pattern(/^2547\d{8}$/)
     .messages({
       'any.required': `Nominator is required`,
       'string.base': 'Invalid type, nominator must be a string',
@@ -81,7 +81,7 @@ export const userLogoutAll = userIdSchema;
 export const userInitiateDonation = joi.object().keys({
   userId: joi.string()
     .required()
-    .pattern(new RegExp(/^[a-fA-F0-9]{32}$/))
+    .pattern(/^[a-fA-F0-9]{32}$/)
     .messages({
       'any.required': `userId is required`,
       'string.base': 'Invalid type, userId must be a string',
