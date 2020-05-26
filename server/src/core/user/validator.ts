@@ -37,7 +37,7 @@ export const validatesLogoutAll = (userId: string) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const validatesInitiateDonation = (userId: string, amount: number) => {
+export const validatesInitiateDonation = ({ userId, amount } : { userId: string; amount: number }) => {
   // The convert: false object is very important when dealing with number validation
   // and ensures that input is not converted from one type to another type during validation
   const { error } = schemas.userInitiateDonation.validate({ userId, amount }, {convert: false}); 

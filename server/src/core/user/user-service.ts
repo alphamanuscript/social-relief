@@ -248,7 +248,7 @@ export class Users implements UserService {
   }
 
   async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
-    validators.validatesInitiateDonation(userId, args.amount);
+    validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {
       const user = await this.getById(userId);
       const trx = await this.transactions.initiateDonation(user, args);
