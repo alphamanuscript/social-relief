@@ -1,5 +1,5 @@
 import * as validators from '../validator';
-import { testValidationSucceeds, testValidationFails } from './validation-test-helpers';
+import { testValidationSucceeds, testValidationFails } from '../../test-util';
 import { generateId, generateToken } from '../../util'
 
 describe('validatesCreate', () => {

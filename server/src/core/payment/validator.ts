@@ -8,6 +8,16 @@ export const validatesGetAllByUser = userValidators.validatesGetAllBeneficiaries
 export const validatesInitiateDonation = userValidators.validatesInitiateDonation;
 
 export const validatesSendDonation = ({ from, to, amount }: { from: string; to: string; amount: number}) => {
-  const { error } = schemas.transactionSendDonation.validate({ from, to, amount });
+  const { error } = schemas.transactionSendDonation.validate({ from, to, amount }, { convert: false });
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const validatesCheckUserTransactionStatus = ({ userId, transactionId }: { userId: string; transactionId: string}) => {
+  const { error } = schemas.transactionCheckUserTransactionStatus.validate({ userId, transactionId });
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const validatesHandleProviderNotification = (payload: any) => {
+  const { error } = schemas.transactionHandleProviderNotifcation.validate(payload);
   if (error) throw createValidationError(error.details[0].message);
 }

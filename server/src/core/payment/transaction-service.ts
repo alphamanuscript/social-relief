@@ -151,6 +151,7 @@ export class Transactions implements TransactionService {
   }
 
   async handleProviderNotification(payload: any): Promise<Transaction> {
+    validators.validatesHandleProviderNotification(payload);
     try {
       const now = new Date();
       const result = await this.provider.handlePaymentNotification(payload);
@@ -182,6 +183,7 @@ export class Transactions implements TransactionService {
   }
 
   async checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction> {
+    validators.validatesCheckUserTransactionStatus({ userId, transactionId });
     try {
       const trx = await this.collection.findOne({ _id: transactionId, $or: [{ from: userId }, { to: userId }] });
       if (!trx) throw createResourceNotFoundError(messages.ERROR_TRANSACTION_NOT_FOUND);
