@@ -255,7 +255,6 @@ export const testValidationFails = (validator: Function, testCases: any[]) => {
   for (const testCase of testCases) {
     try {
       validator(testCase);
-      console.log('testCase: ', testCase);
       fail(`should throw validation error for input ${testCase}`);
     }
     catch (e) {

@@ -18,6 +18,6 @@ export const validatesCheckUserTransactionStatus = ({ userId, transactionId }: {
 }
 
 export const validatesHandleProviderNotification = (payload: any) => {
-  const { error } = schemas.transactionHandleProviderNotifcation.validate(payload);
+  const { error } = schemas.transactionHandleProviderNotification.validate(payload);
   if (error) throw createValidationError(error.details[0].message);
 }

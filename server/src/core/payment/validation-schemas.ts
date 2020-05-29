@@ -43,10 +43,10 @@ export const transactionSendDonation = joi.object().keys({
     })
 });
 
-export const transactionHandleProviderNotifcation = joi.object({
+export const transactionHandleProviderNotification = joi.object({
   transactionId: joi.string()
     .required()
-    .pattern(/^ATPid_\[a-fA-F0-9]{32}$/) // Starts with 'ATPid_' and ends with 32 hexadecimal characters
+    .pattern(/^ATPid_[a-fA-F0-9]{32}$/) // Starts with 'ATPid_' and ends with 32 hexadecimal characters
     .messages({
       'any.required': `transactionId is required`,
       'string.base': `Invalid type, transactionId must be a string`,
