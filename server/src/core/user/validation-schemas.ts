@@ -45,11 +45,11 @@ const userIdSchema = joi.object().keys({
     }),
 })
 
-export const userCreateSchema = userCreateAndLoginSchema; 
+export const createInputSchema = userCreateAndLoginSchema; 
 
-export const userLoginSchema = userCreateAndLoginSchema;
+export const loginInputSchema = userCreateAndLoginSchema;
 
-export const userNominateBeneficiarySchema = joi.object().keys({
+export const nominateBeneficiaryInputSchema = joi.object().keys({
   phone: joi.string()
     .required()
     .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
@@ -70,15 +70,15 @@ export const userNominateBeneficiarySchema = joi.object().keys({
     }),
 });
 
-export const userGetAllBeneficiariesSchema = userIdSchema;
+export const getAllBeneficiariesInputSchema = userIdSchema;
 
-export const userLogout = userTokenIdSchema;
+export const logoutInputSchema = userTokenIdSchema;
 
-export const userGetByToken = userTokenIdSchema;
+export const getByTokenInputSchema = userTokenIdSchema;
 
-export const userLogoutAll = userIdSchema;
+export const logoutAllInputSchema = userIdSchema;
 
-export const userInitiateDonation = joi.object().keys({
+export const initiateDonationInputSchema = joi.object().keys({
   userId: joi.string()
     .required()
     .pattern(/^[a-fA-F0-9]{32}$/)

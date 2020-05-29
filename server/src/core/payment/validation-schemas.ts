@@ -12,9 +12,9 @@ const userIdSchema = joi.object().keys({
     }),
 });
 
-export const transactionGetAllByUser = userIdSchema;
+export const getAllByUserInputSchema = userIdSchema;
 
-export const transactionSendDonation = joi.object().keys({
+export const sendDonationInputSchema = joi.object().keys({
   from: joi.string()
     .required()
     .pattern(/^[a-fA-F0-9]{32}$/)
@@ -43,7 +43,7 @@ export const transactionSendDonation = joi.object().keys({
     })
 });
 
-export const transactionHandleProviderNotification = joi.object({
+export const handleProviderNotificationInputSchema = joi.object({
   transactionId: joi.string()
     .required()
     .pattern(/^ATPid_[a-fA-F0-9]{32}$/) // Starts with 'ATPid_' and ends with 32 hexadecimal characters
@@ -55,7 +55,7 @@ export const transactionHandleProviderNotification = joi.object({
     }),
 });
 
-export const transactionCheckUserTransactionStatus = joi.object().keys({
+export const checkUserTransactionStatusInputSchema = joi.object().keys({
   userId: joi.string()
     .required()
     .pattern(/^[a-fA-F0-9]{32}$/)
