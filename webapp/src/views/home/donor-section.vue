@@ -103,7 +103,7 @@ export default {
         middleman: '',
       },
       validationMessages: [
-        'Insufficient amount. Donations must be 100 and more',
+        'Insufficient amount. Donations must be at least of the amount 100',
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Beneficiary already nominated',
         'Middleman already appointed'

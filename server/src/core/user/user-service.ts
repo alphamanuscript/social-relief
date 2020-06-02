@@ -10,6 +10,7 @@ import {
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import * as validators from './validator'
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -72,6 +73,7 @@ export class Users implements UserService {
   }
   
   async create(args: UserCreateArgs): Promise<User> {
+    validators.validatesCreate(args);
     const now = new Date();
     const user: DbUser = {
       _id: generateId(),
@@ -99,6 +101,7 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
+    validators.validatesNominateBeneficiary(args);
     const { phone, nominator } = args;
     try {
       /*
@@ -136,6 +139,7 @@ export class Users implements UserService {
   }
 
   async getAllBeneficiariesByUser(userId: string): Promise<User[]> {
+    validators.validatesGetAllBeneficiariesByUser(userId);
     try {
       const result = await this.collection.find({ donors: { $in: [userId] } }).toArray();
       return result;
@@ -146,6 +150,7 @@ export class Users implements UserService {
   }
 
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
+    validators.validatesLogin(args);
     try {
       const user = await this.collection.findOne({ phone: args.phone });
 
@@ -167,6 +172,7 @@ export class Users implements UserService {
   }
 
   async getByToken(tokenId: string): Promise<User> {
+    validators.validatesGetByToken(tokenId);
     try {
       const token = await this.tokenCollection.findOne({ _id: tokenId, expiresAt: { $gt: new Date() } });
       if (!token) throw createInvalidAccessTokenError();
@@ -183,6 +189,7 @@ export class Users implements UserService {
   }
 
   async logout(token: string): Promise<void> {
+    validators.validatesLogout(token);
     try {
       const res = await this.tokenCollection.deleteOne({
         _id: token
@@ -197,6 +204,7 @@ export class Users implements UserService {
   }
 
   async logoutAll(user: string): Promise<void> {
+    validators.validatesLogoutAll(user);
     try {
       await this.tokenCollection.deleteMany({ user });
     }
@@ -240,6 +248,7 @@ export class Users implements UserService {
   }
 
   async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
+    validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {
       const user = await this.getById(userId);
       const trx = await this.transactions.initiateDonation(user, args);

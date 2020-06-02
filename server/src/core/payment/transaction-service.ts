@@ -4,6 +4,7 @@ import { generateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
 import * as messages from '../messages';
+import * as validators from './validator';
 
 const COLLECTION = 'transactions';
 
@@ -53,6 +54,7 @@ export class Transactions implements TransactionService {
   }
 
   async getAllByUser(userId: string): Promise<Transaction[]> {
+    validators.validatesGetAllByUser(userId);
     try {
       const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).toArray();
       return result;
@@ -63,6 +65,7 @@ export class Transactions implements TransactionService {
   }
 
   async initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction> {
+    validators.validatesInitiateDonation({ userId: user._id, amount: args.amount })
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
       to: user._id,
@@ -87,6 +90,7 @@ export class Transactions implements TransactionService {
   }
 
   async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
+    validators.validatesSendDonation({ from: from._id, to: to._id, amountArg: args });
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
       to: to._id,
@@ -147,6 +151,7 @@ export class Transactions implements TransactionService {
   }
 
   async handleProviderNotification(payload: any): Promise<Transaction> {
+    validators.validatesHandleProviderNotification(payload);
     try {
       const now = new Date();
       const result = await this.provider.handlePaymentNotification(payload);
@@ -178,6 +183,7 @@ export class Transactions implements TransactionService {
   }
 
   async checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction> {
+    validators.validatesCheckUserTransactionStatus({ userId, transactionId });
     try {
       const trx = await this.collection.findOne({ _id: transactionId, $or: [{ from: userId }, { to: userId }] });
       if (!trx) throw createResourceNotFoundError(messages.ERROR_TRANSACTION_NOT_FOUND);
