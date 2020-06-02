@@ -630,13 +630,6 @@
   dependencies:
     "@types/express" "*"
 
-"@types/express-rate-limit@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/express-rate-limit/-/express-rate-limit-5.0.0.tgz#46b0dbae748a53347a5e1c3bdbb5a54e3f5c34f9"
-  integrity sha512-tVRtvshGIYTNiUET3XJaONn1Li0V9mhi9Tb23Kf3rJ19hsgbCywkZBOf5Xhd9OXBO0Ssw7B+qAHL77xe/TiqUw==
-  dependencies:
-    "@types/express" "*"
-
 "@types/express-serve-static-core@*":
   version "4.17.3"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.3.tgz#dc8068ee3e354d7fba69feb86b3dfeee49b10f09"
@@ -661,19 +654,10 @@
   dependencies:
     "@types/node" "*"
 
-<<<<<<< HEAD
 "@types/hapi__joi@^17.1.0":
   version "17.1.0"
   resolved "https://registry.yarnpkg.com/@types/hapi__joi/-/hapi__joi-17.1.0.tgz#b5324c423a49697ea0926f19cc90c6f5cbb68391"
   integrity sha512-zqPGKJ3FUiut0NZUstLBm3gAkSMwWwn/soNi/KvefJfhlaQYYoLnMiMCaMN97dPK4iKjFSIVwRbHANSgUCKm7g==
-=======
-"@types/helmet@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/@types/helmet/-/helmet-0.0.47.tgz#ec5161541b649142205b7c558bca14801c5ce129"
-  integrity sha512-TcHA/djjdUtrMtq/QAayVLrsgjNNZ1Uhtz0KhfH01mrmjH44E54DA1A0HNbwW0H/NBFqV+tGMo85ACuEhMXcdg==
-  dependencies:
-    "@types/express" "*"
->>>>>>> master
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.1"
