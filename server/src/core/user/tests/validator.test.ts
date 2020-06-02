@@ -3,14 +3,14 @@ import { testValidationSucceeds, testValidationFails } from '../../test-util';
 import { generateId, generateToken } from '../../util'
 
 describe('validatesCreate', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesCreate, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesCreate, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '+254729291091', password: 'dsks12jnDM4' },
@@ -27,14 +27,14 @@ describe('validatesCreate', () => {
 });
 
 describe('validatesLogin', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesLogin, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesLogin, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '+254729291091', password: 'dsks12jnDM4' },
@@ -46,13 +46,13 @@ describe('validatesLogin', () => {
 });
 
 describe('validatesNominateBeneficiary', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesNominateBeneficiary, [
       { phone: '254729291091', nominator: '254729311023' },
       { phone: '254729311023', nominator: '254729291091' }
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesNominateBeneficiary, [
       { phone: '25472929109', nominator: '2547293110232' },
       { phone: '+254729291091', nominator: '254729311023' },
@@ -64,12 +64,12 @@ describe('validatesNominateBeneficiary', () => {
 });
 
 describe('validatesGetAllBeneficiariesByUser', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesGetAllBeneficiariesByUser, [
       generateId(),
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesGetAllBeneficiariesByUser, [
       'dksllcjzcsdmqozm123E2OE',
       'jkshvfb,cnsg&"àéà"ç22013933392028RI3CKF..V?K0332EECDKRU842823.KSkflkfvvnfrozcc32E9ZEZIZRZRZOR391029Egjkvkvdfc ',
@@ -79,12 +79,12 @@ describe('validatesGetAllBeneficiariesByUser', () => {
 });
 
 describe('validatesGetByToken', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesGetByToken, [
       generateToken(),
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesGetByToken, [
       undefined,
       'shvf?K0332EECDKRU842823.KSkflkfvvnE9ZEZIZRZRZOR391029EgjkvkvdfcFMSnd',
@@ -97,12 +97,12 @@ describe('validatesGetByToken', () => {
 });
 
 describe('validatesLogout', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesLogout, [
       generateToken(),
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesLogout, [
       null,
       generateId(),
@@ -113,12 +113,12 @@ describe('validatesLogout', () => {
 });
 
 describe('validatesLogoutAll', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesLogoutAll, [
       generateId(),
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesLogoutAll, [
       'shvf?K0332EECDKRU842823.KSkflkfvvnE9ZEZIZRZRZOR391029EgjkvkvdfcFMSnd',
       104382,
@@ -129,7 +129,7 @@ describe('validatesLogoutAll', () => {
 });
 
 describe('validatesInitiateDonation', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesInitiateDonation, [
       { userId: generateId(), amount: 100 },
       { userId: generateId(), amount: 500 },
@@ -138,7 +138,7 @@ describe('validatesInitiateDonation', () => {
       { userId: generateId(), amount: 527350 },
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesInitiateDonation, [
       { userId: 'fhdgjqjqmqcqmlcq', amount: 100 },
       { userId: '', amount: 100 },

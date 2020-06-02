@@ -90,7 +90,7 @@ export class Transactions implements TransactionService {
   }
 
   async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
-    validators.validatesSendDonation({ from: from._id, to: to._id, amount: args.amount });
+    validators.validatesSendDonation({ from: from._id, to: to._id, amountArg: args });
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
       to: to._id,

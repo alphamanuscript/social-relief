@@ -3,12 +3,12 @@ import { testValidationSucceeds, testValidationFails } from '../../test-util';
 import { generateId, generateToken } from '../../util'
 
 describe('validatesGetAllByUser', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesGetAllByUser, [
       generateId(),
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesGetAllByUser, [
       123832929223627,
       'dksllcjzcsdmqozm123E2OE',
@@ -18,7 +18,7 @@ describe('validatesGetAllByUser', () => {
 })
 
 describe('validatesInitiateDonation', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesInitiateDonation, [
       { userId: generateId(), amount: 100 },
       { userId: generateId(), amount: 500 },
@@ -27,7 +27,7 @@ describe('validatesInitiateDonation', () => {
       { userId: generateId(), amount: 527350 },
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesInitiateDonation, [
       { userId: 'fhdgjqjqmqcqmlcq', amount: 100 },
       { userId: '', amount: 100 },
@@ -42,46 +42,46 @@ describe('validatesInitiateDonation', () => {
 })
 
 describe('validatesSendDonation', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesSendDonation, [
-      { from: generateId(), to: generateId(), amount: 100 },
-      { from: generateId(), to: generateId(), amount: 20 },
-      { from: generateId(), to: generateId(), amount: 0 },
-      { from: generateId(), to: generateId(), amount: 500 },
-      { from: generateId(), to: generateId(), amount: 2000 },
+      { from: generateId(), to: generateId(), amountArg: { amount: 100 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 20 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 0 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 500 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 2000 } },
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw an error if the argument includes unexpected fields or input is not valid', () => {
     testValidationFails(validators.validatesSendDonation, [
-      { from: 'fhdgjqjqmqcqmlcq', amount: 100 },
-      { from: 'fhdgjqjqmqcqmlcq', to: 'shcbsdnlcced', amount: 850 },
-      { from: '', amount: 1000 },
-      { from: '', to: '', amount: 425 },
-      { from: 34256, amount: 2000 },
-      { from: {}, amount: 530 },
-      { from: {}, to: {}, amount: 530 },
-      { to: {}, amount: 530 },
-      { amount: 100 },
+      { from: 'fhdgjqjqmqcqmlcq', amountArg: { amount: 100 } },
+      { from: 'fhdgjqjqmqcqmlcq', to: 'shcbsdnlcced', amountArg: { amount: 850 } },
+      { from: '', amountArg: { amount: 1000 } },
+      { from: '', to: '', amountArg: { amount: 425 } },
+      { from: 34256, amountArg: { amount: 2000 } },
+      { from: {}, amountArg: { amount: 530 } },
+      { from: {}, to: {}, amountArg: { amount: 530 } },
+      { to: {}, amountArg: 530 },
+      { amountArg: { amount: 100 } },
       { from: generateId() },
       { from: generateId(), to: generateId() },
-      { from: generateId(), amount: 200 },
-      { from: generateId(), amount: 10 },
-      { from: generateId(), amount: '1000' },
-      { from: generateId(), to: generateId(), amount: '1000' },
-      { from: generateId(), to: generateId(), amount: 10905 },
-      { from: generateId(), to: generateId(), amount: 527350 },
+      { from: generateId(), amountArg: { amount: 200, someField1: 'Hey', someField2: 34 } },
+      { from: generateId(), amountArg: { amount: 10 } },
+      { from: generateId(), amountArg: { amount: '1000' } },
+      { from: generateId(), to: generateId(), amountArg: { amount: '1000', someField1: 3492.53 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 10905 } },
+      { from: generateId(), to: generateId(), amountArg: { amount: 527350 } },
     ]);
   });
 })
 
 describe('validatesCheckUserTransactionStatus', () => {
-  it('should not throw error if all test cases are valid', () => {
+  it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesCheckUserTransactionStatus, [
       { userId: generateId(), transactionId: generateId() },
       { userId: generateId(), transactionId: generateId() }
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesCheckUserTransactionStatus, [
       { userId: 'fhdgjqjqmqcqmlcq', transactionId: 'fhdgjqjqmqcqmlcq' },
       { userId: '', transactionId: '' },
@@ -100,7 +100,7 @@ describe('validatesHandleProviderNotification', () => {
       { transactionId: `ATPid_${generateId()}` }
     ]);
   });
-  it('should throw error for all invalid test cases', () => {
+  it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesHandleProviderNotification, [
       { transactionId: 'shvf?K0332EECDKRU842823.KSkflkfvvnE9ZEZIZRZRZOR391029EgjkvkvdfcFMSnd' },
       { transactionId: generateId() },
