@@ -60,7 +60,6 @@ export default {
       }
     },
     async signout() {
-      console.log('Signing out...');
       await this.signUserOut();
     }
   }
