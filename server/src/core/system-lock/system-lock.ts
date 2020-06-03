@@ -2,6 +2,7 @@ import { Collection } from 'mongodb';
 import { SystemLock, SystemLockRecord } from './types';
 import { createSystemLockBusyError, AppError, createDbOpFailedError, createSystemLockInvalidStateError } from '../error';
 import * as messages from '../messages';
+import { generateId } from '../util';
 
 
 // this is a bad name. We should just use a common prefix/suffix for interfaces
@@ -14,7 +15,7 @@ export class SystemLockManager implements SystemLock {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: { $ne: true } },
-        { $set: { locked: true, updatedAt: new Date() } },
+        { $set: { key: generateId(), locked: true, updatedAt: new Date() } },
         { upsert: true });
 
       if (!res.ok) {
@@ -32,7 +33,7 @@ export class SystemLockManager implements SystemLock {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: true },
-        { $set: { locked: false, updated: new Date() } });
+        { $set: { key: generateId(), locked: false, updated: new Date() } });
 
       // TODO: It might not be necessary to throw an error when releasing a free lock
       // but releasing a free lock is an indication of logic error

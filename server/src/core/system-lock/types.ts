@@ -1,5 +1,6 @@
 export interface SystemLockRecord {
   _id: string;
+  key: string;
   locked: boolean;
   updatedAt: Date;
 }
