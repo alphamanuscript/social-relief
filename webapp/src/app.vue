@@ -7,7 +7,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div v-if="showNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div v-if="showLoggedInNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
               <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
@@ -23,6 +23,16 @@
             </li>
           </ul>
         </div>
+        <div v-else>
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/sign-in">Sign In</router-link>
+            </li>
+            <li class="nav-item active">
+              <router-link class="nav-link" to="/sign-up">Sign Up</router-link>
+            </li>
+          </ul>
+        </div>
       </nav>
     </div>
     <router-view />
@@ -35,10 +45,10 @@ import { Auth } from './services';
 export default {
   computed: {
     ...mapState(['user', 'message', 'transactions']),
-    showNavigation () {
+    showLoggedInNavigation () {
       this.showPageOrRedirect();
-      if (this.$route.name === 'home' || this.$route.name === 'how-it-works' || this.$route.name === 'about') return true;
-      return false;
+      if (this.$route.name === 'sign-in' || this.$route.name === 'sign-up') return false
+      return true
     }
   },
   methods: {
