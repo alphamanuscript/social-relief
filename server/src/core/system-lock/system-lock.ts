@@ -15,7 +15,7 @@ export class SystemLockManager implements SystemLock {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: { $ne: true } },
-        { $set: { locked: true, updatedAt: new Date() } },
+        { $set: { key: this.key, locked: true, updatedAt: new Date() } },
         { upsert: true });
 
       if (!res.ok) {
