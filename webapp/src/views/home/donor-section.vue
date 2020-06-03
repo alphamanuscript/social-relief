@@ -42,7 +42,7 @@
         <h3>Donation history</h3>
         <ul v-if="donations.length" class="list-group">
           <li v-for="donation in donations" class="list-group-item" :key="donation._id">
-            {{ donation.amount }} @ {{ getDonationDate(donation) }}
+            {{ donation.expectedAmount }} @ {{ getDonationDate(donation) }} {{ donation.status === 'paymentRequested' ? '| PENDING' : ''  }}
           </li>
         </ul>
         <p v-else>No donations made as of yet</p>
