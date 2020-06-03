@@ -8,14 +8,14 @@ import { generateId } from '../util';
 // this is a bad name. We should just use a common prefix/suffix for interfaces
 // to make it easier to name classes
 export class SystemLockManager implements SystemLock {
-  constructor(private id: string, private collection: Collection<SystemLockRecord>) {
+  constructor(private id: string, private key: string, private collection: Collection<SystemLockRecord>) {
   }
   
   async lock() {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: { $ne: true } },
-        { $set: { key: generateId(), locked: true, updatedAt: new Date() } },
+        { $set: { locked: true, updatedAt: new Date() } },
         { upsert: true });
 
       if (!res.ok) {
@@ -33,7 +33,7 @@ export class SystemLockManager implements SystemLock {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: true },
-        { $set: { key: generateId(), locked: false, updated: new Date() } });
+        { $set: { locked: false, updated: new Date() } });
 
       // TODO: It might not be necessary to throw an error when releasing a free lock
       // but releasing a free lock is an indication of logic error
