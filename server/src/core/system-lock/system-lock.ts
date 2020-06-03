@@ -32,7 +32,7 @@ export class SystemLockManager implements SystemLock {
   async unlock() {
     try {
       const res = await this.collection.findOneAndUpdate(
-        { _id: this.id, locked: true },
+        { _id: this.id, key: this.key, locked: true },
         { $set: { locked: false, updated: new Date() } });
 
       // TODO: It might not be necessary to throw an error when releasing a free lock
