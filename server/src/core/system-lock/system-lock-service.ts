@@ -17,7 +17,7 @@ export class SystemLocks implements SystemLockService {
 
   distribution(): SystemLock {
     if (!this.distributionLock) {
-      this.distributionLock = new SystemLockHandle(DISTRIBUTION_LOCK, HANDLE_KEY, this.collection);
+      this.distributionLock = new SystemLockHandle(DISTRIBUTION_LOCK, this.collection);
     }
 
     return this.distributionLock;
