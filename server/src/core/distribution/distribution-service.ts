@@ -18,8 +18,9 @@ export class DonationDistributions implements DonationDistributionService {
   }
 
   async distributeDonations(): Promise<DonationDistributionResults> {
+    const handle = this.args.systemLocks.distribution();
     try {
-      await this.args.systemLocks.distribution().lock();
+      await handle.lock();
       const startedAt = new Date();
       const distributions = await runDonationDistribution(this.db, this.args);
       const finishedAt = new Date();
@@ -45,6 +46,9 @@ export class DonationDistributions implements DonationDistributionService {
       
       if (e instanceof AppError) throw e;
       throw createAppError(e.message, 'dbOpFailed');
+    }
+    finally {
+      await handle.unlock();
     }
   }
 }
