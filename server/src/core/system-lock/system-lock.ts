@@ -11,21 +11,19 @@ export class SystemLockManager implements SystemLock {
   private handleKey: string = null;
 
   constructor(private id: string, private collection: Collection<SystemLockRecord>) {
+    this.handleKey = generateId();
   }
   
   async lock() {
     try {
-      const HANDLE_KEY = generateId();
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: { $ne: true } },
-        { $set: { key: HANDLE_KEY, locked: true, updatedAt: new Date() } },
+        { $set: { key: this.handleKey, locked: true, updatedAt: new Date() } },
         { upsert: true });
 
       if (!res.ok) {
         throw createSystemLockBusyError();
       }
-
-      this.handleKey = HANDLE_KEY;
     }
     catch (e) {
       if (e instanceof AppError) throw e;
