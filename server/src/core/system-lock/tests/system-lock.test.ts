@@ -21,6 +21,10 @@ describe('SystemLock tests', () => {
   });
 
   describe('lock', () => {
+    beforeEach(async () => {
+      await dbUtils.resetCollectionWith(systemLocks);
+    });
+
     test('should set locked:true on lock record', async () => {
       const lock = new SystemLockManager('lock2', dbUtils.getCollection());
       await lock.lock();
@@ -29,7 +33,6 @@ describe('SystemLock tests', () => {
     });
 
     test('should create lock record with locked:true if record does not exist', async () => {
-      await dbUtils.dropCollection();
       const lock = new SystemLockManager('lock2', dbUtils.getCollection());
       await lock.lock();
       const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
@@ -42,12 +45,17 @@ describe('SystemLock tests', () => {
         await lock.lock();
       }
       catch (e) {
+        console.log('e: ', e);
         expect(e.code).toBe('systemLockLocked');
       }
     });
   });
 
   describe('unlock', () => {
+    beforeEach(async () => {
+      await dbUtils.resetCollectionWith(systemLocks);
+    });
+
     test('should set locked to false if locked', async () => {
       const lock = new SystemLockManager('lock1', dbUtils.getCollection());
       await lock.unlock();
@@ -78,6 +86,10 @@ describe('SystemLock tests', () => {
   });
 
   describe('ensureUnlocked', () => {
+    beforeEach(async () => {
+      await dbUtils.resetCollectionWith(systemLocks);
+    });
+
     test('should succeed if lock is not locked', async () => {
       const lock = new SystemLockManager('lock2', dbUtils.getCollection());
       await lock.ensureUnlocked();
