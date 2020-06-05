@@ -1,7 +1,7 @@
 export const systemLocks = [
   {
     _id: 'lock1',
-    locked: true,
+    locked: false,
     updatedAt: new Date()
   },
   {

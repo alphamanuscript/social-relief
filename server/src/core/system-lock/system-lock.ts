@@ -38,13 +38,8 @@ export class SystemLockManager implements SystemLock {
         { _id: this.id, key: this.handleKey, locked: true },
         { $set: { locked: false, updated: new Date() } });
 
-      // TODO: It might not be necessary to throw an error when releasing a free lock
-      // but releasing a free lock is an indication of logic error
-      // If we don't throw an error, we should at least log a warning
-      if (!res.value) throw createSystemLockInvalidStateError(messages.ERROR_ATTEMPT_TO_RELEASE_FREE_LOCK);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
       throw createDbOpFailedError(e.message);
     }
   }
