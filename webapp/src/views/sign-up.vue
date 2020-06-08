@@ -71,7 +71,7 @@ export default {
       ],
       validationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*])(?=.{8,18}$)[a-zA-Z][a-zA-Z\d]*[~!@#$%^&*?<>]*$/.test(creds.password) },
+        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W_)(?=.{8,18}).*$/.test(creds.password) },
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
       validationResults: [true, true, true],
