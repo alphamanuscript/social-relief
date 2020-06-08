@@ -1,6 +1,7 @@
 import { createDbUtils } from '../../test-util';
 import { systemLocks } from './fixtures';
 import { SystemLockManager } from '../system-lock';
+import { generateId } from '../../util';
 
 const DB = '_crowd_relief_system_lock_tests_';
 const COLLECTION = 'system_locks';
@@ -10,37 +11,37 @@ describe('SystemLock tests', () => {
 
   beforeAll(async () => {
     await dbUtils.setupDb();
-  });
+  }, 10000);
 
   afterAll(async () => {
     await dbUtils.tearDown();
-  });
+  }, 10000);
 
-  // beforeEach(async () => {
-  //   await dbUtils.resetCollectionWith(systemLocks);
-  // }, 10000);
+  beforeEach(async () => {
+    await dbUtils.resetCollectionWith(systemLocks);
+  }, 10000);
 
   describe('lock', () => {
-    beforeAll(async () => {
-      await dbUtils.resetCollectionWith(systemLocks);
-    }, 10000);
-
     test('should set locked:true on lock record', async () => {
-      const lock = new SystemLockManager('lock2', dbUtils.getCollection());
+      const key = generateId();
+      const lock = new SystemLockManager('lock2', key, dbUtils.getCollection());
       await lock.lock();
       const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.key).toBe(key);
       expect(record.locked).toBe(true);
     }, 10000);
 
     test('should create lock record with locked:true if record does not exist', async () => {
-      const lock = new SystemLockManager('lock2', dbUtils.getCollection());
+      await dbUtils.dropCollection();
+      const key = generateId()
+      const lock = new SystemLockManager('lock2', key, dbUtils.getCollection());
       await lock.lock();
       const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
       expect(record.locked).toBe(true);
     }, 10000);
 
     test('should throw error if already locked', async () => {
-      const lock = new SystemLockManager('lock2', dbUtils.getCollection());
+      const lock = new SystemLockManager('lock1', generateId(), dbUtils.getCollection());
       try {
         await lock.lock();
       }
@@ -51,51 +52,27 @@ describe('SystemLock tests', () => {
   });
 
   describe('unlock', () => {
-    beforeAll(async () => {
-      await dbUtils.resetCollectionWith(systemLocks);
-    }, 10000);
-
     test('should set locked to false if locked', async () => {
-      const lock = new SystemLockManager('lock1', dbUtils.getCollection());
-      const records = await dbUtils.getCollection().find({ }).toArray();
-      console.log('In unlock records: ', records);
-      await lock.lock();
-      let record = await dbUtils.getCollection().findOne({ _id: 'lock1' });
-      console.log('after lock record: ', record);
-      expect(record.locked).toBe(true);
+      const key = generateId()
+      const lock = new SystemLockManager('lock1', key, dbUtils.getCollection());
       await lock.unlock();
-      record = await dbUtils.getCollection().findOne({ _id: 'lock1' });
-      console.log('after unlock record: ', record);
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock1' });
+      expect(record.key).toBe(key);
       expect(record.locked).toBe(false);
     }, 10000);
-    
-    test('should not set locked to false if not locked', async () => {
-      const lock = new SystemLockManager('lock2', dbUtils.getCollection());
+
+    test('should not change lock state if already unlocked', async () => {
+      await dbUtils.dropCollection();
+      const lock = new SystemLockManager('lock2', generateId(), dbUtils.getCollection());
       let record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
       expect(record.locked).toBe(false);
       await lock.unlock();
       record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
-      // console.log('record: ', record);
       expect(record.locked).toBe(false);
-    }, 10000);
-
-    test('should throw dbOpFailed error if lock does not exist', async () => {
-      await dbUtils.dropCollection();
-      const lock = new SystemLockManager('lock2', dbUtils.getCollection());
-      try {
-        await lock.unlock();
-      }
-      catch (e) {
-        expect(e.code).toBe('dbOpFailed');
-      }
     }, 10000);
   });
 
   // describe('ensureUnlocked', () => {
-  //   beforeEach(async () => {
-  //     await dbUtils.resetCollectionWith(systemLocks);
-  //   });
-
   //   test('should succeed if lock is not locked', async () => {
   //     const lock = new SystemLockManager('lock2', dbUtils.getCollection());
   //     await lock.ensureUnlocked();

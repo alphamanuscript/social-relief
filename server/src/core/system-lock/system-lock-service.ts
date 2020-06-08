@@ -5,7 +5,6 @@ import { generateId } from '../util';
 
 const COLLECTION = 'system_locks';
 const DISTRIBUTION_LOCK = 'donationDistributionLock';
-const HANDLE_KEY = generateId()
 
 export class SystemLocks implements SystemLockService {
   private collection: Collection<SystemLockRecord>;
@@ -17,7 +16,7 @@ export class SystemLocks implements SystemLockService {
 
   distribution(): SystemLock {
     if (!this.distributionLock) {
-      this.distributionLock = new SystemLockHandle(DISTRIBUTION_LOCK, this.collection);
+      this.distributionLock = new SystemLockHandle(DISTRIBUTION_LOCK, generateId(), this.collection);
     }
 
     return this.distributionLock;

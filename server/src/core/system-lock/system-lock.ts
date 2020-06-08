@@ -8,17 +8,14 @@ import { generateId } from '../util';
 // this is a bad name. We should just use a common prefix/suffix for interfaces
 // to make it easier to name classes
 export class SystemLockManager implements SystemLock {
-  private handleKey: string = null;
-
-  constructor(private id: string, private collection: Collection<SystemLockRecord>) {
-    this.handleKey = generateId();
+  constructor(private id: string, private key: string, private collection: Collection<SystemLockRecord>) {
   }
   
   async lock() {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: { $ne: true } },
-        { $set: { key: this.handleKey, locked: true, updatedAt: new Date() } },
+        { $set: { key: this.key, locked: true, updatedAt: new Date() } },
         { upsert: true });
 
       if (!res.ok) {
@@ -34,10 +31,10 @@ export class SystemLockManager implements SystemLock {
 
   async unlock() {
     try {
-      const res = await this.collection.findOneAndUpdate(
-        { _id: this.id, key: this.handleKey, locked: true },
-        { $set: { locked: false, updated: new Date() } });
-
+      await this.collection.findOneAndUpdate(
+        { _id: this.id, key: this.key, locked: true },
+        { $set: { locked: false, updated: new Date() } 
+      });
     }
     catch (e) {
       throw createDbOpFailedError(e.message);
