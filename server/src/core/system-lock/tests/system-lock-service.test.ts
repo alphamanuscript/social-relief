@@ -9,11 +9,11 @@ describe('SystemLockService tests', () => {
 
   beforeAll(async () => {
     await dbUtils.setupDb();
-  });
+  }, 10000);
 
   afterAll(async () => {
     await dbUtils.tearDown();
-  });
+  }, 10000);
 
   describe('distribution lock', () => {
     test('distribution lock', async () => {
@@ -41,6 +41,6 @@ describe('SystemLockService tests', () => {
       await locks.distribution().unlock();
       await expectAsyncAppError(() => locks.distribution().unlock(), 'systemLockInvalidState');
       await locks.distribution().ensureUnlocked();
-    });
+    }, 10000);
   });
 });
