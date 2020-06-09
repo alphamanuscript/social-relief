@@ -40,6 +40,7 @@ export const errorHandler = (): ErrorRequestHandler =>
           return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST,
             `Invalid syntax in request body: ${error.message}`);
         }
+
         return sendServerError(res);
     }
   };
