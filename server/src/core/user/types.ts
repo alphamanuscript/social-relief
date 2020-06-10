@@ -31,13 +31,17 @@ export interface AccessToken {
   expiresAt: Date
 };
 
-
 export interface UserCreateArgs {
   phone: string,
   password: string,
 };
 
 export interface UserNominateBeneficiaryArgs {
+  phone: string,
+  nominator: string,
+};
+
+export interface UserNominateMiddlemanArgs {
   phone: string,
   nominator: string,
 };
@@ -72,6 +76,11 @@ export interface UserService {
    * @param args 
    */
   nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User>;
+  /**
+   * 
+   * @param args 
+   */
+  nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User>;
   /**
    * retrieves all the users 
    * nominated by the specified user

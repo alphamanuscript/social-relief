@@ -64,7 +64,11 @@ export function createFundsToUserFailedError(message: string) {
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
   return createAppError(message, 'atApiError');
 }
-export function createBeneficiaryNominationFailedError (message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
+export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
+  return createAppError(message, 'nominationFailed');
+}
+
+export function createMiddlemanNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
 }
 

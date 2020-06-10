@@ -2,13 +2,13 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
-  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs, UserRole,
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs, UserNominateMiddlemanArgs, UserRole,
 } from './types';
 import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError,createBeneficiaryNominationFailedError } from '../error';
+  createUniquenessFailedError,createBeneficiaryNominationFailedError, createMiddlemanNominationFailedError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 
@@ -162,6 +162,38 @@ export class Users implements UserService {
       if (e instanceof AppError) throw e;
       if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
         throw createBeneficiaryNominationFailedError();
+      }
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User> {
+    const { phone, nominator } = args;
+    try {
+      const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
+      if (!nominatorUser) throw createMiddlemanNominationFailedError();
+      
+      const result = await this.collection.findOneAndUpdate(
+        { phone },
+        {
+          $addToSet: { roles: 'middleman', middlemanFor: nominator },
+          $currentDate: { updatedAt: true },
+          $setOnInsert: {
+            _id: generateId(),
+            password: '',
+            phone,
+            addedBy: nominator,
+            createdAt: new Date()
+          }
+        },
+        { upsert: true, returnOriginal: false }
+      );
+      return getSafeUser(result.value);
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
+        throw createMiddlemanNominationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }
