@@ -50,8 +50,8 @@ export default {
         password: ''
       },
       validationMessages: [
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
-        'Invalid password. Must be at least one character long'
+        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Password required'
       ],
       validationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
@@ -84,8 +84,8 @@ export default {
     },
     async signin() {
       this.validationMessages = [
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
-        'Invalid password. Must be at least one character long'
+        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Password required'
       ];
       this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
 
@@ -93,10 +93,11 @@ export default {
         await this.signUserIn({ phone: `254${this.signinCreds.phone}`, password: this.signinCreds.password });
         if (!this.user) {
           this.validationMessages = [
-            'Incorrect Phone',
-            'Incorrect password'
+            'Login failed. Incorrect phone or password',
+            'Login failed. Incorrect phone or password'
           ];
           this.validationResults = [false, false];
+          
         }
       }
     },
