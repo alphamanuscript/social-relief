@@ -20,5 +20,11 @@ export const users = [
     phone: '254700444444',
     roles: ['beneficiary'],
     donors: ['donor2']
+  },
+  {
+    _id: 'donorMiddleman1',
+    phone: '254700555555',
+    roles: ['donor', 'middleman'],
+    middlemanFor: ['donor1']
   }
 ];

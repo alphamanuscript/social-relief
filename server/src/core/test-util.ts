@@ -158,6 +158,16 @@ export function createDateMocker (): DateMocker {
 }
 
 /**
+ * asserts that the specified dates are close to each other
+ * @param expected 
+ * @param actual 
+ * @param delta maximum allowed milliseconds between the dates
+ */
+export function expectDatesAreClose(expected: Date, actual: Date, delta: number = 1000) {
+  expect(Math.abs(expected.getTime() - actual.getTime()) < delta).toBe(true);
+}
+
+/**
  * creates a function which tests whether the specified validation function `fn`
  * returns true or false (`validState`) given certain inputs
  * @param fn the validation function
@@ -220,7 +230,7 @@ export function createDbUtils(dbName: string, defaultColl: string, dbHost: strin
      * `coll` is not specified
      * @param coll
      */
-    getCollection<T>(coll: string = defaultColl) {
+    getCollection<T = any>(coll: string = defaultColl) {
       return db.collection<T>(coll);
     },
 
