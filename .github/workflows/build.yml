@@ -2,7 +2,6 @@ name: Build
 
 env:
   NODE_VERSION: 12.16.x
-  MONGO_VERSION: 4.2
 
 on:
   push:
@@ -14,7 +13,7 @@ jobs:
 
     services:
       mongo:
-        image: mongo:${{ env.MONGO_VERSION }}
+        image: mongo:4.2
         ports:
           - 27017:27017
 
