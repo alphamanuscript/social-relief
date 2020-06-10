@@ -1,5 +1,9 @@
 name: Build
 
+env:
+  NODE_VERSION: 12.16.x
+  MONGO_VERSION: 4.2
+
 on:
   push:
 
@@ -10,16 +14,16 @@ jobs:
 
     services:
       mongo:
-        image: mongo:4.2
+        image: mongo:${{ env.MONGO_VERSION }}
         ports:
           - 27017:27017
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Node.js 12.x
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: ${{ env.NODE_VERSION }}
 
       - run: yarn --frozen-lockfile
         working-directory: server
@@ -32,10 +36,10 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Node.js 12.x
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: ${{ env.NODE_VERSION }}
       - run: yarn --frozen-lockfile
         working-directory: webapp
       - run: yarn build
