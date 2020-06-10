@@ -153,6 +153,7 @@ export class Users implements UserService {
     validators.validatesLogin(args);
     try {
       const user = await this.collection.findOne({ phone: args.phone });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       const passwordCorrect = await verifyPassword(user.password, args.password);
       if (!passwordCorrect) {
@@ -178,7 +179,7 @@ export class Users implements UserService {
       if (!token) throw createInvalidAccessTokenError();
 
       const user = await this.collection.findOne({ _id: token.user });
-      if (!user) throw createResourceNotFoundError();
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       return getSafeUser(user);
     }
