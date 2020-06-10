@@ -6,7 +6,14 @@ export interface User {
   _id: string,
   phone: string,
   addedBy: string,
+  /**
+   * the donors from whom this beneficiary can receive funds
+   */
   donors: string[],
+  /**
+   * the donors on behalf of whom this middleman can add beneficiaries
+   */
+  middlemanFor?: string[],
   roles: UserRole[],
   createdAt: Date,
   updatedAt: Date

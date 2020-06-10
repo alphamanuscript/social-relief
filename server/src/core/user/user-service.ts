@@ -24,12 +24,13 @@ const SAFE_USER_PROJECTION = { _id: 1, phone: 1, addedBy: 1, donors: 1, roles: 1
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, addedBy, donors, roles, createdAt, updatedAt } = user;
+  const { _id, phone, addedBy, donors, middlemanFor, roles, createdAt, updatedAt } = user;
   return {
     _id,
     phone,
     addedBy,
     donors,
+    middlemanFor,
     roles,
     createdAt,
     updatedAt
