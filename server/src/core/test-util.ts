@@ -65,6 +65,17 @@ export async function expectAsyncAppError (asyncTestFn: () => Promise<any>, erro
   }
 }
 
+export async function expectNoAsyncAppError (asyncTestFn: () => Promise<any>) {
+  try {
+    await asyncTestFn();
+  }
+  catch (e) {
+    if (e instanceof AppError) {
+      fail(`should not throw app error`);
+    }
+  }
+}
+
 /**
  * @description tests whether the specified function throws a validation error
  * the test fails if the function does not return a validation error
