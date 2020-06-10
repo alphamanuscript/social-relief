@@ -61,12 +61,10 @@ export const nominateBeneficiaryInputSchema = joi.object().keys({
     }),
   nominator: joi.string()
     .required()
-    .pattern(/^2547\d{8}$/)
     .messages({
-      'any.required': `Nominator is required`,
+      'any.required': `Nominator id is required`,
       'string.base': 'Invalid type, nominator must be a string',
-      'string.empty': `Please enter nominator's phone number`,
-      'string.pattern.base': `Invalid nominator's phone number. Must start with 2547 and be 12 digit long`
+      'string.empty': `Nominator id is required`,
     }),
 });
 

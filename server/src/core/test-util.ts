@@ -220,8 +220,8 @@ export function createDbUtils(dbName: string, defaultColl: string, dbHost: strin
      * `coll` is not specified
      * @param coll
      */
-    getCollection(coll: string = defaultColl) {
-      return db.collection(coll);
+    getCollection<T>(coll: string = defaultColl) {
+      return db.collection<T>(coll);
     },
 
     /**

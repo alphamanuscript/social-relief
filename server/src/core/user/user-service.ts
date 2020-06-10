@@ -2,7 +2,7 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, generateToken } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
-  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs,
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs, UserRole,
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -35,6 +35,18 @@ function getSafeUser(user: DbUser): User {
     createdAt,
     updatedAt
   };
+}
+
+function hasRole(user: User, role: UserRole): boolean {
+  return user.roles.includes(role);
+}
+
+function isMiddleman(user: User): boolean {
+  return hasRole(user, 'middleman');
+}
+
+function isDonor(user: User): boolean {
+  return hasRole(user, 'donor');
 }
 
 export interface UsersArgs {
@@ -105,6 +117,22 @@ export class Users implements UserService {
     validators.validatesNominateBeneficiary(args);
     const { phone, nominator } = args;
     try {
+      const nominatorUser = await this.collection.findOne({ _id: nominator });
+      if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      let donors: string[] = [];
+      if (isDonor(nominatorUser)) {
+        donors.push(nominator);
+      }
+
+      if (isMiddleman(nominatorUser) && Array.isArray(nominatorUser.middlemanFor)) {
+        donors = donors.concat(nominatorUser.middlemanFor);
+      }
+
+      if (!donors.length) {
+        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
+      }
+
       /*
        If phone number does not exist, a new user is created
        with a beneficiary role and the nominator as their donor.
@@ -116,7 +144,7 @@ export class Users implements UserService {
       const result = await this.collection.findOneAndUpdate(
         { phone, roles: { $nin: ['donor'] } }, 
         { 
-          $addToSet: { roles: 'beneficiary', donors: nominator }, 
+          $addToSet: { roles: 'beneficiary', donors: { $each: donors } }, 
           $currentDate: { updatedAt: true }, 
           $setOnInsert: { 
             _id: generateId(), 
