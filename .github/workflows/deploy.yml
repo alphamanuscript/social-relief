@@ -1,5 +1,8 @@
 name: Deploy to review1
 
+env:
+  NODE_VERSION: 12.16.x
+
 on:
   push:
     branches:
@@ -49,7 +52,7 @@ jobs:
           firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
       - uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: ${{ env.NODE_VERSION }}
       - name: 'Build client'
         # ensure dev dependencies are installed, they're needed in the build process
         run: |
