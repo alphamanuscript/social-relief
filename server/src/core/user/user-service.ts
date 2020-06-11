@@ -17,6 +17,8 @@ const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 
 const SAFE_USER_PROJECTION = { _id: 1, phone: 1, addedBy: 1, donors: 1, middlemanFor: 1, roles: 1, createdAt: 1, updatedAt: 1 };
+const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1 };
+const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
 
 /**
  * removes fields that should
@@ -154,7 +156,7 @@ export class Users implements UserService {
             createdAt: new Date(),
           } 
         },
-        { upsert: true, returnOriginal: false, projection: SAFE_USER_PROJECTION }
+        { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
       return getSafeUser(result.value);
     }
@@ -187,7 +189,7 @@ export class Users implements UserService {
             createdAt: new Date()
           }
         },
-        { upsert: true, returnOriginal: false, projection: SAFE_USER_PROJECTION }
+        { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
       return getSafeUser(result.value);
     }
@@ -203,7 +205,7 @@ export class Users implements UserService {
   async getAllBeneficiariesByUser(userId: string): Promise<User[]> {
     validators.validatesGetAllBeneficiariesByUser(userId);
     try {
-      const result = await this.collection.find({ donors: { $in: [userId] } }, { projection: SAFE_USER_PROJECTION }).toArray();
+      const result = await this.collection.find({ donors: { $in: [userId] } }, { projection: RELATED_BENEFICIARY_PROJECTION }).toArray();
       return result;
     }
     catch (e) {
@@ -214,7 +216,7 @@ export class Users implements UserService {
   async getAllMiddlemenByUser(userId: string): Promise<User[]> {
     validateId(userId);
     try {
-      const result = await this.collection.find({ middlemanFor: { $in: [userId] } }, { projection: SAFE_USER_PROJECTION }).toArray();
+      const result = await this.collection.find({ middlemanFor: { $in: [userId] } }, { projection: NOMINATED_USER_PROJECTION }).toArray();
       return result;
     }
     catch (e) {

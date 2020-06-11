@@ -36,7 +36,7 @@ describe('UserService tests', () => {
     describe('when nominator is a middleman', () => {
       test('should add represented donors to existing beneficiary', async () => {
         const res = await createDefaultService().nominateBeneficiary({ phone: '254700444444', nominator: 'middleman1' });
-        expect(res._id).toBe('beneficiary1');
+        expect(res).toEqual({ _id: 'beneficiary1', phone: '254700444444' });
         const updatedBeneficiary = await usersColl().findOne({ _id: res._id });
         updatedBeneficiary.donors.sort((a, b) => a.localeCompare(b));
         const expectedDonors = ['donor1', 'donor2']
@@ -73,7 +73,7 @@ describe('UserService tests', () => {
     test('should add donor to the middlemanFor list of the middleman and add middleman role', async () => {
       const now = new Date();
       const res = await createDefaultService().nominateMiddleman({ phone: '254700222222', nominator: 'donor1' });
-      expect(res._id).toBe('donor2');
+      expect(res).toEqual({ _id: 'donor2', phone: '254700222222' });
       const updatedMiddleman = await usersColl().findOne({ _id: res._id });
       updatedMiddleman.roles.sort((a, b) => a.localeCompare(b));
       expect(updatedMiddleman.roles).toEqual(['donor', 'middleman']);
@@ -118,7 +118,7 @@ describe('UserService tests', () => {
     test('should return all the middleman for the specified user', async () => {
       const res = await createDefaultService().getAllMiddlemenByUser('donor1');
       res.sort((a, b) => a._id.localeCompare(b._id));
-      expect(res.map(u => u._id)).toEqual(['donorMiddleman1', 'middleman1']);
+      expect(res).toEqual([{ _id: 'donorMiddleman1', phone: '254700555555' }, { _id: 'middleman1', phone: '254700333333' }]);
     });
   });
 });

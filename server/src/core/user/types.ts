@@ -23,6 +23,16 @@ export interface DbUser extends User {
   password: string
 }
 
+/**
+ * result of a nomination operation,
+ * contains minimal data of the nominated user
+ * that is safe for the nominator to se
+ */
+export interface NominatedUserResult {
+  _id: string,
+  phone: string
+};
+
 export interface AccessToken {
   _id: string,
   user: string,
