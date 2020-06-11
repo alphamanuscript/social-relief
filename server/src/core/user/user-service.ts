@@ -154,7 +154,7 @@ export class Users implements UserService {
             createdAt: new Date(),
           } 
         },
-        { upsert: true, returnOriginal: false }
+        { upsert: true, returnOriginal: false, projection: SAFE_USER_PROJECTION }
       );
       return getSafeUser(result.value);
     }
@@ -187,7 +187,7 @@ export class Users implements UserService {
             createdAt: new Date()
           }
         },
-        { upsert: true, returnOriginal: false }
+        { upsert: true, returnOriginal: false, projection: SAFE_USER_PROJECTION }
       );
       return getSafeUser(result.value);
     }
@@ -298,7 +298,7 @@ export class Users implements UserService {
 
   private async getById(id: string): Promise<User> {
     try {
-      const user = await this.collection.findOne({ _id: id });
+      const user = await this.collection.findOne({ _id: id }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       return getSafeUser(user);
