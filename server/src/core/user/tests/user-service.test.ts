@@ -113,4 +113,12 @@ describe('UserService tests', () => {
       expectDatesAreClose(now, updatedMiddleman.updatedAt);
     });
   });
+
+  describe('getAllMiddlemenByUser', () => {
+    test('should return all the middleman for the specified user', async () => {
+      const res = await createDefaultService().getAllMiddlemenByUser('donor1');
+      res.sort((a, b) => a._id.localeCompare(b._id));
+      expect(res.map(u => u._id)).toEqual(['donorMiddleman1', 'middleman1']);
+    });
+  });
 });

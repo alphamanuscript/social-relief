@@ -77,8 +77,11 @@ export interface UserService {
    */
   nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User>;
   /**
-   * 
-   * @param args 
+   * nominates a user as a middleman to the nominating donor.
+   * A user account is created for the middleman if does not already exist
+   * @param args
+   * @params args.nominator ID donor nominating the middleman
+   * @params args.phone phone of the middleman being nominated
    */
   nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User>;
   /**
@@ -87,6 +90,11 @@ export interface UserService {
    * @param user
    */
   getAllBeneficiariesByUser(user: string): Promise<User[]>;
+  /**
+   * retrieves all middlemen for the specified user
+   * @param user id of the user whose middlemen to retrieve
+   */
+  getAllMiddlemenByUser(user: string): Promise<User[]>;
   /**
    * logs in the user if the credentials are valid,
    * generates a temporary access token for the user
