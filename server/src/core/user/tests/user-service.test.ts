@@ -1,7 +1,7 @@
 import { createDbUtils, expectDatesAreClose } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
-import { User, DbUser } from '../types';
+import { DbUser } from '../types';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
