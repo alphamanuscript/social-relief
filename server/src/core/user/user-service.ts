@@ -168,11 +168,12 @@ export class Users implements UserService {
   }
 
   async nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User> {
+    validators.validatesNominateMiddleman(args);
     const { phone, nominator } = args;
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
       if (!nominatorUser) throw createMiddlemanNominationFailedError();
-      
+
       const result = await this.collection.findOneAndUpdate(
         { phone },
         {

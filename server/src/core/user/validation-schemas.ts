@@ -68,6 +68,8 @@ export const nominateBeneficiaryInputSchema = joi.object().keys({
     }),
 });
 
+export const nominateMiddlemanInputSchema = nominateBeneficiaryInputSchema;
+
 export const getAllBeneficiariesInputSchema = userIdSchema;
 
 export const logoutInputSchema = userTokenIdSchema;
