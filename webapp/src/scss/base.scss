@@ -1,0 +1,11 @@
+// Make sure the functions come before custom variables 
+@import "~bootstrap/scss/functions";
+
+// Make sure the mixins come before custom variables 
+@import "~bootstrap/scss/mixins";
+
+// Our custom variables file
+@import "./_variables";
+
+// Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap';

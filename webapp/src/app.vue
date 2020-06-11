@@ -75,7 +75,8 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import "./scss/base";
 .navbar {
   border-radius: 10px;
 }
