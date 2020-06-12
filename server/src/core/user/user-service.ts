@@ -8,7 +8,8 @@ import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError,createBeneficiaryNominationFailedError, createMiddlemanNominationFailedError } from '../error';
+  createUniquenessFailedError, createBeneficiaryNominationFailedError,
+  createMiddlemanNominationFailedError, isMongoDuplicateKeyError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 
@@ -107,7 +108,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
+      if (isMongoDuplicateKeyError(e, args.phone)) {
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
 
@@ -162,7 +163,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
+      if (isMongoDuplicateKeyError(e, args.phone)) {
         throw createBeneficiaryNominationFailedError();
       }
       throw createDbOpFailedError(e.message);
@@ -195,7 +196,7 @@ export class Users implements UserService {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && e.message.indexOf(args.phone) >= 0) {
+      if (isMongoDuplicateKeyError(e, args.phone)) {
         throw createMiddlemanNominationFailedError();
       }
       throw createDbOpFailedError(e.message);

@@ -70,7 +70,7 @@ describe('UserService tests', () => {
   });
 
   describe('nominateMiddleman', () => {
-    test('should add donor to the middlemanFor list of the middleman and add middleman role', async () => {
+    test('should add donor to the list of donors the middleman represents and add middleman role', async () => {
       const now = new Date();
       const res = await createDefaultService().nominateMiddleman({ phone: '254700222222', nominator: 'donor1' });
       expect(res).toEqual({ _id: 'donor2', phone: '254700222222' });

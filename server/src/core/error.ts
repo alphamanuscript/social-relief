@@ -1,4 +1,5 @@
 import * as messages from './messages';
+import { MongoError } from 'mongodb';
 
 export class AppError extends Error {
   readonly code: ErrorCode;
@@ -9,6 +10,29 @@ export class AppError extends Error {
   }
 }
 
+// MongoDB error codes
+export const MONGO_ERROR_DUPLICATE_KEY = 11000;
+
+/**
+ * Checks whether the error is a MongoDB duplicate key error
+ * If a key is provided, then it also checks whether that was the key
+ * that triggered the duplicate error.
+ * @param error
+ * @param key
+ */
+export function isMongoDuplicateKeyError(error: MongoError, key?: any): boolean {
+  if (error.code !== MONGO_ERROR_DUPLICATE_KEY) {
+    return false;
+  }
+  
+  if (typeof key === 'undefined') {
+    return true;
+  }
+
+  return error.message.indexOf(key) > 0;
+}
+
+// Our error codes
 export type ErrorCode = 
   // database error occurred when performing db operation
   'dbOpFailed'
@@ -68,7 +92,7 @@ export function createBeneficiaryNominationFailedError(message: string = message
   return createAppError(message, 'nominationFailed');
 }
 
-export function createMiddlemanNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
+export function createMiddlemanNominationFailedError(message: string = messages.ERROR_MIDDLEMAN_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
 }
 

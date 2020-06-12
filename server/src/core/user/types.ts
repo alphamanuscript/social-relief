@@ -26,7 +26,7 @@ export interface DbUser extends User {
 /**
  * result of a nomination operation,
  * contains minimal data of the nominated user
- * that is safe for the nominator to se
+ * that is safe for the nominator to see
  */
 export interface NominatedUserResult {
   _id: string,
