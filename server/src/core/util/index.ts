@@ -1,6 +1,8 @@
 import { randomBytes } from 'crypto';
 import * as argon2 from 'argon2';
 
+export * from './validation-util';
+
 export function hashPassword(plain: string): Promise<string> {
   return argon2.hash(plain);
 }
