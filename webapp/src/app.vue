@@ -1,40 +1,40 @@
 <template>
   <div id="app">
-    <div class="container">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3 mb-5">
-        <a class="navbar-brand" href="#">Project Lockdown</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3 mb-5">
+      <a class="navbar-brand" href="#">
+        <img :src="imageUrl" alt="Social Relief Logo" class="logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <div v-if="showLoggedInNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/how-it-works">How it works</router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/about">About</router-link>
-            </li>
-            <li class="nav-item active" @click="signout">
-              <router-link class="nav-link" to="#">Sign out</router-link>
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/sign-in">Sign In</router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/sign-up">Sign Up</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+      <div v-if="showLoggedInNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/about">About Us</router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link class="nav-link" to="#">Contact Us</router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link class="nav-link" to="#">Nominate</router-link>
+          </li>
+          <li class="nav-item active" @click="signout">
+            <router-link class="nav-link" to="#">Sign in / Login</router-link>
+          </li>
+        </ul>
+      </div>
+      <div v-else>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/sign-in">Sign In</router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/sign-up">Sign Up</router-link>
+          </li>
+        </ul>
+      </div>
+    </nav>
     <router-view />
   </div>
 </template>
@@ -49,6 +49,9 @@ export default {
       this.showPageOrRedirect();
       if (this.$route.name === 'sign-in' || this.$route.name === 'sign-up') return false
       return true
+    },
+    imageUrl () {
+      return require(`@/assets/Social Relief Logo.jpg`);
     }
   },
   methods: {
@@ -71,13 +74,37 @@ export default {
     },
     async signout() {
       await this.signUserOut();
-    }
+    },
   }
 }
 </script>
 <style scoped lang="scss">
 @import "./scss/base";
-.navbar {
-  border-radius: 10px;
+#app {
+  background: #F5F5F5;
+  height: 100vh;
+  width: 100vw;
+  border: 1px solid #000;
+  padding: 0;
+  margin: 0;
+
+  nav {
+    width: 75%;
+    margin: auto;
+    height: 7rem;
+
+    .navbar-brand {
+      border: 1px solid #000;
+      img {
+        height: 5rem;
+        opacity: .9;
+      }
+    }
+
+    #navbarSupportedContent {
+      border: 1px solid #000;
+    }
+  }
 }
+
 </style>
