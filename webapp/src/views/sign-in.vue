@@ -31,7 +31,7 @@
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="signin">Sign In</button>
-              <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess" :onFailure="onFailure"></GoogleLogin>
+              <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </div>
           </div>
         </form>
@@ -50,7 +50,8 @@ export default {
     return {
       signinCreds: {
         phone: '',
-        password: ''
+        password: '',
+        googleIdToken: ''
       },
       validationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digit long',
@@ -111,20 +112,17 @@ export default {
             'Login failed. Incorrect phone or password'
           ];
           this.validationResults = [false, false];
-          
         }
       }
     },
-    onSuccess(googleUser) {
-      const profile = googleUser.getBasicProfile();
+    async onSuccess(googleUser) {
+      /*const profile = googleUser.getBasicProfile();
       console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
       console.log('Name: ' + profile.getName());
       console.log('Image URL: ' + profile.getImageUrl());
-      console.log('Email: ' + profile.getEmail());
-      console.log('ID Token: ' + googleUser.getAuthResponse().id_token);
-    },
-    onFailure(error) {
-      console.log(error);
+      console.log('Email: ' + profile.getEmail());*/
+      this.signinCreds.googleIdToken = googleUser.getAuthResponse().id_token;
+      await this.signUserIn(this.signinCreds);
     }
   }
 }

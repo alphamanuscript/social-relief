@@ -23,16 +23,16 @@ const actions = wrapActions({
       commit('addBeneficiary', bnf);
     }
   },
-  async createUser({ commit }, { phone, password }: { phone: string; password: string }) {
-    const user = await Users.createUser({ phone, password });
-    await Users.login({ phone, password });
+  async createUser({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.createUser({ phone, password, googleIdToken });
+    await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
       router.push({ name: 'home' });
     }
   },
-  async signUserIn({ commit }, { phone, password }: { phone: string; password: string }) {
-    const user = await Users.login({ phone, password });
+  async signUserIn({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
       if (router.currentRoute.name !== 'home') router.push({ name: 'home' });
