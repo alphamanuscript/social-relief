@@ -50,8 +50,7 @@ export default {
     return {
       signinCreds: {
         phone: '',
-        password: '',
-        googleIdToken: ''
+        password: ''
       },
       validationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digit long',
@@ -59,7 +58,7 @@ export default {
       ],
       validationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => creds.password.length > 0, }
+        { test: (creds) => creds.password.length > 0 }
       ],
       validationResults: [true, true],
       params: {
@@ -116,13 +115,7 @@ export default {
       }
     },
     async onSuccess(googleUser) {
-      /*const profile = googleUser.getBasicProfile();
-      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-      console.log('Name: ' + profile.getName());
-      console.log('Image URL: ' + profile.getImageUrl());
-      console.log('Email: ' + profile.getEmail());*/
-      this.signinCreds.googleIdToken = googleUser.getAuthResponse().id_token;
-      await this.signUserIn(this.signinCreds);
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
     }
   }
 }
