@@ -1,6 +1,6 @@
 import { Collection } from 'mongodb';
 import { SystemLock, SystemLockRecord } from './types';
-import { createSystemLockBusyError, AppError, createDbOpFailedError, createSystemLockInvalidStateError } from '../error';
+import { createSystemLockBusyError, AppError, createDbOpFailedError, createSystemLockInvalidStateError, isMongoDuplicateKeyError } from '../error';
 import * as messages from '../messages';
 
 
@@ -23,7 +23,7 @@ export class SystemLockManager implements SystemLock {
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (e.code == 11000 && e.message.indexOf(this.id) >= 0) throw createSystemLockBusyError();
+      if (isMongoDuplicateKeyError(e, this.id)) throw createSystemLockBusyError();
       throw createDbOpFailedError(e.message);
     }
   }

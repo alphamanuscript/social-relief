@@ -48,17 +48,33 @@ describe('validatesLogin', () => {
 describe('validatesNominateBeneficiary', () => {
   it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesNominateBeneficiary, [
-      { phone: '254729291091', nominator: '254729311023' },
-      { phone: '254729311023', nominator: '254729291091' }
+      { phone: '254729291091', nominator: 'nominator1' },
+      { phone: '254729311023', nominator: 'nominator1' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesNominateBeneficiary, [
-      { phone: '25472929109', nominator: '2547293110232' },
-      { phone: '+254729291091', nominator: '254729311023' },
-      { phone: '254729291091', nominator: '+254729311023' },
+      { phone: '25472929109', nominator: '' },
+      { phone: '+254729291091', nominator: {} },
       { phone: '254829291091' },
-      { nominator: '254729311023' }
+      { nominator: 'donor1' }
+    ]);
+  });
+});
+
+describe('validateNominateMiddleman', () => {
+  it('should not throw error if inputs are valid', () => {
+    testValidationSucceeds(validators.validatesNominateMiddleman, [
+      { phone: '254729291091', nominator: 'nominator1' },
+      { phone: '254729311023', nominator: 'nominator1' }
+    ]);
+  });
+  it('should throw error if inputs are not valid', () => {
+    testValidationFails(validators.validatesNominateMiddleman, [
+      { phone: '25472929109', nominator: '' },
+      { phone: '+254729291091', nominator: {} },
+      { phone: '254829291091' },
+      { nominator: 'donor1' }
     ]);
   });
 });
