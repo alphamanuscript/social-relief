@@ -30,8 +30,8 @@
               </div>
             </div>
             <div class="col-md-6">
-              <button type="submit" class="btn btn-primary" @click.prevent="signin">Sign In</button>
-              <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
+                <button type="submit" class="btn btn-primary" @click.prevent="signin">Sign In</button>
+                <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </div>
           </div>
         </form>

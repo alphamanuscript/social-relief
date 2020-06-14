@@ -44,9 +44,7 @@
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="signup">Sign Up</button>
-            </div>
-            <div v-show="!googleUser" class="col-md-6">
-              <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
+              <GoogleLogin v-show="!googleUser" :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </div>
           </div>
         </form>
