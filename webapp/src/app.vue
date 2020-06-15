@@ -20,7 +20,7 @@
             <router-link class="nav-link" to="#">Nominate</router-link>
           </li>
           <li class="nav-item active" @click="signout">
-            <router-link class="nav-link" to="#">Sign in / Login</router-link>
+            <router-link class="nav-link sign-up-and-login-btn" to="#">Sign Up / Login</router-link>
           </li>
         </ul>
       </div>
@@ -92,9 +92,10 @@ export default {
     width: 75%;
     margin: auto;
     height: 7rem;
+    background-color: #F5F5F5 !important;
 
     .navbar-brand {
-      border: 1px solid #000;
+      background-color: transparent;
       img {
         height: 5rem;
         opacity: .9;
@@ -102,7 +103,37 @@ export default {
     }
 
     #navbarSupportedContent {
-      border: 1px solid #000;
+      width: 5px;
+      margin-left: 4rem;
+
+
+      .navbar-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+
+        li {
+          font-weight: 500;
+        }
+
+        .sign-up-and-login-btn {
+          border-radius: 3rem;
+          width: 7.3rem;
+          height: 2.2rem;
+          text-align: center;
+          background: darken(#ED1C24, .9);
+          color: #fff;
+          transition: all 0.5s;
+          box-shadow: 0 2px 5px #E2E2E2;
+          font-size: .75rem;
+
+          &:hover {
+            background-image: linear-gradient(to bottom, #ED1C24, #9D1A63);
+          }
+        }
+      }
     }
   }
 }
