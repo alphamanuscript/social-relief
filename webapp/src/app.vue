@@ -51,7 +51,7 @@ export default {
       return true
     },
     imageUrl () {
-      return require(`@/assets/Social Relief Logo.jpg`);
+      return require(`@/assets/Social Relief Logo_1.svg`);
     }
   },
   methods: {
@@ -82,23 +82,28 @@ export default {
 @import "./scss/base";
 #app {
   background: #F5F5F5;
-  height: 100vh;
-  width: 100vw;
-  border: 1px solid #000;
+  border: 1px solid #F5F5F5;
   padding: 0;
   margin: 0;
 
   nav {
-    width: 75%;
-    margin: auto;
+    width: 68%;
+    margin: 0 auto;
     height: 7rem;
     background-color: #F5F5F5 !important;
+    // border: 1px solid #000;
 
     .navbar-brand {
-      background-color: transparent;
+      // border: 1px solid #000;
+      width: 7rem;
+      height: 12rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
       img {
-        height: 5rem;
-        opacity: .9;
+        width: inherit;
+        height: inherit;
       }
     }
 
