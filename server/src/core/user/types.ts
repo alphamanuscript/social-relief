@@ -5,6 +5,7 @@ export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 export interface User {
   _id: string,
   phone: string,
+  email?: string,
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -20,7 +21,7 @@ export interface User {
 };
 
 export interface DbUser extends User {
-  password: string
+  password?: string
 }
 
 /**
@@ -44,6 +45,7 @@ export interface AccessToken {
 export interface UserCreateArgs {
   phone: string,
   password: string,
+  googleIdToken: string
 };
 
 export interface UserNominateBeneficiaryArgs {
@@ -58,7 +60,8 @@ export interface UserNominateMiddlemanArgs {
 
 export interface UserLoginArgs {
   phone: string,
-  password: string
+  password: string,
+  googleIdToken: string
 };
 
 export interface UserLoginResult {

@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { generateId, hashPassword, verifyPassword, generateToken, validateId } from '../util';
+import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs, UserNominateMiddlemanArgs, UserRole,
@@ -17,7 +17,7 @@ const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 
-const SAFE_USER_PROJECTION = { _id: 1, phone: 1, addedBy: 1, donors: 1, middlemanFor: 1, roles: 1, createdAt: 1, updatedAt: 1 };
+const SAFE_USER_PROJECTION = { _id: 1, phone: 1, email: 1, addedBy: 1, donors: 1, middlemanFor: 1, roles: 1, createdAt: 1, updatedAt: 1 };
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
 
@@ -27,10 +27,11 @@ const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, addedBy, donors, middlemanFor, roles, createdAt, updatedAt } = user;
+  const { _id, phone, email, addedBy, donors, middlemanFor, roles, createdAt, updatedAt } = user;
   return {
     _id,
     phone,
+    email,
     addedBy,
     donors,
     middlemanFor,
@@ -75,8 +76,8 @@ export class Users implements UserService {
     if (this.indexesCreated) return;
 
     try {
-      // unique phone index
-      await this.collection.createIndex({ 'phone': 1 }, { unique: true, sparse: false });
+      // unique phone and email index
+      await this.collection.createIndex({ 'phone': 1, 'email': 1 }, { unique: true, sparse: false });
       // ttl collection for access token expiry
       await this.tokenCollection.createIndex({ expiresAt: 1},
         { expireAfterSeconds: 1 });
@@ -93,7 +94,6 @@ export class Users implements UserService {
     const now = new Date();
     const user: DbUser = {
       _id: generateId(),
-      password: await hashPassword(args.password),
       phone: args.phone,
       addedBy: '',
       donors: [],
@@ -101,8 +101,12 @@ export class Users implements UserService {
       createdAt: now,
       updatedAt: now
     };
-
     try {
+      if (args.password) 
+        user.password = await hashPassword(args.password);
+      else if (args.googleIdToken)
+        user.email = await verifyGoogleIdToken(args.googleIdToken);
+
       const res = await this.collection.insertOne(user);
       return getSafeUser(res.ops[0]);
     }
@@ -228,12 +232,20 @@ export class Users implements UserService {
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
     validators.validatesLogin(args);
     try {
-      const user = await this.collection.findOne({ phone: args.phone });
-      if (!user) throw createLoginError();
+      let user;
+      if (args.phone) {
+        user = await this.collection.findOne({ phone: args.phone });
+        if (!user) throw createLoginError();
 
-      const passwordCorrect = await verifyPassword(user.password, args.password);
-      if (!passwordCorrect) {
-        throw createLoginError();
+        const passwordCorrect = await verifyPassword(user.password, args.password);
+        if (!passwordCorrect) {
+          throw createLoginError();
+        }
+      }
+      else if (args.googleIdToken) {
+        const email = await verifyGoogleIdToken(args.googleIdToken);
+        user = await this.collection.findOne({ email: email });
+        if (!user) throw createLoginError();
       }
 
       const token = await this.createAccessToken(user._id);
