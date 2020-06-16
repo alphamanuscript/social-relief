@@ -5,7 +5,7 @@ const userCreateAndLoginSchema = joi.alternatives().try(
   joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
   joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
   joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
-); 
+);
 
 const userTokenIdSchema = joi.object().keys({
   tokenId: joi.string()

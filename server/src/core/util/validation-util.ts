@@ -42,12 +42,10 @@ export const passwordValidationSchema = joi.string()
 
 export const googleIdTokenValidationSchema = joi.string()
   .required()
-  .token()
   .messages({
     'any.required': 'Google ID token is required',
     'string.base': 'Invalid type, Google ID token must be a string',
     'string.empty': 'Please enter your Google ID token',
-    'string.token.base': 'Invalid Google ID token. Must contain only alphanumeric characters and underscore'
 });
 
 export const emailValidationSchema = joi.string()

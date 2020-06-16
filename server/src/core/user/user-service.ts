@@ -115,7 +115,6 @@ export class Users implements UserService {
       if (isMongoDuplicateKeyError(e, args.phone)) {
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
-
       throw createDbOpFailedError(e.message);
     }
   }
