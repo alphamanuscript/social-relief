@@ -128,14 +128,15 @@ export default {
           width: 7.3rem;
           height: 2.2rem;
           text-align: center;
-          background: darken(#ED1C24, .9);
+          background: darken(#EF5A24, .9);
           color: #fff;
           transition: all 0.5s;
           box-shadow: 0 2px 5px #E2E2E2;
           font-size: .75rem;
+          border: none;
 
           &:hover {
-            background-image: linear-gradient(to bottom, #ED1C24, #9D1A63);
+            background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
           }
         }
       }

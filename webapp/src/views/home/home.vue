@@ -23,6 +23,22 @@
         </div>
       </div>
     </section>
+    <section class="section__beneficiaries">
+      <h1>The Beneficiaries</h1>
+      <p>
+        <span>All nominees get <span class="max-amount-per-month">Ksh 3,500</span> to get basic supplies during this trying period</span>
+        <span>Here are some of the people that your contribution will go along to</span>
+        <span>help them</span>
+      </p>
+      <p>
+        <span>Your contribution will go a long to touch the lives of</span>
+        <span class="beneficiary-figure">13,600+</span>
+        <span>people who are currently enlisted as beneficiaries from this system</span>
+      </p>
+      <p>
+        We at social relief want to say a big <span>thank you</span> for your kindness and support
+      </p>
+    </section>
     <section class="section__about-us">
       <h1>About Us</h1>
       <p>
@@ -59,7 +75,18 @@
       </div>
     </section>
     <section class="section__contact-us">
-      <h1>Contact Us</h1>
+      <div class="contact-us-form-container">
+        <h1>Contact Us</h1>
+        <div class="map-and-form">
+          <div class="map-container"></div>
+          <div class="form-container"></div>
+        </div>
+      </div>
+      <div class="footer">
+        <span>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</span>
+        <span>privacy policy • terms of use	</span>
+        <span>(c)2020</span>
+      </div>
     </section>
   </div>
 </template>
@@ -110,15 +137,16 @@ export default {
       //  margin-bottom: 3rem;
       width: 12rem;
       border-radius: .5rem;
-      background: darken(#ED1C24, .9);
+      background: darken(#EF5A24, .9);
       color: #fff;
       font-weight: bold;
       font-size: 1.2rem;
       transition: all 0.5s;
       box-shadow: 0 2px 5px #E2E2E2;
+      border: none;
 
       &:hover {
-        background-image: linear-gradient(to bottom, #ED1C24, #9D1A63);
+        background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
       }
     }
 
@@ -127,7 +155,7 @@ export default {
 
       h5 {
         margin: 0 1.5rem 1rem 1.5rem;
-        color: #ED1C24;
+        color: #EF5A24;
         font-weight: bold;
       }
 
@@ -161,7 +189,7 @@ export default {
           .figure {
             font-size: 3rem;
             font-weight: 500;
-            color: #ED1C24
+            color: #EF5A24;
           }
 
           .label {
@@ -173,6 +201,51 @@ export default {
     }
    }
 
+   .section__beneficiaries {
+     width: 67rem;
+    //  border: 1px solid #000;
+     padding: 0 4rem 0 4rem;
+     margin: 0 auto;
+     text-align: center;
+
+     h1 {
+       display: inline-block;
+      //  border: 1px solid #000;
+       margin: 2rem 0 1rem 0;
+       color: #EF5A24;
+       font-weight: bold;
+     }
+
+     p {
+      //  border: 1px solid #000;
+       margin: 1.5rem 1.5rem 3rem 1.5rem;
+       font-size: .9rem;
+
+       span {
+         display: block;
+       }
+
+       .max-amount-per-month {
+         display: inline-block;
+         font-weight: bold;
+         color: #9D1A69;
+       }
+
+       .beneficiary-figure {
+         font-size: 4rem;
+         font-weight: bold;
+         color: #ED1C24; 
+       }
+
+       &:last-child {
+         span {
+           display: inline-block;
+           color: #9D1A63;
+         }
+       }
+     }
+   }
+
    .section__about-us {
      width: 67rem;
     //  border: 1px solid #000;
@@ -181,7 +254,7 @@ export default {
 
      h1 {
        margin: 2rem 1.5rem 1rem 1.5rem;
-       color: #ED1C24; 
+       color: #EF5A24; 
      }
 
      p {
@@ -243,15 +316,69 @@ export default {
 
    .section__contact-us {
     //  border: 1px solid #000;
-     height: 30rem;
-     width: 67rem;
+     height: 45rem;
+    //  width: 67rem;
      margin: 0 auto;
-     padding: 0 4rem 0 4rem;
+    //  padding: 0 4rem 0 4rem;
+    position: relative;
 
-     h1 {
-       margin: 2rem 1.5rem 1rem 1.5rem;
-       color: #ED1C24; 
-     }
+    .contact-us-form-container {
+      // border: 1px solid #000;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%);
+      width: 67rem;
+      z-index: 999;
+
+      h1 {
+        margin: 2rem 4rem 1rem 4rem;
+        padding: 0 1.5rem 0 1.5rem;
+        color: #EF5A24;
+        // border: 1px solid #000;
+      }
+
+      .map-and-form {
+        // border: 1px solid #000;
+        border-radius: .7rem;
+        height: 30rem;
+
+        .map-container {
+          // border: 1px solid #000;
+        }
+
+        .form-container {
+          // border: 1px solid #000;
+        }
+      }
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      // border: 1px solid #000;
+      width: 100%;
+      height: 15rem;
+      background-color: #9D1A63;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding-bottom: 1.5rem;
+
+      span {
+        display: block;
+        color: #F5F5F5;
+        font-size: .9rem;
+        margin-bottom: .4rem;
+
+        &:first-child, &:last-child {
+          font-weight: bold;
+        }
+      }
+
+    }
    }
  }
 </style>
