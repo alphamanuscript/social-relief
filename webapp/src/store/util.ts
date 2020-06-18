@@ -2,6 +2,7 @@ import { ActionTree, ActionContext } from 'vuex';
 import { Auth } from '../services';
 import router from '../router';
 import { AppState } from '../types';
+import Vue from 'vue';
 
 /* eslint-disable */
 function setErrorMessage (e: any, commit: any) {
@@ -59,4 +60,11 @@ export function wrapActions (actions: ActionTree<AppState, AppState>): ActionTre
       ...wrapAction(action, actions[action])
     };
   }, {});
+}
+
+export function googleSignOut() {
+  // @ts-ignore
+  Vue.GoogleAuth.then( (auth2) => {
+    auth2.signOut();
+    });
 }

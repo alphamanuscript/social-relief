@@ -1,4 +1,4 @@
-import { wrapActions } from './util';
+import { wrapActions, googleSignOut } from './util';
 import { Users, Transactions, Donations } from '../services';
 import router from '../router';
 
@@ -40,6 +40,7 @@ const actions = wrapActions({
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
+    googleSignOut();
     dispatch('clearData');
     router.push({ name: 'sign-in' });
   },
