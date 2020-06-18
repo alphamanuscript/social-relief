@@ -76,8 +76,9 @@ export class Users implements UserService {
     if (this.indexesCreated) return;
 
     try {
-      // unique phone and email index
-      await this.collection.createIndex({ 'phone': 1, 'email': 1 }, { unique: true, sparse: false });
+      // unique phone and email indexes
+      await this.collection.createIndex({ 'phone': 1 }, { unique: true, sparse: false });
+      await this.collection.createIndex({ 'email': 1 }, { unique: true, sparse: false });
       // ttl collection for access token expiry
       await this.tokenCollection.createIndex({ expiresAt: 1},
         { expireAfterSeconds: 1 });
@@ -113,6 +114,9 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (isMongoDuplicateKeyError(e, args.phone)) {
+        const existingUser = await this.collection.findOne({ phone: args.phone });
+        if (existingUser.email && user.email && existingUser.email === user.email)
+          return getSafeUser(existingUser)
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
       throw createDbOpFailedError(e.message);
@@ -236,9 +240,14 @@ export class Users implements UserService {
         user = await this.collection.findOne({ phone: args.phone });
         if (!user) throw createLoginError();
 
-        const passwordCorrect = await verifyPassword(user.password, args.password);
-        if (!passwordCorrect) {
-          throw createLoginError();
+        if (args.password) {
+          const passwordCorrect = await verifyPassword(user.password, args.password);
+          if (!passwordCorrect) throw createLoginError();
+        }
+        else if (args.googleIdToken) {
+          const email = await verifyGoogleIdToken(args.googleIdToken);
+          const emailCorrect = user.email && user.email === email;
+          if (!emailCorrect) throw createLoginError();
         }
       }
       else if (args.googleIdToken) {

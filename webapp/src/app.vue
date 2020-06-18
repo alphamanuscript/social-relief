@@ -47,7 +47,7 @@ export default {
     ...mapState(['user', 'message', 'transactions']),
     showLoggedInNavigation () {
       this.showPageOrRedirect();
-      if (this.$route.name === 'sign-in' || this.$route.name === 'sign-up') return false
+      if (this.$route.name === 'sign-in' || this.$route.name === 'sign-up' || this.$route.name === 'google-sign-up') return false
       return true
     }
   },

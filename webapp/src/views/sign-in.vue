@@ -116,6 +116,8 @@ export default {
     },
     async onSuccess(googleUser) {
       await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
+      if (!this.user)
+        this.$router.push({ name: 'google-sign-up', params: { googleUser: googleUser } });
     }
   }
 }

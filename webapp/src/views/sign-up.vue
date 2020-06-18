@@ -3,7 +3,7 @@
     <div class="row mb md-5">
       <div class="col">
         <h2>Sign Up Page</h2>
-        <h6 v-if="googleUser">Welcome {{ googleUser.getBasicProfile().getName() }}, please enter your phone number </h6>
+        <h6 v-if="googleUser">Welcome {{ googleUser.getBasicProfile().getName() }}, please enter your phone number to finish creating your account.</h6>
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
@@ -59,6 +59,12 @@ import { validateObj } from './util';
 import { GOOGLE_CLIENT_ID } from '../api-urls'
 export default {
   name: 'sign-up',
+  props: {
+    googleUser: {
+      type: Object,
+      required: false
+    }
+  },
   data() {
     return {
       signUpCreds: {
@@ -85,8 +91,7 @@ export default {
         width: 250,
         height: 50,
         longtitle: true
-      },
-      googleUser: null
+      }
     }
   },
   components: {
@@ -96,7 +101,7 @@ export default {
     ...mapState(['user', 'message'])
   },
   methods: {
-    ...mapActions(['createUser']),
+    ...mapActions(['createUser', 'signUserIn']),
     validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
@@ -129,8 +134,10 @@ export default {
         await this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
       }
     },
-    onSuccess(googleUser) {
-      this.googleUser = googleUser;
+    async onSuccess(googleUser) {
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
+      if (!this.user)
+        this.$router.push({ name: 'google-sign-up', params: { googleUser: googleUser } });
     }
   },
   watch: {
