@@ -106,7 +106,7 @@ export default {
   //  border: 1px solid green;
    width: 100%;
    padding: 0;
-   margin: 3.5rem 0 0 0;
+   margin: 0;
 
    .section__home {
     width: 67rem;
