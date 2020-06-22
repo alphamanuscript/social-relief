@@ -40,7 +40,7 @@ const actions = wrapActions({
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
-    googleSignOut();
+    await googleSignOut();
     dispatch('clearData');
     router.push({ name: 'sign-in' });
   },

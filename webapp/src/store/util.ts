@@ -64,7 +64,7 @@ export function wrapActions (actions: ActionTree<AppState, AppState>): ActionTre
 
 export function googleSignOut() {
   // @ts-ignore
-  Vue.GoogleAuth.then( (auth2) => {
+  return Vue.GoogleAuth.then( (auth2) => {
     auth2.signOut();
     });
 }
