@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 import * as argon2 from 'argon2';
 import { OAuth2Client } from 'google-auth-library';
-import { GOOGLE_CLIENT_ID } from '../google-client';
 import { createLoginError } from '../error';
 import { ERROR_GOOGLE_LOGIN_FAILED } from '../messages';
 import { validateEmail } from './validation-util';
@@ -42,10 +41,10 @@ export function hasOnlyAllowedKeys (arg: any, allowedKeys: string[]): boolean {
  */
 export async function verifyGoogleIdToken(token: string): Promise<string> {
   try {
-    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: GOOGLE_CLIENT_ID
+      audience: process.env.GOOGLE_CLIENT_ID
     });
     const payload = ticket.getPayload();
     const email = payload['email'];
