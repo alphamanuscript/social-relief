@@ -186,7 +186,7 @@ export default {
         // border: 1px solid #000;
         width: 30%;
         height: 3rem;
-        margin: 1rem 0 0 3rem;
+        margin: .6rem 0 0 3rem;
 
 
         img {
