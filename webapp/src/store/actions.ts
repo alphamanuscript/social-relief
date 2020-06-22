@@ -35,7 +35,7 @@ const actions = wrapActions({
     const user = await Users.login({ phone, password });
     if (user) {
       commit('setUser', user);
-      if (router.currentRoute.name !== 'home') router.push({ name: 'home' });
+      if (router.currentRoute.name !== 'beneficiaries') router.push({ name: 'beneficiaries' });
     }
   },
   async signUserOut({ dispatch }) {

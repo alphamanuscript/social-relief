@@ -63,7 +63,7 @@ export default {
     ...mapState(['user', 'message', 'transactions']),
     showLoggedInNavigation () {
       this.showPageOrRedirect();
-      if (this.$route.name === 'sign-in') return false
+      if (this.$route.name === 'home' || this.$route.name === 'sign-in' || this.$route.name === 'sign-up') return false
       return true
     },
     imageUrl () {
@@ -77,15 +77,15 @@ export default {
     ]),
     async showPageOrRedirect () {
       const hasDataBeenFetched = this.user && this.transactions.length > 0;
-      if (this.$route.name === 'home' && Auth.isAuthenticated() && !hasDataBeenFetched) {
+      if (this.$route.name === 'beneficiaries' && Auth.isAuthenticated() && !hasDataBeenFetched) {
         await this.getCurrentUser();
         await this.getTransactions();
         await this.getBeneficiaries();
       } 
-      else if (this.$route.name === 'home' && !Auth.isAuthenticated()) this.$router.push({ name: 'sign-in' });
-      else if (this.$route.name === 'sign-in' && Auth.isAuthenticated() && !this.user) {
+      else if (this.$route.name === 'beneficiaries' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+      else if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
         await this.getCurrentUser();
-        this.$router.push({ name: 'home' });
+        this.$router.push({ name: 'beneficiaries' });
       }
     },
     async signout() {
