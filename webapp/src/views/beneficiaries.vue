@@ -350,7 +350,6 @@ export default {
 
                 td {
                   white-space: nowrap;
-                  // border: 1px solid #000;
 
                   &:first-child{
                     width: 3rem;

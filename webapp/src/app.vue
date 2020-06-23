@@ -44,13 +44,27 @@
             <li class="nav-item active">
               <router-link class="nav-link" to="/beneficiaries">Nominate</router-link>
             </li>
-            <li class="nav-item active" @click="signout">
+            <li class="nav-item active">
               <router-link class="nav-link sign-up-and-login-btn" to="#">Sign Up / Login</router-link>
             </li>
           </ul>
         </div>
       </nav>
       <router-view class="view-content" />
+    </div>
+    <div class="custom-dialog">
+      <div class="backdrop">
+        <div class="logo-container">
+          <img :src="imageUrl" alt="Social Relief Logo" class="logo">
+        </div>
+        <h4>Login</h4>
+        <form class="login-form">
+          <input type="text" class="input phone-input" placeholder="Enter phone number">
+          <input type="password" class="input password-input" placeholder="Enter password">
+          <button type="button" class="submit-btn">Submit</button>
+        </form>
+        <p>Don't have an account yet? <span>Sign Up.</span></p>
+      </div>
     </div>
   </div>
 </template>
@@ -284,6 +298,108 @@ export default {
       overflow-y: scroll;
       background: #F5F5F5;
       padding: 0 3rem 0 3rem;
+    }
+  }
+
+  .custom-dialog {
+    border: 1px solid #000;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(#000, 60%);
+    top: 0;
+    overflow: auto;
+    position: fixed;
+    z-index: 99999;
+
+    .backdrop {
+      border: 1px solid #fff;
+      height: 57%;
+      width: 22%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: .8rem;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+
+      .logo-container {
+        // border: 1px solid #000;
+        width: 17%;
+        height: 2.5rem;
+        margin-top: 1rem;
+
+        img {
+          // border: 1px solid #000;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      h4 {
+        // border: 1px solid red;
+        margin-top: .5rem;
+        color: #9D1A63;
+        font-weight: 450;
+      }
+
+      .login-form {
+        margin-top: -.4rem;
+        width: 80%;
+        height: 10rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+
+        .input {
+          width: 100%;
+          height: 2.2rem;
+          border-radius: .8rem;
+          text-align: center;
+          font-size: .8rem;
+          box-shadow: 0 2px 5px #E2E2E2; 
+          font-weight: 300;
+          background-color: #F5F5F5;
+          border: none;
+
+          &:focus {
+            outline: none;
+          }
+        }
+
+        .submit-btn {
+          border-radius: 3rem;
+          width: 7rem;
+          height: 1.7rem;
+          text-align: center;
+          background: darken(#EF5A24, .9);
+          color: #fff;
+          transition: all 0.5s;
+          box-shadow: 0 2px 5px #E2E2E2;
+          font-size: .75rem;
+          border: none;
+          font-weight: bold;
+
+          &:hover {
+            background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
+          }
+        }
+      }
+
+      p {
+        color: #9D1A63;
+        font-size: .75rem;
+        
+        span {
+          // border: 1px solid #000;
+          color: #EF5A24;
+          cursor: pointer;
+        }
+      }
     }
   }
 }
