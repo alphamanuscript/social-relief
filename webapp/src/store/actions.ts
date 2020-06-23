@@ -23,6 +23,11 @@ const actions = wrapActions({
       commit('addBeneficiary', bnf);
     }
   },
+  /**
+   * Valid combinations for creating a user: 
+   * createUser({phone, password}) OR
+   * createUser({phone, googleIdToken})
+   */
   async createUser({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
     const user = await Users.createUser({ phone, password, googleIdToken });
     await Users.login({ phone, password, googleIdToken });
@@ -31,6 +36,11 @@ const actions = wrapActions({
       router.push({ name: 'home' });
     }
   },
+   /**
+   * Valid combinations for signing a user in:
+   * signUserin({phone, password}) OR
+   * signUserin({googleIdToken})
+   */
   async signUserIn({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
     const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
