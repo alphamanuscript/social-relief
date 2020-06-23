@@ -32,6 +32,12 @@ const routes = [
     path: '/sign-up',
     name: 'sign-up',
     component: () => import(/* webpackChunkName: "sign-up" */ '../views/sign-up.vue')
+  },
+  {
+    path: '/sign-up/:googleUser',
+    name: 'google-sign-up',
+    props: true,
+    component: () => import(/* webpackChunkName: "google-sign-up" */ '../views/sign-up.vue')
   }
 ]
 

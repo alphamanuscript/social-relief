@@ -7,7 +7,8 @@ describe('validatesCreate', () => {
     testValidationSucceeds(validators.validatesCreate, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
@@ -21,7 +22,13 @@ describe('validatesCreate', () => {
       { phone: '254738103012', password: '' },
       { password: 'wiedna102Ldnffrfldm' },
       { phone: '254738103012' },
-      { phone: '254738103012', password: 1 }
+      { phone: '254738103012', password: 1 },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
+      { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: '' },
+      { password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
 });
@@ -31,7 +38,9 @@ describe('validatesLogin', () => {
     testValidationSucceeds(validators.validatesLogin, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
@@ -40,7 +49,14 @@ describe('validatesLogin', () => {
       { phone: '+254729291091', password: 'dsks12jnDM4' },
       { phone: '254829291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254738103012', password: 'f' },
-      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' }
+      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
+      { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: '' },
+      { googleIdToken: '' },
+      { password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
 });
