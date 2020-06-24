@@ -44,35 +44,117 @@
             <li class="nav-item active">
               <router-link class="nav-link" to="/beneficiaries">Nominate</router-link>
             </li>
-            <li class="nav-item active">
-              <router-link class="nav-link sign-up-and-login-btn" to="#">Sign Up / Login</router-link>
+            <li class="nav-item active" @click="handleLoginAndSignUpBtnClick()">
+              <router-link class="nav-link login-and-sign-up-btn" to="#">Login / Sign Up</router-link>
             </li>
           </ul>
         </div>
       </nav>
       <router-view class="view-content" />
     </div>
-    <div class="custom-dialog">
-      <div class="backdrop">
-        <div class="logo-container">
-          <img :src="imageUrl" alt="Social Relief Logo" class="logo">
-        </div>
-        <h4>Login</h4>
-        <form class="login-form">
-          <input type="text" class="input phone-input" placeholder="Enter phone number">
-          <input type="password" class="input password-input" placeholder="Enter password">
-          <button type="button" class="submit-btn">Submit</button>
-        </form>
-        <p>Don't have an account yet? <span>Sign Up.</span></p>
+    <CustomDialog :show="showLoginDialog" @updated:show="hideDialog('login')">
+      <div class="logo-container">
+        <img :src="imageUrl" alt="Social Relief Logo" class="logo">
       </div>
-    </div>
+      <h4>Login</h4>
+      <form class="login-form">
+        <div class="row form-group">
+          <input 
+            v-model="signinCreds.phone" 
+            type="text" 
+            :class="getClasses('phone')"
+            placeholder="Enter phone number"
+          />
+          <div class="invalid-feedback">
+            {{ validationMessages[0] }}
+          </div>
+        </div>
+        <div class="row form-group">
+          <input 
+            v-model="signinCreds.password" 
+            type="password" 
+            :class="getClasses('password')" 
+            placeholder="Enter password"
+          />
+          <div class="invalid-feedback">
+            {{ validationMessages[1] }}
+          </div>
+        </div>
+        <button type="button" class="submit-btn" @click.prevent="signin">Submit</button>
+      </form>
+      <p>Don't have an account yet? <span @click="showDialog('sign-up')">Sign Up.</span></p>
+    </CustomDialog>
+    <CustomDialog :show="showSignUpDialog" @updated:show="hideDialog('sign-up')">
+      <div class="logo-container">
+        <img :src="imageUrl" alt="Social Relief Logo" class="logo">
+      </div>
+      <h4>Sign Up</h4>
+      <form class="login-form">
+        <div class="row form-group">
+          <input 
+            v-model="signinCreds.phone" 
+            type="text" 
+            :class="getClasses('phone')"
+            placeholder="Enter phone number"
+          />
+          <div class="invalid-feedback">
+            {{ validationMessages[0] }}
+          </div>
+        </div>
+        <div class="row form-group">
+          <input 
+            v-model="signinCreds.password" 
+            type="password" 
+            :class="getClasses('password')" 
+            placeholder="Enter password"
+          />
+          <div class="invalid-feedback">
+            {{ validationMessages[1] }}
+          </div>
+        </div>
+        <div class="row form-group">
+          <input 
+            v-model="signinCreds.password" 
+            type="password" 
+            :class="getClasses('password')" 
+            placeholder="Confirm password"
+          />
+          <div class="invalid-feedback">
+            {{ validationMessages[1] }}
+          </div>
+        </div>
+        <button type="button" class="submit-btn" @click.prevent="signin">Submit</button>
+      </form>
+      <p>I have an account. <span @click="showDialog('login')">Login.</span></p>
+    </CustomDialog>
   </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
 import { Auth } from './services';
+import CustomDialog from './ui-components/dialog.vue';
+import { validateObj } from './views/util';
 
 export default {
+  data() {
+    return {
+      showLoginDialog: false,
+      signinCreds: {
+        phone: '',
+        password: ''
+      },
+      validationMessages: [
+        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Password required'
+      ],
+      validationRules: [
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => creds.password.length > 0, }
+      ],
+      validationResults: [true, true],
+    }
+  },
+  components: { CustomDialog },
   computed: {
     ...mapState(['user', 'message', 'transactions']),
     showLoggedInNavigation () {
@@ -82,13 +164,14 @@ export default {
     },
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
-    }
+    },
   },
   methods: {
     ...mapActions([
       'signUserIn', 'getBeneficiaries', 'getTransactions',
       'getCurrentUser', 'signUserOut'
     ]),
+    validateObj,
     async showPageOrRedirect () {
       const hasDataBeenFetched = this.user && this.transactions.length > 0;
       if (this.$route.name === 'beneficiaries' && Auth.isAuthenticated() && !hasDataBeenFetched) {
@@ -105,10 +188,68 @@ export default {
     async signout() {
       await this.signUserOut();
     },
+    handleLoginAndSignUpBtnClick() {
+      this.showLoginDialog = true;
+    },
+    hideLoginDialog() {
+      this.showLoginDialog = false;
+      this.signinCreds = { phone: '', password: '' };
+      this.validationResults = [true, true];
+    },
+    getClasses(nameOfInput) {
+      switch(nameOfInput) {
+        case 'phone': 
+          return {
+            'input': true,
+            'form-control': true,
+            'is-invalid': !this.validationResults[0]
+          }
+        case 'password': 
+          return {
+            'input': true,
+            'form-control': true,
+            'is-invalid': !this.validationResults[1]
+          }
+        default: 
+          return {}
+      }
+    },
+    async signin() {
+      this.validationMessages = [
+        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Password required'
+      ];
+      this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
+      console.log('this.signinCreds: ', this.signinCreds);
+
+      if (!this.validationResults.includes(false)) {
+        await this.signUserIn({ phone: `254${this.signinCreds.phone}`, password: this.signinCreds.password });
+        if (!this.user) {
+          this.validationMessages = [
+            'Login failed. Incorrect phone or password',
+            'Login failed. Incorrect phone or password'
+          ];
+          this.validationResults = [false, false];
+        }
+        else this.showLoginDialog = false;
+      }
+    },
+    showDialog(dialogName) {
+      if (dialogName === 'login') {
+        this.showSignUpDialog = false;
+        this.validationRules = [true, true, true];
+        this.showLoginDialog = true;
+      }
+      else if (dialogName === 'sign-up') {
+        this.showLoginDialog = false;
+        this.validationRules = [true, true];
+        this.showSignUpDialog = true;
+      }
+    }
   }
 }
 </script>
-<style scoped lang="scss">
+<style lang="scss">
 @import "./scss/base";
 #app {
   background: #F5F5F5;
@@ -154,7 +295,7 @@ export default {
               font-weight: 500;
             }
 
-            .sign-up-and-login-btn {
+            .login-and-sign-up-btn {
               border-radius: 3rem;
               width: 7.3rem;
               height: 2.2rem;
@@ -302,30 +443,7 @@ export default {
   }
 
   .custom-dialog {
-    border: 1px solid #000;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(#000, 60%);
-    top: 0;
-    overflow: auto;
-    position: fixed;
-    z-index: 99999;
-
     .backdrop {
-      border: 1px solid #fff;
-      height: 57%;
-      width: 22%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: .8rem;
-      background-color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-
       .logo-container {
         // border: 1px solid #000;
         width: 17%;
@@ -347,27 +465,35 @@ export default {
       }
 
       .login-form {
-        margin-top: -.4rem;
+        margin-top: -.5rem;
         width: 80%;
-        height: 10rem;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
 
-        .input {
+        .row {
           width: 100%;
-          height: 2.2rem;
-          border-radius: .8rem;
-          text-align: center;
-          font-size: .8rem;
-          box-shadow: 0 2px 5px #E2E2E2; 
-          font-weight: 300;
-          background-color: #F5F5F5;
-          border: none;
 
-          &:focus {
-            outline: none;
+          .input {
+            width: 100%;
+            height: 2.2rem;
+            border-radius: .8rem;
+            text-align: center;
+            font-size: .8rem;
+            box-shadow: 0 2px 5px #E2E2E2; 
+            font-weight: 300;
+            background-color: #F5F5F5;
+            border: none;
+
+            &:focus {
+              outline: none;
+            }
+          }
+
+          .invalid-feedback {
+            font-size: .75rem;
+            text-align: center;
           }
         }
 
@@ -378,16 +504,17 @@ export default {
           text-align: center;
           background: darken(#EF5A24, .9);
           color: #fff;
-          transition: all 0.5s;
           box-shadow: 0 2px 5px #E2E2E2;
           font-size: .75rem;
           border: none;
           font-weight: bold;
+          outline: none;
 
           &:hover {
             background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
           }
         }
+
       }
 
       p {
@@ -395,7 +522,6 @@ export default {
         font-size: .75rem;
         
         span {
-          // border: 1px solid #000;
           color: #EF5A24;
           cursor: pointer;
         }

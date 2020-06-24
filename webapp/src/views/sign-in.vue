@@ -97,7 +97,6 @@ export default {
             'Login failed. Incorrect phone or password'
           ];
           this.validationResults = [false, false];
-          
         }
       }
     },

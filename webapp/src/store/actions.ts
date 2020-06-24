@@ -28,7 +28,7 @@ const actions = wrapActions({
     await Users.login({ phone, password });
     commit('setUser', user);
     if (user) {
-      router.push({ name: 'home' });
+      router.push({ name: 'beneficiaries' });
     }
   },
   async signUserIn({ commit }, { phone, password }: { phone: string; password: string }) {
