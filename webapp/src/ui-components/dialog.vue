@@ -39,7 +39,8 @@ export default {
     // transition: all .5s;
 
     .backdrop {
-      height: 57%;
+      min-height: 57%;
+      max-height: 92%;
       width: 22%;
       position: absolute;
       top: 50%;

@@ -60,27 +60,27 @@
       <form class="login-form">
         <div class="row form-group">
           <input 
-            v-model="signinCreds.phone" 
+            v-model="signInCreds.phone" 
             type="text" 
-            :class="getClasses('phone')"
+            :class="getClassesForSignInDialog('phone')"
             placeholder="Enter phone number"
           />
           <div class="invalid-feedback">
-            {{ validationMessages[0] }}
+            {{ signInValidationMessages[0] }}
           </div>
         </div>
         <div class="row form-group">
           <input 
-            v-model="signinCreds.password" 
+            v-model="signInCreds.password" 
             type="password" 
-            :class="getClasses('password')" 
+            :class="getClassesForSignInDialog('password')" 
             placeholder="Enter password"
           />
           <div class="invalid-feedback">
-            {{ validationMessages[1] }}
+            {{ signInValidationMessages[1] }}
           </div>
         </div>
-        <button type="button" class="submit-btn" @click.prevent="signin">Submit</button>
+        <button type="button" class="submit-btn" @click.prevent="signIn">Submit</button>
       </form>
       <p>Don't have an account yet? <span @click="showDialog('sign-up')">Sign Up.</span></p>
     </CustomDialog>
@@ -92,38 +92,39 @@
       <form class="login-form">
         <div class="row form-group">
           <input 
-            v-model="signinCreds.phone" 
+            v-model="signUpCreds.phone" 
             type="text" 
-            :class="getClasses('phone')"
+            :class="getClassesForSignUpDialog('phone')"
             placeholder="Enter phone number"
           />
           <div class="invalid-feedback">
-            {{ validationMessages[0] }}
+            {{ signUpValidationMessages[0] }}
           </div>
         </div>
         <div class="row form-group">
           <input 
-            v-model="signinCreds.password" 
+            v-model="signUpCreds.password" 
             type="password" 
-            :class="getClasses('password')" 
+            :class="getClassesForSignUpDialog('password')" 
             placeholder="Enter password"
           />
           <div class="invalid-feedback">
-            {{ validationMessages[1] }}
+            {{ signUpValidationMessages[1] }}
           </div>
         </div>
         <div class="row form-group">
-          <input 
-            v-model="signinCreds.password" 
-            type="password" 
-            :class="getClasses('password')" 
+          <input
+            v-model="signUpCreds.confirmedPassword"
+            id="confirmedPassword"
+            type="password"
+            :class="getClassesForSignUpDialog('confirmedPassword')"
             placeholder="Confirm password"
-          />
+          >
           <div class="invalid-feedback">
-            {{ validationMessages[1] }}
+            {{ signUpValidationMessages[2] }}
           </div>
         </div>
-        <button type="button" class="submit-btn" @click.prevent="signin">Submit</button>
+        <button type="button" class="submit-btn" @click.prevent="signUp">Submit</button>
       </form>
       <p>I have an account. <span @click="showDialog('login')">Login.</span></p>
     </CustomDialog>
@@ -139,19 +140,38 @@ export default {
   data() {
     return {
       showLoginDialog: false,
-      signinCreds: {
+      showSignUpDialog: false,
+      signInCreds: {
         phone: '',
         password: ''
       },
-      validationMessages: [
+      signUpCreds: {
+        phone: '',
+        password: '',
+        confirmedPassword: '',
+        role: 'donor'
+      },
+      signInValidationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Password required'
       ],
-      validationRules: [
+      signInValidationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
-      validationResults: [true, true],
+      signInValidationResults: [true, true],
+      
+      signUpValidationMessages: [
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character',
+        'Confirmed password does not match with password'
+      ],
+      signUpValidationRules: [
+        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?=.{8,18}).*$/.test(creds.password) },
+        { test: (creds) => creds.confirmedPassword === creds.password }
+      ],
+      signUpValidationResults: [true, true, true],
     }
   },
   components: { CustomDialog },
@@ -169,14 +189,14 @@ export default {
   methods: {
     ...mapActions([
       'signUserIn', 'getBeneficiaries', 'getTransactions',
-      'getCurrentUser', 'signUserOut'
+      'getCurrentUser', 'signUserOut', 'createUser'
     ]),
     validateObj,
     async showPageOrRedirect () {
       const hasDataBeenFetched = this.user && this.transactions.length > 0;
       if (this.$route.name === 'beneficiaries' && Auth.isAuthenticated() && !hasDataBeenFetched) {
         await this.getCurrentUser();
-        await this.getTransactions();
+        // await this.getTransactions();
         await this.getBeneficiaries();
       } 
       else if (this.$route.name === 'beneficiaries' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
@@ -191,58 +211,105 @@ export default {
     handleLoginAndSignUpBtnClick() {
       this.showLoginDialog = true;
     },
-    hideLoginDialog() {
-      this.showLoginDialog = false;
-      this.signinCreds = { phone: '', password: '' };
-      this.validationResults = [true, true];
+    hideDialog(dialogName) {
+      if (dialogName === 'login') {
+        this.showLoginDialog = false;
+        this.signInValidationResults = [true, true]
+      }
+      else if (dialogName === 'sign-up') {
+        this.showSignUpDialog = false;
+        this.signUpValidationResults = [true, true, true]
+      }
     },
-    getClasses(nameOfInput) {
+    getClassesForSignInDialog(nameOfInput) {
       switch(nameOfInput) {
         case 'phone': 
           return {
             'input': true,
             'form-control': true,
-            'is-invalid': !this.validationResults[0]
+            'is-invalid': !this.signInValidationResults[0]
           }
         case 'password': 
           return {
             'input': true,
             'form-control': true,
-            'is-invalid': !this.validationResults[1]
+            'is-invalid': !this.signInValidationResults[1]
           }
         default: 
           return {}
       }
     },
-    async signin() {
-      this.validationMessages = [
+    getClassesForSignUpDialog(nameOfInput) {
+      switch(nameOfInput) {
+        case 'phone': 
+          return {
+            'input': true,
+            'form-control': true,
+            'is-invalid': !this.signUpValidationResults[0]
+          }
+        case 'password': 
+          return {
+            'input': true,
+            'form-control': true,
+            'is-invalid': !this.signUpValidationResults[1]
+          }
+        case 'confirmedPassword': 
+          return {
+            'input': true,
+            'form-control': true,
+            'is-invalid': !this.signUpValidationResults[2]
+          }
+        default: 
+          return {}
+      }
+    },
+    async signIn() {
+      this.signInValidationMessages = [
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Password required'
       ];
-      this.validationResults = this.validateObj(this.signinCreds, this.validationRules);
-      console.log('this.signinCreds: ', this.signinCreds);
+      this.signInValidationResults = this.validateObj(this.signInCreds, this.signInValidationRules);
 
-      if (!this.validationResults.includes(false)) {
-        await this.signUserIn({ phone: `254${this.signinCreds.phone}`, password: this.signinCreds.password });
+      if (!this.signInValidationResults.includes(false)) {
+        await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
         if (!this.user) {
-          this.validationMessages = [
+          this.signInValidationMessages = [
             'Login failed. Incorrect phone or password',
             'Login failed. Incorrect phone or password'
           ];
-          this.validationResults = [false, false];
+          this.signInValidationResults = [false, false];
         }
         else this.showLoginDialog = false;
+      }
+    },
+    async signUp() {
+      this.signUpValidationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
+      this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
+
+      if (!this.signUpValidationResults.includes(false)) {
+        await this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
+        this.hideDialog('sign-up');
       }
     },
     showDialog(dialogName) {
       if (dialogName === 'login') {
         this.showSignUpDialog = false;
-        this.validationRules = [true, true, true];
+        this.signUpCreds = {
+          phone: '',
+          password: '',
+          confirmedPassword: '',
+          role: 'donor'
+        },
+        this.signUpValidationResults = [true, true, true];
         this.showLoginDialog = true;
       }
       else if (dialogName === 'sign-up') {
         this.showLoginDialog = false;
-        this.validationRules = [true, true];
+        this.signInCreds = {
+          phone: '',
+          password: ''
+        },
+        this.signInValidationResults = [true, true];
         this.showSignUpDialog = true;
       }
     }
@@ -263,10 +330,8 @@ export default {
         margin: 0 auto;
         height: 7rem;
         background-color: #F5F5F5 !important;
-        // border: 1px solid #000;
 
         .navbar-brand {
-          // border: 1px solid #000;
           width: 7rem;
           height: 12rem;
           display: flex;
@@ -321,13 +386,11 @@ export default {
   }
 
   .logged-in-structure {
-    // border: 1px solid #000;
     display: grid;
     grid-template-rows: 100vh;
     grid-template-columns: 13rem 1fr;
 
     .sidebar {
-      // border: 1px solid green;
       background-color: #FFF;
       display: flex;
       flex-direction: column;
@@ -338,7 +401,6 @@ export default {
       z-index: 999;
 
       .logo-container {
-        // border: 1px solid #000;
         width: 30%;
         height: 3rem;
         margin: .6rem 0 0 3rem;
@@ -351,7 +413,6 @@ export default {
       }
 
       .current-balance-container {
-        // border: 1px solid #000;
         background-color: #9D1A63;
         height: 5rem;
         width: 65%;
@@ -366,7 +427,6 @@ export default {
         span {
           color:  #FFF;
           font-size: .7rem;
-          // border: 1px solid #000;
           display: block;
           height: 1rem;
           width: 6rem;
@@ -384,13 +444,11 @@ export default {
       }
 
       .vertical-navigation {
-        // border: 1px solid #000;
         width: 57%;
         margin: -5rem 0 2rem 2rem;
         padding: 0;
 
         li {
-          // border: 1px solid #000;
           list-style: none;
           padding: 0 0 0 1rem;
           margin-bottom: 1.2rem;
@@ -413,13 +471,10 @@ export default {
           color: #FFF;
           font-weight: bold;
           height: 1.5rem;
-          // border: none;
-          // font-size: .9rem;
         }
       }
 
       .policy-and-terms {
-        // border: 1px solid #000;
         height: 5rem;
         width: 70%;
         color: #9D1A63;
@@ -427,7 +482,6 @@ export default {
         margin: 0 0 0 2rem;
 
         span{
-          // border: 1px solid #000;
           display: block;
           margin-bottom: .3rem;
         }
@@ -445,27 +499,23 @@ export default {
   .custom-dialog {
     .backdrop {
       .logo-container {
-        // border: 1px solid #000;
         width: 17%;
         height: 2.5rem;
         margin-top: 1rem;
 
         img {
-          // border: 1px solid #000;
           width: 100%;
           height: 100%;
         }
       }
 
       h4 {
-        // border: 1px solid red;
         margin-top: .5rem;
         color: #9D1A63;
         font-weight: 450;
       }
 
       .login-form {
-        margin-top: -.5rem;
         width: 80%;
         display: flex;
         flex-direction: column;
@@ -509,6 +559,7 @@ export default {
           border: none;
           font-weight: bold;
           outline: none;
+          margin-bottom: .3rem;
 
           &:hover {
             background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
