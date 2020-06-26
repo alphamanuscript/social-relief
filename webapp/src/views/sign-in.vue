@@ -30,7 +30,8 @@
               </div>
             </div>
             <div class="col-md-6">
-              <button type="submit" class="btn btn-primary" @click.prevent="signin">Sign In</button>
+                <button type="submit" class="btn btn-primary" @click.prevent="signin">Sign In</button>
+                <GoogleLogin :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </div>
           </div>
         </form>
@@ -40,7 +41,9 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import { GoogleLogin } from 'vue-google-login';
 import { validateObj } from './util';
+import { GOOGLE_CLIENT_ID } from '../api-urls'
 export default {
   name: 'sign-in',
   data() {
@@ -55,10 +58,21 @@ export default {
       ],
       validationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => creds.password.length > 0, }
+        { test: (creds) => creds.password.length > 0 }
       ],
       validationResults: [true, true],
+      params: {
+        clientId: GOOGLE_CLIENT_ID
+      },
+      renderParams: {
+        width: 250,
+        height: 50,
+        longtitle: true
+      }
     }
+  },
+  components: {
+    GoogleLogin
   },
   computed: {
     ...mapState(['user']),
@@ -100,7 +114,12 @@ export default {
         }
       }
     },
-  },
+    async onSuccess(googleUser) {
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
+      if (!this.user)
+        this.$router.push({ name: 'google-sign-up', params: { googleUser: googleUser } });
+    }
+  }
 }
 </script>
 <style scoped lang="scss">

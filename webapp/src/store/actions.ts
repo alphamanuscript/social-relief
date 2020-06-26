@@ -1,4 +1,4 @@
-import { wrapActions } from './util';
+import { wrapActions, googleSignOut } from './util';
 import { Users, Transactions, Donations } from '../services';
 import router from '../router';
 
@@ -23,16 +23,26 @@ const actions = wrapActions({
       commit('addBeneficiary', bnf);
     }
   },
-  async createUser({ commit }, { phone, password }: { phone: string; password: string }) {
-    const user = await Users.createUser({ phone, password });
-    await Users.login({ phone, password });
+  /**
+   * Valid combinations for creating a user: 
+   * createUser({phone, password}) OR
+   * createUser({phone, googleIdToken})
+   */
+  async createUser({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.createUser({ phone, password, googleIdToken });
+    await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
       router.push({ name: 'beneficiaries' });
     }
   },
-  async signUserIn({ commit }, { phone, password }: { phone: string; password: string }) {
-    const user = await Users.login({ phone, password });
+   /**
+   * Valid combinations for signing a user in:
+   * signUserin({phone, password}) OR
+   * signUserin({googleIdToken})
+   */
+  async signUserIn({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
       if (router.currentRoute.name !== 'beneficiaries') router.push({ name: 'beneficiaries' });
@@ -40,8 +50,9 @@ const actions = wrapActions({
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
+    await googleSignOut();
     dispatch('clearData');
-    router.push({ name: 'sign-in' });
+    router.push({ name: 'home' });
   },
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();

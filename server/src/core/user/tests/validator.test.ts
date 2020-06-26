@@ -7,7 +7,8 @@ describe('validatesCreate', () => {
     testValidationSucceeds(validators.validatesCreate, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
@@ -21,7 +22,13 @@ describe('validatesCreate', () => {
       { phone: '254738103012', password: '' },
       { password: 'wiedna102Ldnffrfldm' },
       { phone: '254738103012' },
-      { phone: '254738103012', password: 1 }
+      { phone: '254738103012', password: 1 },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
+      { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: '' },
+      { password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
 });
@@ -31,7 +38,9 @@ describe('validatesLogin', () => {
     testValidationSucceeds(validators.validatesLogin, [
       { phone: '254729291091', password: 'dsksjjn,' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' }
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
@@ -40,7 +49,14 @@ describe('validatesLogin', () => {
       { phone: '+254729291091', password: 'dsks12jnDM4' },
       { phone: '254829291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254738103012', password: 'f' },
-      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' }
+      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
+      { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', googleIdToken: '' },
+      { googleIdToken: '' },
+      { password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
 });
@@ -48,17 +64,33 @@ describe('validatesLogin', () => {
 describe('validatesNominateBeneficiary', () => {
   it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesNominateBeneficiary, [
-      { phone: '254729291091', nominator: '254729311023' },
-      { phone: '254729311023', nominator: '254729291091' }
+      { phone: '254729291091', nominator: 'nominator1' },
+      { phone: '254729311023', nominator: 'nominator1' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesNominateBeneficiary, [
-      { phone: '25472929109', nominator: '2547293110232' },
-      { phone: '+254729291091', nominator: '254729311023' },
-      { phone: '254729291091', nominator: '+254729311023' },
+      { phone: '25472929109', nominator: '' },
+      { phone: '+254729291091', nominator: {} },
       { phone: '254829291091' },
-      { nominator: '254729311023' }
+      { nominator: 'donor1' }
+    ]);
+  });
+});
+
+describe('validateNominateMiddleman', () => {
+  it('should not throw error if inputs are valid', () => {
+    testValidationSucceeds(validators.validatesNominateMiddleman, [
+      { phone: '254729291091', nominator: 'nominator1' },
+      { phone: '254729311023', nominator: 'nominator1' }
+    ]);
+  });
+  it('should throw error if inputs are not valid', () => {
+    testValidationFails(validators.validatesNominateMiddleman, [
+      { phone: '25472929109', nominator: '' },
+      { phone: '+254729291091', nominator: {} },
+      { phone: '254829291091' },
+      { nominator: 'donor1' }
     ]);
   });
 });

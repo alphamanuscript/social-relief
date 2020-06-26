@@ -1,25 +1,11 @@
 import * as joi from '@hapi/joi';
+import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema } from '../util/validation-util';
 
-const userCreateAndLoginSchema = joi.object().keys({
-  phone: joi.string()
-    .required()
-    .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
-    .messages({
-      'any.required': 'Phone is required',
-      'string.base': 'Invalid type, phone must be a string',
-      'string.empty': 'Please enter your phone number',
-      'string.pattern.base': 'Invalid phone number. Must start with 2547 and be 12 digit long'
-    }),
-  password: joi.string()
-    .required()
-    .pattern(/^.{8,18}$/)
-    .messages({
-      'any.required': 'Password is required',
-      'string.base': 'Invalid type, password must be a string',
-      'string.empty': 'Please enter your password',
-      'string.pattern.base': 'Invalid password. Must range between 8 and 18 characters'
-    })
-}); 
+const userCreateAndLoginSchema = joi.alternatives().try(
+  joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
+  joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
+  joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
+);
 
 const userTokenIdSchema = joi.object().keys({
   tokenId: joi.string()
@@ -61,14 +47,14 @@ export const nominateBeneficiaryInputSchema = joi.object().keys({
     }),
   nominator: joi.string()
     .required()
-    .pattern(/^2547\d{8}$/)
     .messages({
-      'any.required': `Nominator is required`,
+      'any.required': `Nominator id is required`,
       'string.base': 'Invalid type, nominator must be a string',
-      'string.empty': `Please enter nominator's phone number`,
-      'string.pattern.base': `Invalid nominator's phone number. Must start with 2547 and be 12 digit long`
+      'string.empty': `Nominator id is required`,
     }),
 });
+
+export const nominateMiddlemanInputSchema = nominateBeneficiaryInputSchema;
 
 export const getAllBeneficiariesInputSchema = userIdSchema;
 

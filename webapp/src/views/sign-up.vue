@@ -3,6 +3,7 @@
     <div class="row mb md-5">
       <div class="col">
         <h2>Sign Up Page</h2>
+        <h6 v-if="googleUser">Welcome {{ googleUser.getBasicProfile().getName() }}, please enter your phone number to finish creating your account.</h6>
         <form>
           <div class="row">
             <div class="col-md-12 form-group">
@@ -17,7 +18,7 @@
                 {{ validationMessages[0] }}
               </div>
             </div>
-            <div class="col-md-12 form-group">
+            <div v-show="!googleUser" class="col-md-12 form-group">
               <label for="password">Password</label>
               <input
                 v-model="signUpCreds.password"
@@ -29,7 +30,7 @@
                 {{ validationMessages[1] }}
               </div>
             </div>
-            <div class="col-md-12 form-group">
+            <div v-show="!googleUser" class="col-md-12 form-group">
               <label for="confirmedPassword">Confirm Password</label>
               <input
                 v-model="signUpCreds.confirmedPassword"
@@ -43,6 +44,7 @@
             </div>
             <div class="col-md-6">
               <button type="submit" class="btn btn-primary" @click.prevent="signup">Sign Up</button>
+              <GoogleLogin v-show="!googleUser" :params="params" :renderParams="renderParams" :onSuccess="onSuccess"></GoogleLogin>
             </div>
           </div>
         </form>
@@ -52,10 +54,17 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import { GoogleLogin } from 'vue-google-login';
 import { validateObj } from './util';
-
+import { GOOGLE_CLIENT_ID } from '../api-urls'
 export default {
   name: 'sign-up',
+  props: {
+    googleUser: {
+      type: Object,
+      required: false
+    }
+  },
   data() {
     return {
       signUpCreds: {
@@ -75,13 +84,24 @@ export default {
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
       validationResults: [true, true, true],
+      params: {
+        clientId: GOOGLE_CLIENT_ID
+      },
+      renderParams: {
+        width: 250,
+        height: 50,
+        longtitle: true
+      }
     }
+  },
+  components: {
+    GoogleLogin
   },
   computed: {
     ...mapState(['user', 'message'])
   },
   methods: {
-    ...mapActions(['createUser']),
+    ...mapActions(['createUser', 'signUserIn']),
     validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
@@ -107,10 +127,17 @@ export default {
     async signup() {
       this.validationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
       this.validationResults = this.validateObj(this.signUpCreds, this.validationRules);
-
-      if (!this.validationResults.includes(false)) {
-        this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
+      if (this.googleUser && this.validationResults[0]) {
+        await this.createUser({ phone: `254${this.signUpCreds.phone}`, googleIdToken: this.googleUser.getAuthResponse().id_token });
       }
+      else if (!this.validationResults.includes(false)) {
+        await this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
+      }
+    },
+    async onSuccess(googleUser) {
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
+      if (!this.user)
+        this.$router.push({ name: 'google-sign-up', params: { googleUser: googleUser } });
     }
   },
   watch: {

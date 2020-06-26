@@ -59,6 +59,10 @@ export interface AppConfig {
    * processes
    */
   distributionInterval: number;
+  /**
+   * Google API Client ID
+   */
+  googleClientId: string;
 };
 
 export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig {
@@ -73,6 +77,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atWebhooksRoot: '/at-webhooks',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
-    distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1
+    distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
+    googleClientId: env.GOOGLE_CLIENT_ID
   };
 }
