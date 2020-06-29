@@ -36,7 +36,6 @@ export default {
     position: fixed;
     z-index: 99999;
     visibility: hidden;
-    // transition: all .5s;
 
     .backdrop {
       min-height: 57%;

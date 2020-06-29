@@ -63,12 +63,12 @@ export default {
       
       signUpValidationMessages: [
         'Invalid Phone number. Must start with 7 and be 9 digit long',
-        'Invalid password. Must range between 8 and 18 characters and have at least one uppercase, lowercase, digit, and special character',
+        'Invalid password. Must range between 8 and 18 characters',
         'Confirmed password does not match with password'
       ],
       signUpValidationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?=.{8,18}).*$/.test(creds.password) },
+        { test: (creds) => /^.{8,18}$/.test(creds.password) },
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
       signUpValidationResults: [true, true, true],

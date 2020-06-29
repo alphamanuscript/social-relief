@@ -103,7 +103,6 @@ export default {
 </script>
 <style lang="scss" scoped> 
  .outermost-container {
-  //  border: 1px solid green;
    width: 100%;
    padding: 0;
    margin: 0;
@@ -111,14 +110,12 @@ export default {
    .section__home {
     width: 67rem;
     padding: 0 4rem 0 4rem;
-    // border: 1px solid #000;
     margin: 0 auto;
 
 
     h3 {
       margin: 0 1.5rem .5rem 1.5rem;
       color: #9D1A63;
-      //  border: 1px solid #000;
       font-size: 1.5rem;
     }
 
@@ -128,13 +125,10 @@ export default {
       font-size: .7rem;
       color: #EF5A24;
       font-weight: bold;
-      //  border: 1px solid #000;
     }
 
     .btn-donate {
-      //  border: 1px solid #000;
       margin: 0 1.5rem 3rem 1.5rem;
-      //  margin-bottom: 3rem;
       width: 12rem;
       border-radius: .5rem;
       background: darken(#EF5A24, .9);
@@ -217,7 +211,6 @@ export default {
      }
 
      p {
-      //  border: 1px solid #000;
        margin: 1.5rem 1.5rem 3rem 1.5rem;
        font-size: .9rem;
 
@@ -248,7 +241,6 @@ export default {
 
    .section__about-us {
      width: 67rem;
-    //  border: 1px solid #000;
      padding: 0 4rem 0 4rem;
      margin: 0 auto;
 
@@ -258,11 +250,9 @@ export default {
      }
 
      p {
-      //  border: 1px solid #000;
        margin: 1.5rem 1.5rem 2rem 1.5rem;
 
        span {
-        //  border: 1px solid #000;
          display: block;
          font-size: .9rem;
          font-weight: 400;
@@ -270,24 +260,20 @@ export default {
      }
 
      .partners {
-      //  border: 1px solid #000;
        margin: 4rem 0;
 
        h5 {
-        //  border: 1px solid #000;
          margin: 0 1.5rem 2rem 1.5rem;
          color: #9D1A63;
        }
 
        .partner-container {
-        //  border: 1px solid #000;
          height: 4.2rem;
          display: flex;
          border-radius: .7rem;
          box-shadow: 0 2px 5px #E2E2E2;
 
          .partner {
-            // border: 1px solid #000;
             flex-grow: 1; 
             display: flex;
             flex-direction: column;
@@ -306,7 +292,6 @@ export default {
               width: 2.7rem;
               height: 2.7rem;
               border-radius: 50%;
-              // border: 1px solid #000;
               background-color: #9D1A63;
             }
          }
@@ -315,15 +300,11 @@ export default {
    }
 
    .section__contact-us {
-    //  border: 1px solid #000;
      height: 45rem;
-    //  width: 67rem;
      margin: 0 auto;
-    //  padding: 0 4rem 0 4rem;
     position: relative;
 
     .contact-us-form-container {
-      // border: 1px solid #000;
       position: absolute;
       top: 0;
       left: 50%;
@@ -335,28 +316,21 @@ export default {
         margin: 2rem 4rem 1rem 4rem;
         padding: 0 1.5rem 0 1.5rem;
         color: #EF5A24;
-        // border: 1px solid #000;
       }
 
       .map-and-form {
-        // border: 1px solid #000;
         border-radius: .7rem;
         height: 30rem;
 
-        .map-container {
-          // border: 1px solid #000;
-        }
+        .map-container {}
 
-        .form-container {
-          // border: 1px solid #000;
-        }
+        .form-container {}
       }
     }
 
     .footer {
       position: absolute;
       bottom: 0;
-      // border: 1px solid #000;
       width: 100%;
       height: 15rem;
       background-color: #9D1A63;
