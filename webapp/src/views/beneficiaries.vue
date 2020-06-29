@@ -1,7 +1,7 @@
 <template>
   <div class="outermost-container">
     <div class="inner-container">
-      <div class="top-nav">
+      <!-- <div class="top-nav">
         <div class="links">
           <span class="nominate-btn">Nominate</span>
           <span class="donate-btn">Donate</span>
@@ -15,7 +15,7 @@
           </div>
           <i class="fas fa-user-circle"></i>
         </div>
-      </div>
+      </div> -->
       <div class="page-intro">
         <h3>Beneficiaries</h3>
         <p>
@@ -176,113 +176,113 @@ export default {
 <style lang="scss" scoped>
   .outermost-container {
     // border: 1px solid #000;
+    margin: 0 0 0 1rem;
     .inner-container {
-      // border: 1px solid #000;
 
-      .top-nav {
-        // border: 1px solid #000;
-        margin-top: .6rem;
-        height: 2.9rem;
-        display: flex;
-        justify-content: space-between;
+      // .top-nav {
+      //   // border: 1px solid #000;
+      //   margin-top: .6rem;
+      //   height: 2.9rem;
+      //   display: flex;
+      //   justify-content: space-between;
 
-        .links {
-          // border: 1px solid #000;
-          width: 17rem;
-          height: 100%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+      //   .links {
+      //     // border: 1px solid #000;
+      //     width: 17rem;
+      //     height: 100%;
+      //     display: flex;
+      //     justify-content: space-between;
+      //     align-items: center;
 
-          span {
-            // border: 1px solid #000;
-            font-weight: bold;
+      //     span {
+      //       // border: 1px solid #000;
+      //       font-weight: bold;
 
-            &:hover {
-              cursor: pointer;
-            }
-          }
+      //       &:hover {
+      //         cursor: pointer;
+      //       }
+      //     }
 
-          .nominate-btn {
-            height: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          }
+      //     .nominate-btn {
+      //       height: 2rem;
+      //       display: flex;
+      //       justify-content: center;
+      //       align-items: center;
+      //     }
 
-          .donate-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 3rem;
-            width: 8rem;
-            height: 2rem;
-            text-align: center;
-            background: #EF5A24;
-            color: #fff;
-            transition: all 0.5s;
-            box-shadow: 0 2px 5px #E2E2E2;
-            border: none;
+      //     .donate-btn {
+      //       display: flex;
+      //       justify-content: center;
+      //       align-items: center;
+      //       border-radius: 3rem;
+      //       width: 8rem;
+      //       height: 2rem;
+      //       text-align: center;
+      //       background: #EF5A24;
+      //       color: #fff;
+      //       transition: all 0.5s;
+      //       box-shadow: 0 2px 5px #E2E2E2;
+      //       border: none;
 
-            &:hover {
-              background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
-            }
-          }
-        }
+      //       &:hover {
+      //         background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
+      //       }
+      //     }
+      //   }
 
-        .account-details-and-settings {
-          // border: 1px solid #000;
-          height: 100%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+      //   .account-details-and-settings {
+      //     // border: 1px solid #000;
+      //     height: 100%;
+      //     display: flex;
+      //     justify-content: space-between;
+      //     align-items: center;
 
-          div {
-            // border: 1px solid #000;
-            display: flex;
-            flex-direction: column;
-            font-size: .8rem;
-            height: 100%;
+      //     div {
+      //       // border: 1px solid #000;
+      //       display: flex;
+      //       flex-direction: column;
+      //       font-size: .8rem;
+      //       height: 100%;
 
-            span {
-              // border: 1px solid #000;
-              height: 100%;
-              display: flex;
-              justify-content: flex-end;
-            }
+      //       span {
+      //         // border: 1px solid #000;
+      //         height: 100%;
+      //         display: flex;
+      //         justify-content: flex-end;
+      //       }
 
-            .user-name {
-              font-size: .8rem;
-              align-items: flex-end;
-            }
+      //       .user-name {
+      //         font-size: .8rem;
+      //         align-items: flex-end;
+      //       }
 
-            .account-number {
-              align-items: flex-start;
-              span {
-                &:first-child {
-                  color: #EF5A24;
-                  font-weight: bold;
-                }
+      //       .account-number {
+      //         align-items: flex-start;
+      //         span {
+      //           &:first-child {
+      //             color: #EF5A24;
+      //             font-weight: bold;
+      //           }
 
-                &:last-child {
-                  color: #9D1A63;
-                }
-              }
-            }
-          }
+      //           &:last-child {
+      //             color: #9D1A63;
+      //           }
+      //         }
+      //       }
+      //     }
 
-          i {
-            // border: 1px solid #000;
-            height: 100%;
-            width: 3rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.2rem;
-            color: #9D1A63;
-          }
-        }
-      }
+      //     i {
+      //       // border: 1px solid #000;
+      //       height: 100%;
+      //       width: 3rem;
+      //       display: flex;
+      //       justify-content: center;
+      //       align-items: center;
+      //       font-size: 2.2rem;
+      //       color: #9D1A63;
+      //     }
+      //   }
+      // }
 
       .page-intro {
         // border: 1px solid #000;
