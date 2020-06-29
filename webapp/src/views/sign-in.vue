@@ -1,3 +1,4 @@
+
 <template>
   <div class="container">
     <div class="row mb md-5">
@@ -122,6 +123,5 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-  
+<style scoped lang="scss">
 </style>

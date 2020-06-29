@@ -4,6 +4,7 @@ import './register-service-worker'
 import router from './router'
 import store from './store'
 import './configure-api';
+import './scss/base.scss';
 import { LoaderPlugin } from 'vue-google-login';
 import { GOOGLE_CLIENT_ID } from './api-urls'
 

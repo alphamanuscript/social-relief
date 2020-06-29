@@ -1,82 +1,91 @@
 <template>
   <div id="app">
-    <div class="container">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3 mb-5">
-        <a class="navbar-brand" href="#">Project Lockdown</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div v-if="showLoggedInNavigation" class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/how-it-works">How it works</router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/about">About</router-link>
-            </li>
-            <li class="nav-item active" @click="signout">
-              <router-link class="nav-link" to="#">Sign out</router-link>
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/sign-in">Sign In</router-link>
-            </li>
-            <li class="nav-item active">
-              <router-link class="nav-link" to="/sign-up">Sign Up</router-link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
-    <router-view />
+    <LoggedInStructure v-if="showLoggedInNavigation" />
+    <LoggedOutStructure v-else @show:login-dialog="handleLoginAndSignUpBtnClick" />
+    <LoginDialog :show="showLoginDialog" @hide="hideDialog('login')" @show:sign-up="showDialog('sign-up')" />
+    <SignUpDialog :show="showSignUpDialog" @hide="hideDialog('sign-up')" @show:login="showDialog('login')" />
   </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
 import { Auth } from './services';
+import LoginDialog from './components/login-dialog.vue';
+import SignUpDialog from './components/sign-up-dialog.vue';
+import LoggedOutStructure from './views/logged-out-structure.vue';
+import LoggedInStructure from './views/logged-in-structure.vue';
+import { validateObj } from './views/util';
 
 export default {
+  data() {
+    return {
+      showLoginDialog: false,
+      showSignUpDialog: false,
+    }
+  },
+  components: { LoginDialog, SignUpDialog, LoggedInStructure, LoggedOutStructure },
   computed: {
     ...mapState(['user', 'message', 'transactions']),
     showLoggedInNavigation () {
       this.showPageOrRedirect();
-      if (this.$route.name === 'sign-in' || this.$route.name === 'sign-up' || this.$route.name === 'google-sign-up') return false
+      if (this.$route.name === 'home' || this.$route.name === 'sign-in' || this.$route.name === 'sign-up' || this.$route.name === 'google-sign-up') return false
       return true
-    }
+    },
+    imageUrl () {
+      return require(`@/assets/Social Relief Logo_1.svg`);
+    },
   },
   methods: {
     ...mapActions([
       'signUserIn', 'getBeneficiaries', 'getTransactions',
-      'getCurrentUser', 'signUserOut'
+      'getCurrentUser', 'signUserOut', 'createUser'
     ]),
+    validateObj,
     async showPageOrRedirect () {
       const hasDataBeenFetched = this.user && this.transactions.length > 0;
-      if (this.$route.name === 'home' && Auth.isAuthenticated() && !hasDataBeenFetched) {
+      if (this.$route.name === 'beneficiaries' && Auth.isAuthenticated() && !hasDataBeenFetched) {
         await this.getCurrentUser();
-        await this.getTransactions();
         await this.getBeneficiaries();
       } 
-      else if (this.$route.name === 'home' && !Auth.isAuthenticated()) this.$router.push({ name: 'sign-in' });
-      else if (this.$route.name === 'sign-in' && Auth.isAuthenticated() && !this.user) {
+      else if (this.$route.name === 'beneficiaries' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+      else if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
         await this.getCurrentUser();
-        this.$router.push({ name: 'home' });
+        this.$router.push({ name: 'beneficiaries' });
       }
     },
     async signout() {
       await this.signUserOut();
+    },
+    handleLoginAndSignUpBtnClick() {
+      this.showLoginDialog = true;
+    },
+    hideDialog(dialogName) {
+      if (dialogName === 'login') {
+        this.showLoginDialog = false;
+      }
+      else if (dialogName === 'sign-up') {
+        this.showSignUpDialog = false;
+      }
+    },
+    showDialog(dialogName) {
+      if (dialogName === 'login') {
+        this.showSignUpDialog = false;
+        this.showLoginDialog = true;
+      }
+      else if (dialogName === 'sign-up') {
+        this.showLoginDialog = false;
+        this.showSignUpDialog = true;
+      }
     }
   }
 }
 </script>
-<style scoped>
-.navbar {
-  border-radius: 10px;
+<style lang="scss">
+@import "./scss/base";
+#app {
+  background: #F5F5F5;
+  border: 1px solid #F5F5F5;
+  padding: 0;
+  margin: 0;
 }
+
 </style>

@@ -33,7 +33,7 @@ const actions = wrapActions({
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
-      router.push({ name: 'home' });
+      router.push({ name: 'beneficiaries' });
     }
   },
    /**
@@ -45,14 +45,14 @@ const actions = wrapActions({
     const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
-      if (router.currentRoute.name !== 'home') router.push({ name: 'home' });
+      if (router.currentRoute.name !== 'beneficiaries') router.push({ name: 'beneficiaries' });
     }
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
     await googleSignOut();
     dispatch('clearData');
-    router.push({ name: 'sign-in' });
+    router.push({ name: 'home' });
   },
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();

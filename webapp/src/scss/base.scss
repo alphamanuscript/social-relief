@@ -1,0 +1,15 @@
+// // Our custom variables file
+// @import "./_variables";
+
+// // Bootstrap and its default variables
+// $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+// @import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+// Make sure the functions come before custom variables 
+@import "~bootstrap/scss/functions";
+
+// Our custom variables file
+@import "./_variables";
+
+// The bootstrap file that compiles the CSS
+@import "~bootstrap/scss/bootstrap";
