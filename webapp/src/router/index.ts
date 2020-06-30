@@ -46,9 +46,23 @@ const routes = [
   }
 ]
 
+//@ts-ignore
+const scrollBehavior = function (to, from, savedPosition) {
+    if (to.hash) {
+      if (to.hash === "#") {
+        return { x: 0, y: 0}
+      }
+      return { 
+        selector: to.hash,
+        offset: { y: 100 }
+      }  
+    }
+}
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  scrollBehavior,
   routes
 })
 

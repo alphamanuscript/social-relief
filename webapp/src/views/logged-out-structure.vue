@@ -1,5 +1,29 @@
 <template>
-  <div class="logged-out-structure">
+  <b-container fluid="md" class="w-lg-75">
+    <b-navbar toggleable="sm" variant="light" sticky>
+      <b-navbar-brand to="#">
+        <img :src="imageUrl" width="150" alt="Social Relief Logo">
+      </b-navbar-brand>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav class="h6 w-75" justified>
+          <b-nav-item to="/#beneficiaries" ><span class="text-body">How it works</span></b-nav-item>
+          <b-nav-item to="/#about-us"><span class="text-body">About Us</span></b-nav-item>
+          <b-nav-item to="/#contact-us"><span class="text-body">Contact Us</span></b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item to="#" @click="handleLoginAndSignUpBtnClick">
+            <b-button size="sm" pill variant="primary">Login / Sign Up</b-button>
+          </b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <router-view class="view-content" />
+  </b-container>
+  
+  <!-- <div class="logged-out-structure">
     <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3 mb-5">
       <a class="navbar-brand" href="#">
         <img :src="imageUrl" alt="Social Relief Logo" class="logo">
@@ -11,13 +35,13 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <router-link class="nav-link" to="/about">About Us</router-link>
+            <router-link class="nav-link" to="/#beneficiaries">Beneficiaries</router-link>
           </li>
           <li class="nav-item active">
-            <router-link class="nav-link" to="#">Contact Us</router-link>
+            <router-link class="nav-link" to="/#about-us">About Us</router-link>
           </li>
           <li class="nav-item active">
-            <router-link class="nav-link" to="/beneficiaries">Nominate</router-link>
+            <router-link class="nav-link" to="/#contact-us">Contact Us</router-link>
           </li>
           <li class="nav-item active" @click="handleLoginAndSignUpBtnClick">
             <router-link class="nav-link login-and-sign-up-btn" to="#">Login / Sign Up</router-link>
@@ -26,7 +50,7 @@
       </div>
     </nav>
     <router-view class="view-content" />
-  </div>
+  </div> -->
 </template>
 <script>
 export default {
