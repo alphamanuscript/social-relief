@@ -54,7 +54,7 @@ const scrollBehavior = function (to, from, savedPosition) {
       }
       return { 
         selector: to.hash,
-        offset: { y: 100 }
+        offset: { y: 50 }
       }  
     }
 }
@@ -62,6 +62,7 @@ const scrollBehavior = function (to, from, savedPosition) {
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  //@ts-ignore
   scrollBehavior,
   routes
 })
