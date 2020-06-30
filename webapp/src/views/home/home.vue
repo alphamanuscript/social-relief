@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid="md">
-    <section>
+  <b-container fluid="sm" class="w-md-75">
+    <section class="my-5 pt-5">
       <div>
         <h3 class="text-secondary">
             All donations are geared towards helping those most affected by the covid-19 pandemic.
@@ -9,58 +9,93 @@
           <h6 class="text-primary">Click the button below to make your contribution.</h6>
         </div>
         <div class="pb-3">
-          <b-button pill variant="primary" class="px-5 btn-donate">Donate</b-button>
+          <b-button pill variant="primary" class="px-5">Donate</b-button>
         </div>
       </div>
     
-      <div class="my-3">
+      <div class="my-3 font-weight-bold">
         <h4 class="text-primary">Some stats</h4>
-        <b-row class="shadow bg-white rounded px-4 pt-4 pb-3">
+        <b-row class="text-center shadow bg-white rounded px-4 pt-4 pb-3">
           <b-col sm="12" md="4">
-            <p class="text-secondary font-weight-bold text-center h1 mb-0 ">6,563</p>
-            <p class="font-weight-bold text-center">Contributors so far</p>
+            <p class="text-secondary display-4 mb-0">6,563</p>
+            <p>Contributors so far</p>
           </b-col>
           <b-col sm="12" md="4">
-            <p class="text-primary font-weight-bold text-center h1 mb-0">2.5M+</p>
-            <p class="font-weight-bold text-center">Money shared so far</p>
+            <p class="text-primary display-4 mb-0">2.5M+</p>
+            <p>Money shared so far</p>
           </b-col>
           <b-col sm="12" md="4">
-            <p class="text-primary font-weight-bold text-center h1 mb-0">36,563</p>
-            <p class="font-weight-bold text-center">Beneficiaries so far</p>
+            <p class="text-primary display-4 mb-0">36,563</p>
+            <p>Beneficiaries so far</p>
           </b-col>
         </b-row>
       </div>
     </section>
-  </b-container>
-  <!-- <div class="outermost-container">
-    
-    <section class="section__beneficiaries">
-      <h1>The Beneficiaries</h1>
+
+    <section class="my-5 pt-5 text-center">
+      <h1 class="text-primary mb-5">The Beneficiaries</h1>
       <p>
-        <span>All nominees get <span class="max-amount-per-month">Ksh 3,500</span> to get basic supplies during this trying period</span>
-        <span>Here are some of the people that your contribution will go along to</span>
-        <span>help them</span>
+        All nominees get <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
+        to get basic supplies during this trying period. <br/>
+        Here are some of the people whom your contribution will go along to help.
       </p>
+      <p>Your contribution will go a long to touch the lives of</p>
+      <p class="text-primary display-4">13,600+</p>
+      <p>people who are currently enlisted as beneficiaries in this system.</p>
       <p>
-        <span>Your contribution will go a long to touch the lives of</span>
-        <span class="beneficiary-figure">13,600+</span>
-        <span>people who are currently enlisted as beneficiaries from this system</span>
-      </p>
-      <p>
-        We at social relief want to say a big <span>thank you</span> for your kindness and support
+        We at Social Relief want to say a big <span class="text-secondary font-weight-bold">thank you</span> 
+        for your kindness and support!
       </p>
     </section>
-    <section class="section__about-us">
-      <h1>About Us</h1>
-      <p>
-        <span>All nominees get kshs*** to get basic supplies during this</span>
-        <span>trying period.  Here are some of the people that your contribution will </span>
-        <span>go a long way to help them.</span>
-      </p>
-      <p>
-        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span>
-        <span>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</span>
-      </p>
+
+    <section class="my-5 pt-5">
+      <div class="text-center">
+        <h1 class="text-primary mb-5">About Us</h1>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+      </div>
+      
+
+      <div class="my-5">
+        <h4 class="text-secondary">Our Partners</h4>
+        <div class="d-flex flex-row flex-wrap justify-content-between text-center shadow bg-white rounded px-4 pt-4 pb-3">
+          <div>
+            <b-avatar></b-avatar>
+          </div>
+          <div>
+            <b-avatar></b-avatar>
+          </div>
+          <div>
+            <b-avatar></b-avatar>
+          </div>
+          <div>
+            <b-avatar></b-avatar>
+          </div>
+          <div>
+            <b-avatar></b-avatar>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section  class="my-5 pt-5">
+      <div class="text-center">
+          <h1 class="text-primary mb-5">Contact Us</h1>
+          <b-card
+          >
+          </b-card>
+        </div> 
+    </section>
+
+    
+  </b-container>
+  <!-- <div class="outermost-container">
       <div class="partners">
         <h5>Our partners</h5>
         <div class="partner-container">
