@@ -1,28 +1,39 @@
 <template>
-  <div class="outermost-container">
-    <section class="section__home">
-      <h3>All donations are geared towards helping</h3>
-      <h3>those most affected by the covide-19 pandemic.</h3>
-      <span class="call-to-action-msg">Click the button below to make your contribution</span>
-      <button type="button" class="btn btn-danger btn-donate">Donate</button>
-      <div class="stats">
-        <h5>Some stats</h5>
-        <div class="stats-container">
-          <div class="stat">
-            <span class="figure">6,563</span>
-            <span class="label">Contributors so far</span>
-          </div>
-          <div class="stat">
-            <span class="figure">2.5M+</span>
-            <span class="label">Money shared so far</span>
-          </div>
-          <div class="stat">
-            <span class="figure">36,563</span>
-            <span class="label">Beneficiaries so far</span>
-          </div>
+  <b-container fluid="md">
+    <section>
+      <div>
+        <h3 class="text-secondary">
+            All donations are geared towards helping those most affected by the covid-19 pandemic.
+        </h3>
+        <div class="py-3">
+          <h6 class="text-primary">Click the button below to make your contribution.</h6>
+        </div>
+        <div class="pb-3">
+          <b-button pill variant="primary" class="px-5 btn-donate">Donate</b-button>
         </div>
       </div>
+    
+      <div class="my-3">
+        <h4 class="text-primary">Some stats</h4>
+        <b-row class="shadow bg-white rounded px-4 pt-4 pb-3">
+          <b-col sm="12" md="4">
+            <p class="text-secondary font-weight-bold text-center h1 mb-0 ">6,563</p>
+            <p class="font-weight-bold text-center">Contributors so far</p>
+          </b-col>
+          <b-col sm="12" md="4">
+            <p class="text-primary font-weight-bold text-center h1 mb-0">2.5M+</p>
+            <p class="font-weight-bold text-center">Money shared so far</p>
+          </b-col>
+          <b-col sm="12" md="4">
+            <p class="text-primary font-weight-bold text-center h1 mb-0">36,563</p>
+            <p class="font-weight-bold text-center">Beneficiaries so far</p>
+          </b-col>
+        </b-row>
+      </div>
     </section>
+  </b-container>
+  <!-- <div class="outermost-container">
+    
     <section class="section__beneficiaries">
       <h1>The Beneficiaries</h1>
       <p>
@@ -88,7 +99,7 @@
         <span>(c)2020</span>
       </div>
     </section>
-  </div>
+  </div> -->
 </template>
 <script>
 import { mapState } from 'vuex';
