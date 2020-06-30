@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <LoggedInStructure v-if="showLoggedInNavigation" @show:nominate-dialog="handleNominateBtnClick" />
+    <LoggedInStructure v-if="showLoggedInNavigation" />
     <LoggedOutStructure v-else @show:login-dialog="handleLoginAndSignUpBtnClick" />
     <LoginDialog :show="showLoginDialog" @hide="hideDialog('login')" @show:sign-up="showDialog('sign-up')" />
     <SignUpDialog :show="showSignUpDialog" @hide="hideDialog('sign-up')" @show:login="showDialog('login')" />
