@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateBeneficiaryArgs, UserLoginArgs, UserNominateMiddlemanArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -13,12 +13,12 @@ export const validatesLogin = (args: UserLoginArgs) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const validatesNominateBeneficiary = (args: UserNominateBeneficiaryArgs) => {
-  const { error } = schemas.nominateBeneficiaryInputSchema.validate(args);
+export const validatesNominate = (args: UserNominateArgs) => {
+  const { error } = schemas.nominateInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const validatesNominateMiddleman = makeValidatorFromJoiSchema<UserNominateMiddlemanArgs>(schemas.nominateMiddlemanInputSchema);
+// export const validatesNominate = makeValidatorFromJoiSchema<UserNominateArgs>(schemas.nominateInputSchema);
 
 export const validatesGetAllBeneficiariesByUser = (userId: string) => {
   const { error } = schemas.getAllBeneficiariesInputSchema.validate({ userId });

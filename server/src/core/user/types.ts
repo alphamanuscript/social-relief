@@ -48,13 +48,9 @@ export interface UserCreateArgs {
   googleIdToken: string
 };
 
-export interface UserNominateBeneficiaryArgs {
+export interface UserNominateArgs {
   phone: string,
-  nominator: string,
-};
-
-export interface UserNominateMiddlemanArgs {
-  phone: string,
+  email: string,
   nominator: string,
 };
 
@@ -88,15 +84,16 @@ export interface UserService {
    * with the role 'beneficiary'
    * @param args 
    */
-  nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User>;
+  nominateBeneficiary(args: UserNominateArgs): Promise<User>;
   /**
    * nominates a user as a middleman to the nominating donor.
    * A user account is created for the middleman if does not already exist
    * @param args
    * @params args.nominator ID donor nominating the middleman
    * @params args.phone phone of the middleman being nominated
+   * @params args.email email of the middleman being nominated
    */
-  nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User>;
+  nominateMiddleman(args: UserNominateArgs): Promise<User>;
   /**
    * retrieves all the users 
    * nominated by the specified user
