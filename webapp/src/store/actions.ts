@@ -17,12 +17,22 @@ const actions = wrapActions({
       commit('addTransaction', trx);
     }
   },
-  async nominateBeneficiary({ commit, state }, { beneficiary }: { beneficiary: string }) {
-    if (state.user) {
-      const bnf = await Users.nominateBeneficiary({ phone: beneficiary, nominator: state.user._id });
+  async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
+    if (state.user && role === 'Beneficiary') {
+      const bnf = await Users.nominateBeneficiary({ phone: nominee, email, nominator: state.user._id });
       commit('addBeneficiary', bnf);
     }
+    else if (state.user && role === 'Middleman') {
+      const mdn = await Users.nominateMiddleman({ phone: nominee, email, nominator: state.user._id });
+      commit('addMiddleman', mdn);
+    }
   },
+  // async nominateBeneficiary({ commit, state }, { beneficiary, email }: { beneficiary: string, email: string }) {
+  //   if (state.user) {
+  //     const bnf = await Users.nominateBeneficiary({ phone: beneficiary, email, nominator: state.user._id });
+  //     commit('addBeneficiary', bnf);
+  //   }
+  // },
   /**
    * Valid combinations for creating a user: 
    * createUser({phone, password}) OR

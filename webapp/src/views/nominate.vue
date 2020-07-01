@@ -14,7 +14,7 @@
               <input 
                 v-model="nomineeCreds.phone"
                 type="text" 
-                :class="getClasses('email')"  
+                :class="getClasses('phone')"  
                 id="phone-number"
                 placeholder="7xxxxxxxx">
               <div class="invalid-feedback">
@@ -26,7 +26,7 @@
             <label for="email" class="col-sm-2 col-form-label">Email:</label>
             <div class="col-sm-10 form-control-container">
               <input 
-                v-model="nomineeCreds.phone"
+                v-model="nomineeCreds.email"
                 type="email" 
                 :class="getClasses('email')" 
                 id="email">
@@ -38,8 +38,8 @@
           <div class="row form-group">
             <label for="role" class="col-sm-2 col-form-label">Role:</label>
             <div class="col-sm-10 form-control-container">
-              <select id="role" class="input form-control">
-                <option selected>Beneficiary</option>
+              <select id="role" class="input form-control" v-model="nomineeCreds.role">
+                <option>Beneficiary</option>
                 <option>Middleman</option>
               </select>
             </div>
@@ -56,7 +56,9 @@
   </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+
 export default {
   name: 'nominate',
   props: ['show'],
@@ -65,7 +67,7 @@ export default {
       nomineeCreds: {
         phone: '',
         email: '',
-        role: ''
+        role: 'Beneficiary'
       },
       validationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digit long',
@@ -73,12 +75,14 @@ export default {
       ],
       validationRules: [
         { test: (nomineeCreds) => nomineeCreds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
-        { test: (nomineeCreds) => /\S+@\S+\.\S+/.test(String(nomineeCreds.email))}
+        { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))}
       ],
       validationResults: [true, true],
     }
   },
   methods: {
+    ...mapState(['message']),
+    ...mapActions(['nominateBeneficiary']),
     validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
@@ -104,6 +108,20 @@ export default {
         'Invalid email'
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
+      // if (!this.validationResults.includes(false)) {
+      //   await this.nominate({ phone: `254${this.nomineeCreds.phone}`, email: this.nomineeCreds.email, role: this.nomineeCreds.role });
+      //   if (this.message.type === 'error') {
+      //     this.validationMessages = [this.message.message, this.message.message];
+      //     this.validationResults = [false, false];
+      //   }
+      //   else {
+      //     this.signInCreds = {
+      //       phone: '',
+      //       password: ''
+      //     },
+      //     this.signInValidationResults = [true, true];
+      //   } 
+      // }
     },
     handleViewInvitationsBtnClick() {
       console.log('In here....')
@@ -170,10 +188,11 @@ export default {
 
             .form-control-container {
               display: flex;
+              flex-direction: column;
               justify-content: flex-start;
 
               .input {
-                height: 1.7rem;
+                height: 1.8rem;
                 border: none;
                 border-bottom: 2px solid #F5F5F5;
                 padding-left: .7rem;
@@ -182,6 +201,10 @@ export default {
                 &:focus {
                   box-shadow: none;
                 }
+              }
+
+              .invalid-feedback {
+                font-size: .75rem;
               }
 
               #role {}
