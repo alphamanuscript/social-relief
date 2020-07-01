@@ -50,7 +50,7 @@ export interface UserCreateArgs {
 
 export interface UserNominateArgs {
   phone: string,
-  email: string,
+  email?: string,
   nominator: string,
 };
 
