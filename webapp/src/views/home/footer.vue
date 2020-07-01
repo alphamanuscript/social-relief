@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center text-white small bg-secondary py-5 px-0 m-0 w-100 position-absolute">
+  <div class="text-center text-white small bg-secondary p-5 w-100 position-absolute">
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
     </p>

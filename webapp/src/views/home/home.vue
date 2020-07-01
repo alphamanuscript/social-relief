@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid="sm" class="w-md-75 ">
+    <b-container fluid="sm" class="w-md-75">
       <section class="my-5">
         <div>
           <h3 class="text-secondary">

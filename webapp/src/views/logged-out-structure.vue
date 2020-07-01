@@ -1,6 +1,6 @@
 <template>
   <div >
-    <b-container fluid="md" class="w-lg-75">
+    <b-container fluid="md" class="w-lg-75 pt-5">
       <b-navbar toggleable="sm" variant="light" sticky>
         <b-navbar-brand to="#">
           <img :src="imageUrl" width="150" alt="Social Relief Logo">
