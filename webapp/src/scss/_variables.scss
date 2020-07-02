@@ -2,5 +2,10 @@ $primary:#EF5A24;
 $secondary: #9D1A69;
 $light: #F5F5F5;
 
+.btn-primary {
+    &:hover {
+        background-image: linear-gradient(to bottom, $primary, $secondary);
+    }
+}
 
 @import "~bootstrap/scss/_variables";
