@@ -132,8 +132,10 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    validators.validatesNominate(args);
     const { phone, email, nominator } = args;
+    if (email) validators.validatesNominate({ phone, email, nominator });
+    else validators.validatesNominate({ phone, nominator });
+
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
       if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
@@ -159,19 +161,20 @@ export class Users implements UserService {
        simply because a user can not be both a donor and 
        a beneficiary.
       */
+      const insert: any = {
+        _id: generateId(), 
+        password: '', 
+        phone,
+        addedBy: nominator, 
+        createdAt: new Date(),
+      }
+      if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone, roles: { $nin: ['donor'] } }, 
         { 
           $addToSet: { roles: 'beneficiary', donors: { $each: donors } }, 
           $currentDate: { updatedAt: true }, 
-          $setOnInsert: { 
-            _id: generateId(), 
-            password: '', 
-            phone,
-            email, 
-            addedBy: nominator, 
-            createdAt: new Date(),
-          } 
+          $setOnInsert: insert
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
@@ -187,25 +190,29 @@ export class Users implements UserService {
   }
 
   async nominateMiddleman(args: UserNominateArgs): Promise<User> {
-    validators.validatesNominate(args);
     const { phone, email, nominator } = args;
+    if (email) validators.validatesNominate({ phone, email, nominator });
+    else validators.validatesNominate({ phone, nominator });
+    // validators.validatesNominate(args);
+    // const { phone, email, nominator } = args;
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
       if (!nominatorUser) throw createMiddlemanNominationFailedError();
 
+      const insert: any = {
+        _id: generateId(),
+        password: '',
+        phone,
+        addedBy: nominator,
+        createdAt: new Date()
+      }
+      if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone },
         {
           $addToSet: { roles: 'middleman', middlemanFor: nominator },
           $currentDate: { updatedAt: true },
-          $setOnInsert: {
-            _id: generateId(),
-            password: '',
-            phone,
-            email,
-            addedBy: nominator,
-            createdAt: new Date()
-          }
+          $setOnInsert: insert
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );

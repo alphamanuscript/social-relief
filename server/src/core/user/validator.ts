@@ -18,8 +18,6 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
-// export const validatesNominate = makeValidatorFromJoiSchema<UserNominateArgs>(schemas.nominateInputSchema);
-
 export const validatesGetAllBeneficiariesByUser = (userId: string) => {
   const { error } = schemas.getAllBeneficiariesInputSchema.validate({ userId });
   if (error) throw createValidationError(error.details[0].message);

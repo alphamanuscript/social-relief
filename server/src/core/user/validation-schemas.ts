@@ -48,6 +48,7 @@ export const nominateInputSchema = joi.object().keys({
   email: joi.string()
     .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
     .messages({
+      'string.base': 'Invalid type, email must be a string',
       'string.pattern.base': 'Invalid email.'
     }),
   nominator: joi.string()
@@ -58,8 +59,6 @@ export const nominateInputSchema = joi.object().keys({
       'string.empty': `Nominator id is required`,
     }),
 });
-
-// export const nominateMiddlemanInputSchema = nominateBeneficiaryInputSchema;
 
 export const getAllBeneficiariesInputSchema = userIdSchema;
 
