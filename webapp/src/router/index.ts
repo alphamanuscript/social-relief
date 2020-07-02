@@ -54,7 +54,7 @@ const scrollBehavior = function (to, from, savedPosition) {
       }
       return { 
         selector: to.hash,
-        offset: { y: 50 }
+        offset: { x: 0, y: 50 }
       }  
     }
 }
