@@ -37,14 +37,31 @@
           <i class="fas fa-user-circle"></i>
         </div>
       </div>
-      <router-view />
+      <router-view 
+        @show:nomination-success-dialog="displayNominationSuccessDialog" />
     </div>
+    <CustomDialog width="35%" :show='showNominationSuccessDialog'>
+      <div v-if="Object.keys(dialogData).length" class="content-wrapper">
+        <div class="message">
+          <h4>Nomination Invitation Sent!</h4>
+          <p>A '{{dialogData.role.toLowerCase()}}' invitation has been successfully sent to <span>{{dialogData.phone}}</span></p>
+        </div>
+        <button type="button" class="btn btn-primary close-btn" @click.prevent="hideDialog">Close</button>
+      </div>
+    </CustomDialog>
   </div>
 </template>
 <script>
+import CustomDialog from '../ui-components/dialog.vue';
 export default {
   name: 'logged-out-structure',
-  components: {},
+  components: { CustomDialog },
+  data() {
+    return {
+      dialogData: {},
+      showNominationSuccessDialog: false
+    }
+  },
   computed: {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
@@ -53,13 +70,19 @@ export default {
   methods: {
     handleNominateBtnClick() {
       this.$router.push({ name: 'nominate' });
+    },
+    displayNominationSuccessDialog(dialogData) {
+      this.dialogData = dialogData;
+      this.showNominationSuccessDialog = true;
+    },
+    hideDialog() {
+      this.showNominationSuccessDialog = false;
     }
   }
 }
 </script>
 <style lang="scss">
   .logged-in-structure {
-    // border: 1px solid #000;
     display: grid;
     grid-template-rows: 100vh;
     grid-template-columns: 13rem 1fr;
@@ -282,6 +305,46 @@ export default {
             align-items: center;
             font-size: 2.2rem;
             color: #9D1A63;
+          }
+        }
+      }
+    }
+
+    .custom-dialog {
+      .backdrop {
+        .content-wrapper {
+          // border: 1px solid #000;
+          height: 15rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: space-between;
+
+          .message {
+
+            h4 {
+              font-weight: bold;
+              color: #EF5A24;
+            }
+
+            p {
+              color: #000;
+              font-size: .9rem;
+            }
+          }
+
+          .close-btn {
+            width: 8.4rem;
+            height: 1.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: .9rem;
+            padding-right: .9rem;
+            border-radius: 3rem;
+            background-color: #9D1A63;
+            border: none;
+            box-shadow: 0 2px 5px #E2E2E2;
           }
         }
       }

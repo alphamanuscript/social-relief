@@ -19,10 +19,12 @@ export const Users = {
     return res.data.user;
   },
   async nominateBeneficiary(args: UserNominateArgs) {
+    console.log('Inside nominateBeneficiary...');
     const res = await axios.post<User>('/users/beneficiaries', args);
     return res.data;
   },
   async nominateMiddleman(args: UserNominateArgs) {
+    console.log('Inside nominateMiddleman...');
     const res = await axios.post<User>('/users/middlemen', args);
     return res.data;
   },

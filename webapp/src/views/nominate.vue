@@ -47,7 +47,7 @@
           <div class="row submit-btn-row form-group">
             <div class="col-sm-9"></div>
             <div class="col-sm-3 form-control-container">
-              <button type="button" class="btn btn-primary" @click.prevent="nominate">Submit</button>
+              <button type="button" class="btn btn-primary submit-btn" @click.prevent="submitNomination">Submit</button>
             </div>
           </div>
         </form>
@@ -58,10 +58,8 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
-
 export default {
   name: 'nominate',
-  props: ['show'],
   data() {
     return {
       nomineeCreds: {
@@ -78,11 +76,13 @@ export default {
         { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))}
       ],
       validationResults: [true, true],
+      showNominationSuccessDialog: false
     }
   },
+  components: { },
   methods: {
     ...mapState(['message']),
-    ...mapActions(['nominateBeneficiary']),
+    ...mapActions(['nominate']),
     validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
@@ -102,26 +102,36 @@ export default {
           return {}
       }
     },
-    async nominate() {
+    hideDialog() {
+      this.nomineeCreds = {
+        phone: '',
+        email: '',
+        role: 'Beneficiary'
+      },
+      this.signInValidationResults = [true, true];
+      this.showNominationSuccessDialog = false;
+    },
+    async submitNomination() {
       this.validationMessages = [
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Invalid email'
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
-      // if (!this.validationResults.includes(false)) {
-      //   await this.nominate({ phone: `254${this.nomineeCreds.phone}`, email: this.nomineeCreds.email, role: this.nomineeCreds.role });
-      //   if (this.message.type === 'error') {
-      //     this.validationMessages = [this.message.message, this.message.message];
-      //     this.validationResults = [false, false];
-      //   }
-      //   else {
-      //     this.signInCreds = {
-      //       phone: '',
-      //       password: ''
-      //     },
-      //     this.signInValidationResults = [true, true];
-      //   } 
-      // }
+      if (!this.validationResults.includes(false)) {
+        console.log('this.nomineeCreds: ', this.nomineeCreds);
+        await this.nominate({ nominee: `254${this.nomineeCreds.phone}`, email: this.nomineeCreds.email, role: this.nomineeCreds.role });
+        if (this.message.type === 'error') {
+          this.validationMessages = [this.message.message, this.message.message];
+          this.validationResults = [false, false];
+        }
+        else {
+          this.$emit('show:nomination-success-dialog', { 
+            phone: this.nomineeCreds.phone,
+            role: this.nomineeCreds.role
+          });
+          this.nomineeCreds = { phone: '', email: '', role: 'Beneficiary' }
+        }
+      }
     },
     handleViewInvitationsBtnClick() {
       console.log('In here....')
@@ -217,7 +227,8 @@ export default {
             .form-control-container {
               display: flex;
               justify-content: flex-end;
-              button {
+
+              .submit-btn {
                 width: 8.4rem;
                 height: 1.8rem;
                 display: flex;

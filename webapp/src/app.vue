@@ -47,6 +47,7 @@ export default {
         await this.getBeneficiaries();
       } 
       else if (this.$route.name === 'beneficiaries' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+      else if (this.$route.name === 'nominate' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
       else if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
         await this.getCurrentUser();
         this.$router.push({ name: 'beneficiaries' });

@@ -18,21 +18,21 @@ const actions = wrapActions({
     }
   },
   async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
+    console.log('Inside nominate...')
+    console.log('Inside nominate: ', nominee, email, role)
+    console.log('role === Beneficiary: ', role === 'Beneficiary')
+    console.log('state.user ', state.user)
     if (state.user && role === 'Beneficiary') {
+      console.log('Nominee is a beneficiary')
       const bnf = await Users.nominateBeneficiary({ phone: nominee, email, nominator: state.user._id });
       commit('addBeneficiary', bnf);
     }
     else if (state.user && role === 'Middleman') {
+      console.log('Nominee is a middleman')
       const mdn = await Users.nominateMiddleman({ phone: nominee, email, nominator: state.user._id });
       commit('addMiddleman', mdn);
     }
   },
-  // async nominateBeneficiary({ commit, state }, { beneficiary, email }: { beneficiary: string, email: string }) {
-  //   if (state.user) {
-  //     const bnf = await Users.nominateBeneficiary({ phone: beneficiary, email, nominator: state.user._id });
-  //     commit('addBeneficiary', bnf);
-  //   }
-  // },
   /**
    * Valid combinations for creating a user: 
    * createUser({phone, password}) OR
