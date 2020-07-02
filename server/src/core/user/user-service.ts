@@ -193,8 +193,7 @@ export class Users implements UserService {
     const { phone, email, nominator } = args;
     if (email) validators.validatesNominate({ phone, email, nominator });
     else validators.validatesNominate({ phone, nominator });
-    // validators.validatesNominate(args);
-    // const { phone, email, nominator } = args;
+    
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
       if (!nominatorUser) throw createMiddlemanNominationFailedError();
