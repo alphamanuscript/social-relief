@@ -46,7 +46,8 @@ const routes = [
   }
 ]
 
-//@ts-ignore
+// @ts-ignore
+// eslint-disable-next-line
 const scrollBehavior = function (to, from, savedPosition) {
     if (to.hash) {
       if (to.hash === "#") {
