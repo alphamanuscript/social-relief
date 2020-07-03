@@ -20,7 +20,8 @@
         <b-form-input 
           v-model="signUpCreds.phone" 
           type="text" 
-          :class="getClassesForSignUpDialog('phone')"
+          :state="signUpValidationResults[0]"
+          class="custom-form-input"
           placeholder="Enter phone number"
         />
         <b-form-invalid-feedback class="text-center">
@@ -31,7 +32,8 @@
         <b-form-input 
           v-model="signUpCreds.password" 
           type="password" 
-          :class="getClassesForSignUpDialog('password')" 
+          :state="signUpValidationResults[1]"
+          class="custom-form-input" 
           placeholder="Enter password"
         />
         <b-form-invalid-feedback class="text-center">
@@ -43,7 +45,8 @@
           v-model="signUpCreds.confirmedPassword"
           id="confirmedPassword"
           type="password"
-          :class="getClassesForSignUpDialog('confirmedPassword')"
+          :state="signUpValidationResults[2]"
+          class="custom-form-input"
           placeholder="Confirm password"
         />
         <b-form-invalid-feedback class="text-center">
@@ -85,7 +88,7 @@ export default {
         { test: (creds) => /^.{8,18}$/.test(creds.password) },
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
-      signUpValidationResults: [true, true, true],
+      signUpValidationResults: [null, null, null],
     }
   },
   computed: {
@@ -97,27 +100,6 @@ export default {
   methods: {
     ...mapActions(['createUser']),
     validateObj,
-    getClassesForSignUpDialog(nameOfInput) {
-      switch(nameOfInput) {
-        case 'phone': 
-          return {
-            'custom-form-input': true,
-            'is-invalid': !this.signUpValidationResults[0]
-          }
-        case 'password': 
-          return {
-            'custom-form-input': true,
-            'is-invalid': !this.signUpValidationResults[1]
-          }
-        case 'confirmedPassword': 
-          return {
-            'custom-form-input': true,
-            'is-invalid': !this.signUpValidationResults[2]
-          }
-        default: 
-          return {}
-      }
-    },
     showLoginDialog() {
       this.signUpCreds = {
         phone: '',
@@ -125,7 +107,7 @@ export default {
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = [true, true, true];
+      this.signUpValidationResults = [null, null, null];
       this.$bvModal.show('login');
     },
     hideDialog() {
@@ -135,10 +117,14 @@ export default {
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = [true, true, true];
+      this.signUpValidationResults = [null, null, null];
     },
     async signUp() {
-      this.signUpValidationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
+      this.signUpValidationMessages = [
+        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid password. Must range between 8 and 18 characters',
+        'Confirmed password does not match with password'
+      ]
       this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
 
       if (!this.signUpValidationResults.includes(false)) {
@@ -149,7 +135,7 @@ export default {
             'Sign-up failed. Phone number already assigned to existing account',
             'Sign-up failed. Phone number already assigned to existing account',
           ];
-          this.signUpValidationResults = [false, false, false];
+          this.signUpValidationResults = [false, null, null];
         }
         else {
           this.signUpCreds = {

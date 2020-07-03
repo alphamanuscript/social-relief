@@ -19,8 +19,9 @@
       <b-form-group>
         <b-form-input 
           v-model="signInCreds.phone" 
-          type="text" 
-          :class="getClassesForSignInDialog('phone')"
+          type="text"
+          :state="signInValidationResults[0]"
+          class="custom-form-input"
           placeholder="Enter phone number"
         />
         <b-form-invalid-feedback class="text-center">
@@ -31,7 +32,8 @@
         <b-form-input 
           v-model="signInCreds.password" 
           type="password" 
-          :class="getClassesForSignInDialog('password')" 
+          :state="signInValidationResults[1]"
+          class="custom-form-input"
           placeholder="Enter password"
         />
         <b-form-invalid-feedback class="text-center">
@@ -68,14 +70,15 @@ export default {
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
-      signInValidationResults: [true, true],
+      signInValidationResults: [null, null],
+      freshForm: true
     }
   },
   computed: {
     ...mapState(['user', 'transactions']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
-    },
+    }
   },
   methods: {
     ...mapActions([
@@ -83,28 +86,25 @@ export default {
       'getCurrentUser', 'signUserOut', 'createUser'
     ]),
     validateObj,
-    getClassesForSignInDialog(nameOfInput) {
-      switch(nameOfInput) {
-        case 'phone': 
-          return {
-            'custom-form-input': true,
-            'is-invalid': !this.signInValidationResults[0]
-          }
-        case 'password': 
-          return {
-            'custom-form-input': true,
-            'is-invalid': !this.signInValidationResults[1]
-          }
-        default: 
-          return {}
+    inputState(nameOfInput) {
+      if (!this.freshForm) {
+        switch(nameOfInput) {
+          case 'phone': 
+            return this.signInValidationResults[0];
+          case 'password': 
+            return this.signInValidationResults[1];
+          default: 
+            return null;
+        }
       }
+      return null;
     },
     showSignUpDialog() {
       this.signInCreds = {
         phone: '',
         password: ''
       },
-      this.signInValidationResults = [true, true];
+      this.signInValidationResults = [null, null];
       this.$bvModal.show('sign-up');
     },
     hideDialog() {
@@ -112,7 +112,7 @@ export default {
         phone: '',
         password: ''
       },
-      this.signInValidationResults = [true, true];
+      this.signInValidationResults = [null, null];
     },
     async signIn() {
       this.signInValidationMessages = [
