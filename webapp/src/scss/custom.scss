@@ -1,14 +1,34 @@
-// theme colors
+// theme color variants
 $primary:#EF5A24;
 $secondary: #9D1A69;
 $light: #F5F5F5;
 
+// rounded-lg for cards and dialogs
+$border-radius-lg: 1rem;
+
+//nav links
+.nav-link {
+    @extend .text-body;
+}
+
+// sidebar nav links 
+.nav-pills {  
+    .nav-link.active,
+    .show > .nav-link {
+        @extend .rounded-lg;
+        @extend .bg-secondary;
+        @extend .text-white;
+  }
+}
+
+// primary button gradient hover
 .btn-primary {
-    @extend .btn-primary;
     &:hover {
         background-image: linear-gradient(to bottom, $primary, $secondary);
     }
 }
+
+// sign-in and sign-up form input
 .custom-form-input {
     @extend .text-center;
     @extend .shadow-sm;
@@ -17,6 +37,7 @@ $light: #F5F5F5;
     @extend .rounded-pill;
 }
 
+// submit/cancel/ok buttons
 .custom-submit-button {
     @extend .rounded-pill;
     @extend .px-5;

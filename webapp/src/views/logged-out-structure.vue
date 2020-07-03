@@ -10,9 +10,9 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav class="h6 w-100" fill>
-            <b-nav-item to="/#beneficiaries" ><span class="text-body">How it works</span></b-nav-item>
-            <b-nav-item to="/#about-us"><span class="text-body">About Us</span></b-nav-item>
-            <b-nav-item to="/#contact-us"><span class="text-body">Contact Us</span></b-nav-item>
+            <b-nav-item to="/#beneficiaries" >How it works</b-nav-item>
+            <b-nav-item to="/#about-us">About Us</b-nav-item>
+            <b-nav-item to="/#contact-us">Contact Us</b-nav-item>
             <b-nav-item to="#" @click="handleLoginAndSignUpBtnClick">
               <b-button size="sm" pill variant="primary">Login / Sign Up</b-button>
             </b-nav-item>

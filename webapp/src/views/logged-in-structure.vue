@@ -1,30 +1,35 @@
 <template>
   <b-container fluid>
-    <b-row class="vh-100">
-      <b-col cols="2" class="bg-white">
-        <div class="py-5">
-        <img :src="imageUrl" width="150" alt="Social Relief Logo">
-      </div>
-      <div class="current-balance-container">
-        <span>Current balance</span>
-        <span>KSH</span>
-        <span>1,500</span>
-      </div>
-      <ul class="vertical-navigation">
-        <li class="active">Beneficiaries</li>
-        <li>Middlemen</li>
-        <li>My invitations</li>
-        <li>History</li>
-      </ul>
-      <div class="mb-0">
-        <b-button @click="signOut()">Sign out</b-button>
-        <span>privacy policy</span>
-        <span>terms of use</span>
-        <span>(c)2020</span>
-      </div> -->
+    <b-row>
+      <b-col md="3" xl="2" class="bg-white d-none d-md-block">
+        <b-nav vertical class="mr-4 vh-100 pl-2" pills>
+          <b-nav-text class="mb-5">
+            <div class="d-flex flex-column">
+              <div class="py-5">
+                <img :src="imageUrl" width="75%" alt="Social Relief Logo">
+              </div>
+              <div class="bg-secondary text-white rounded-lg pl-3 pt-2">
+                <div class="font-weight-light">Current balance</div>
+                <div class="">KSH</div>
+                <div class="h4">1,500</div>
+              </div>
+            </div>
+          </b-nav-text>
+          <b-nav-item active>Beneficiaries</b-nav-item>
+          <b-nav-item>Middlemen</b-nav-item>
+          <b-nav-item>My invitations</b-nav-item>
+          <b-nav-item>History</b-nav-item>
+          <b-button variant="primary" pill @click="signOut()">Sign out</b-button>
+          <div class="small text-secondary mt-auto">
+          <p>privacy policy</p>
+          <p>terms of use</p>
+          <p>&copy; {{ new Date().getFullYear() }}</p>
+        </div>
+        </b-nav>
       </b-col>
-      <b-col cols="10">
+      <b-col>
         <router-view class="view-content" />
+        <Footer class="d-md-none"/>
       </b-col>
     </b-row>
     
@@ -32,6 +37,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex';
+import Footer from './home/footer'
 export default {
   name: 'logged-out-structure',
   data () {
@@ -39,7 +45,7 @@ export default {
       showSidebar: true
     }
   },
-  components: {},
+  components: { Footer },
   computed: {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);

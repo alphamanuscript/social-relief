@@ -3,11 +3,12 @@
     id="sign-up"
     size="sm" 
     centered
-    hideHeaderClose
-    headerClass="border-bottom-0"
+    hide-header-close
+    header-class="border-bottom-0"
     hide-footer
     no-stacking
     @hidden="hideDialog()"
+    content-class="rounded-lg"
     >
     <template v-slot:modal-header>
     <div class="d-flex flex-column m-auto">
