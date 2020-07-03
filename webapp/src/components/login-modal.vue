@@ -39,7 +39,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
       <div class="text-center">
-        <b-button type="submit" size="sm" pill variant="primary" class="px-5" @click.prevent="signIn">Submit</b-button>
+        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signIn">Submit</b-button>
       </div>
     </b-form>
     <p class="text-center small mt-3 text-secondary">

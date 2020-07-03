@@ -56,10 +56,9 @@ export default {
 <style lang="scss">
 @import "./scss/base";
 #app {
-  background: #F5F5F5;
-  border: 1px solid #F5F5F5;
+  background: $light;
+  border: 1px solid $light;
   padding: 0;
   margin: 0;
 }
-
 </style>
