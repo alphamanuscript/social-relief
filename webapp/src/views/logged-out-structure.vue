@@ -17,15 +17,12 @@
               <b-button size="sm" pill variant="primary">Login / Sign Up</b-button>
             </b-nav-item>
           </b-navbar-nav>
-          <b-navbar-nav class="ml-auto">
-          </b-navbar-nav>
         </b-collapse>
       </b-navbar>
       <router-view class="view-content" />
     </b-container>
     <Footer />
     </div>
-
 </template>
 <script>
 import Footer from './home/footer'

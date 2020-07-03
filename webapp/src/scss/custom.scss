@@ -1,3 +1,4 @@
+// theme colors
 $primary:#EF5A24;
 $secondary: #9D1A69;
 $light: #F5F5F5;
@@ -7,5 +8,10 @@ $light: #F5F5F5;
         background-image: linear-gradient(to bottom, $primary, $secondary);
     }
 }
-
-@import "~bootstrap/scss/_variables";
+.custom-form-input {
+    @extend .text-center;
+    @extend .shadow-sm;
+    @extend .border-0;
+    @extend .bg-light;
+    @extend .rounded;
+}

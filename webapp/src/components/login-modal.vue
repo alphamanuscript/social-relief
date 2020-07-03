@@ -23,7 +23,7 @@
           :class="getClassesForSignInDialog('phone')"
           placeholder="Enter phone number"
         />
-        <b-form-invalid-feedback>
+        <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[0] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -34,7 +34,7 @@
           :class="getClassesForSignInDialog('password')" 
           placeholder="Enter password"
         />
-        <b-form-invalid-feedback>
+        <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[1] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -87,14 +87,12 @@ export default {
       switch(nameOfInput) {
         case 'phone': 
           return {
-            'input': true,
-            'form-control': true,
+            'custom-form-input': true,
             'is-invalid': !this.signInValidationResults[0]
           }
         case 'password': 
           return {
-            'input': true,
-            'form-control': true,
+            'custom-form-input': true,
             'is-invalid': !this.signInValidationResults[1]
           }
         default: 

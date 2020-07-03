@@ -46,9 +46,6 @@ export default {
         this.$router.push({ name: 'beneficiaries' });
       }
     },
-    async signout() {
-      await this.signUserOut();
-    },
     handleLoginAndSignUpBtnClick() {
       this.showLoginDialog = true;
       this.$bvModal.show('login');

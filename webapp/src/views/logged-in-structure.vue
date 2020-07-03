@@ -1,8 +1,9 @@
 <template>
-  <div class="logged-in-structure">
-    <div class="sidebar">
-      <div class="logo-container">
-        <img :src="imageUrl" alt="Social Relief Logo" class="logo">
+  <b-container fluid>
+    <b-row class="vh-100">
+      <b-col cols="2" class="bg-white">
+        <div class="py-5">
+        <img :src="imageUrl" width="150" alt="Social Relief Logo">
       </div>
       <div class="current-balance-container">
         <span>Current balance</span>
@@ -15,23 +16,40 @@
         <li>My invitations</li>
         <li>History</li>
       </ul>
-      <div class="policy-and-terms">
+      <div class="mb-0">
+        <b-button @click="signOut()">Sign out</b-button>
         <span>privacy policy</span>
         <span>terms of use</span>
         <span>(c)2020</span>
-      </div>
-    </div>
-    <router-view class="view-content" />
-  </div>
+      </div> -->
+      </b-col>
+      <b-col cols="10">
+        <router-view class="view-content" />
+      </b-col>
+    </b-row>
+    
+  </b-container>
 </template>
 <script>
+import { mapActions } from 'vuex';
 export default {
   name: 'logged-out-structure',
+  data () {
+    return {
+      showSidebar: true
+    }
+  },
   components: {},
   computed: {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
-    },
+    }
+  },
+  methods: {
+    ...mapActions(['signUserOut']),
+    async signOut() {
+      await this.signUserOut();
+    }
   }
 }
 </script>

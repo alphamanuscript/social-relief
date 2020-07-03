@@ -23,7 +23,7 @@
           :class="getClassesForSignUpDialog('phone')"
           placeholder="Enter phone number"
         />
-        <b-form-invalid-feedback>
+        <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[0] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -34,7 +34,7 @@
           :class="getClassesForSignUpDialog('password')" 
           placeholder="Enter password"
         />
-        <b-form-invalid-feedback>
+        <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[1] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -46,7 +46,7 @@
           :class="getClassesForSignUpDialog('confirmedPassword')"
           placeholder="Confirm password"
         />
-        <b-form-invalid-feedback>
+        <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[2] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -101,20 +101,17 @@ export default {
       switch(nameOfInput) {
         case 'phone': 
           return {
-            'input': true,
-            'form-control': true,
+            'custom-form-input': true,
             'is-invalid': !this.signUpValidationResults[0]
           }
         case 'password': 
           return {
-            'input': true,
-            'form-control': true,
+            'custom-form-input': true,
             'is-invalid': !this.signUpValidationResults[1]
           }
         case 'confirmedPassword': 
           return {
-            'input': true,
-            'form-control': true,
+            'custom-form-input': true,
             'is-invalid': !this.signUpValidationResults[2]
           }
         default: 
