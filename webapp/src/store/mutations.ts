@@ -15,7 +15,7 @@ const mutations: MutationTree<AppState> = {
     state.beneficiaries[state.beneficiaries.findIndex(beneficiary => beneficiary._id === bnf._id)] = bnf;
   },
   setUser(state, user) {
-    state.user = user
+    state.user = user;
   },
   unsetUser(state) {
     state.user = undefined

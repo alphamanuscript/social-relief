@@ -148,14 +148,24 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
-
+import { mapState, mapActions } from 'vuex';
+import { Auth } from '../services';
 export default {
   name: 'beneficiaries',
   components: { }, 
   computed: {
     ...mapState(['user'])
-  }
+  },
+  methods: {
+    ...mapActions(['getCurrentUser', 'getBeneficiaries']),
+  },
+  async mounted() {
+    if (Auth.isAuthenticated() && !this.user) {
+      await this.getCurrentUser();
+      await this.getBeneficiaries();
+    }
+    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+  },
 }
 </script>
 <style lang="scss" scoped>

@@ -7,8 +7,6 @@
   </div>
 </template>
 <script>
-import { mapActions, mapState } from 'vuex';
-import { Auth } from './services';
 import LoginDialog from './components/login-dialog.vue';
 import SignUpDialog from './components/sign-up-dialog.vue';
 import LoggedOutStructure from './views/logged-out-structure.vue';
@@ -24,9 +22,7 @@ export default {
   },
   components: { LoginDialog, SignUpDialog, LoggedInStructure, LoggedOutStructure },
   computed: {
-    ...mapState(['user', 'message', 'transactions']),
     showLoggedInNavigation () {
-      this.showPageOrRedirect();
       if (this.$route.name === 'home' || this.$route.name === 'sign-in' || this.$route.name === 'sign-up' || this.$route.name === 'google-sign-up') return false
       return true
     },
@@ -35,24 +31,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      'signUserIn', 'getBeneficiaries', 'getTransactions',
-      'getCurrentUser', 'signUserOut', 'createUser'
-    ]),
     validateObj,
-    async showPageOrRedirect () {
-      const hasDataBeenFetched = this.user && this.transactions.length > 0;
-      if (this.$route.name === 'beneficiaries' && Auth.isAuthenticated() && !hasDataBeenFetched) {
-        await this.getCurrentUser();
-        await this.getBeneficiaries();
-      } 
-      else if (this.$route.name === 'beneficiaries' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
-      else if (this.$route.name === 'nominate' && !Auth.isAuthenticated()) this.$router.push({ name: 'home' });
-      else if (this.$route.name === 'home' && Auth.isAuthenticated() && !this.user) {
-        await this.getCurrentUser();
-        this.$router.push({ name: 'beneficiaries' });
-      }
-    },
     async signout() {
       await this.signUserOut();
     },
@@ -77,7 +56,7 @@ export default {
         this.showSignUpDialog = true;
       }
     }
-  }
+  },
 }
 </script>
 <style lang="scss">

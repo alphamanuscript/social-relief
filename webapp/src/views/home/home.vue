@@ -91,13 +91,22 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
+import { Auth } from '../../services';
 
 export default {
   name: 'home',
   components: { }, 
   computed: {
     ...mapState(['user'])
+  },
+  methods: {
+    ...mapActions(['getCurrentUser']),
+  },
+  async mounted() {
+    if (Auth.isAuthenticated() && !this.user) {
+      this.$router.push({ name: 'beneficiaries' });
+    }
   }
 }
 </script>

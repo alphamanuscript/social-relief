@@ -58,6 +58,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+import { Auth } from '../services';
 export default {
   name: 'nominate',
   data() {
@@ -80,9 +81,11 @@ export default {
     }
   },
   components: { },
+  computed: {
+    ...mapState(['message', 'user']),
+  },
   methods: {
-    ...mapState(['message']),
-    ...mapActions(['nominate']),
+    ...mapActions(['nominate', 'getCurrentUser']),
     validateObj,
     getClasses(nameOfInput) {
       switch(nameOfInput) {
@@ -117,6 +120,7 @@ export default {
         'Invalid email'
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
+      console.log('this.user: ', this.user);
       if (!this.validationResults.includes(false)) {
         console.log('this.nomineeCreds: ', this.nomineeCreds);
         await this.nominate({ nominee: `254${this.nomineeCreds.phone}`, email: this.nomineeCreds.email, role: this.nomineeCreds.role });
@@ -136,7 +140,13 @@ export default {
     handleViewInvitationsBtnClick() {
       console.log('In here....')
     }
-  }
+  },
+  async mounted() {
+    if (Auth.isAuthenticated() && !this.user) {
+      await this.getCurrentUser();
+    }
+    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+  },
 }
 </script>
 <style lang="scss" scoped>
