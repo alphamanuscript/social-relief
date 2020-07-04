@@ -51,9 +51,25 @@ const routes = [
   }
 ]
 
+// @ts-ignore
+// eslint-disable-next-line
+const scrollBehavior = function (to, from, savedPosition) {
+    if (to.hash) {
+      if (to.hash === "#") {
+        return { x: 0, y: 0}
+      }
+      return { 
+        selector: to.hash,
+        offset: { x: 0, y: 50 }
+      }  
+    }
+}
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  //@ts-ignore
+  scrollBehavior,
   routes
 })
 

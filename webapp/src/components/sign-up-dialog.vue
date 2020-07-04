@@ -62,7 +62,7 @@ export default {
       },
       
       signUpValidationMessages: [
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digits long',
         'Invalid password. Must range between 8 and 18 characters',
         'Confirmed password does not match with password'
       ],
@@ -128,7 +128,7 @@ export default {
       this.$emit('hide');
     },
     async signUp() {
-      this.signUpValidationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digit long';
+      this.signUpValidationMessages[0] = 'Invalid Phone number. Must start with 7 and be 9 digits long';
       this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
 
       if (!this.signUpValidationResults.includes(false)) {

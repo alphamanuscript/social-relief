@@ -1,82 +1,57 @@
 <template>
-  <div class="logged-in-structure">
-    <div class="sidebar">
-      <div class="logo-container">
-        <img :src="imageUrl" alt="Social Relief Logo" class="logo">
-      </div>
-      <div class="current-balance-container">
-        <span>Current balance</span>
-        <span>KSH</span>
-        <span>1,500</span>
-      </div>
-      <ul class="vertical-navigation">
-        <li class="active">Beneficiaries</li>
-        <li>Middlemen</li>
-        <li>My invitations</li>
-        <li>History</li>
-      </ul>
-      <div class="policy-and-terms">
-        <span>privacy policy</span>
-        <span>terms of use</span>
-        <span>(c)2020</span>
-      </div>
-    </div>
-    <div class="view-content">
-      <div class="top-nav">
-        <div class="links">
-          <span class="nominate-btn" @click="handleNominateBtnClick">Nominate</span>
-          <span class="donate-btn">Donate</span>
+  <b-container fluid>
+    <b-row>
+      <b-col md="3" xl="2" class="bg-white d-none d-md-block">
+        <b-nav vertical class="mr-4 vh-100 pl-2" pills>
+          <b-nav-text class="mb-5">
+            <div class="d-flex flex-column">
+              <div class="py-5">
+                <img :src="imageUrl" width="75%" alt="Social Relief Logo">
+              </div>
+              <div class="bg-secondary text-white rounded-lg pl-3 pt-2">
+                <div class="font-weight-light">Current balance</div>
+                <div class="">KSH</div>
+                <div class="h4">1,500</div>
+              </div>
+            </div>
+          </b-nav-text>
+          <b-nav-item active>Beneficiaries</b-nav-item>
+          <b-nav-item>Middlemen</b-nav-item>
+          <b-nav-item>My invitations</b-nav-item>
+          <b-nav-item>History</b-nav-item>
+          <b-button variant="primary" pill @click="signOut()">Sign out</b-button>
+          <div class="small text-secondary mt-auto">
+          <p>privacy policy</p>
+          <p>terms of use</p>
+          <p>&copy; {{ new Date().getFullYear() }}</p>
         </div>
-        <div class="account-details-and-settings">
-          <div>
-            <span class="user-name">John Doe</span>
-            <span class="account-number">
-              <span>Account Number:</span><span> 1234567</span>
-            </span>
-          </div>
-          <i class="fas fa-user-circle"></i>
-        </div>
-      </div>
-      <router-view 
-        @show:nomination-success-dialog="displayNominationSuccessDialog" />
-    </div>
-    <CustomDialog width="35%" :show='showNominationSuccessDialog'>
-      <div v-if="Object.keys(dialogData).length" class="content-wrapper">
-        <div class="message">
-          <h4>Nomination Invitation Sent!</h4>
-          <p>A '{{dialogData.role.toLowerCase()}}' invitation has been successfully sent to <span>{{dialogData.phone}}</span></p>
-        </div>
-        <button type="button" class="btn btn-primary close-btn" @click.prevent="hideDialog">Close</button>
-      </div>
-    </CustomDialog>
-  </div>
+        </b-nav>
+      </b-col>
+      <b-col>
+        <router-view />
+        <Footer class="d-md-none"/>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 <script>
-import CustomDialog from '../ui-components/dialog.vue';
+import { mapActions } from 'vuex';
+import Footer from './home/footer';
 export default {
   name: 'logged-out-structure',
-  components: { CustomDialog },
-  data() {
-    return {
-      dialogData: {},
-      showNominationSuccessDialog: false
-    }
-  },
+  components: { Footer },
   computed: {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
   },
   methods: {
+    ...mapActions(['signUserOut']),
+    async signOut() {
+      await this.signUserOut();
+    },
     handleNominateBtnClick() {
       this.$router.push({ name: 'nominate' });
-    },
-    displayNominationSuccessDialog(dialogData) {
-      this.dialogData = dialogData;
-      this.showNominationSuccessDialog = true;
-    },
-    hideDialog() {
-      this.showNominationSuccessDialog = false;
     }
   }
 }
