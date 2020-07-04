@@ -80,7 +80,7 @@ export default {
       },
       
       signUpValidationMessages: [
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digits long',
         'Invalid password. Must range between 8 and 18 characters',
         'Confirmed password does not match with password'
       ],
@@ -122,7 +122,7 @@ export default {
     },
     async signUp() {
       this.signUpValidationMessages = [
-        'Invalid Phone number. Must start with 7 and be 9 digit long',
+        'Invalid Phone number. Must start with 7 and be 9 digits long',
         'Invalid password. Must range between 8 and 18 characters',
         'Confirmed password does not match with password'
       ]
