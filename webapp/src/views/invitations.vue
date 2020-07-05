@@ -1,3 +1,3 @@
 <template>
-  <b-container>Invitations</b-container>
+  <b-container class="vh-100">Invitations</b-container>
 </template>

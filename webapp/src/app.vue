@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <LoggedInStructure v-if="showLoggedInNavigation" />
-    <LoggedOutStructure v-else @show:login-dialog="handleLoginAndSignUpBtnClick" />
+    <LoggedOutStructure v-else />
     <LoginModal/>
     <SignUpModal/>
   </div>
@@ -11,7 +11,6 @@ import LoginModal from './components/login-modal.vue';
 import SignUpModal from './components/sign-up-modal.vue';
 import LoggedOutStructure from './views/logged-out-structure.vue';
 import LoggedInStructure from './views/logged-in-structure.vue';
-import { validateObj } from './views/util';
 
 export default {
   components: { LoginModal, SignUpModal, LoggedInStructure, LoggedOutStructure },
@@ -23,17 +22,7 @@ export default {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
-  },
-  methods: {
-    validateObj,
-    async signout() {
-      await this.signUserOut();
-    },
-    handleLoginAndSignUpBtnClick() {
-      this.showLoginDialog = true;
-      this.$bvModal.show('login');
-    }
-  },
+  }
 }
 </script>
 <style lang="scss">

@@ -36,21 +36,27 @@
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
             <b-collapse id="nav-collapse" is-nav>
-              <b-navbar-nav class="h6 w-100" fill>
-                <b-nav-item to="nominate" exact exact-active-class="active">Nominate</b-nav-item>
-                <div class="d-md-none">
+              <b-nav class="h6 w-100 text-center" pills>
+                <b-nav-item to="nominate" exact exact-active-class="active" class="col-sm-12 col-md-3 col-xl-2">Nominate</b-nav-item>
+                <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
                   <b-nav-item to="middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
                   <b-nav-item to="invitations" exact exact-active-class="active">Invitations</b-nav-item>
                   <b-nav-item to="history" exact exact-active-class="active">History</b-nav-item>
+                  <b-nav-item to="account" exact exact-active-class="active">My Account</b-nav-item>
+                  <b-nav-item href="#" @click="signOut()">Sign Out</b-nav-item>
                 </div>
-                <b-nav-item to="#">
+                <b-nav-text>
                   <b-button variant="primary" class="custom-submit-button">Donate</b-button>
-                </b-nav-item>
-                <b-nav-item to="#">
-                  <b-button variant="primary" pill  @click="signOut()">Sign out</b-button>
-                </b-nav-item>
-              </b-navbar-nav>
+                </b-nav-text>
+                <b-nav-item-dropdown class="ml-auto d-none d-md-block">
+                  <template v-slot:button-content>
+                    <b-avatar></b-avatar>
+                  </template>
+                  <b-dropdown-item to="account">My Account</b-dropdown-item>
+                  <b-dropdown-item href="#" @click="signOut()">Sign Out</b-dropdown-item>
+                </b-nav-item-dropdown>
+              </b-nav>
             </b-collapse>
           </b-navbar>
           <router-view />

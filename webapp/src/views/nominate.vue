@@ -120,7 +120,6 @@ export default {
         email: '',
         role: 'Beneficiary'
       },
-      this.signInValidationResults = [null, null];
       this.$bvModal.hide('nominate');
     },
     async submitNomination() {
@@ -138,6 +137,7 @@ export default {
           this.validationResults = [false, false];
         }
         else {
+          this.validationResults = [null, null];
           this.$bvModal.show('nominate');
         }
       }

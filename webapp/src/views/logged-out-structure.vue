@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     handleLoginAndSignUpBtnClick() {
-      this.$emit('show:login-dialog');
+      this.$bvModal.show('login');
     }
   }
 }

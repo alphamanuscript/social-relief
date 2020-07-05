@@ -32,10 +32,16 @@ const routes = [
     path: '/middlemen',
     name: 'middlemen',
     component: () => import(/* webpackChunkName: "middlemen" */ '../views/middlemen.vue')
-  }, {
+  },
+  {
     path: '/invitations',
     name: 'invitations',
     component: () => import(/* webpackChunkName: "invitations" */ '../views/invitations.vue')
+  },
+  {
+    path: '/account',
+    name: 'account',
+    component: () => import(/* webpackChunkName: "invitations" */ '../views/account.vue')
   },
   {
     path: '/sign-in',
