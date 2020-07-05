@@ -29,7 +29,7 @@ $border-radius-lg: 1rem;
 }
 
 // sign-in and sign-up form input
-.custom-form-input {
+.custom-dialog-form-input {
     @extend .text-center;
     @extend .shadow-sm;
     @extend .border-0;
@@ -37,8 +37,18 @@ $border-radius-lg: 1rem;
     @extend .rounded-pill;
 }
 
+// nominate form input
+.custom-form-input {
+    @extend .border-top-0;
+    @extend .border-left-0;
+    @extend .border-right-0;
+    @extend .rounded-0;
+}
+
 // submit/cancel/ok buttons
 .custom-submit-button {
     @extend .rounded-pill;
     @extend .px-5;
 }
+
+

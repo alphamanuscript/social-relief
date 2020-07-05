@@ -18,37 +18,42 @@
     </template>
     <b-form>
       <b-form-group>
+        <label for="phone" class="sr-only">Phone Number</label>
         <b-form-input 
           v-model="signUpCreds.phone" 
           type="text" 
           :state="signUpValidationResults[0]"
-          class="custom-form-input"
+          class="custom-dialog-form-input"
           placeholder="Enter phone number"
+          id="phone"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[0] }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
+        <label for="password" class="sr-only">Password</label>
         <b-form-input 
           v-model="signUpCreds.password" 
           type="password" 
           :state="signUpValidationResults[1]"
-          class="custom-form-input" 
+          class="custom-dialog-form-input" 
           placeholder="Enter password"
+          id="password"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[1] }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
+        <label for="confirmedPassword" class="sr-only">Confirmed Password</label>
         <b-form-input
           v-model="signUpCreds.confirmedPassword"
-          id="confirmedPassword"
           type="password"
           :state="signUpValidationResults[2]"
-          class="custom-form-input"
+          class="custom-dialog-form-input"
           placeholder="Confirm password"
+          id="confirmedPassword"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[2] }}

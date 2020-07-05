@@ -1,59 +1,87 @@
 <template>
-  <div class="outermost-container">
-    <div class="inner-container">
-      <div class="page-header">
-        <h3>Nominate</h3>
-        <span class="view-invitations-btn" @click="handleViewInvitationsBtnClick">View invitations</span>
-      </div>
-      <div class="form-container">
-        <h6>Nominee information</h6>
-        <form>
-          <div class="row form-group">
-            <label for="phone-number" class="col-sm-2 col-form-label">M-Pesa Number:</label>
-            <div class="col-sm-10 form-control-container">
-              <input 
-                v-model="nomineeCreds.phone"
-                type="text" 
-                :class="getClasses('phone')"  
-                id="phone-number"
-                placeholder="7xxxxxxxx">
-              <div class="invalid-feedback">
-                {{ validationMessages[0] }}
-              </div>
-            </div>
-          </div>
-          <div class="row form-group">
-            <label for="email" class="col-sm-2 col-form-label">Email:</label>
-            <div class="col-sm-10 form-control-container">
-              <input 
-                v-model="nomineeCreds.email"
-                type="email" 
-                :class="getClasses('email')" 
-                id="email">
-              <div class="invalid-feedback">
-                {{ validationMessages[1] }}
-              </div>
-            </div>
-          </div>
-          <div class="row form-group">
-            <label for="role" class="col-sm-2 col-form-label">Role:</label>
-            <div class="col-sm-10 form-control-container">
-              <select id="role" class="input form-control" v-model="nomineeCreds.role">
-                <option>Beneficiary</option>
-                <option>Middleman</option>
-              </select>
-            </div>
-          </div>
-          <div class="row submit-btn-row form-group">
-            <div class="col-sm-9"></div>
-            <div class="col-sm-3 form-control-container">
-              <button type="button" class="btn btn-primary submit-btn" @click.prevent="submitNomination">Submit</button>
-            </div>
-          </div>
-        </form>
-      </div>
+  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+    <p class="ml-lg-5">
+      <span class="h3 text-primary">Nominate</span>
+      <b-link to="invitations" class="text-body ml-5">View invitations</b-link>
+    </p>
+    <div class="bg-white rounded-lg m-lg-5 p-5 shadow-sm">
+      <b-form class="mx-md-2 px-md-2 mx-lg-3 px-lg-3 mx-xl-5 px-xl-5">
+        <b-form-text class="pb-3">
+          <span class="h5 text-secondary">Nominee information</span>
+        </b-form-text>
+        <b-form-row class="py-3">
+          <b-col sm="12" md="4" class="text-md-right font-weight-bold">
+            <label for="phone-number">M-Pesa Number:</label>
+          </b-col>
+          <b-col>
+            <b-form-input 
+              v-model="nomineeCreds.phone"
+              type="text" 
+              :state="validationResults[0]"
+              class="custom-form-input"  
+              placeholder="7xxxxxxxx"
+              id="phone-number"
+            />
+            <b-form-invalid-feedback>
+              {{ validationMessages[0] }}
+            </b-form-invalid-feedback>
+          </b-col>
+        </b-form-row>
+        <b-form-row class="py-3">
+          <b-col sm="12" md="4" class="text-md-right font-weight-bold">
+            <label for="email">Email:</label>
+          </b-col>
+          <b-col>
+            <b-form-input 
+              v-model="nomineeCreds.email"
+              type="email"
+              :state="validationResults[1]" 
+              class="custom-form-input" 
+              id="email"
+            />
+            <b-form-invalid-feedback>
+              {{ validationMessages[1] }}
+            </b-form-invalid-feedback>
+          </b-col>
+        </b-form-row>
+        <b-form-row class="py-3">
+          <b-col sm="12" md="4" class="text-md-right font-weight-bold">
+            <label for="role">Role:</label>
+          </b-col>
+          <b-col>
+            <b-form-select id="role" v-model="nomineeCreds.role" class="custom-form-input">
+              <b-form-select-option value="Beneficiary">Beneficiary</b-form-select-option>
+              <b-form-select-option value="Middleman">Middleman</b-form-select-option>
+            </b-form-select>
+          </b-col>
+        </b-form-row>
+        <b-form-row class="pt-3">
+          <b-col>
+            <b-button variant="secondary" class="custom-submit-button float-right" @click.prevent="submitNomination">Submit</b-button>
+          </b-col>
+        </b-form-row>
+      </b-form>
     </div>
-  </div>
+    <b-modal
+      id="nominate"
+      title="Nomination Invitation Sent!"
+      title-class="text-primary"
+      centered
+      hide-header-close
+      header-class="border-bottom-0"
+      hide-footer
+      @hidden="hideDialog()"
+      content-class="rounded-lg p-5"
+    >
+      <p>
+        A <span class="font-italic">{{ nomineeCreds.role.toLowerCase() }}</span> invitation has been successfully sent to 
+        <span class="text-secondary">+254{{ nomineeCreds.phone }}</span>.
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="secondary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
+      </div>
+    </b-modal>
+  </b-container>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -69,15 +97,14 @@ export default {
         role: 'Beneficiary'
       },
       validationMessages: [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid phone number. Must start with 7 and be 9 digits long',
         'Invalid email'
       ],
       validationRules: [
         { test: (nomineeCreds) => nomineeCreds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
         { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))}
       ],
-      validationResults: [true, true],
-      showNominationSuccessDialog: false
+      validationResults: [null, null]
     }
   },
   components: { },
@@ -87,36 +114,18 @@ export default {
   methods: {
     ...mapActions(['nominate', 'getCurrentUser']),
     validateObj,
-    getClasses(nameOfInput) {
-      switch(nameOfInput) {
-        case 'phone': 
-          return {
-            'input': true,
-            'form-control': true,
-            'is-invalid': !this.validationResults[0]
-          }
-        case 'email': 
-          return {
-            'input': true,
-            'form-control': true,
-            'is-invalid': !this.validationResults[1]
-          }
-        default: 
-          return {}
-      }
-    },
     hideDialog() {
       this.nomineeCreds = {
         phone: '',
         email: '',
         role: 'Beneficiary'
       },
-      this.signInValidationResults = [true, true];
-      this.showNominationSuccessDialog = false;
+      this.signInValidationResults = [null, null];
+      this.$bvModal.hide('nominate');
     },
     async submitNomination() {
       this.validationMessages = [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid phone number. Must start with 7 and be 9 digits long',
         'Invalid email'
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
@@ -129,16 +138,9 @@ export default {
           this.validationResults = [false, false];
         }
         else {
-          this.$emit('show:nomination-success-dialog', { 
-            phone: this.nomineeCreds.phone,
-            role: this.nomineeCreds.role
-          });
-          this.nomineeCreds = { phone: '', email: '', role: 'Beneficiary' }
+          this.$bvModal.show('nominate');
         }
       }
-    },
-    handleViewInvitationsBtnClick() {
-      console.log('In here....')
     }
   },
   async mounted() {
@@ -150,112 +152,5 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .outermost-container {
-    margin: 1rem 0 0 1rem;
-    .inner-container {
-      .page-header {
-        display: flex;
-        align-items: center;
 
-        h3 {
-          color: #EF5A24;
-        }
-
-        .view-invitations-btn {
-          margin-left: 3rem;
-          width: 9rem;
-          height: 2rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          transition: all .5s;
-          padding-left: .9rem;
-          padding-right: .9rem;
-          border-radius: 3rem;
-          cursor: pointer;
-          font-size: .92rem;
-          font-weight: 500;
-
-          &:hover {
-            color: #FFF;
-            background-color: #9D1A63;
-          }
-        }
-      }
-
-      .form-container {
-        margin-top: 1.5rem;
-        border-radius: .7rem;
-        background-color: #FFF;
-        padding: 3rem 6rem 3rem 6rem;
-        box-shadow: 0 2px 5px #E2E2E2;
-
-        h6 {
-          color: #9D1A63;
-          font-weight: 500;
-          font-size: .8rem;
-        }
-
-        form {
-          margin-top: 2rem;
-          margin-left: 4rem;
-
-          .form-group {
-            label {
-              font-size: .8rem;
-              font-weight: bold;
-            }
-
-            .form-control-container {
-              display: flex;
-              flex-direction: column;
-              justify-content: flex-start;
-
-              .input {
-                height: 1.8rem;
-                border: none;
-                border-bottom: 2px solid #F5F5F5;
-                padding-left: .7rem;
-                font-size: .7rem;
-
-                &:focus {
-                  box-shadow: none;
-                }
-              }
-
-              .invalid-feedback {
-                font-size: .75rem;
-              }
-
-              #role {}
-            }
-          }
-
-          .submit-btn-row {
-            margin-top: 7rem;
-
-            .form-control-container {
-              display: flex;
-              justify-content: flex-end;
-
-              .submit-btn {
-                width: 8.4rem;
-                height: 1.8rem;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                transition: all .5s;
-                padding-left: .9rem;
-                padding-right: .9rem;
-                border-radius: 3rem;
-                background-color: #9D1A63;
-                border: none;
-                box-shadow: 0 2px 5px #E2E2E2;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 </style>

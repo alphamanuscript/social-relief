@@ -18,24 +18,28 @@
     </template>
     <b-form>
       <b-form-group>
+        <label for="phone" class="sr-only">Phone Number</label>
         <b-form-input 
           v-model="signInCreds.phone" 
           type="text"
           :state="signInValidationResults[0]"
-          class="custom-form-input"
+          class="custom-dialog-form-input"
           placeholder="Enter phone number"
+          id="phone"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[0] }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
+        <label for="password" class="sr-only">Password</label>
         <b-form-input 
           v-model="signInCreds.password" 
           type="password" 
           :state="signInValidationResults[1]"
-          class="custom-form-input"
+          class="custom-dialog-form-input"
           placeholder="Enter password"
+          id="password"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[1] }}
@@ -72,7 +76,6 @@ export default {
         { test: (creds) => creds.password.length > 0, }
       ],
       signInValidationResults: [null, null],
-      freshForm: true
     }
   },
   computed: {
@@ -87,19 +90,6 @@ export default {
       'getCurrentUser', 'signUserOut', 'createUser'
     ]),
     validateObj,
-    inputState(nameOfInput) {
-      if (!this.freshForm) {
-        switch(nameOfInput) {
-          case 'phone': 
-            return this.signInValidationResults[0];
-          case 'password': 
-            return this.signInValidationResults[1];
-          default: 
-            return null;
-        }
-      }
-      return null;
-    },
     showSignUpDialog() {
       this.signInCreds = {
         phone: '',

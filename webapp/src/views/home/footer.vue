@@ -12,11 +12,7 @@
 import { mapState } from 'vuex';
 
 export default {
-  name: 'footer',
-  components: { }, 
-  computed: {
-    ...mapState(['user'])
-  }
+  name: 'footer'
 }
 </script>
 
