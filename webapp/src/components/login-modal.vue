@@ -79,15 +79,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'transactions']),
+    ...mapState(['user']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     }
   },
   methods: {
     ...mapActions([
-      'signUserIn', 'getBeneficiaries',
-      'getCurrentUser', 'signUserOut', 'createUser'
+      'signUserIn'
     ]),
     validateObj,
     showSignUpDialog() {

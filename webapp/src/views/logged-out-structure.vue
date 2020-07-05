@@ -26,18 +26,25 @@
 </template>
 <script>
 import Footer from './home/footer'
-
+import { mapState, mapActions } from 'vuex';
+import { Auth } from '../services';
 export default {
   name: 'logged-out-structure',
   components: { Footer },
   computed: {
+    ...mapState(['user']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
   },
   methods: {
-    handleLoginAndSignUpBtnClick() {
+  handleLoginAndSignUpBtnClick() {
       this.$bvModal.show('login');
+    }
+  },
+  async mounted() {
+    if (Auth.isAuthenticated() && !this.user) {
+      this.$router.push({ name: 'nominate' });
     }
   }
 }

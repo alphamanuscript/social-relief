@@ -100,26 +100,13 @@
     </b-container>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
-import { Auth } from '../../services';
-
 export default {
   name: 'home',
-  components: { }, 
-  computed: {
-    ...mapState(['user'])
-  },
   methods: {
-    ...mapActions(['getCurrentUser']),
     handleDonateBtn() {
       this.$bvModal.show('login');
     }
-  },
-  async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
-      this.$router.push({ name: 'beneficiaries' });
-    }
-  }
+  } 
 }
 </script>
 <style lang="scss" scoped>
