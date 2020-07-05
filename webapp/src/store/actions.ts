@@ -37,7 +37,7 @@ const actions = wrapActions({
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
-      router.push({ name: 'beneficiaries' });
+      router.push({ name: 'nominate' });
     }
   },
    /**
@@ -49,7 +49,7 @@ const actions = wrapActions({
     const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
-      if (router.currentRoute.name !== 'beneficiaries') router.push({ name: 'beneficiaries' });
+      if (router.currentRoute.name !== 'nominate') router.push({ name: 'nominate' });
     }
   },
   async signUserOut({ dispatch }) {
