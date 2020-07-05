@@ -37,25 +37,32 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
-                <b-nav-item to="nominate" exact exact-active-class="active" class="col-sm-12 col-md-3 col-xl-2">Nominate</b-nav-item>
+                <b-nav-item to="nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-2">Nominate</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
                   <b-nav-item to="middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
                   <b-nav-item to="invitations" exact exact-active-class="active">Invitations</b-nav-item>
                   <b-nav-item to="history" exact exact-active-class="active">History</b-nav-item>
                   <b-nav-item to="account" exact exact-active-class="active">My Account</b-nav-item>
-                  <b-nav-item href="#" @click="signOut()">Sign Out</b-nav-item>
+                  <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
-                <b-nav-text>
-                  <b-button variant="primary" class="custom-submit-button">Donate</b-button>
-                </b-nav-text>
-                <b-nav-item-dropdown class="ml-auto d-none d-md-block">
-                  <template v-slot:button-content>
-                    <b-avatar></b-avatar>
-                  </template>
-                  <b-dropdown-item to="account">My Account</b-dropdown-item>
-                  <b-dropdown-item href="#" @click="signOut()">Sign Out</b-dropdown-item>
-                </b-nav-item-dropdown>
+                <b-button variant="primary" class="custom-submit-button m-auto m-md-0">Donate</b-button>
+              </b-nav>
+              <b-nav class="ml-auto d-none d-md-block">
+                <b-nav-item-dropdown dropleft no-caret>
+                    <template v-slot:button-content>
+                        <b-avatar></b-avatar>
+                    </template>
+                    <b-dropdown-header>
+                      <p>
+                        <span class="h5 text-body">John Doe</span> <br/>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user.phone}}</span>
+                      </p>
+                    </b-dropdown-header>
+                    <b-dropdown-divider></b-dropdown-divider>
+                    <b-dropdown-item to="account">My Account</b-dropdown-item>
+                    <b-dropdown-item href="#" @click="signOut()"><span class="text-secondary">Sign Out</span></b-dropdown-item>
+                  </b-nav-item-dropdown>
               </b-nav>
             </b-collapse>
           </b-navbar>
@@ -67,22 +74,30 @@
   </div>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
+import { Auth } from '../services';
 import Footer from './home/footer';
 export default {
-  name: 'logged-out-structure',
+  name: 'logged-in-structure',
   components: { Footer },
   computed: {
+    ...mapState(['user']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
   },
   methods: {
-    ...mapActions(['signUserOut']),
+    ...mapActions(['signUserOut', 'getCurrentUser']),
     async signOut() {
       await this.signUserOut();
     }
-  }
+  },
+  async mounted() {
+    if (Auth.isAuthenticated() && !this.user) {
+      await this.getCurrentUser();
+    }
+    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+  },
 }
 </script>
 <style lang="scss">
