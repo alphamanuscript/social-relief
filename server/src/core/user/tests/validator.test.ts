@@ -63,13 +63,13 @@ describe('validatesLogin', () => {
 
 describe('validatesNominateBeneficiary', () => {
   it('should not throw error if inputs are valid', () => {
-    testValidationSucceeds(validators.validatesNominate, [
+    testValidationSucceeds(validators.validatesNominateBeneficiary, [
       { phone: '254729291091', nominator: 'nominator1' },
       { phone: '254729311023', nominator: 'nominator1' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
-    testValidationFails(validators.validatesNominate, [
+    testValidationFails(validators.validatesNominateBeneficiary, [
       { phone: '25472929109', nominator: '' },
       { phone: '+254729291091', nominator: {} },
       { phone: '254829291091' },
@@ -80,13 +80,13 @@ describe('validatesNominateBeneficiary', () => {
 
 describe('validateNominateMiddleman', () => {
   it('should not throw error if inputs are valid', () => {
-    testValidationSucceeds(validators.validatesNominate, [
+    testValidationSucceeds(validators.validatesNominateMiddleman, [
       { phone: '254729291091', nominator: 'nominator1' },
       { phone: '254729311023', nominator: 'nominator1' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
-    testValidationFails(validators.validatesNominate, [
+    testValidationFails(validators.validatesNominateMiddleman, [
       { phone: '25472929109', nominator: '' },
       { phone: '+254729291091', nominator: {} },
       { phone: '254829291091' },

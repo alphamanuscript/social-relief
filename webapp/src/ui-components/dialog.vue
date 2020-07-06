@@ -1,29 +1,21 @@
 <template>
-  <div class="custom-dialog" @click="handleClick('custom-dialog', $event)" :style="getStyleObject('custom-dialog')">
-    <div class="backdrop" :style="getStyleObject('backdrop')" @click="handleClick('backdrop', $event)">
+  <div class="custom-dialog" @click="handleClick('custom-dialog', $event)" :style="getStyleObject()">
+    <div class="backdrop" @click="handleClick('backdrop', $event)">
       <slot></slot>
     </div>
   </div>
 </template>
 <script>
 export default {
-  props: ['width', 'show'],
+  props: ['show'],
   computed: {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     }
   },
   methods: {
-    getStyleObject(classname) {
-      switch(classname) {
-        case 'custom-dialog':
-          return { visibility: this.show ? 'visible' : 'hidden' };
-        case 'backdrop': 
-          return { width: this.width ? this.width : '22%' }
-        default: 
-          return {}
-      }
-      
+    getStyleObject() {
+      return { visibility: this.show ? 'visible' : 'hidden' };
     },
     handleClick(clickedDiv, event) {
       if (clickedDiv === 'custom-dialog') {
