@@ -1,7 +1,6 @@
 import { wrapActions, googleSignOut } from './util';
 import { Users, Transactions, Donations } from '../services';
 import router from '../router';
-import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 const actions = wrapActions({
   async getBeneficiaries({ commit }) {
@@ -18,14 +17,10 @@ const actions = wrapActions({
       commit('addTransaction', trx);
     }
   },
-  async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
-    if (state.user && role === 'Beneficiary') {
-      const bnf = await Users.nominateBeneficiary({ phone: nominee, email, nominator: state.user._id });
+  async nominateBeneficiary({ commit, state }, { beneficiary }: { beneficiary: string }) {
+    if (state.user) {
+      const bnf = await Users.nominateBeneficiary({ phone: beneficiary, nominator: state.user._id });
       commit('addBeneficiary', bnf);
-    }
-    else if (state.user && role === 'Middleman') {
-      const mdn = await Users.nominateMiddleman({ phone: nominee, email, nominator: state.user._id });
-      commit('addMiddleman', mdn);
     }
   },
   /**
@@ -38,7 +33,7 @@ const actions = wrapActions({
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
-      router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+      router.push({ name: 'beneficiaries' });
     }
   },
    /**
@@ -50,14 +45,14 @@ const actions = wrapActions({
     const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
-      if (router.currentRoute.name !== DEFAULT_SIGNED_IN_PAGE ) router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+      if (router.currentRoute.name !== 'beneficiaries') router.push({ name: 'beneficiaries' });
     }
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
     await googleSignOut();
     dispatch('clearData');
-    router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    router.push({ name: 'home' });
   },
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();

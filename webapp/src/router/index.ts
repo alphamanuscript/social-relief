@@ -13,35 +13,20 @@ const routes = [
   {
     path: '/beneficiaries',
     name: 'beneficiaries',
-    component: () => import(/* webpackChunkName: "beneficiaries" */ '../views/beneficiaries.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/beneficiaries.vue')
   },
   {
-    path: '/nominate',
-    name: 'nominate',
-    component: () => import(/* webpackChunkName: "nominate" */ '../views/nominate.vue')
-  },
-  {
-    path: '/history',
-    name: 'history',
+    path: '/about',
+    name: 'about',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "history" */ '../views/history.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/about.vue')
   },
   {
-    path: '/middlemen',
-    name: 'middlemen',
-    component: () => import(/* webpackChunkName: "middlemen" */ '../views/middlemen.vue')
-  },
-  {
-    path: '/invitations',
-    name: 'invitations',
-    component: () => import(/* webpackChunkName: "invitations" */ '../views/invitations.vue')
-  },
-  {
-    path: '/account',
-    name: 'account',
-    component: () => import(/* webpackChunkName: "invitations" */ '../views/account.vue')
+    path: '/how-it-works',
+    name: 'how-it-works',
+    component: () => import(/* webpackChunkName: "how-it-works" */ '../views/how-it-works.vue')
   },
   {
     path: '/sign-in',
@@ -61,25 +46,9 @@ const routes = [
   }
 ]
 
-// @ts-ignore
-// eslint-disable-next-line
-const scrollBehavior = function (to, from, savedPosition) {
-    if (to.hash) {
-      if (to.hash === "#") {
-        return { x: 0, y: 0}
-      }
-      return { 
-        selector: to.hash,
-        offset: { x: 0, y: 50 }
-      }  
-    }
-}
-
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  //@ts-ignore
-  scrollBehavior,
   routes
 })
 
