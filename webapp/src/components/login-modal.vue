@@ -1,64 +1,74 @@
 <template>
-  <b-modal
-    id="login"
-    size="sm" 
-    centered
-    hide-header-close
-    header-class="border-bottom-0"
-    hide-footer
-    no-stacking
-    @hidden="hideDialog()"
-    content-class="rounded-lg"
-   >
-    <template v-slot:modal-header>
-      <div class="d-flex flex-column m-auto">
-        <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
-        <h4 class="text-secondary text-center">Login</h4>
-      </div>
-    </template>
-    <b-form>
-      <b-form-group>
-        <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input 
-          v-model="signInCreds.phone" 
-          type="text"
-          :state="signInValidationResults[0]"
-          class="custom-dialog-form-input"
-          placeholder="Enter phone number"
-          id="phone"
-        />
-        <b-form-invalid-feedback class="text-center">
-          {{ signInValidationMessages[0] }}
-        </b-form-invalid-feedback>
-      </b-form-group>
-      <b-form-group>
-        <label for="password" class="sr-only">Password</label>
-        <b-form-input 
-          v-model="signInCreds.password" 
-          type="password" 
-          :state="signInValidationResults[1]"
-          class="custom-dialog-form-input"
-          placeholder="Enter password"
-          id="password"
-        />
-        <b-form-invalid-feedback class="text-center">
-          {{ signInValidationMessages[1] }}
-        </b-form-invalid-feedback>
-      </b-form-group>
-      <div class="text-center">
-        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signIn">Submit</b-button>
-      </div>
-    </b-form>
-    <p class="text-center small mt-3 text-secondary">
-      Do you have an account yet?
-      <b-link href=# class="text-primary" @click="showSignUpDialog()">Sign up.</b-link>
-    </p>
-</b-modal>
+  <div>
+    <b-modal
+      id="login"
+      size="sm" 
+      centered
+      hide-header-close
+      header-class="border-bottom-0"
+      hide-footer
+      no-stacking
+      @hidden="hideDialog()"
+      content-class="rounded-lg"
+    >
+      <template v-slot:modal-header>
+        <div class="d-flex flex-column m-auto">
+          <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
+          <h4 class="text-secondary text-center">Login</h4>
+        </div>
+      </template>
+      <b-form>
+        <b-form-group>
+          <label for="phone" class="sr-only">Phone Number</label>
+          <b-form-input 
+            v-model="signInCreds.phone" 
+            type="text"
+            :state="signInValidationResults[0]"
+            class="custom-dialog-form-input"
+            placeholder="Enter phone number"
+            id="phone"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ signInValidationMessages[0] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group>
+          <label for="password" class="sr-only">Password</label>
+          <b-form-input 
+            v-model="signInCreds.password" 
+            type="password" 
+            :state="signInValidationResults[1]"
+            class="custom-dialog-form-input"
+            placeholder="Enter password"
+            id="password"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ signInValidationMessages[1] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <div class="text-center">
+          <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signIn">Submit</b-button>
+        </div>
+        <div class="text-center mt-3 ">
+          <i class="fab fa-google text-primary"></i>
+          <GoogleLogin :params="params" :onSuccess="onSuccess" class="bg-white border-0 text-secondary">Sign in with Google</GoogleLogin>
+        </div>
+      </b-form>
+      <p class="text-center small mt-3 text-secondary">
+        Don't have an account yet?
+        <b-link href=# class="text-primary" @click="showSignUpDialog()">Sign up.</b-link>
+      </p>
+    </b-modal>
+    <GoogleSignUp :googleUser="googleUser" />
+  </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import { GoogleLogin } from 'vue-google-login';
 import { validateObj } from '../views/util';
+import { GOOGLE_CLIENT_ID } from '../api-urls';
+import GoogleSignUp from './google-sign-up-modal';
 export default {
   name: 'login-modal',
   data() {
@@ -76,7 +86,14 @@ export default {
         { test: (creds) => creds.password.length > 0, }
       ],
       signInValidationResults: [null, null],
+      params: {
+        clientId: GOOGLE_CLIENT_ID
+      },
+      googleUser: null
     }
+  },
+  components: {
+    GoogleLogin, GoogleSignUp
   },
   computed: {
     ...mapState(['user']),
@@ -129,6 +146,14 @@ export default {
           this.$bvModal.hide('login');
         } 
       }
+    },
+    async onSuccess(googleUser) {
+      console.log("googleUser : ", googleUser);
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token }); 
+      if (!this.user) {
+        this.googleUser = googleUser;
+        this.$bvModal.show('google-sign-up');
+        }
     }
   }
 }

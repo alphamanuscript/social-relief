@@ -54,7 +54,7 @@ export default {
         password: ''
       },
       validationMessages: [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid phone number. Must start with 7 and be 9 digits long',
         'Password required'
       ],
       validationRules: [
@@ -99,7 +99,7 @@ export default {
     },
     async signin() {
       this.validationMessages = [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid phone number. Must start with 7 and be 9 digits long',
         'Password required'
       ];
       this.validationResults = this.validateObj(this.signinCreds, this.validationRules);

@@ -1,78 +1,88 @@
 <template>
-  <b-modal
-    id="sign-up"
-    size="sm" 
-    centered
-    hide-header-close
-    header-class="border-bottom-0"
-    hide-footer
-    no-stacking
-    @hidden="hideDialog()"
-    content-class="rounded-lg"
-    >
-    <template v-slot:modal-header>
-    <div class="d-flex flex-column m-auto">
-        <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
-        <h4 class="text-secondary text-center">Sign Up</h4>
-    </div>
-    </template>
-    <b-form>
-      <b-form-group>
-        <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input 
-          v-model="signUpCreds.phone" 
-          type="text" 
-          :state="signUpValidationResults[0]"
-          class="custom-dialog-form-input"
-          placeholder="Enter phone number"
-          id="phone"
-        />
-        <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[0] }}
-        </b-form-invalid-feedback>
-      </b-form-group>
-      <b-form-group>
-        <label for="password" class="sr-only">Password</label>
-        <b-form-input 
-          v-model="signUpCreds.password" 
-          type="password" 
-          :state="signUpValidationResults[1]"
-          class="custom-dialog-form-input" 
-          placeholder="Enter password"
-          id="password"
-        />
-        <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[1] }}
-        </b-form-invalid-feedback>
-      </b-form-group>
-      <b-form-group>
-        <label for="confirmedPassword" class="sr-only">Confirmed Password</label>
-        <b-form-input
-          v-model="signUpCreds.confirmedPassword"
-          type="password"
-          :state="signUpValidationResults[2]"
-          class="custom-dialog-form-input"
-          placeholder="Confirm password"
-          id="confirmedPassword"
-        />
-        <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[2] }}
-        </b-form-invalid-feedback>
-      </b-form-group>
-      <div class="text-center">
-        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signUp">Submit</b-button>
+  <div>
+    <b-modal
+      id="sign-up"
+      size="sm" 
+      centered
+      hide-header-close
+      header-class="border-bottom-0"
+      hide-footer
+      no-stacking
+      @hidden="hideDialog()"
+      content-class="rounded-lg"
+      >
+      <template v-slot:modal-header>
+      <div class="d-flex flex-column m-auto">
+          <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
+          <h4 class="text-secondary text-center">Sign Up</h4>
       </div>
-    </b-form>
-    <p class="text-center small mt-3 text-secondary">
-      I have an account.
-      <b-link href=# class="text-primary" @click="showLoginDialog()">Login.</b-link>
-    </p>
-</b-modal>
+      </template>
+      <b-form>
+        <b-form-group>
+          <label for="phone" class="sr-only">Phone Number</label>
+          <b-form-input 
+            v-model="signUpCreds.phone" 
+            type="text" 
+            :state="signUpValidationResults[0]"
+            class="custom-dialog-form-input"
+            placeholder="Enter phone number"
+            id="phone"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ signUpValidationMessages[0] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group>
+          <label for="password" class="sr-only">Password</label>
+          <b-form-input 
+            v-model="signUpCreds.password" 
+            type="password" 
+            :state="signUpValidationResults[1]"
+            class="custom-dialog-form-input" 
+            placeholder="Enter password"
+            id="password"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ signUpValidationMessages[1] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group>
+          <label for="confirmedPassword" class="sr-only">Confirmed Password</label>
+          <b-form-input
+            v-model="signUpCreds.confirmedPassword"
+            type="password"
+            :state="signUpValidationResults[2]"
+            class="custom-dialog-form-input"
+            placeholder="Confirm password"
+            id="confirmedPassword"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ signUpValidationMessages[2] }}
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <div class="text-center">
+          <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signUp">Submit</b-button>
+        </div>
+        <div class="text-center mt-3 ">
+          <i class="fab fa-google text-primary"></i>
+          <GoogleLogin :params="params" :onSuccess="onSuccess" class="bg-white border-0 text-secondary">Sign up with Google</GoogleLogin>
+        </div>
+      </b-form>
+      <p class="text-center small mt-3 text-secondary">
+        I have an account.
+        <b-link href=# class="text-primary" @click="showLoginDialog()">Login.</b-link>
+      </p>
+    </b-modal>
+    <GoogleSignUp :googleUser="googleUser" />
+  </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import { GoogleLogin } from 'vue-google-login';
 import { validateObj } from '../views/util';
+import { GOOGLE_CLIENT_ID } from '../api-urls';
+import GoogleSignUp from './google-sign-up-modal';
 export default {
   name: 'sign-up-modal',
   data() {
@@ -95,7 +105,14 @@ export default {
         { test: (creds) => creds.confirmedPassword === creds.password }
       ],
       signUpValidationResults: [null, null, null],
+      params: {
+        clientId: GOOGLE_CLIENT_ID
+      },
+      googleUser: null
     }
+  },
+  components: {
+    GoogleLogin, GoogleSignUp
   },
   computed: {
     ...mapState(['user']),
@@ -155,6 +172,14 @@ export default {
         }
       }
     },
+    async onSuccess(googleUser) {
+      console.log("googleUser : ", googleUser);
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
+      if (!this.user) {
+        this.googleUser = googleUser;
+        this.$bvModal.show('google-sign-up');
+      }
+    }
   }
 }
 </script>
