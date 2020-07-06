@@ -105,7 +105,7 @@ describe('UserService tests', () => {
 
     test('allows nominating beneficiary as middleman', async () => {
       const now = new Date();
-      const res = await createDefaultService().nominateMiddleman({ phone: '254700444444',  nominator: 'donor1' });
+      const res = await createDefaultService().nominateMiddleman({ phone: '254700444444', nominator: 'donor1' });
       expect(res._id).toBe('beneficiary1');
       const updatedMiddleman = await usersColl().findOne({ _id: res._id });
       expect(updatedMiddleman.roles).toEqual(['beneficiary', 'middleman']);
