@@ -28,6 +28,7 @@
 import Footer from './home/footer'
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
+import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
   name: 'logged-out-structure',
   components: { Footer },
@@ -44,7 +45,7 @@ export default {
   },
   async mounted() {
     if (Auth.isAuthenticated() && !this.user) {
-      this.$router.push({ name: 'nominate' });
+      this.$router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }
   }
 }

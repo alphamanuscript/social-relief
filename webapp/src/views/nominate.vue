@@ -63,7 +63,7 @@
       </b-form>
     </div>
     <b-modal
-      id="nominate"
+      id="nominate-success"
       title="Nomination Invitation Sent!"
       title-class="text-primary"
       centered
@@ -119,7 +119,7 @@ export default {
         email: '',
         role: 'Beneficiary'
       },
-      this.$bvModal.hide('nominate');
+      this.$bvModal.hide('nominate-success');
     },
     async submitNomination() {
       this.validationMessages = [
@@ -135,7 +135,7 @@ export default {
         }
         else {
           this.validationResults = [null, null];
-          this.$bvModal.show('nominate');
+          this.$bvModal.show('nominate-success');
         }
       }
     }

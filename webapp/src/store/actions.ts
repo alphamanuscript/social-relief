@@ -1,6 +1,7 @@
 import { wrapActions, googleSignOut } from './util';
 import { Users, Transactions, Donations } from '../services';
 import router from '../router';
+import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 const actions = wrapActions({
   async getBeneficiaries({ commit }) {
@@ -37,7 +38,7 @@ const actions = wrapActions({
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
     if (user) {
-      router.push({ name: 'nominate' });
+      router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }
   },
    /**
@@ -49,14 +50,14 @@ const actions = wrapActions({
     const user = await Users.login({ phone, password, googleIdToken });
     if (user) {
       commit('setUser', user);
-      if (router.currentRoute.name !== 'nominate') router.push({ name: 'nominate' });
+      if (router.currentRoute.name !== DEFAULT_SIGNED_IN_PAGE ) router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }
   },
   async signUserOut({ dispatch }) {
     await Users.logout();
     await googleSignOut();
     dispatch('clearData');
-    router.push({ name: 'home' });
+    router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();

@@ -76,6 +76,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import Footer from './home/footer';
 export default {
   name: 'logged-in-structure',
@@ -96,7 +97,7 @@ export default {
     if (Auth.isAuthenticated() && !this.user) {
       await this.getCurrentUser();
     }
-    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+    else if (!Auth.isAuthenticated()) this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },
 }
 </script>
