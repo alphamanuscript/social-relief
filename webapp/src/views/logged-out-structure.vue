@@ -26,7 +26,7 @@
 </template>
 <script>
 import Footer from './home/footer'
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
@@ -39,7 +39,7 @@ export default {
     },
   },
   methods: {
-  handleLoginAndSignUpBtnClick() {
+    handleLoginAndSignUpBtnClick() {
       this.$bvModal.show('login');
     }
   },

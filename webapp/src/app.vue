@@ -4,17 +4,19 @@
     <LoggedOutStructure v-else />
     <LoginModal/>
     <SignUpModal/>
+    <DonateModal/>
   </div>
 </template>
 <script>
 import LoginModal from './components/login-modal.vue';
 import SignUpModal from './components/sign-up-modal.vue';
+import DonateModal from './components/donate-modal.vue';
 import LoggedOutStructure from './views/logged-out-structure.vue';
 import LoggedInStructure from './views/logged-in-structure.vue';
 import { DEFAULT_SIGNED_OUT_PAGE } from './router/defaults';
 
 export default {
-  components: { LoginModal, SignUpModal, LoggedInStructure, LoggedOutStructure },
+  components: { LoginModal, SignUpModal, DonateModal, LoggedInStructure, LoggedOutStructure },
   computed: {
     showLoggedInNavigation () {
       if (this.$route.name === DEFAULT_SIGNED_OUT_PAGE || this.$route.name === 'sign-in' || this.$route.name === 'sign-up' || this.$route.name === 'google-sign-up') return false

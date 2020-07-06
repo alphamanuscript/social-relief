@@ -104,7 +104,7 @@ export default {
   name: 'home',
   methods: {
     handleDonateBtn() {
-      this.$bvModal.show('login');
+      this.$bvModal.show('donate');
     }
   } 
 }

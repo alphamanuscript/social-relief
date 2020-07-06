@@ -12,7 +12,7 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
-  async donate({ commit, state }, { amount }: { amount: number }) {
+  async donate({ commit, state }, { phone, amount }: { phone: string; amount: number }) {
     if (state.user) {
       const trx = await Donations.initiateDonation({ amount });
       commit('addTransaction', trx);

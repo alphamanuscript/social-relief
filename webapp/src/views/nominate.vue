@@ -86,6 +86,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+import { Auth } from '../services';
 export default {
   name: 'nominate',
   data() {
@@ -138,7 +139,13 @@ export default {
           this.$bvModal.show('nominate-success');
         }
       }
-    }
+    },
+    async mounted() {
+      if (Auth.isAuthenticated() && !this.user) {
+        await this.getCurrentUser();
+      }
+      else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+    },
   }
 }
 </script>
