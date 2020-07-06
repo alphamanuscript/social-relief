@@ -1,4 +1,4 @@
-export type UserRole = 'donor' | 'beneficiary';
+export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution';
 
@@ -33,8 +33,9 @@ export interface LoginResult {
   token: Token;
 }
 
-export interface UserNominateBeneficiaryArgs {
+export interface UserNominateArgs {
   phone: string,
+  email: string,
   nominator: string
 }
 
@@ -86,6 +87,7 @@ export interface AppMessage {
 export interface AppState {
   user?: User;
   beneficiaries: User[];
+  middlemen: User[];
   transactions: Transaction[];
   message: AppMessage;
 }
