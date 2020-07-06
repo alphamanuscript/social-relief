@@ -35,7 +35,7 @@ export const createInputSchema = userCreateAndLoginSchema;
 
 export const loginInputSchema = userCreateAndLoginSchema;
 
-export const nominateBeneficiaryInputSchema = joi.object().keys({
+export const nominateInputSchema = joi.object().keys({
   phone: joi.string()
     .required()
     .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
@@ -45,6 +45,12 @@ export const nominateBeneficiaryInputSchema = joi.object().keys({
       'string.empty': 'Please enter your phone number',
       'string.pattern.base': 'Invalid phone number. Must start with 2547 and be 12 digit long'
     }),
+  email: joi.string()
+    .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
+    .messages({
+      'string.base': 'Invalid type, email must be a string',
+      'string.pattern.base': 'Invalid email.'
+    }),
   nominator: joi.string()
     .required()
     .messages({
@@ -53,8 +59,6 @@ export const nominateBeneficiaryInputSchema = joi.object().keys({
       'string.empty': `Nominator id is required`,
     }),
 });
-
-export const nominateMiddlemanInputSchema = nominateBeneficiaryInputSchema;
 
 export const getAllBeneficiariesInputSchema = userIdSchema;
 

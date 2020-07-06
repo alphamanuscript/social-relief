@@ -8,11 +8,14 @@ const mutations: MutationTree<AppState> = {
   addBeneficiary(state, bnf) {
     state.beneficiaries.push(bnf);
   },
+  addMiddleman(state, mdn) {
+    state.middlemen.push(mdn);
+  },
   updateBeneficiary(state, bnf) {
     state.beneficiaries[state.beneficiaries.findIndex(beneficiary => beneficiary._id === bnf._id)] = bnf;
   },
   setUser(state, user) {
-    state.user = user
+    state.user = user;
   },
   unsetUser(state) {
     state.user = undefined
