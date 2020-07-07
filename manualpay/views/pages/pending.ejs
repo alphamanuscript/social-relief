@@ -1,0 +1,33 @@
+<%- include('../templates/header') %>
+
+<div class="container">
+  <h2>Pending Transactions</h2>
+  <% if (transactions.length) { %>
+    <ul class="list-group">
+      <% transactions.forEach(tx => { %>
+        <div class="list-group-item">
+          <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
+          <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
+          <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
+          <form method="post" action="/complete-transaction" class="mt-4 mb-4">
+            <input type="hidden" name="id" value="<%= tx._id %>">
+            <div class="form-group">
+              <label>
+                Transaction Reference
+                <input name="reference" type="text" class="form-control" required>
+              </label>
+            </div>
+            <div class="form-g">
+              <button class="btn btn-primary">Complete transaction</button>
+            </div>
+          </form>
+        </div>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <div class="alert alert-info">No pending transactions found.</div>
+  <% } %>
+
+</div>
+
+<%- include('../templates/footer') %>

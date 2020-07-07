@@ -1,0 +1,23 @@
+<%- include('../templates/header') %>
+
+<div class="container">
+  <h2>Completed Transactions</h2>
+  <% if (transactions.length) { %>
+    <ul class="list-group">
+      <% transactions.forEach(tx => { %>
+        <div class="list-group-item">
+          <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
+          <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
+          <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
+          <div class="h4"><span class="small text-muted">Reference:</span><%= tx.reference %></div>
+          <div class="h4"><span class="small text-muted">Date updated:</span><%= tx.updatedAt %></div>
+        </div>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <div class="alert alert-info">No completed transactions found.</div>
+  <% } %>
+
+</div>
+
+<%- include('../templates/footer') %>
