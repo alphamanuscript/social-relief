@@ -26,7 +26,11 @@
           class="custom-dialog-form-input"
           placeholder="Enter phone number"
           id="phone"
+          @update="helper.phone = true"
         />
+        <b-form-text v-show="showPhoneHelper" class="text-center">
+          Start with 7, for example 712345678
+        </b-form-text>
         <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[0] }}
         </b-form-invalid-feedback>
@@ -40,7 +44,11 @@
           class="custom-dialog-form-input"
           placeholder="Enter password"
           id="password"
+          @update="helper.password = true"
         />
+        <b-form-text v-show="showPasswordHelper" class="text-center">
+          Between 8 and 18 characters including uppercase, numeric and special characters
+        </b-form-text>
         <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages[1] }}
         </b-form-invalid-feedback>
@@ -84,6 +92,10 @@ export default {
       signInValidationResults: [null, null],
       params: {
         clientId: GOOGLE_CLIENT_ID
+      },
+      helper: {
+        phone: false,
+        password: false
       }
     }
   },
@@ -94,6 +106,12 @@ export default {
     ...mapState(['user']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
+    },
+    showPhoneHelper () {
+          return this.signInValidationResults[0] == null && this.helper.phone;
+    },
+    showPasswordHelper () {
+          return this.signInValidationResults[1] == null && this.helper.password;
     }
   },
   methods: {
@@ -102,11 +120,6 @@ export default {
     ]),
     validateObj,
     showSignUpDialog() {
-      this.signInCreds = {
-        phone: '',
-        password: ''
-      },
-      this.signInValidationResults = [null, null];
       this.$bvModal.show('sign-up');
     },
     hideDialog() {
@@ -115,14 +128,21 @@ export default {
         password: ''
       },
       this.signInValidationResults = [null, null];
+      this.helper = {
+        phone: false,
+        password: false
+      };
     },
     async signIn() {
       this.signInValidationMessages = [
         'Invalid phone number. Must start with 7 and be 9 digits long',
         'Password required'
       ];
+      this.helper = {
+        phone: false,
+        password: false
+      };
       this.signInValidationResults = this.validateObj(this.signInCreds, this.signInValidationRules);
-
       if (!this.signInValidationResults.includes(false)) {
         await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
         if (!this.user) {
@@ -167,7 +187,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>

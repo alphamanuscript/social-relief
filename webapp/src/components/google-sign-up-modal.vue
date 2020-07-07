@@ -30,7 +30,11 @@
           class="custom-dialog-form-input"
           placeholder="Enter phone number"
           id="phone"
+          @update="helper.phone = true"
         />
+        <b-form-text v-show="showPhoneHelper" class="text-center">
+          Start with 7, for example 712345678
+        </b-form-text>
         <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages[0] }}
         </b-form-invalid-feedback>
@@ -72,7 +76,10 @@ export default {
       signUpValidationRules: [
         { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) }
       ],
-      signUpValidationResults: [null]
+      signUpValidationResults: [null],
+      helper: {
+        phone: false,
+      }
     }
   },
   computed: {
@@ -80,16 +87,14 @@ export default {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
+    showPhoneHelper () {
+      return this.signUpValidationResults[0] == null && this.helper.phone;
+    }
   },
   methods: {
     ...mapActions(['createUser']),
     validateObj,
     showLoginDialog() {
-      this.signUpCreds = {
-        phone: '',
-        role: 'donor'
-      },
-      this.signUpValidationResults = [null];
       this.$bvModal.show('login');
     },
     hideDialog() {
@@ -97,12 +102,19 @@ export default {
         phone: '',
         role: 'donor'
       },
-      this.signUpValidationResults = [null, null, null];
+      this.signUpValidationResults = [null];
+       this.helper = {
+        phone: false
+      };
     },
     async signUp() {
       this.signUpValidationMessages = [
         'Invalid Phone number. Must start with 7 and be 9 digits long'
-      ]
+      ];
+      this.helper = {
+        phone: false,
+        password: false
+      };
       this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
       if (this.googleUser && this.signUpValidationResults[0]) {
         await this.createUser({ phone: `254${this.signUpCreds.phone}`, googleIdToken: this.googleUser.getAuthResponse().id_token });
