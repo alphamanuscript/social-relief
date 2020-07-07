@@ -13,7 +13,3 @@ export default {
   name: 'home-footer'
 }
 </script>
-
-<style>
-
-</style>
