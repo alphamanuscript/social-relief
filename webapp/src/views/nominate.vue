@@ -14,7 +14,11 @@
             <label for="phone-number">M-Pesa Number:</label>
           </b-col>
           <b-col>
-            <b-form-input 
+            <b-input-group>
+              <template v-slot:prepend >
+                <img :src="imageUrl" width="50" height="30" class="rounded-pill align-self-end" alt="Social Relief Logo">
+              </template>
+              <b-form-input 
               v-model="nomineeCreds.phone"
               type="text" 
               :state="validationResults[0]"
@@ -25,6 +29,8 @@
             <b-form-invalid-feedback>
               {{ validationMessages[0] }}
             </b-form-invalid-feedback>
+            </b-input-group>
+            
           </b-col>
         </b-form-row>
         <b-form-row class="py-3">
@@ -109,6 +115,9 @@ export default {
   components: { },
   computed: {
     ...mapState(['message']),
+    imageUrl () {
+      return require(`@/assets/Flag_of_Kenya.png`);
+    }
   },
   methods: {
     ...mapActions(['nominate']),
