@@ -7,7 +7,8 @@
     header-class="border-bottom-0"
     hide-footer
     no-stacking
-    @hidden="hideDialog()"
+    @show="setModalData"
+    @hidden="hideDialog"
     content-class="rounded-lg"
    >
     <template v-slot:modal-header>
@@ -20,6 +21,17 @@
       <b-form-group>
         <label for="phone" class="sr-only">Phone Number</label>
         <b-form-input 
+          v-if="user"
+          v-model="donationInputs.phone" 
+          type="text"
+          :state="validationResults[0]"
+          class="custom-dialog-form-input"
+          id="phone"
+          :value="donationInputs.phone"
+          disabled
+        />
+        <b-form-input
+          v-else 
           v-model="donationInputs.phone" 
           type="text"
           :state="validationResults[0]"
@@ -27,7 +39,7 @@
           placeholder="Enter phone number (7xxxxxxxx)"
           id="phone" 
         />
-        <b-form-invalid-feedback class="text-center">
+        <b-form-invalid-feedback v-if="!user" class="text-center">
           {{ validationMessages[0] }}
         </b-form-invalid-feedback>
       </b-form-group>
@@ -47,7 +59,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
       <div class="text-center">
-        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="donate">Submit</b-button>
+        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="submitDonation">Submit</b-button>
       </div>
     </b-form>
 </b-modal>
@@ -69,8 +81,8 @@ export default {
         'Insufficient amount. Donations must be at least of the amount 100',
       ],
       validationRules: [
-        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (input) => input.donation >= 100 },
+        { test: (donationInputs) => donationInputs.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
+        { test: (donationInputs) => donationInputs.amount >= 100 },
       ],
       validationResults: [null, null],
     }
@@ -82,26 +94,30 @@ export default {
     }
   },
   methods: {
-    ...mapActions([
-      'signUserIn'
-    ]),
+    ...mapActions(['donate']),
     validateObj,
     showDonateDialog() {
       this.donationInputs = {
         phone: '',
-        password: ''
+        amount: 100
       },
       this.validationResults = [null, null];
       this.$bvModal.show('sign-up');
     },
     hideDialog() {
-      this.donateInputs = {
+      this.donationInputs = {
         phone: '',
-        password: ''
+        amount: 100
       },
       this.validationResults = [null, null];
     },
-    async donate() {
+    setModalData() {
+      console.log('Setting donate modal data...');
+      if (this.user) {
+        this.donationInputs.phone = this.user.phone.substring(3);
+      }
+    },
+    async submitDonation() {
       this.validationMessages = [
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Insufficient amount. Donations must be at least of the amount 100',
@@ -109,6 +125,22 @@ export default {
       this.validationResults = this.validateObj(this.donationInputs, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
+        await this.donate({ phone: `254${this.donationInputs.phone}`, amount: this.donationInputs.amount });
+        console.log('After this.donate...');
+        if (this.message.type === 'error') {
+          this.validationMessages = [this.message.message, this.message.message];
+          this.validationResults = [false, false];
+        }
+        else {
+          console.log('Donation recorded successfully...');
+          this.donationInputs = {
+            phone: '',
+            amount: 100
+          },
+          this.validationResults = [null, null];
+          this.$bvModal.hide('donate');
+        } 
+
         // await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
         // if (this.message.type === 'error') {
         //   this.validationMessages = [this.message.message, this.message.message];

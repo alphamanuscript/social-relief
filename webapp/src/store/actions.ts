@@ -13,10 +13,10 @@ const actions = wrapActions({
     commit('setTransactions', transactions);
   },
   async donate({ commit, state }, { phone, amount }: { phone: string; amount: number }) {
-    if (state.user) {
-      const trx = await Donations.initiateDonation({ amount });
-      commit('addTransaction', trx);
-    }
+    console.log('Inside donate action');
+    const trx = await Donations.initiateDonation({ amount });
+    console.log('After initiateDonation');  
+    if (state.user) commit('addTransaction', trx);
   },
   async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
     if (state.user && role === 'Beneficiary') {
