@@ -70,17 +70,17 @@
         </b-col>
       </b-row>
     </b-container>
-    <Footer class="d-md-none"/>
+    <HomeFooter class="d-md-none"/>
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
-import Footer from './home/footer';
+import HomeFooter from './home/home-footer';
 export default {
   name: 'logged-in-structure',
-  components: { Footer },
+  components: { HomeFooter },
   computed: {
     ...mapState(['user']),
     imageUrl () {

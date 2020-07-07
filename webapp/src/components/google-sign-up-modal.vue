@@ -16,9 +16,10 @@
         <h4 class="text-secondary text-center">Sign Up</h4>
     </div>
     </template>
-    <p v-if="googleUser">
-        Welcome {{ googleUser.getBasicProfile().getName() }}, please enter your phone number to finish creating your account.
-    </p>
+    <div v-if="googleUser" class="text-center text-secondary">
+        <h5>Welcome <span class="text-primary">{{ googleUser.getBasicProfile().getName() }}</span>,</h5>
+        <p class="small">please enter your phone number to finish creating your account.</p>
+    </div>
     <b-form>
       <b-form-group>
         <label for="phone" class="sr-only">Phone Number</label>
@@ -52,7 +53,8 @@ export default {
   name: 'google-sign-up-modal',
   props: {
     googleUser: {
-      type: Object
+      type: Object,
+      required: false
     }
   },
   data() {
@@ -102,7 +104,7 @@ export default {
         'Invalid Phone number. Must start with 7 and be 9 digits long'
       ]
       this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
-      if (this.googleUser && this.validationResults[0]) {
+      if (this.googleUser && this.signUpValidationResults[0]) {
         await this.createUser({ phone: `254${this.signUpCreds.phone}`, googleIdToken: this.googleUser.getAuthResponse().id_token });
         if (!this.user) {
           this.signUpValidationMessages = [

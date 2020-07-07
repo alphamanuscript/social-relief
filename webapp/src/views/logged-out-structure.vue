@@ -21,17 +21,17 @@
       </b-navbar>
       <router-view class="view-content" />
     </b-container>
-    <Footer />
+    <HomeFooter />
     </div>
 </template>
 <script>
-import Footer from './home/footer'
+import HomeFooter from './home/home-footer'
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
   name: 'logged-out-structure',
-  components: { Footer },
+  components: { HomeFooter },
   computed: {
     ...mapState(['user']),
     imageUrl () {
