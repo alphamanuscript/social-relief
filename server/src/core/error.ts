@@ -51,7 +51,8 @@ export type ErrorCode =
   | 'validationError'
   | 'batchQueueError'
   | 'systemLockLocked'
-  | 'systemLockInvalidState';
+  | 'systemLockInvalidState'
+  | 'messageDeliveryFailed';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -110,4 +111,8 @@ export function createValidationError (message: string = messages.ERROR_INVALID_
 
 export function createDbConnectionFailedError (message: string = messages.ERROR_DB_CONNECTION_FAILED) {
   return createAppError(message, 'dbConnectionFailed');
+}
+
+export function createMessageDeliveryFailedError(message: string) {
+  return createAppError(message, 'messageDeliveryFailed');
 }
