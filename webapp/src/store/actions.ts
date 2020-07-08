@@ -12,11 +12,11 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
-  async donate({ commit, state }, { phone, amount }: { phone: string; amount: number }) {
-    console.log('Inside donate action');
-    const trx = await Donations.initiateDonation({ amount });
-    console.log('After initiateDonation');  
-    if (state.user) commit('addTransaction', trx);
+  async donate({ commit, state }, { amount }: { amount: number }) {
+    if (state.user) {
+      const trx = await Donations.initiateDonation({ amount });
+      commit('addTransaction', trx);
+    }   
   },
   async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
     if (state.user && role === 'Beneficiary') {

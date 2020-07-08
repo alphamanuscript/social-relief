@@ -20,8 +20,7 @@
     <b-form>
       <b-form-group>
         <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input 
-          v-if="user"
+        <b-form-input
           v-model="donationInputs.phone" 
           type="text"
           :state="validationResults[0]"
@@ -30,18 +29,6 @@
           :value="donationInputs.phone"
           disabled
         />
-        <b-form-input
-          v-else 
-          v-model="donationInputs.phone" 
-          type="text"
-          :state="validationResults[0]"
-          class="custom-dialog-form-input"
-          placeholder="Enter phone number (7xxxxxxxx)"
-          id="phone" 
-        />
-        <b-form-invalid-feedback v-if="!user" class="text-center">
-          {{ validationMessages[0] }}
-        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
         <label for="amount" class="sr-only">Amount</label>
@@ -112,7 +99,6 @@ export default {
       this.validationResults = [null, null];
     },
     setModalData() {
-      console.log('Setting donate modal data...');
       if (this.user) {
         this.donationInputs.phone = this.user.phone.substring(3);
       }
@@ -122,38 +108,24 @@ export default {
         'Invalid phone number. Must start with 7 and be 9 digit long',
         'Insufficient amount. Donations must be at least of the amount 100',
       ];
+      this.donationInputs.amount = Number(this.donationInputs.amount);
       this.validationResults = this.validateObj(this.donationInputs, this.validationRules);
 
       if (!this.validationResults.includes(false)) {
-        await this.donate({ phone: `254${this.donationInputs.phone}`, amount: this.donationInputs.amount });
-        console.log('After this.donate...');
+        await this.donate({ amount: this.donationInputs.amount });
         if (this.message.type === 'error') {
           this.validationMessages = [this.message.message, this.message.message];
           this.validationResults = [false, false];
         }
         else {
-          console.log('Donation recorded successfully...');
           this.donationInputs = {
             phone: '',
             amount: 100
           },
           this.validationResults = [null, null];
           this.$bvModal.hide('donate');
-        } 
-
-        // await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
-        // if (this.message.type === 'error') {
-        //   this.validationMessages = [this.message.message, this.message.message];
-        //   this.validationResults = [false, false];
-        // }
-        // else {
-        //   this.donateInputs = {
-        //     phone: '',
-        //     amount: ''
-        //   },
-        //   this.validationResults = [null, null];
-        //   this.$bvModal.hide('login');
-        // } 
+          this.$bvModal.show('confirm-donation');
+        }
       }
     }
   }
