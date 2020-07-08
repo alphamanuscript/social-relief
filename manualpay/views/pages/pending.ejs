@@ -6,12 +6,12 @@
     <ul class="list-group">
       <% transactions.forEach(tx => { %>
         <div class="list-group-item">
-          <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
-          <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
-          <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
-          <div class="h5"><span class="small text-muted">ID:</span> <%= tx._id %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Name:</span> <%= tx.recipientName %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Phone:</span> <%= tx.recipientPhone %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Amount:</span> KES <%= tx.amount %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">ID:</span> <%= tx._id %></div>
           <div class="row">
-            <form class="col" method="post" action="<%= getFullPath('/complete-transaction') %>" class="mt-4 mb-4">
+            <form class="col mb-4 mt-4" method="post" action="<%= getFullPath('/complete-transaction') %>">
               <input type="hidden" name="id" value="<%= tx._id %>">
               <div class="form-group">
                 <label>
@@ -24,7 +24,7 @@
               </div>
             </form>
 
-            <form class="col" method="post" action="<%= getFullPath('/fail-transaction') %>" class="mt-4 mb-4">
+            <form class="col mb-4 mt-4" method="post" action="<%= getFullPath('/fail-transaction') %>">
               <input type="hidden" name="id" value="<%= tx._id %>">
               <div class="form-group">
                 <label>

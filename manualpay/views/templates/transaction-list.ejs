@@ -1,18 +1,32 @@
 <% if (transactions.length) { %>
-  <ul class="list-group">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Reference</th>
+        <th>Failure reason</th>
+        <th>Updated at</th>
+      </tr>
+    </thead>
+    <tbody>
     <% transactions.forEach(tx => { %>
-      <div class="list-group-item">
-        <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
-        <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
-        <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
-        <div class="h4"><span class="small text-muted">ID:</span> <%= tx._id %></div>
-        <div class="h4"><span class="small text-muted">Status:</span> <%= tx.status %></div>
-        <div class="h4"><span class="small text-muted">Reference:</span> <%= tx.reference %></div>
-        <div class="h4"><span class="small text-muted">Failure reason:</span> <%= tx.failureReason %></div>
-        <div class="h4"><span class="small text-muted">Date updated:</span> <%= tx.updatedAt %></div>
-      </div>
+      <tr>
+        <td><span class="small muted"><%= tx._id %></span></td>
+        <td><%= tx.recipientName %></td>
+        <td><%= tx.recipientPhone %></td>
+        <td><%= tx.amount %></td>
+        <td><%= tx.status %></td>
+        <td><%= tx.reference %></td>
+        <td><%= tx.failureReason %></td>
+        <td><%= tx.updatedAt.toLocaleString() %></td>
+      </tr>
     <% }) %>
-  </ul>
+    </tbody>
+  </table>
 <% } else { %>
   <div class="alert alert-info">No transactions found.</div>
 <% } %>
