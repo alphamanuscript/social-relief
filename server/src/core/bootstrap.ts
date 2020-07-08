@@ -5,19 +5,26 @@ import { MongoClient } from 'mongodb';
 import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
+import { PaymentProviders } from './payment/provider-registry';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
   const db = client.db(config.dbName);
 
-  const paymentProvider = new AtPaymentProvider({
+  const atPaymentProvider = new AtPaymentProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
     paymentsProductName: config.atPaymentsProductName,
     paymentsProviderChannel: config.atPaymentsProviderChannel
   });
+
+  const paymentProviders = new PaymentProviders();
+  paymentProviders.register(atPaymentProvider);
+  paymentProviders.setPreferredForReceiving(atPaymentProvider.name());
+  paymentProviders.setPreferredForSending(atPaymentProvider.name());
+
   const systemLocks = new SystemLocks(db);
-  const transactions = new Transactions(db, { paymentProvider });
+  const transactions = new Transactions(db, { paymentProviders });
   const users = new Users(db, {
     transactions,
   });

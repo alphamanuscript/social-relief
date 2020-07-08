@@ -45,7 +45,7 @@ export interface TransactionService {
   createIndexes(): Promise<void>;
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
   sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction>;
-  handleProviderNotification(payload: any): Promise<Transaction>;
+  handleProviderNotification(providerName: string, payload: any): Promise<Transaction>;
   getAllByUser(userId: string): Promise<Transaction[]>;
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;
 }
@@ -77,4 +77,30 @@ export interface PaymentProvider {
   handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo>;
   getTransaction(id: string): Promise<ProviderTransactionInfo>;
   sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult>;
+}
+
+export interface PaymentProviderRegistry {
+  register(provider: PaymentProvider): void;
+  getProvider(name: string): PaymentProvider;
+  /**
+   * returns the preferred payment provider
+   * for receiving money from users
+   */
+  getPreferredForReceiving(): PaymentProvider;
+  /**
+   * sets preferred payment provider for
+   * receiving money from users
+   * @param name 
+   */
+  setPreferredForReceiving(name: string): void;
+  /**
+   * sets preferred payment provider for
+   * sending money to users
+   */
+  getPreferredForSending(): PaymentProvider;
+  /**
+   * gets preferred payment provider for sending money to users
+   * @param name
+   */
+  setPreferredForSending(name: string): void;
 }

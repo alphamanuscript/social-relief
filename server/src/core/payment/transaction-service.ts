@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
 import { generateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
 import { User } from '../user';
@@ -9,7 +9,7 @@ import * as validators from './validator';
 const COLLECTION = 'transactions';
 
 export interface TransactionsArgs {
-  paymentProvider: PaymentProvider;
+  paymentProviders: PaymentProviderRegistry;
 }
 
 const isFinalStatus = (status: TransactionStatus) =>
@@ -18,13 +18,13 @@ const isFinalStatus = (status: TransactionStatus) =>
 export class Transactions implements TransactionService {
   private db: Db;
   private collection: Collection<Transaction>;
-  private provider: PaymentProvider;
+  private providers: PaymentProviderRegistry;
   private indexesCreated: boolean;
 
   constructor(db: Db, args: TransactionsArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
-    this.provider = args.paymentProvider;
+    this.providers = args.paymentProviders;
     this.indexesCreated = false;
   }
 
@@ -66,6 +66,9 @@ export class Transactions implements TransactionService {
 
   async initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction> {
     validators.validatesInitiateDonation({ userId: user._id, amount: args.amount })
+
+    const provider = this.receivingProvider();
+
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
       to: user._id,
@@ -73,11 +76,11 @@ export class Transactions implements TransactionService {
       fromExternal: true,
       toExternal: false,
       type: 'donation',
-      provider: this.provider.name()
+      provider: provider.name()
     };
 
     try {
-      const requestResult = await this.provider.requestPaymentFromUser(user, args.amount);
+      const requestResult = await provider.requestPaymentFromUser(user, args.amount);
       trxArgs.providerTransactionId = requestResult.providerTransactionId;
       trxArgs.status = requestResult.status;
       const result = await this.create(trxArgs);
@@ -91,6 +94,7 @@ export class Transactions implements TransactionService {
 
   async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
     validators.validatesSendDonation({ from: from._id, to: to._id, amountArg: args });
+    const provider = this.sendingProvider();
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
       to: to._id,
@@ -98,7 +102,7 @@ export class Transactions implements TransactionService {
       fromExternal: false,
       toExternal: true,
       type: 'distribution',
-      provider: this.provider.name()
+      provider: provider.name()
     };
 
     let trx: Transaction;
@@ -119,7 +123,7 @@ export class Transactions implements TransactionService {
       // transaction, then we'll simply mark this transaction record as failed
       // and that's enough to synchronize the system
       trx = await this.create(trxArgs);
-      const providerResult = await this.provider.sendFundsToUser(to, args.amount, { transaction: trx._id });
+      const providerResult = await provider.sendFundsToUser(to, args.amount, { transaction: trx._id });
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id },
         { 
@@ -150,14 +154,15 @@ export class Transactions implements TransactionService {
     }
   }
 
-  async handleProviderNotification(payload: any): Promise<Transaction> {
+  async handleProviderNotification(providerName: string, payload: any): Promise<Transaction> {
     validators.validatesHandleProviderNotification(payload);
     try {
       const now = new Date();
-      const result = await this.provider.handlePaymentNotification(payload);
+      const provider = this.provider(providerName);
+      const result = await this.provider(providerName).handlePaymentNotification(payload);
 
       const updateRes = await this.collection.findOneAndUpdate(
-        { providerTransactionId: result.providerTransactionId, provider: this.provider.name() },
+        { providerTransactionId: result.providerTransactionId, provider: provider.name() },
         {
           $set: {
             status: result.status,
@@ -192,7 +197,7 @@ export class Transactions implements TransactionService {
         return trx;
       }
 
-      const providerResult = await this.provider.getTransaction(trx.providerTransactionId);
+      const providerResult = await this.provider(trx.provider).getTransaction(trx.providerTransactionId);
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id }, 
         {
@@ -237,6 +242,18 @@ export class Transactions implements TransactionService {
     catch (e) {
       throw createDbOpFailedError(e.message);
     }
+  }
+
+  private provider(name: string): PaymentProvider {
+    return this.providers.getProvider(name);
+  }
+
+  private receivingProvider(): PaymentProvider {
+    return this.providers.getPreferredForReceiving();
+  }
+
+  private sendingProvider(): PaymentProvider {
+    return this.providers.getPreferredForSending();
   }
 
 }
