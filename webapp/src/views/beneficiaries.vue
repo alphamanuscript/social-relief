@@ -1,15 +1,15 @@
 <template>
-  <div class="outermost-container">
-    <div class="inner-container">
+  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+    <div class="ml-lg-5">
       <div class="page-intro">
-        <h3>Beneficiaries</h3>
+        <h3 class="text-primary">Beneficiaries</h3>
         <p>
-          <span>All nominees get <span class="max-amount-per-month">Ksh 3,500</span> to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="beneficiary-count">13,600 +</span> people who </span>
-          <span>are currently enlisted as beneficiaries of this system. We at social relief want to say a big <span class="thank-you-span">THANK YOU</span> for your kindness and support.</span>
+          All nominees get <span class="text-secondary font-weight-bold">Ksh 2,000</span> to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
+          are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>
       <div class="my-nominees">
-        <h3>My Nominees</h3>
+        <h3 class="text-primary">My Nominees</h3>
         <div class="table-container">
           <table>
             <thead>
@@ -145,7 +145,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </b-container>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -154,17 +154,13 @@ export default {
   name: 'beneficiaries',
   components: { }, 
   computed: {
-    ...mapState(['user'])
+    ...mapState(['beneficiaries'])
   },
   methods: {
     ...mapActions(['getCurrentUser', 'getBeneficiaries']),
   },
   async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
-      await this.getCurrentUser();
-      await this.getBeneficiaries();
-    }
-    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+    await this.getBeneficiaries();
   },
 }
 </script>
