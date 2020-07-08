@@ -20,6 +20,12 @@ describe('SystemLock tests', () => {
     await dbUtils.resetCollectionWith(systemLocks);
   });
 
+  describe('auto-generates unique key by default', async () => {
+    const lock1 = new SystemLockHandle('someLock', dbUtils.getCollection());
+    const lock2 = new SystemLockHandle('someLock', dbUtils.getCollection());
+    expect(lock1.getKey()).not.toEqual(lock2.getKey());
+  });
+
   describe('lock', () => {
     test('should set locked:true on lock record and lock with specified key', async () => {
       const lock = new SystemLockHandle('lock2', dbUtils.getCollection(), 'someKey');
