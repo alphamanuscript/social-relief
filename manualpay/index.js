@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { initDb } = require('./db');
+const { TransactionNotifier } = require('./notifier');
 const { createTransaction, completeTransaction, findByStatus, STATUS_COMPLETE, STATUS_PENDING, findById } = require('./services/transactions');
 
 const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017/manualpay_socialrelief';
@@ -16,6 +17,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+const notifier = new TransactionNotifier(WEBHOOK_URL);
 
 
 /**
@@ -52,8 +55,8 @@ router.get('/completed', async (req, res) => {
 router.post('/complete-transaction', async (req, res) => {
   try {
     if (!req.body.id || !req.body.reference) throw new Error('Transaction id and reference are required');
-    await completeTransaction(req.body.id, req.body.reference);
-    // TODO send notification back to social relief
+    const tx = await completeTransaction(req.body.id, req.body.reference);
+    notifier.sendNotification(tx)
     return res.redirect(getFullPath('/'));
   }
   catch (e) {
@@ -91,6 +94,11 @@ router.get('/api/transactions/:id', async (req, res) => {
     });
   }
 });
+
+
+async function sendTransactionNotification(tx) {
+
+}
 
 
 

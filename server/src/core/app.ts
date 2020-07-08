@@ -44,6 +44,10 @@ export interface AppConfig {
    */
   atWebhooksRoot: string;
   /**
+   * Root path of the Manual Payment service notifications callback URL
+   */
+  manualPayWebhooksRoot: string;
+  /**
    * Maximum amount of funds a beneficiary can receive
    * from donation distributions in a given period
    */
@@ -75,6 +79,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atPaymentsProductName: env.AT_PAYMENTS_PRODUCT_NAME || 'TestCrowdRelief',
     atPaymentsProviderChannel: env.AT_PAYMENTS_PROVIDER_CHANNEL || '50000',
     atWebhooksRoot: '/at-webhooks',
+    manualPayWebhooksRoot: '/webhooks/manualpay',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
