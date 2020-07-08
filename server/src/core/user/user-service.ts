@@ -2,7 +2,7 @@ import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, 
-  AccessToken, UserLoginArgs, UserLoginResult, UserNominateBeneficiaryArgs, UserNominateMiddlemanArgs, UserRole,
+  AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -76,9 +76,17 @@ export class Users implements UserService {
     if (this.indexesCreated) return;
 
     try {
-      // unique phone and email indexes
+      // unique phone and partial email indexes
       await this.collection.createIndex({ 'phone': 1 }, { unique: true, sparse: false });
-      await this.collection.createIndex({ 'email': 1 }, { unique: true, sparse: false });
+      await this.collection.createIndex(
+        { email: 1 }, 
+        { 
+          unique: true, 
+          partialFilterExpression: {
+            email: { $exists: true }
+          }
+        }
+      );
       // ttl collection for access token expiry
       await this.tokenCollection.createIndex({ expiresAt: 1},
         { expireAfterSeconds: 1 });
@@ -123,9 +131,11 @@ export class Users implements UserService {
     }
   }
 
-  async nominateBeneficiary(args: UserNominateBeneficiaryArgs): Promise<User> {
-    validators.validatesNominateBeneficiary(args);
-    const { phone, nominator } = args;
+  async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
+    const { phone, email, nominator } = args;
+    if (email) validators.validatesNominate({ phone, email, nominator });
+    else validators.validatesNominate({ phone, nominator });
+
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
       if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
@@ -151,18 +161,20 @@ export class Users implements UserService {
        simply because a user can not be both a donor and 
        a beneficiary.
       */
+      const insert: any = {
+        _id: generateId(), 
+        password: '', 
+        phone,
+        addedBy: nominator, 
+        createdAt: new Date(),
+      }
+      if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone, roles: { $nin: ['donor'] } }, 
         { 
           $addToSet: { roles: 'beneficiary', donors: { $each: donors } }, 
           $currentDate: { updatedAt: true }, 
-          $setOnInsert: { 
-            _id: generateId(), 
-            password: '', 
-            phone, 
-            addedBy: nominator, 
-            createdAt: new Date(),
-          } 
+          $setOnInsert: insert
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
@@ -177,25 +189,29 @@ export class Users implements UserService {
     }
   }
 
-  async nominateMiddleman(args: UserNominateMiddlemanArgs): Promise<User> {
-    validators.validatesNominateMiddleman(args);
-    const { phone, nominator } = args;
+  async nominateMiddleman(args: UserNominateArgs): Promise<User> {
+    const { phone, email, nominator } = args;
+    if (email) validators.validatesNominate({ phone, email, nominator });
+    else validators.validatesNominate({ phone, nominator });
+    
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
       if (!nominatorUser) throw createMiddlemanNominationFailedError();
 
+      const insert: any = {
+        _id: generateId(),
+        password: '',
+        phone,
+        addedBy: nominator,
+        createdAt: new Date()
+      }
+      if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone },
         {
           $addToSet: { roles: 'middleman', middlemanFor: nominator },
           $currentDate: { updatedAt: true },
-          $setOnInsert: {
-            _id: generateId(),
-            password: '',
-            phone,
-            addedBy: nominator,
-            createdAt: new Date()
-          }
+          $setOnInsert: insert
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
