@@ -58,8 +58,19 @@ async function findByStatus(status) {
   return db.collection(COLL).find({ status }).toArray();
 }
 
+/**
+ * 
+ * @param {string} id 
+ */
+async function findById(id) {
+  const db = getDb();
+  const res = await db.collection(COLL).findOne({ _id: id });
+  return res;
+}
+
 exports.createTransaction = createTransaction;
 exports.completeTransaction = completeTransaction;
 exports.findByStatus = findByStatus;
+exports.findById = findById;
 exports.STATUS_COMPLETE = STATUS_COMPLETE;
 exports.STATUS_PENDING = STATUS_PENDING;

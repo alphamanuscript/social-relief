@@ -9,7 +9,7 @@
           <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
           <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
           <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
-          <form method="post" action="/complete-transaction" class="mt-4 mb-4">
+          <form method="post" action="<%= getFullPath('/complete-transaction') %>" class="mt-4 mb-4">
             <input type="hidden" name="id" value="<%= tx._id %>">
             <div class="form-group">
               <label>

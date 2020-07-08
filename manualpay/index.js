@@ -2,11 +2,11 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { initDb } = require('./db');
-const { createTransaction, completeTransaction, findByStatus, STATUS_COMPLETE, STATUS_PENDING } = require('./services/transactions');
-const { Console } = require('console');
+const { createTransaction, completeTransaction, findByStatus, STATUS_COMPLETE, STATUS_PENDING, findById } = require('./services/transactions');
 
 const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017/manualpay_socialrelief';
 const DB_NAME = process.env.DB_NAME || 'manualpay_socialrelief';
+const BASE_PATH_SECRET = process.env.BASE_PATH_SECRET || '';
 const WEBHOOK_URL = process.env.WEBHOOK_URL || 'http://localhost:3000/webhooks/manualpay'
 const PORT = (process.env.PORT && Number(process.env.PORT)) || 5000;
 
@@ -17,42 +17,54 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', async (req, res) => {
+
+/**
+ * 
+ * @param {string} path 
+ */
+function getFullPath(path) {
+  return `/${BASE_PATH_SECRET}${path}`;
+}
+
+const router = express.Router();
+app.use(getFullPath(''), router);
+
+router.get('/', async (req, res) => {
   try {
     const transactions = await findByStatus(STATUS_PENDING)
-    return res.render('pages/pending', { transactions });
+    return res.render('pages/pending', { transactions, getFullPath });
   }
   catch (error) {
-    return res.render('pages/error', { error });
+    return res.render('pages/error', { error, getFullPath });
   }
 });
 
-app.get('/completed', async (req, res) => {
+router.get('/completed', async (req, res) => {
   try {
     const transactions = await findByStatus(STATUS_COMPLETE);
-    return res.render('pages/completed', { transactions });
+    return res.render('pages/completed', { transactions, getFullPath });
   }
   catch (error) {
-    return res.render('pages/error', { error });
+    return res.render('pages/error', { error, getFullPath });
   }
 });
 
-app.post('/complete-transaction', async (req, res) => {
+router.post('/complete-transaction', async (req, res) => {
   try {
     if (!req.body.id || !req.body.reference) throw new Error('Transaction id and reference are required');
     await completeTransaction(req.body.id, req.body.reference);
     // TODO send notification back to social relief
-    return res.redirect('/');
+    return res.redirect(getFullPath('/'));
   }
   catch (e) {
-    return res.render('pages/error', { error: e });
+    return res.render('pages/error', { error: e, getFullPath });
   }
 });
 
 
 // API
 
-app.post('/api/transactions', async (req, res) => {
+router.post('/api/transactions', async (req, res) => {
   try {
     console.log('Creating transaction', req.body);
     const tx = await createTransaction(req.body);
@@ -61,6 +73,19 @@ app.post('/api/transactions', async (req, res) => {
   }
   catch (e) {
     console.error('Error creating transaction', e);
+    res.status(400).json({
+      error: e.message
+    });
+  }
+});
+
+router.get('/api/transactions/:id', async (req, res) => {
+  try {
+    const tx = await findById(req.params.id);
+    res.status(200).json(tx);
+  }
+  catch (e) {
+    console.error('Error getting transaction', e);
     res.status(400).json({
       error: e.message
     });
