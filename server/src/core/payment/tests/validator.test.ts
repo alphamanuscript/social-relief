@@ -93,21 +93,3 @@ describe('validatesCheckUserTransactionStatus', () => {
     ]);
   });
 })
-
-describe('validatesHandleProviderNotification', () => {
-  it('should not throw error if all test cases are valid', () => {
-    testValidationSucceeds(validators.validatesHandleProviderNotification, [
-      { transactionId: `ATPid_${generateId()}` }
-    ]);
-  });
-  it('should throw error if inputs are not valid', () => {
-    testValidationFails(validators.validatesHandleProviderNotification, [
-      { transactionId: 'shvf?K0332EECDKRU842823.KSkflkfvvnE9ZEZIZRZRZOR391029EgjkvkvdfcFMSnd' },
-      { transactionId: generateId() },
-      { transactionId: 104382 },
-      { transactionId: undefined },
-      { transactionId: null }
-    ]);
-  });
-})
-

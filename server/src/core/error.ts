@@ -10,6 +10,10 @@ export class AppError extends Error {
   }
 }
 
+export function isAppError(e: any) {
+  return e instanceof AppError;
+}
+
 // MongoDB error codes
 export const MONGO_ERROR_DUPLICATE_KEY = 11000;
 
@@ -46,6 +50,7 @@ export type ErrorCode =
   | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
+  | 'manualPayApiError'
   | 'serverError'
   | 'nominationFailed'
   | 'validationError'
@@ -89,6 +94,11 @@ export function createFundsToUserFailedError(message: string) {
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
   return createAppError(message, 'atApiError');
 }
+
+export function createManualPayApiError(message: string) {
+  return createAppError(message, 'manualPayApiError');
+}
+
 export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
 }

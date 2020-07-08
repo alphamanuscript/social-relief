@@ -43,18 +43,6 @@ export const sendDonationInputSchema = joi.object().keys({
     })
 });
 
-export const handleProviderNotificationInputSchema = joi.object({
-  transactionId: joi.string()
-    .required()
-    .pattern(/^ATPid_[a-fA-F0-9]{32}$/) // Starts with 'ATPid_' and ends with 32 hexadecimal characters
-    .messages({
-      'any.required': `transactionId is required`,
-      'string.base': `Invalid type, transactionId must be a string`,
-      'string.empty': `transactionId cannot be empty`,
-      'string.pattern.base': `Invalid transactionId. Must start with 'ATPid_' and end with 32 hexadecimal characters`
-    }),
-});
-
 export const checkUserTransactionStatusInputSchema = joi.object().keys({
   userId: joi.string()
     .required()

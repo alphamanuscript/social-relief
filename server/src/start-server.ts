@@ -1,7 +1,7 @@
 import { loadAppConfigFromEnv, bootstrap } from './core';
 import { createServer } from './server';
 import { mountRestApi } from './rest';
-import { mountAtWebhooks } from './webhooks';
+import { mountAtWebhooks, mountManualPaymentWebhooks } from './webhooks';
 
 async function startServer() {
   try {
@@ -10,6 +10,7 @@ async function startServer() {
     const server = createServer(app);
     mountRestApi(server, '/api');
     mountAtWebhooks(server, config.atWebhooksRoot);
+    mountManualPaymentWebhooks(server, config.manualPayWebhooksRoot);
 
     server.listen(config.port, () => {
       console.log(`Server listening on port ${config.port}`);

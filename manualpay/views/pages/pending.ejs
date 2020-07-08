@@ -1,0 +1,50 @@
+<%- include('../templates/header') %>
+
+<div class="container">
+  <h2>Pending Transactions</h2>
+  <% if (transactions.length) { %>
+    <ul class="list-group">
+      <% transactions.forEach(tx => { %>
+        <div class="list-group-item">
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Name:</span> <%= tx.recipientName %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Phone:</span> <%= tx.recipientPhone %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Amount:</span> KES <%= tx.amount %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">ID:</span> <%= tx._id %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Created:</span> <%= tx.createdAt.toLocaleString() %></div>
+          <div class="row">
+            <form class="col mb-4 mt-4" method="post" action="<%= getFullPath('/complete-transaction') %>">
+              <input type="hidden" name="id" value="<%= tx._id %>">
+              <div class="form-group">
+                <label>
+                  Transaction reference
+                  <input name="reference" type="text" class="form-control" required>
+                </label>
+              </div>
+              <div class="form-g">
+                <button class="btn btn-success">Complete transaction</button>
+              </div>
+            </form>
+
+            <form class="col mb-4 mt-4" method="post" action="<%= getFullPath('/fail-transaction') %>">
+              <input type="hidden" name="id" value="<%= tx._id %>">
+              <div class="form-group">
+                <label>
+                  Failure Reason
+                  <input name="failureReason" type="text" class="form-control" required>
+                </label>
+              </div>
+              <div class="form-g">
+                <button class="btn btn-danger">Mark as failed</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <div class="alert alert-info">No pending transactions found.</div>
+  <% } %>
+
+</div>
+
+<%- include('../templates/footer') %>

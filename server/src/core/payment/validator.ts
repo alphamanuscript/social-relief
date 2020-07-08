@@ -18,8 +18,3 @@ export const validatesCheckUserTransactionStatus = ({ userId, transactionId }: {
   const { error } = schemas.checkUserTransactionStatusInputSchema.validate({ userId, transactionId });
   if (error) throw createValidationError(error.details[0].message);
 }
-
-export const validatesHandleProviderNotification = (payload: any) => {
-  const { error } = schemas.handleProviderNotificationInputSchema.validate(payload);
-  if (error) throw createValidationError(error.details[0].message);
-}

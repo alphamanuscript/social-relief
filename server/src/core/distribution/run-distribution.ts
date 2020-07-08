@@ -93,7 +93,15 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
               }
             },
           },
-          { $group: { _id: null, totalReceived: { $sum: '$amount' } } },
+          { 
+            $group: { 
+              _id: null,
+              totalReceived: {
+                // for pending transactions, amount might be 0, so use expectedAmount
+                $sum: { $cond: [{ $eq: ['$status', 'success'] }, '$amount', '$expectedAmount'] }
+              } 
+            } 
+          },
           { $project: { _id: 0 } }
         ],
         as: 'transactions'
@@ -155,7 +163,11 @@ export async function computeDonorsBalances(db: Db, donors: string[]): Promise<D
               _id: {
                 $cond: { if: { $eq: ['$to', '$$user'] }, then: 1, else: -1 }
               },
-              total: { $sum: '$amount' }
+              total: {
+                $sum: {
+                  $cond: [{ $eq: ['$status', 'success'] }, '$amount', '$expectedAmount']
+                } 
+              }
             }
           },
           {
