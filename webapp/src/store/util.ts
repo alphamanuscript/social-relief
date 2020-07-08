@@ -1,6 +1,7 @@
 import { ActionTree, ActionContext } from 'vuex';
 import { Auth } from '../services';
 import router from '../router';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { AppState } from '../types';
 import Vue from 'vue';
 
@@ -26,7 +27,7 @@ export function handleActionError (error: any, { commit, dispatch }: ActionConte
     if (data && /Invalid access token/.test(data.message)) {
       dispatch('clearData');
       Auth.deleteAccessToken();
-      router.push({ name: 'sign-in'});
+      router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   }
   setErrorMessage(error, commit);
