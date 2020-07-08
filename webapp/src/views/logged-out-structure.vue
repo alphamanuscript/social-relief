@@ -25,8 +25,8 @@
     </div>
 </template>
 <script>
-import HomeFooter from './home/home-footer'
-import { mapState, mapActions } from 'vuex';
+import HomeFooter from '../components/home-footer'
+import { mapState } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {

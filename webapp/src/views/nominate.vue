@@ -4,7 +4,7 @@
       <span class="h3 text-primary">Nominate</span>
       <b-link to="invitations" class="text-body ml-5">View invitations</b-link>
     </p>
-    <div class="bg-white rounded-lg m-lg-5 p-5 shadow-sm">
+    <div class="bg-white rounded m-lg-5 p-5 shadow-sm">
       <b-form class="mx-md-2 px-md-2 mx-lg-3 px-lg-3 mx-xl-5 px-xl-5">
         <b-form-text class="pb-3">
           <span class="h5 text-secondary">Nominee information</span>
@@ -19,18 +19,17 @@
                 <img :src="imageUrl" width="50" height="30" class="rounded-pill align-self-end" alt="Social Relief Logo">
               </template>
               <b-form-input 
-              v-model="nomineeCreds.phone"
-              type="text" 
-              :state="validationResults[0]"
-              class="custom-form-input"  
-              placeholder="7xxxxxxxx"
-              id="phone-number"
-            />
-            <b-form-invalid-feedback>
-              {{ validationMessages[0] }}
-            </b-form-invalid-feedback>
+                v-model="nomineeCreds.phone"
+                type="text" 
+                :state="validationResults[0]"
+                class="custom-input"  
+                placeholder="7xxxxxxxx"
+                id="phone-number"
+              />
+              <b-form-invalid-feedback>
+                {{ validationMessages[0] }}
+              </b-form-invalid-feedback>
             </b-input-group>
-            
           </b-col>
         </b-form-row>
         <b-form-row class="py-3">
@@ -42,7 +41,7 @@
               v-model="nomineeCreds.email"
               type="email"
               :state="validationResults[1]" 
-              class="custom-form-input" 
+              class="custom-input" 
               id="email"
             />
             <b-form-invalid-feedback>
@@ -55,7 +54,7 @@
             <label for="role">Role:</label>
           </b-col>
           <b-col>
-            <b-form-select id="role" v-model="nomineeCreds.role" class="custom-form-input">
+            <b-form-select id="role" v-model="nomineeCreds.role" class="custom-input">
               <b-form-select-option value="Beneficiary">Beneficiary</b-form-select-option>
               <b-form-select-option value="Middleman">Middleman</b-form-select-option>
             </b-form-select>
@@ -77,7 +76,7 @@
       header-class="border-bottom-0"
       hide-footer
       @hidden="hideDialog()"
-      content-class="rounded-lg p-5"
+      content-class="rounded p-5"
     >
       <p>
         A <span class="font-italic">{{ nomineeCreds.role.toLowerCase() }}</span> invitation has been successfully sent to 

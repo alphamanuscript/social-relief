@@ -8,7 +8,7 @@
     hide-footer
     no-stacking
     @hidden="hideDialog()"
-    content-class="rounded-lg"
+    content-class="rounded"
   >
     <template v-slot:modal-header>
       <div class="d-flex flex-column m-auto">
@@ -18,16 +18,21 @@
     </template>
     <b-form>
       <b-form-group>
-        <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input 
-          v-model="signInCreds.phone" 
-          type="text"
-          :state="signInValidationResults[0]"
-          class="custom-dialog-form-input"
-          placeholder="Enter phone number"
-          id="phone"
-          @update="helper.phone = true"
-        />
+        <b-input-group>
+          <b-input-group-prepend>
+            <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
+          </b-input-group-prepend>
+          <label for="phone" class="sr-only">Phone Number</label>
+          <b-form-input 
+            v-model="signInCreds.phone" 
+            type="text"
+            :state="signInValidationResults[0]"
+            class="custom-dialog-input-phone"
+            placeholder="Enter phone number"
+            id="phone"
+            @update="helper.phone = true"
+          />
+        </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
           Start with 7, for example 712345678
         </b-form-text>
@@ -41,7 +46,7 @@
           v-model="signInCreds.password" 
           type="password" 
           :state="signInValidationResults[1]"
-          class="custom-dialog-form-input"
+          class="custom-dialog-input"
           placeholder="Enter password"
           id="password"
           @update="helper.password = true"
@@ -56,7 +61,9 @@
       <div class="text-center">
         <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="signIn">Submit</b-button>
       </div>
+      <div class="border-bottom mt-3"></div>
       <div class="text-center mt-3 ">
+        <span class="text-secondary font-weight-light pr-3">or:</span>  
         <i class="fab fa-google text-primary"></i>
         <GoogleLogin :params="params" :onSuccess="onSuccess" :onFailure="onFailure" class="bg-white border-0 text-secondary">Sign in with Google</GoogleLogin>
       </div>

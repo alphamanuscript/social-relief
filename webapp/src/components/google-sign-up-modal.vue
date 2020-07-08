@@ -8,7 +8,7 @@
     hide-footer
     no-stacking
     @hidden="hideDialog()"
-    content-class="rounded-lg"
+    content-class="rounded"
     >
     <template v-slot:modal-header>
     <div class="d-flex flex-column m-auto">
@@ -22,16 +22,21 @@
     </div>
     <b-form>
       <b-form-group>
-        <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input 
-          v-model="signUpCreds.phone" 
-          type="text" 
-          :state="signUpValidationResults[0]"
-          class="custom-dialog-form-input"
-          placeholder="Enter phone number"
-          id="phone"
-          @update="helper.phone = true"
-        />
+        <b-input-group>
+          <b-input-group-prepend>
+            <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
+          </b-input-group-prepend>
+          <label for="phone" class="sr-only">Phone Number</label>
+          <b-form-input 
+            v-model="signUpCreds.phone" 
+            type="text" 
+            :state="signUpValidationResults[0]"
+            class="custom-dialog-input-phone"
+            placeholder="Enter phone number"
+            id="phone"
+            @update="helper.phone = true"
+          />
+        </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
           Start with 7, for example 712345678
         </b-form-text>

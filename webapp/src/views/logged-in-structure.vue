@@ -9,7 +9,7 @@
                 <div class="py-5">
                   <img :src="imageUrl" width="75%" alt="Social Relief Logo">
                 </div>
-                <div class="bg-secondary text-white rounded-lg pl-3 pt-2">
+                <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
                   <div class="h4">1,500</div>
@@ -77,7 +77,7 @@
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
-import HomeFooter from './home/home-footer';
+import HomeFooter from '../components/home-footer';
 export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
