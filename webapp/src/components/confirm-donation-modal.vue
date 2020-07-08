@@ -8,7 +8,7 @@
     header-class="border-bottom-0"
     hide-footer
     @hidden="hideDialog()"
-    content-class="rounded-lg p-5"
+    content-class="rounded p-5"
   >
     <p>
       A confirmation sms has been sent to <span class="text-secondary">+{{ user ? user.phone : '' }}</span>. Kindly confirm to finalize the donation. 

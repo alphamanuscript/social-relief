@@ -9,7 +9,7 @@
     no-stacking
     @show="setModalData"
     @hidden="hideDialog"
-    content-class="rounded-lg"
+    content-class="rounded"
    >
     <template v-slot:modal-header>
       <div class="d-flex flex-column m-auto">
@@ -24,7 +24,7 @@
           v-model="donationInputs.phone" 
           type="text"
           :state="validationResults[0]"
-          class="custom-dialog-form-input"
+          class="custom-dialog-input-phone"
           id="phone"
           :value="donationInputs.phone"
           disabled

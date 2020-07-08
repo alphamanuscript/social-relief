@@ -5,6 +5,7 @@
     <LoginModal @login:google="handleGoogleLogin"/>
     <SignUpModal  @login:google="handleGoogleLogin"/>
     <GoogleSignUpModal :googleUser="googleUser"/>
+    <DonateModal/>
     <ConfirmDonationModal/>
   </div>
 </template>
