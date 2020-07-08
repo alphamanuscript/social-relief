@@ -1,0 +1,18 @@
+<% if (transactions.length) { %>
+  <ul class="list-group">
+    <% transactions.forEach(tx => { %>
+      <div class="list-group-item">
+        <div class="h4"><span class="small text-muted">Name:</span> <%= tx.recipientName %></div>
+        <div class="h4"><span class="small text-muted">Phone:</span> <%= tx.recipientPhone %></div>
+        <div class="h4"><span class="small text-muted">Amount:</span> KES <%= tx.amount %></div>
+        <div class="h4"><span class="small text-muted">ID:</span> <%= tx._id %></div>
+        <div class="h4"><span class="small text-muted">Status:</span> <%= tx.status %></div>
+        <div class="h4"><span class="small text-muted">Reference:</span> <%= tx.reference %></div>
+        <div class="h4"><span class="small text-muted">Failure reason:</span> <%= tx.failureReason %></div>
+        <div class="h4"><span class="small text-muted">Date updated:</span> <%= tx.updatedAt %></div>
+      </div>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <div class="alert alert-info">No transactions found.</div>
+<% } %>

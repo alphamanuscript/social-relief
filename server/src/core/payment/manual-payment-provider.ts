@@ -28,11 +28,25 @@ interface ManualPayTransaction {
   metadata?: any;
   status: string;
   socialReliefId?: any;
+  failureReason?: string;
 }
 
 function convertStatus(status: string): TransactionStatus {
   return status === 'success' ? 'success' :
     status === 'pending' ? 'pending' : 'failed';
+}
+
+function convertTransaction(tx: ManualPayTransaction): ProviderTransactionInfo {
+  return {
+    providerTransactionId: tx._id,
+    amount: tx.amount,
+    userData: {
+      phone: tx.recipientPhone
+    },
+    status: convertStatus(tx.status),
+    failureReason: tx.failureReason,
+    metadata: tx
+  };
 }
 
 export class ManualPaymentProvider implements PaymentProvider {
@@ -51,38 +65,20 @@ export class ManualPaymentProvider implements PaymentProvider {
 
   async handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
     const tx: ManualPayTransaction = payload;
-
-    return {
-      providerTransactionId: tx._id,
-      amount: tx.amount,
-      userData: {
-        phone: tx.recipientPhone
-      },
-      status: convertStatus(tx.status),
-      metadata: tx
-    };
+    return convertTransaction(tx);
   }
 
   async getTransaction(id: string): Promise<ProviderTransactionInfo> {
     try {
       const res = await axios.default.get<ManualPayTransaction>(this.getTransactionsUrl(`/${id}`));
-      
+
       if (res.status !== 200) {
         const data: any = res.data;
         throw createManualPayApiError(data.error || res.statusText);
       }
 
       const tx = res.data;
-
-      return {
-        providerTransactionId: tx._id,
-        amount: tx.amount,
-        userData: {
-          phone: tx.recipientPhone
-        },
-        status: convertStatus(tx.status),
-        metadata: tx
-      };
+      return convertTransaction(tx);
     }
     catch (e) {
       if (isAppError(e)) throw e;

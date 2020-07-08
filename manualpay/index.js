@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { initDb } = require('./db');
 const { TransactionNotifier } = require('./notifier');
-const { createTransaction, completeTransaction, findByStatus, STATUS_SUCCESS, STATUS_PENDING, findById } = require('./services/transactions');
+const { createTransaction, completeTransaction, findByStatus, STATUS_SUCCESS, STATUS_PENDING, findById, failTransaction, STATUS_FAILED } = require('./transactions');
 
 const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017/manualpay_socialrelief';
 const DB_NAME = process.env.DB_NAME || 'manualpay_socialrelief';
@@ -52,10 +52,33 @@ router.get('/completed', async (req, res) => {
   }
 });
 
+router.get('/failed', async (req, res) => {
+  try {
+    const transactions = await findByStatus(STATUS_FAILED);
+    return res.render('pages/failed', { transactions, getFullPath });
+  }
+  catch (error) {
+    return res.render('pages/error', { error, getFullPath });
+  }
+});
+
 router.post('/complete-transaction', async (req, res) => {
   try {
     if (!req.body.id || !req.body.reference) throw new Error('Transaction id and reference are required');
     const tx = await completeTransaction(req.body.id, req.body.reference);
+    // fire notification and move on immediately, if it fails, errors will be logged
+    notifier.sendNotification(tx)
+    return res.redirect(getFullPath('/'));
+  }
+  catch (e) {
+    return res.render('pages/error', { error: e, getFullPath });
+  }
+});
+
+router.post('/fail-transaction', async (req, res) => {
+  try {
+    if (!req.body.id) throw new Error('Transaction id is required');
+    const tx = await failTransaction(req.body.id, req.body.failureReason || '');
     notifier.sendNotification(tx)
     return res.redirect(getFullPath('/'));
   }
