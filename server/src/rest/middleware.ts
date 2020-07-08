@@ -35,6 +35,8 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'nominationFailed':
       case 'validationError':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
+      case 'messageDeliveryFailed':
+        return sendErrorResponse(res, statusCodes.INTERNAL_SERVER_ERROR, error);
       default:
         if (error instanceof SyntaxError) {
           return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST,

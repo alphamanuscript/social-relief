@@ -39,7 +39,7 @@ export default {
     },
   },
   methods: {
-  handleLoginAndSignUpBtnClick() {
+    handleLoginAndSignUpBtnClick() {
       this.$bvModal.show('login');
     }
   },

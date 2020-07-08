@@ -16,7 +16,7 @@ const actions = wrapActions({
     if (state.user) {
       const trx = await Donations.initiateDonation({ amount });
       commit('addTransaction', trx);
-    }
+    }   
   },
   async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
     if (state.user && role === 'Beneficiary') {
