@@ -3,8 +3,8 @@ $primary:#EF5A24;
 $secondary: #9D1A69;
 $light: #F5F5F5;
 
-// rounded-lg for cards and dialogs
-$border-radius-lg: 1rem;
+// rounded for cards and dialogs
+$border-radius: 1rem;
 
 //nav links
 .nav-link {
@@ -15,7 +15,7 @@ $border-radius-lg: 1rem;
 .nav-pills {  
     .nav-link.active,
     .show > .nav-link {
-        @extend .rounded-lg;
+        @extend .rounded;
         @extend .bg-secondary;
         @extend .text-white;
   }
@@ -28,17 +28,30 @@ $border-radius-lg: 1rem;
     }
 }
 
-// sign-in and sign-up form input
-.custom-dialog-form-input {
+// dialog phone form input (sign-in and sign-up dialogs
+.custom-dialog-input-phone-prepend {
+    @extend .shadow-sm;
+    @extend .rounded-left;
+}
+
+.custom-dialog-input-phone {
+    @extend .shadow-sm;
+    @extend .border-0;
+    @extend .bg-light;
+    @extend .rounded-right;
+}
+
+// other dialog form inputs (sign-in and sign-up dialogs)
+.custom-dialog-input {
     @extend .text-center;
     @extend .shadow-sm;
     @extend .border-0;
     @extend .bg-light;
-    @extend .rounded-pill;
+    @extend .rounded;
 }
 
-// nominate form input
-.custom-form-input {
+// full page form input (nominate page)
+.custom-input {
     @extend .border-top-0;
     @extend .border-left-0;
     @extend .border-right-0;

@@ -9,7 +9,7 @@
                 <div class="py-5">
                   <img :src="imageUrl" width="75%" alt="Social Relief Logo">
                 </div>
-                <div class="bg-secondary text-white rounded-lg pl-3 pt-2">
+                <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
                   <div class="h4">1,500</div>
@@ -70,17 +70,17 @@
         </b-col>
       </b-row>
     </b-container>
-    <Footer class="d-md-none"/>
+    <HomeFooter class="d-md-none"/>
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
-import Footer from './home/footer';
+import HomeFooter from '../components/home-footer';
 export default {
   name: 'logged-in-structure',
-  components: { Footer },
+  components: { HomeFooter },
   computed: {
     ...mapState(['user']),
     imageUrl () {
@@ -104,6 +104,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-  
-</style>
