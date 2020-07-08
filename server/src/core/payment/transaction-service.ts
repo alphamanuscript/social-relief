@@ -155,7 +155,6 @@ export class Transactions implements TransactionService {
   }
 
   async handleProviderNotification(providerName: string, payload: any): Promise<Transaction> {
-    validators.validatesHandleProviderNotification(payload);
     try {
       const now = new Date();
       const provider = this.provider(providerName);
