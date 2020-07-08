@@ -10,6 +10,7 @@
           <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Phone:</span> <%= tx.recipientPhone %></div>
           <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Amount:</span> KES <%= tx.amount %></div>
           <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">ID:</span> <%= tx._id %></div>
+          <div class="h6"><span class="small text-muted d-inline-block" style="min-width: 100px">Created:</span> <%= tx.createdAt.toLocaleString() %></div>
           <div class="row">
             <form class="col mb-4 mt-4" method="post" action="<%= getFullPath('/complete-transaction') %>">
               <input type="hidden" name="id" value="<%= tx._id %>">
