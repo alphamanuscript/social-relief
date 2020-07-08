@@ -138,7 +138,8 @@ describe('DonationDistributionService tests', () => {
       jest.spyOn(systemLockService, 'distribution').mockReturnValue({
         lock: jest.fn().mockResolvedValue({}),
         unlock: jest.fn().mockResolvedValue({}),
-        ensureUnlocked: jest.fn().mockResolvedValue({})
+        ensureUnlocked: jest.fn().mockResolvedValue({}),
+        getKey: jest.fn().mockReturnValue('')
       });
       
       const distributionService = createDistributionService();
