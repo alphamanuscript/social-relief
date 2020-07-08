@@ -6,7 +6,7 @@ function generateId() {
 }
 
 const STATUS_PENDING = 'pending';
-const STATUS_COMPLETE = 'complete';
+const STATUS_SUCCESS = 'success';
 const COLL = 'transactions';
 
 /**
@@ -39,7 +39,7 @@ async function completeTransaction(id, reference) {
   }, {
     $set: {
       reference: reference,
-      status: STATUS_COMPLETE,
+      status: STATUS_SUCCESS,
       updatedAt: now
     }
   }, {
@@ -72,5 +72,5 @@ exports.createTransaction = createTransaction;
 exports.completeTransaction = completeTransaction;
 exports.findByStatus = findByStatus;
 exports.findById = findById;
-exports.STATUS_COMPLETE = STATUS_COMPLETE;
+exports.STATUS_SUCCESS = STATUS_SUCCESS;
 exports.STATUS_PENDING = STATUS_PENDING;

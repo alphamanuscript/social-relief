@@ -31,7 +31,7 @@ interface ManualPayTransaction {
 }
 
 function convertStatus(status: string): TransactionStatus {
-  return status === 'completed' ? 'success' :
+  return status === 'success' ? 'success' :
     status === 'pending' ? 'pending' : 'failed';
 }
 
@@ -65,7 +65,8 @@ export class ManualPaymentProvider implements PaymentProvider {
 
   async getTransaction(id: string): Promise<ProviderTransactionInfo> {
     try {
-      const res = await axios.default.get<ManualPayTransaction>(this.getTransactionsUrl(id))
+      const res = await axios.default.get<ManualPayTransaction>(this.getTransactionsUrl(`/${id}`));
+      
       if (res.status !== 200) {
         const data: any = res.data;
         throw createManualPayApiError(data.error || res.statusText);

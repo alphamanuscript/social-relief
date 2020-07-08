@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { initDb } = require('./db');
 const { TransactionNotifier } = require('./notifier');
-const { createTransaction, completeTransaction, findByStatus, STATUS_COMPLETE, STATUS_PENDING, findById } = require('./services/transactions');
+const { createTransaction, completeTransaction, findByStatus, STATUS_SUCCESS, STATUS_PENDING, findById } = require('./services/transactions');
 
 const DB_URL = process.env.DB_URL || 'mongodb://localhost:27017/manualpay_socialrelief';
 const DB_NAME = process.env.DB_NAME || 'manualpay_socialrelief';
@@ -26,7 +26,7 @@ const notifier = new TransactionNotifier(WEBHOOK_URL);
  * @param {string} path 
  */
 function getFullPath(path) {
-  return `/${BASE_PATH_SECRET}${path}`;
+  return `${BASE_PATH_SECRET}${path}`;
 }
 
 const router = express.Router();
@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 
 router.get('/completed', async (req, res) => {
   try {
-    const transactions = await findByStatus(STATUS_COMPLETE);
+    const transactions = await findByStatus(STATUS_SUCCESS);
     return res.render('pages/completed', { transactions, getFullPath });
   }
   catch (error) {
@@ -84,6 +84,7 @@ router.post('/api/transactions', async (req, res) => {
 
 router.get('/api/transactions/:id', async (req, res) => {
   try {
+    console.log('Finding transacition', req.params.id);
     const tx = await findById(req.params.id);
     res.status(200).json(tx);
   }
@@ -94,13 +95,6 @@ router.get('/api/transactions/:id', async (req, res) => {
     });
   }
 });
-
-
-async function sendTransactionNotification(tx) {
-
-}
-
-
 
 async function start() {
   try {

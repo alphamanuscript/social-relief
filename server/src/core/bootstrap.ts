@@ -1,6 +1,6 @@
 import { AppConfig, App } from './app';
 import { Users } from './user';
-import { Transactions, AtPaymentProvider } from './payment';
+import { Transactions, AtPaymentProvider, ManualPaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
 import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
@@ -18,10 +18,15 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     paymentsProviderChannel: config.atPaymentsProviderChannel
   });
 
+  const manualPayProvider = new ManualPaymentProvider({
+    baseUrl: config.manualPayBaseUrl
+  });
+
   const paymentProviders = new PaymentProviders();
   paymentProviders.register(atPaymentProvider);
+  paymentProviders.register(manualPayProvider);
   paymentProviders.setPreferredForReceiving(atPaymentProvider.name());
-  paymentProviders.setPreferredForSending(atPaymentProvider.name());
+  paymentProviders.setPreferredForSending(manualPayProvider.name());
 
   const systemLocks = new SystemLocks(db);
   const transactions = new Transactions(db, { paymentProviders });

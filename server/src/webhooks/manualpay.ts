@@ -9,5 +9,8 @@ manualPayRoutes.post('/', (req: AppRequest, res) => {
   console.log('Manual payment notification');
   req.core.transactions.handleProviderNotification(MANUAL_PAYMENT_PROVIDER_NAME, notification)
     .then(_ => res.status(200).send())
-    .catch(_ => res.status(400).send());
+    .catch(e => {
+      console.error('Manual notification error', e);
+      res.status(400).send();
+    });
 });

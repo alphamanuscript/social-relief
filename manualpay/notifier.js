@@ -11,7 +11,7 @@ class TransactionNotifier {
 
   async sendNotification(transaction) {
     try {
-      console.log('Sending transaction notification', transaction._id);
+      console.log('Sending transaction notification', transaction._id.toString());
       await axios.post(this.webhookUrl, transaction);
     }
     catch (e) {
