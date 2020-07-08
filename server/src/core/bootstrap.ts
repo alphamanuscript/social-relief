@@ -6,6 +6,7 @@ import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 import { PaymentProviders } from './payment/provider-registry';
+import { AtSMSProvider } from './sms';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -39,6 +40,10 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     periodLength: config.distributionPeriodLength,
     periodLimit: config.distributionPeriodLimit
   });
+  const smsProvider = new AtSMSProvider({
+    username: config.atUsername,
+    apiKey: config.atApiKey,
+  });
 
   await users.createIndexes();
   await transactions.createIndexes();
@@ -46,7 +51,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   return {
     users,
     transactions,
-    donationDistributions
+    donationDistributions,
+    smsProvider
   };
 }
 

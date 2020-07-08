@@ -9,7 +9,7 @@
                 <div class="py-5">
                   <img :src="imageUrl" width="75%" alt="Social Relief Logo">
                 </div>
-                <div class="bg-secondary text-white rounded-lg pl-3 pt-2">
+                <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
                   <div class="h4">1,500</div>
@@ -46,7 +46,7 @@
                   <b-nav-item to="account" exact exact-active-class="active">My Account</b-nav-item>
                   <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
-                <b-button variant="primary" class="custom-submit-button m-auto m-md-0">Donate</b-button>
+                <b-button variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
               </b-nav>
               <b-nav class="ml-auto d-none d-md-block">
                 <b-nav-item-dropdown dropleft no-caret>
@@ -56,7 +56,7 @@
                     <b-dropdown-header>
                       <p>
                         <span class="h5 text-body">John Doe</span> <br/>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user.phone}}</span>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user ? user.phone : '' }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>
@@ -70,17 +70,17 @@
         </b-col>
       </b-row>
     </b-container>
-    <Footer class="d-md-none"/>
+    <HomeFooter class="d-md-none"/>
   </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
-import Footer from './home/footer';
+import HomeFooter from '../components/home-footer';
 export default {
   name: 'logged-in-structure',
-  components: { Footer },
+  components: { HomeFooter },
   computed: {
     ...mapState(['user']),
     imageUrl () {
@@ -91,6 +91,9 @@ export default {
     ...mapActions(['signUserOut', 'getCurrentUser']),
     async signOut() {
       await this.signUserOut();
+    },
+    handleDonateBtn() {
+      this.$bvModal.show('donate');
     }
   },
   async mounted() {
@@ -101,6 +104,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-  
-</style>

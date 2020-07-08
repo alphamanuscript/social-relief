@@ -1,11 +1,13 @@
 import { UserService } from './user';
 import { TransactionService } from './payment';
 import { DonationDistributionService } from './distribution';
+import { SMSProvider } from './sms';
 
 export interface App {
   users: UserService;
   transactions: TransactionService;
   donationDistributions: DonationDistributionService;
+  smsProvider: SMSProvider
 };
 
 export interface AppConfig {

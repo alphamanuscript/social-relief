@@ -325,6 +325,36 @@ declare module 'africastalking-types' {
     errorMessage?: string;
     data: TransactionInfo;
   }
+
+  export interface SmsService {
+    /**
+     * Send sms to one or more recipients
+     * @param args 
+     */
+    send(args: SendArgs): Promise<SendResult>;
+  }
+
+  export interface SendArgs {
+    to: string[];
+    message: string;
+  }
+
+  export interface SendResult {
+    SMSMessageData: SMSMessageDataObj;
+  }
+
+  export interface SMSMessageDataObj {
+    Message: string;
+    Recipients: SMSRecipient[];
+  }
+
+  export interface SMSRecipient {
+    statusCode: number;
+    number: string;
+    cost: string;
+    status: 'Success' | 'Failed';
+    messageId: string;
+  }
 }
 
 declare module 'africastalking' {
