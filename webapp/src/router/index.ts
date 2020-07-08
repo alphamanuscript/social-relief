@@ -42,22 +42,6 @@ const routes = [
     path: '/account',
     name: 'account',
     component: () => import(/* webpackChunkName: "invitations" */ '../views/account.vue')
-  },
-  {
-    path: '/sign-in',
-    name: 'sign-in',
-    component: () => import(/* webpackChunkName: "sign-in" */ '../views/sign-in.vue')
-  },
-  {
-    path: '/sign-up',
-    name: 'sign-up',
-    component: () => import(/* webpackChunkName: "sign-up" */ '../views/sign-up.vue')
-  },
-  {
-    path: '/sign-up/:googleUser',
-    name: 'google-sign-up',
-    props: true,
-    component: () => import(/* webpackChunkName: "google-sign-up" */ '../views/sign-up.vue')
   }
 ]
 
