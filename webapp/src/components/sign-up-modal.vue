@@ -32,13 +32,13 @@
             id="phone"
             @update="helper.phone = true"
           />
+          <b-form-invalid-feedback class="text-center">
+            {{ signUpValidationMessages[0] }}
+          </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
           Start with 7, for example 712345678.
         </b-form-text>
-        <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[0] }}
-        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
         <label for="password" class="sr-only">Password</label>
