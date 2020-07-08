@@ -55,8 +55,10 @@ describe('DonationDistributionService tests', () => {
   
     test('should distribute donations and save distribution details and release distribution lock', async () => {
       const distributionService = createDistributionService();
-      jest.spyOn(systemLockService.distribution(), 'lock');
-      jest.spyOn(systemLockService.distribution(), 'unlock');
+      const lock = systemLockService.distribution();
+      jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock);
+      jest.spyOn(lock, 'lock');
+      jest.spyOn(lock, 'unlock');
       const started = new Date();
       const res = await distributionService.distributeDonations();
       const finished = new Date();
@@ -94,21 +96,28 @@ describe('DonationDistributionService tests', () => {
         }
       ]);
 
-      expect(systemLockService.distribution().lock).toHaveBeenCalledTimes(1);
-      expect(systemLockService.distribution().unlock).toHaveBeenCalledTimes(1);
-      await systemLockService.distribution().ensureUnlocked();
+      expect(lock.lock).toHaveBeenCalledTimes(1);
+      expect(lock.unlock).toHaveBeenCalledTimes(1);
+      await lock.ensureUnlocked();
     });
 
     test('should not run if distribution lock is locked', async () => {
-      await systemLockService.distribution().lock();
-      jest.spyOn(systemLockService.distribution(), 'lock');
-      jest.spyOn(systemLockService.distribution(), 'unlock');
+      const lock = systemLockService.distribution();
+      const lock2 = systemLockService.distribution();
+      // from now, return lock2 whenever distribution lock handle is requested
+      jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock2);
+      jest.spyOn(lock2, 'lock');
+      jest.spyOn(lock2, 'unlock');
+
+      await lock.lock();
+
       const distributionService = createDistributionService();
       await expectAsyncAppError(() => distributionService.distributeDonations(), 'systemLockLocked');
 
-      expect(systemLockService.distribution().lock).toHaveBeenCalledTimes(1);
-      expect(systemLockService.distribution().unlock).not.toHaveBeenCalled();
-      await systemLockService.distribution().unlock();
+      expect(lock2.lock).toHaveBeenCalledTimes(1);
+      expect(lock2.unlock).toHaveBeenCalledTimes(1);
+
+      await lock.unlock();
     });
 
     test('should release distribution lock even if error occurs', async () => {
