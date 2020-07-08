@@ -56,6 +56,7 @@ describe('DonationDistributionService tests', () => {
     test('should distribute donations and save distribution details and release distribution lock', async () => {
       const distributionService = createDistributionService();
       const lock = systemLockService.distribution();
+      // return the previous lock when distribution() is called, so that we can spy on it
       jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock);
       jest.spyOn(lock, 'lock');
       jest.spyOn(lock, 'unlock');
@@ -104,7 +105,7 @@ describe('DonationDistributionService tests', () => {
     test('should not run if distribution lock is locked', async () => {
       const lock = systemLockService.distribution();
       const lock2 = systemLockService.distribution();
-      // from now, return lock2 whenever distribution lock handle is requested
+      // return lock2 on subsequent requests for a distribution lock handle, so that we can spy on it
       jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock2);
       jest.spyOn(lock2, 'lock');
       jest.spyOn(lock2, 'unlock');
