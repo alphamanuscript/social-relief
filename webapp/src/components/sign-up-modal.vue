@@ -204,7 +204,7 @@ export default {
             confirmedPassword: 'Sign-up failed. Phone number already assigned to existing account',
             name: 'Sign-up failed. Phone number already assigned to existing account'
           };
-          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: false };
+          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: null };
         }
         else {
           this.signUpCreds = {
