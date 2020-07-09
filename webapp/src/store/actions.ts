@@ -33,10 +33,11 @@ const actions = wrapActions({
    * createUser({phone, password}) OR
    * createUser({phone, googleIdToken})
    */
-  async createUser({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
-    const user = await Users.createUser({ phone, password, googleIdToken });
+  async createUser({ commit }, { name, phone, password, googleIdToken }: { name: string; phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.createUser({ name, phone, password, googleIdToken });
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
+
     if (user) {
       router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }

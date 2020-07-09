@@ -14,6 +14,10 @@ export function isAppError(e: any) {
   return e instanceof AppError;
 }
 
+export function rethrowIfAppError(e: any) {
+  if (isAppError(e)) throw e;
+}
+
 // MongoDB error codes
 export const MONGO_ERROR_DUPLICATE_KEY = 11000;
 

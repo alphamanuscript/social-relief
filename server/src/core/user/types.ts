@@ -45,6 +45,7 @@ export interface AccessToken {
 
 export interface UserCreateArgs {
   phone: string,
+  name: string,
   password: string,
   googleIdToken: string
 };

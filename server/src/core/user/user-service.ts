@@ -9,7 +9,7 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError,
-  createMiddlemanNominationFailedError, isMongoDuplicateKeyError } from '../error';
+  createMiddlemanNominationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 
@@ -113,29 +113,37 @@ export class Users implements UserService {
     const user: DbUser = {
       _id: generateId(),
       phone: args.phone,
+      name: args.name,
       addedBy: '',
       donors: [],
       roles: ['donor'],
       createdAt: now,
       updatedAt: now
     };
+
     try {
-      if (args.password) 
+      if (args.password) {
         user.password = await hashPassword(args.password);
-      else if (args.googleIdToken)
-        user.email = await verifyGoogleIdToken(args.googleIdToken);
+      }
+      else if (args.googleIdToken) {
+        const googleUserData = await verifyGoogleIdToken(args.googleIdToken);
+        user.email = googleUserData.email;
+        user.name = googleUserData.name;
+      }
 
       const res = await this.collection.insertOne(user);
       return getSafeUser(res.ops[0]);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
+
       if (isMongoDuplicateKeyError(e, args.phone)) {
         const existingUser = await this.collection.findOne({ phone: args.phone });
         if (existingUser.email && user.email && existingUser.email === user.email)
           return getSafeUser(existingUser)
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
+
       throw createDbOpFailedError(e.message);
     }
   }
@@ -270,13 +278,13 @@ export class Users implements UserService {
           if (!passwordCorrect) throw createLoginError();
         }
         else if (args.googleIdToken) {
-          const email = await verifyGoogleIdToken(args.googleIdToken);
-          const emailCorrect = user.email && user.email === email;
+          const googleUserData = await verifyGoogleIdToken(args.googleIdToken);
+          const emailCorrect = user.email && user.email === googleUserData.email;
           if (!emailCorrect) throw createLoginError();
         }
       }
       else if (args.googleIdToken) {
-        const email = await verifyGoogleIdToken(args.googleIdToken);
+        const { email } = await verifyGoogleIdToken(args.googleIdToken);
         user = await this.collection.findOne({ email: email });
         if (!user) throw createLoginError();
       }
@@ -288,7 +296,7 @@ export class Users implements UserService {
       };
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -305,7 +313,7 @@ export class Users implements UserService {
       return getSafeUser(user);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -320,7 +328,7 @@ export class Users implements UserService {
       if (res.deletedCount !== 1) throw createInvalidAccessTokenError();
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -351,7 +359,7 @@ export class Users implements UserService {
       return res.ops[0];
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -364,7 +372,7 @@ export class Users implements UserService {
       return getSafeUser(user);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -377,7 +385,7 @@ export class Users implements UserService {
       return trx;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -391,7 +399,7 @@ export class Users implements UserService {
       return result;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }

@@ -21,12 +21,18 @@ export interface User {
 }
 
 export interface UserCreateArgs {
+  name: string,
   phone: string,
   password: string,
   googleIdToken: string
 }
 
-export interface UserLoginArgs extends UserCreateArgs {}
+export interface UserLoginArgs {
+  phone: string,
+  password: string,
+  googleIdToken: string
+}
+
 
 export interface LoginResult {
   user: User;

@@ -18,6 +18,15 @@
     </template>
     <b-form>
       <b-form-group>
+        <b-form-input
+          v-model="signUpCreds.name"
+          type="text"
+          class="custom-dialog-input"
+          placeholder="Enter name"
+          id="name"
+        />
+      </b-form-group>
+      <b-form-group>
         <b-input-group>
           <b-input-group-prepend>
             <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
@@ -26,7 +35,7 @@
           <b-form-input 
             v-model="signUpCreds.phone" 
             type="text" 
-            :state="signUpValidationResults[0]"
+            :state="signUpValidationResults.phone"
             class="custom-dialog-input-phone"
             placeholder="Enter phone number"
             id="phone"
@@ -37,7 +46,7 @@
           Start with 7, for example 712345678.
         </b-form-text>
         <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[0] }}
+          {{ signUpValidationMessages.phone }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
@@ -45,7 +54,7 @@
         <b-form-input 
           v-model="signUpCreds.password" 
           type="password" 
-          :state="signUpValidationResults[1]"
+          :state="signUpValidationResults.password"
           class="custom-dialog-input" 
           placeholder="Enter password"
           id="password"
@@ -55,7 +64,7 @@
           Between 8 and 18 characters including uppercase, numeric and special characters
         </b-form-text>
         <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[1] }}
+          {{ signUpValidationMessages.password }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
@@ -63,13 +72,13 @@
         <b-form-input
           v-model="signUpCreds.confirmedPassword"
           type="password"
-          :state="signUpValidationResults[2]"
+          :state="signUpValidationResults.confirmedPassword"
           class="custom-dialog-input"
           placeholder="Confirm password"
           id="confirmedPassword"
         />
         <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages[2] }}
+          {{ signUpValidationMessages.confirmedPassword }}
         </b-form-invalid-feedback>
       </b-form-group>
       <div class="text-center">
@@ -79,7 +88,7 @@
       <div class="text-center mt-3 ">
         <span class="text-secondary font-weight-light pr-3">or:</span>
         <i class="fab fa-google text-primary"></i>
-        <GoogleLogin :params="params" :onSuccess="onSuccess" class="bg-white border-0 text-secondary">Sign up with Google</GoogleLogin>
+        <GoogleLogin :params="params" :onSuccess="onGoogleLoginSuccess" class="bg-white border-0 text-secondary">Sign up with Google</GoogleLogin>
       </div>
     </b-form>
     <p class="text-center small mt-3 text-secondary">
@@ -92,30 +101,31 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import { GoogleLogin } from 'vue-google-login';
-import { validateObj } from '../views/util';
+import { validateNamedRules } from '../views/util';
 import { GOOGLE_CLIENT_ID } from '../api-urls';
 export default {
   name: 'sign-up-modal',
   data() {
     return {
       signUpCreds: {
+        name: '',
         phone: '',
         password: '',
         confirmedPassword: '',
         role: 'donor'
       },
       
-      signUpValidationMessages: [
-        'Invalid Phone number. Must start with 7 and be 9 digits long',
-        'Invalid password. Must range between 8 and 18 characters',
-        'Confirmed password does not match with password'
-      ],
-      signUpValidationRules: [
-        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => /^.{8,18}$/.test(creds.password) },
-        { test: (creds) => creds.confirmedPassword === creds.password }
-      ],
-      signUpValidationResults: [null, null, null],
+      signUpValidationMessages: {
+        phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
+        password: 'Invalid password. Must range between 8 and 18 characters',
+        confirmedPassword: 'Confirmed password does not match with password'
+      },
+      signUpValidationRules: {
+        phone: { test: (creds) => /^7\d{8}$/.test(creds.phone) },
+        password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
+        confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password }
+      },
+      signUpValidationResults: { phone: null, password: null, confirmedPassword: null },
       params: {
         clientId: GOOGLE_CLIENT_ID
       },
@@ -134,65 +144,73 @@ export default {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
     showPhoneHelper () {
-          return this.signUpValidationResults[0] == null && this.helper.phone;
+      return this.signUpValidationResults.phone == null && this.helper.phone;
     },
     showPasswordHelper () {
-          return this.signUpValidationResults[1] == null && this.helper.password;
+      return this.signUpValidationResults.password == null && this.helper.password;
     }
   },
   methods: {
     ...mapActions(['createUser']),
-    validateObj,
     showLoginDialog() {
       this.$bvModal.show('login');
     },
     hideDialog() {
       this.signUpCreds = {
+        name: '',
         phone: '',
         password: '',
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = [null, null, null];
+      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null },
       this.helper = {
         phone: false,
         password: false
       };
     },
     async signUp() {
-      this.signUpValidationMessages = [
-        'Invalid Phone number. Must start with 7 and be 9 digits long',
-        'Invalid password. Must range between 8 and 18 characters',
-        'Confirmed password does not match with password'
-      ];
+      this.signUpValidationMessages = {
+        phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
+        password: 'Invalid password. Must range between 8 and 18 characters',
+        confirmedPassword: 'Confirmed password does not match with password'
+      };
       this.helper = {
         phone: false,
         password: false
       };
-      this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
-      if (!this.signUpValidationResults.includes(false)) {
-        await this.createUser({ phone: `254${this.signUpCreds.phone}`, password: this.signUpCreds.password });
+      this.signUpValidationResults = validateNamedRules(this.signUpCreds, this.signUpValidationRules);
+
+      if (!Object.values(this.signUpValidationResults).includes(false)) {
+        const data = {
+          name: this.signUpCreds.name,
+          phone: `254${this.signUpCreds.phone}`,
+          password: this.signUpCreds.password
+        };
+        await this.createUser(data);
+
         if (!this.user) {
-          this.signUpValidationMessages = [
-            'Sign-up failed. Phone number already assigned to existing account',
-            'Sign-up failed. Phone number already assigned to existing account',
-            'Sign-up failed. Phone number already assigned to existing account',
-          ];
-          this.signUpValidationResults = [false, null, null];
+          this.signUpValidationMessages = {
+            phone: 'Sign-up failed. Phone number already assigned to existing account',
+            password: 'Sign-up failed. Phone number already assigned to existing account',
+            confirmedPassword: 'Sign-up failed. Phone number already assigned to existing account',
+          };
+          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null };
         }
         else {
           this.signUpCreds = {
+            name: '',
             phone: '',
             password: '',
             confirmedPassword: '',
             role: 'donor'
           },
-          this.signUpValidationResults = [true, true, true];
+          this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true };
           this.$bvModal.hide('sign-up');
         }
       }
     },
-    async onSuccess(googleUser) {
+    async onGoogleLoginSuccess(googleUser) {
       if (googleUser) {
         await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
         if (!this.user) {
