@@ -183,12 +183,6 @@ export default {
         }
       }
     },
-    async mounted() {
-      if (Auth.isAuthenticated() && !this.user) {
-        await this.getCurrentUser();
-      }
-      else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
-    },
   }
 }
 </script>
