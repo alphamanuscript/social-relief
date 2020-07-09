@@ -183,7 +183,7 @@ export default {
 
       if (!Object.values(this.signUpValidationResults).includes(false)) {
         const data = {
-          name: this.signUpCreds.name,
+          name: this.signUpCreds.name.trim(),
           phone: `254${this.signUpCreds.phone}`,
           password: this.signUpCreds.password
         };
