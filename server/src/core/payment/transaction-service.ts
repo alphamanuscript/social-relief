@@ -1,10 +1,11 @@
 import { Db, Collection } from 'mongodb';
 import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
 import { generateId } from '../util';
-import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
+import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError } from '../error';
 import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
+import { request } from 'express';
 
 const COLLECTION = 'transactions';
 
@@ -83,11 +84,13 @@ export class Transactions implements TransactionService {
       const requestResult = await provider.requestPaymentFromUser(user, args.amount);
       trxArgs.providerTransactionId = requestResult.providerTransactionId;
       trxArgs.status = requestResult.status;
+      trxArgs.metadata = requestResult.metadata;
+
       const result = await this.create(trxArgs);
       return result;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -227,7 +230,7 @@ export class Transactions implements TransactionService {
       status: args.status || 'pending',
       createdAt: now,
       updatedAt: now,
-      metadata: {}
+      metadata: args.metadata || {}
     };
 
     if (args.providerTransactionId) {

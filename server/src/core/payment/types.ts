@@ -30,7 +30,10 @@ export interface TransactionCreateArgs {
   toExternal: boolean,
   provider: string,
   providerTransactionId?: string
-  status?: TransactionStatus
+  status?: TransactionStatus,
+  metadata?: {
+    [name: string]: any
+  }
 };
 
 export interface InitiateDonationArgs {
@@ -51,8 +54,9 @@ export interface TransactionService {
 }
 
 export interface PaymentRequestResult {
-  providerTransactionId: string,
-  status: TransactionStatus
+  providerTransactionId: string;
+  status: TransactionStatus;
+  metadata?: { [name: string]: any }
 };
 
 export interface ProviderTransactionInfo {

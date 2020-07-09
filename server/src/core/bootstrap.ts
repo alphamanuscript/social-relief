@@ -1,11 +1,10 @@
 import { AppConfig, App } from './app';
 import { Users } from './user';
-import { Transactions, AtPaymentProvider, ManualPaymentProvider } from './payment';
+import { Transactions, PaymentProviders, AtPaymentProvider, ManualPaymentProvider, FlutterwavePaymentProvider } from './payment';
 import { MongoClient } from 'mongodb';
 import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
-import { PaymentProviders } from './payment/provider-registry';
 import { AtSMSProvider } from './sms';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
@@ -19,14 +18,21 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     paymentsProviderChannel: config.atPaymentsProviderChannel
   });
 
+  const flwPaymentProvider = new FlutterwavePaymentProvider({
+    secretKey: config.flutterwaveSecretKey,
+    redirectUrl: config.flutterwaveRedirectUrl,
+    logoUrl: config.flutterwaveLogoUrl
+  });
+
   const manualPayProvider = new ManualPaymentProvider({
     baseUrl: config.manualPayBaseUrl
   });
 
   const paymentProviders = new PaymentProviders();
   paymentProviders.register(atPaymentProvider);
+  paymentProviders.register(flwPaymentProvider);
   paymentProviders.register(manualPayProvider);
-  paymentProviders.setPreferredForReceiving(atPaymentProvider.name());
+  paymentProviders.setPreferredForReceiving(flwPaymentProvider.name());
   paymentProviders.setPreferredForSending(manualPayProvider.name());
 
   const systemLocks = new SystemLocks(db);
