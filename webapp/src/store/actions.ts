@@ -18,14 +18,14 @@ const actions = wrapActions({
       commit('addTransaction', trx);
     }   
   },
-  async nominate({ commit, state}, { nominee, email, role }: { nominee: string; email: string; role: string }) {
+  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: string }) {
     if (state.user && role === 'Beneficiary') {
-      const bnf = await Users.nominateBeneficiary({ phone: nominee, email, nominator: state.user._id });
-      commit('addBeneficiary', bnf);
+      const beneficiary = await Users.nominateBeneficiary({ phone: nominee, name, email, nominator: state.user._id });
+      commit('addBeneficiary', beneficiary);
     }
     else if (state.user && role === 'Middleman') {
-      const mdn = await Users.nominateMiddleman({ phone: nominee, email, nominator: state.user._id });
-      commit('addMiddleman', mdn);
+      const middleman = await Users.nominateMiddleman({ phone: nominee, name, email, nominator: state.user._id });
+      commit('addMiddleman', middleman);
     }
   },
   /**
@@ -33,10 +33,11 @@ const actions = wrapActions({
    * createUser({phone, password}) OR
    * createUser({phone, googleIdToken})
    */
-  async createUser({ commit }, { phone, password, googleIdToken }: { phone: string; password: string; googleIdToken: string }) {
-    const user = await Users.createUser({ phone, password, googleIdToken });
+  async createUser({ commit }, { name, phone, password, googleIdToken }: { name: string; phone: string; password: string; googleIdToken: string }) {
+    const user = await Users.createUser({ name, phone, password, googleIdToken });
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
+
     if (user) {
       router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }

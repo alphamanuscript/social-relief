@@ -9,7 +9,7 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError,
-  createMiddlemanNominationFailedError, isMongoDuplicateKeyError } from '../error';
+  createMiddlemanNominationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 
@@ -17,9 +17,20 @@ const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 
-const SAFE_USER_PROJECTION = { _id: 1, phone: 1, email: 1, addedBy: 1, donors: 1, middlemanFor: 1, roles: 1, createdAt: 1, updatedAt: 1 };
-const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1 };
-const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
+const SAFE_USER_PROJECTION = { 
+  _id: 1,
+  phone: 1,
+  email: 1,
+  name: 1,
+  addedBy: 1,
+  donors: 1,
+  middlemanFor: 1,
+  roles: 1,
+  createdAt: 1,
+  updatedAt: 1
+};
+const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1 };
+const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1 };
 
 /**
  * removes fields that should
@@ -27,18 +38,16 @@ const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, email, addedBy, donors, middlemanFor, roles, createdAt, updatedAt } = user;
-  return {
-    _id,
-    phone,
-    email,
-    addedBy,
-    donors,
-    middlemanFor,
-    roles,
-    createdAt,
-    updatedAt
-  };
+  const userDict: any = user;
+  return Object.keys(SAFE_USER_PROJECTION)
+    .reduce<any>((safeUser, field) => {
+      if (field in user) {
+        safeUser[field] = userDict[field];
+      }
+
+      return safeUser;
+    }, {});
+      
 }
 
 function hasRole(user: User, role: UserRole): boolean {
@@ -104,37 +113,44 @@ export class Users implements UserService {
     const user: DbUser = {
       _id: generateId(),
       phone: args.phone,
+      name: args.name,
       addedBy: '',
       donors: [],
       roles: ['donor'],
       createdAt: now,
       updatedAt: now
     };
+
     try {
-      if (args.password) 
+      if (args.password) {
         user.password = await hashPassword(args.password);
-      else if (args.googleIdToken)
-        user.email = await verifyGoogleIdToken(args.googleIdToken);
+      }
+      else if (args.googleIdToken) {
+        const googleUserData = await verifyGoogleIdToken(args.googleIdToken);
+        user.email = googleUserData.email;
+        user.name = googleUserData.name;
+      }
 
       const res = await this.collection.insertOne(user);
       return getSafeUser(res.ops[0]);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
+
       if (isMongoDuplicateKeyError(e, args.phone)) {
         const existingUser = await this.collection.findOne({ phone: args.phone });
         if (existingUser.email && user.email && existingUser.email === user.email)
           return getSafeUser(existingUser)
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
       }
+
       throw createDbOpFailedError(e.message);
     }
   }
 
   async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator } = args;
-    if (email) validators.validatesNominate({ phone, email, nominator });
-    else validators.validatesNominate({ phone, nominator });
+    const { phone, email, nominator, name } = args;
+    validators.validatesNominate(args);
 
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
@@ -165,6 +181,7 @@ export class Users implements UserService {
         _id: generateId(), 
         password: '', 
         phone,
+        name,
         addedBy: nominator, 
         createdAt: new Date(),
       }
@@ -190,9 +207,8 @@ export class Users implements UserService {
   }
 
   async nominateMiddleman(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator } = args;
-    if (email) validators.validatesNominate({ phone, email, nominator });
-    else validators.validatesNominate({ phone, nominator });
+    const { phone, email, nominator, name } = args;
+    validators.validatesNominate(args);
     
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
@@ -202,6 +218,7 @@ export class Users implements UserService {
         _id: generateId(),
         password: '',
         phone,
+        name,
         addedBy: nominator,
         createdAt: new Date()
       }
@@ -261,13 +278,13 @@ export class Users implements UserService {
           if (!passwordCorrect) throw createLoginError();
         }
         else if (args.googleIdToken) {
-          const email = await verifyGoogleIdToken(args.googleIdToken);
-          const emailCorrect = user.email && user.email === email;
+          const googleUserData = await verifyGoogleIdToken(args.googleIdToken);
+          const emailCorrect = user.email && user.email === googleUserData.email;
           if (!emailCorrect) throw createLoginError();
         }
       }
       else if (args.googleIdToken) {
-        const email = await verifyGoogleIdToken(args.googleIdToken);
+        const { email } = await verifyGoogleIdToken(args.googleIdToken);
         user = await this.collection.findOne({ email: email });
         if (!user) throw createLoginError();
       }
@@ -279,7 +296,7 @@ export class Users implements UserService {
       };
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -296,7 +313,7 @@ export class Users implements UserService {
       return getSafeUser(user);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -311,7 +328,7 @@ export class Users implements UserService {
       if (res.deletedCount !== 1) throw createInvalidAccessTokenError();
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -342,7 +359,7 @@ export class Users implements UserService {
       return res.ops[0];
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -355,7 +372,7 @@ export class Users implements UserService {
       return getSafeUser(user);
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -368,7 +385,7 @@ export class Users implements UserService {
       return trx;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -382,7 +399,7 @@ export class Users implements UserService {
       return result;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }

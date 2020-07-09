@@ -1,11 +1,12 @@
 import * as joi from '@hapi/joi';
 import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema } from '../util/validation-util';
 
-const userCreateAndLoginSchema = joi.alternatives().try(
-  joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
-  joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
-  joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
-);
+const emailSchema = joi.string()
+  .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
+  .messages({
+    'string.base': 'Invalid type, email must be a string',
+    'string.pattern.base': 'Invalid email.'
+  });
 
 const userTokenIdSchema = joi.object().keys({
   tokenId: joi.string()
@@ -31,9 +32,22 @@ const userIdSchema = joi.object().keys({
     }),
 })
 
-export const createInputSchema = userCreateAndLoginSchema; 
+export const createInputSchema = joi.alternatives().try(
+  joi.object().keys({
+    phone: phoneValidationSchema,
+    password: passwordValidationSchema,
+    name: joi.string().required(),
+    email: emailSchema
+  }),
+  joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
+  joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
+);; 
 
-export const loginInputSchema = userCreateAndLoginSchema;
+export const loginInputSchema = joi.alternatives().try(
+  joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
+  joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
+  joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
+);;
 
 export const nominateInputSchema = joi.object().keys({
   phone: joi.string()
@@ -42,15 +56,16 @@ export const nominateInputSchema = joi.object().keys({
     .messages({
       'any.required': 'Phone is required',
       'string.base': 'Invalid type, phone must be a string',
-      'string.empty': 'Please enter your phone number',
+      'string.empty': 'Please enter phone number',
       'string.pattern.base': 'Invalid phone number. Must start with 2547 and be 12 digit long'
     }),
-  email: joi.string()
-    .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
+  name: joi.string()
+    .required()
     .messages({
-      'string.base': 'Invalid type, email must be a string',
-      'string.pattern.base': 'Invalid email.'
+      'any.required': 'Name is required',
+      'string.empty': 'Name is required'
     }),
+  email: emailSchema,
   nominator: joi.string()
     .required()
     .messages({

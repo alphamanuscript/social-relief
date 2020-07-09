@@ -255,7 +255,7 @@ export const testValidationSucceeds = (validator: Function, testCases: any[]) =>
     }
     catch (e) {
       if (e instanceof AppError && e.code === 'validationError') {
-        fail(`should not throw validation error for input ${testCase}`);
+        fail(`should not throw validation error for input ${JSON.stringify(testCase, undefined, 2)}`);
       }
     }
   })
@@ -265,7 +265,7 @@ export const testValidationFails = (validator: Function, testCases: any[]) => {
   for (const testCase of testCases) {
     try {
       validator(testCase);
-      fail(`should throw validation error for input ${testCase}`);
+      fail(`should throw validation error for input ${JSON.stringify(testCase, undefined, 2)}`);
     }
     catch (e) {
       expect(e).toBeInstanceOf(AppError);
