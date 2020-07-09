@@ -17,9 +17,20 @@ const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 
-const SAFE_USER_PROJECTION = { _id: 1, phone: 1, email: 1, addedBy: 1, donors: 1, middlemanFor: 1, roles: 1, createdAt: 1, updatedAt: 1 };
-const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1 };
-const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
+const SAFE_USER_PROJECTION = { 
+  _id: 1,
+  phone: 1,
+  email: 1,
+  name: 1,
+  addedBy: 1,
+  donors: 1,
+  middlemanFor: 1,
+  roles: 1,
+  createdAt: 1,
+  updatedAt: 1
+};
+const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1 };
+const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1 };
 
 /**
  * removes fields that should
@@ -27,18 +38,16 @@ const RELATED_BENEFICIARY_PROJECTION = { _id: 1 };
  * @param user 
  */
 function getSafeUser(user: DbUser): User {
-  const { _id, phone, email, addedBy, donors, middlemanFor, roles, createdAt, updatedAt } = user;
-  return {
-    _id,
-    phone,
-    email,
-    addedBy,
-    donors,
-    middlemanFor,
-    roles,
-    createdAt,
-    updatedAt
-  };
+  const userDict: any = user;
+  return Object.keys(SAFE_USER_PROJECTION)
+    .reduce<any>((safeUser, field) => {
+      if (field in user) {
+        safeUser[field] = userDict[field];
+      }
+
+      return safeUser;
+    }, {});
+      
 }
 
 function hasRole(user: User, role: UserRole): boolean {
@@ -132,9 +141,8 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator } = args;
-    if (email) validators.validatesNominate({ phone, email, nominator });
-    else validators.validatesNominate({ phone, nominator });
+    const { phone, email, nominator, name } = args;
+    validators.validatesNominate(args);
 
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
@@ -165,6 +173,7 @@ export class Users implements UserService {
         _id: generateId(), 
         password: '', 
         phone,
+        name,
         addedBy: nominator, 
         createdAt: new Date(),
       }
@@ -190,9 +199,8 @@ export class Users implements UserService {
   }
 
   async nominateMiddleman(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator } = args;
-    if (email) validators.validatesNominate({ phone, email, nominator });
-    else validators.validatesNominate({ phone, nominator });
+    const { phone, email, nominator, name } = args;
+    validators.validatesNominate(args);
     
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
@@ -202,6 +210,7 @@ export class Users implements UserService {
         _id: generateId(),
         password: '',
         phone,
+        name,
         addedBy: nominator,
         createdAt: new Date()
       }
