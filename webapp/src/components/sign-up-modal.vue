@@ -170,7 +170,7 @@ export default {
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null },
+      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null, name: null },
       this.helper = {
         phone: false,
         password: false
@@ -213,7 +213,7 @@ export default {
             password: '',
             confirmedPassword: '',
             role: 'donor'
-          },
+          };
           this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true, name: true };
           this.$bvModal.hide('sign-up');
         }
