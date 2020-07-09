@@ -21,10 +21,15 @@
         <b-form-input
           v-model="signUpCreds.name"
           type="text"
+          :state="signUpValidationResults.name"
           class="custom-dialog-input"
           placeholder="Enter name"
           id="name"
+          @update="helper.name = true"
         />
+        <b-form-invalid-feedback class="text-center">
+          {{ signUpValidationMessages.name }}
+        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
         <b-input-group>
@@ -121,6 +126,7 @@ export default {
         confirmedPassword: 'Confirmed password does not match with password'
       },
       signUpValidationRules: {
+        name: { test: (creds) => !!creds.name.trim().length },
         phone: { test: (creds) => /^7\d{8}$/.test(creds.phone) },
         password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
         confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password }
@@ -173,7 +179,8 @@ export default {
       this.signUpValidationMessages = {
         phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
         password: 'Invalid password. Must range between 8 and 18 characters',
-        confirmedPassword: 'Confirmed password does not match with password'
+        confirmedPassword: 'Confirmed password does not match with password',
+        name: 'Name is required'
       };
       this.helper = {
         phone: false,
@@ -185,7 +192,7 @@ export default {
         const data = {
           name: this.signUpCreds.name.trim(),
           phone: `254${this.signUpCreds.phone}`,
-          password: this.signUpCreds.password
+          password: this.signUpCreds.password,
         };
         await this.createUser(data);
 
@@ -194,8 +201,9 @@ export default {
             phone: 'Sign-up failed. Phone number already assigned to existing account',
             password: 'Sign-up failed. Phone number already assigned to existing account',
             confirmedPassword: 'Sign-up failed. Phone number already assigned to existing account',
+            name: 'Sign-up failed. Phone number already assigned to existing account'
           };
-          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null };
+          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: false };
         }
         else {
           this.signUpCreds = {
@@ -205,7 +213,7 @@ export default {
             confirmedPassword: '',
             role: 'donor'
           },
-          this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true };
+          this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true, name: true };
           this.$bvModal.hide('sign-up');
         }
       }
