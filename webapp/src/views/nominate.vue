@@ -161,12 +161,17 @@ export default {
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
       if (!this.validationResults.includes(false)) {
-        await this.nominate({
+        const data = {
           nominee: `254${this.nomineeCreds.phone}`,
-          email: this.nomineeCreds.email,
           name: this.nomineeCreds.name.trim(),
           role: this.nomineeCreds.role
-        });
+        };
+
+        if (this.nomineeCreds.email) {
+          data.email = this.nomineeCreds.email;
+        }
+
+        await this.nominate(data);
         
         if (this.message.type === 'error') {
           this.validationMessages = [this.message.message, this.message.message, this.message.message];
