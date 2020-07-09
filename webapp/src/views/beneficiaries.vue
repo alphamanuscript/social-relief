@@ -5,7 +5,7 @@
         <h3 class="text-primary">Beneficiaries</h3>
         <p>
           All nominees get <span class="text-secondary font-weight-bold">Ksh 2,000</span> to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
-          are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
+          are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-primary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>
       <div class="my-nominees">
@@ -157,10 +157,11 @@ export default {
     ...mapState(['beneficiaries'])
   },
   methods: {
-    ...mapActions(['getCurrentUser', 'getBeneficiaries']),
+    ...mapActions(['getTransactions', 'getBeneficiaries']),
   },
   async mounted() {
     await this.getBeneficiaries();
+    await this.getTransactions();
   },
 }
 </script>
