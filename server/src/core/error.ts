@@ -10,6 +10,14 @@ export class AppError extends Error {
   }
 }
 
+export function isAppError(e: any) {
+  return e instanceof AppError;
+}
+
+export function rethrowIfAppError(e: any) {
+  if (isAppError(e)) throw e;
+}
+
 // MongoDB error codes
 export const MONGO_ERROR_DUPLICATE_KEY = 11000;
 
@@ -46,12 +54,14 @@ export type ErrorCode =
   | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
+  | 'manualPayApiError'
   | 'serverError'
   | 'nominationFailed'
   | 'validationError'
   | 'batchQueueError'
   | 'systemLockLocked'
-  | 'systemLockInvalidState';
+  | 'systemLockInvalidState'
+  | 'messageDeliveryFailed';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -88,6 +98,11 @@ export function createFundsToUserFailedError(message: string) {
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
   return createAppError(message, 'atApiError');
 }
+
+export function createManualPayApiError(message: string) {
+  return createAppError(message, 'manualPayApiError');
+}
+
 export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
   return createAppError(message, 'nominationFailed');
 }
@@ -110,4 +125,8 @@ export function createValidationError (message: string = messages.ERROR_INVALID_
 
 export function createDbConnectionFailedError (message: string = messages.ERROR_DB_CONNECTION_FAILED) {
   return createAppError(message, 'dbConnectionFailed');
+}
+
+export function createMessageDeliveryFailedError(message: string) {
+  return createAppError(message, 'messageDeliveryFailed');
 }

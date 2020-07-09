@@ -23,13 +23,13 @@ users.get('/me', requireAuth(), wrapResponse(
   req => Promise.resolve(req.user)));
 
 users.post('/beneficiaries', requireAuth(), wrapResponse(
-  req => req.core.users.nominateBeneficiary({ phone: req.body.phone, email: req.body.email, nominator: req.user._id })));
+  req => req.core.users.nominateBeneficiary({ ...req.body, nominator: req.user._id })));
 
 users.get('/beneficiaries', requireAuth(), wrapResponse(
   req => req.core.users.getAllBeneficiariesByUser(req.user._id)));
 
 users.post('/middlemen', requireAuth(), wrapResponse(
-  req => req.core.users.nominateMiddleman({ phone: req.body.phone, email: req.body.email, nominator: req.user._id })));
+  req => req.core.users.nominateMiddleman({ ...req.body, nominator: req.user._id })));
 
 users.get('/middlemen', requireAuth(), wrapResponse(
   req => req.core.users.getAllMiddlemenByUser(req.user._id)));

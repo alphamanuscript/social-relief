@@ -12,6 +12,23 @@
           </b-form-text>
           <b-form-row class="py-3">
             <b-col sm="12" md="4" class="text-md-right font-weight-bold">
+              <label for="name">Name:</label>
+            </b-col>
+            <b-col>
+              <b-form-input 
+                v-model="nomineeCreds.name"
+                type="text"
+                :state="validationResults[2]" 
+                class="custom-input" 
+                id="name"
+              />
+              <b-form-invalid-feedback>
+                {{ validationMessages[2] }}
+              </b-form-invalid-feedback>
+            </b-col>
+          </b-form-row>
+          <b-form-row class="py-3">
+            <b-col sm="12" md="4" class="text-md-right font-weight-bold">
               <label for="phone-number">M-Pesa Number:</label>
             </b-col>
             <b-col>
@@ -93,6 +110,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+import { Auth } from '../services';
 export default {
   name: 'nominate',
   data() {
@@ -100,15 +118,18 @@ export default {
       nomineeCreds: {
         phone: '',
         email: '',
+        name: '',
         role: 'Beneficiary'
       },
       validationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digits long',
-        'Invalid email'
+        'Invalid email',
+        'Name is required'
       ],
       validationRules: [
         { test: (nomineeCreds) => nomineeCreds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
-        { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))}
+        { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))},
+        { test: (nomineeCreds) => !!nomineeCreds.name.trim().length }
       ],
       validationResults: [null, null]
     }
@@ -127,6 +148,7 @@ export default {
       this.nomineeCreds = {
         phone: '',
         email: '',
+        name: '',
         role: 'Beneficiary'
       },
       this.$bvModal.hide('nominate-success');
@@ -134,21 +156,39 @@ export default {
     async submitNomination() {
       this.validationMessages = [
         'Invalid phone number. Must start with 7 and be 9 digits long',
-        'Invalid email'
+        'Invalid email',
+        'Name is required'
       ];
       this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
       if (!this.validationResults.includes(false)) {
-        await this.nominate({ nominee: `254${this.nomineeCreds.phone}`, email: this.nomineeCreds.email, role: this.nomineeCreds.role });
+        const data = {
+          nominee: `254${this.nomineeCreds.phone}`,
+          name: this.nomineeCreds.name.trim(),
+          role: this.nomineeCreds.role
+        };
+
+        if (this.nomineeCreds.email) {
+          data.email = this.nomineeCreds.email;
+        }
+
+        await this.nominate(data);
+        
         if (this.message.type === 'error') {
-          this.validationMessages = [this.message.message, this.message.message];
-          this.validationResults = [false, false];
+          this.validationMessages = [this.message.message, this.message.message, this.message.message];
+          this.validationResults = [false, false, false];
         }
         else {
           this.validationResults = [null, null];
           this.$bvModal.show('nominate-success');
         }
       }
-    }
+    },
+    async mounted() {
+      if (Auth.isAuthenticated() && !this.user) {
+        await this.getCurrentUser();
+      }
+      else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
+    },
   }
 }
 </script>

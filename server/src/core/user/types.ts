@@ -6,6 +6,7 @@ export interface User {
   _id: string,
   phone: string,
   email?: string,
+  name: string,
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -44,12 +45,14 @@ export interface AccessToken {
 
 export interface UserCreateArgs {
   phone: string,
+  name: string,
   password: string,
   googleIdToken: string
 };
 
 export interface UserNominateArgs {
   phone: string,
+  name: string,
   email?: string,
   nominator: string,
 };

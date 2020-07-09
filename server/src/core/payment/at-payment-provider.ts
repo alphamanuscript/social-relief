@@ -11,6 +11,8 @@ export interface AtArgs {
   paymentsProviderChannel: string
 };
 
+export const AT_PAYMENT_PROVIDER_NAME = 'africastalking-mpesa';
+
 export class AtPaymentProvider implements PaymentProvider {
   private atClient: any;
   private payments: AtPaymentService;
@@ -25,7 +27,7 @@ export class AtPaymentProvider implements PaymentProvider {
   }
 
   name() {
-    return 'africastalking-mpesa';
+    return AT_PAYMENT_PROVIDER_NAME;
   }
 
   async requestPaymentFromUser(user: User, amount: number): Promise<PaymentRequestResult> {

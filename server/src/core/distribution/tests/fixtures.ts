@@ -133,7 +133,8 @@ export const transactions = [
   {
     from: 'donor3',
     to: 'beneficiary2',
-    amount: 1400,
+    amount: 0,
+    expectedAmount: 1400,
     status: 'pending',
     updatedAt: yesterday
   },
