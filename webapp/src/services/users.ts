@@ -19,7 +19,6 @@ export const Users = {
     return res.data.user;
   },
   async nominateBeneficiary(args: UserNominateArgs) {
-    console.log('BEN', args);
     const res = await axios.post<User>('/users/beneficiaries', args);
     return res.data;
   },

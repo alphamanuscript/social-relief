@@ -6,7 +6,7 @@ export interface User {
   _id: string,
   phone: string,
   email?: string,
-  name?: string,
+  name: string,
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
