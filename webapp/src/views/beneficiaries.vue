@@ -45,9 +45,6 @@
       scrollable
     >
       <p class="small">
-        <span class="font-weight-bold pr-2">M-PESA Number:</span> 
-        <span>+{{ currentBeneficiary.phone }}</span>
-        <br/>
         <span class="font-weight-bold pr-2">Added by:</span> 
         <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
         <br/>
@@ -85,7 +82,6 @@ export default {
       currentBeneficiary: {
         _id: '',
         name: '',
-        phone: '',
         addedBy: '',
         createdAt: '',
       },
