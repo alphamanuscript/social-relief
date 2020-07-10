@@ -30,7 +30,7 @@ const SAFE_USER_PROJECTION = {
   updatedAt: 1
 };
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1 };
-const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1 };
+const RELATED_BENEFICIARY_PROJECTION = { _id: 1, phone: 1, name: 1, addedBy: 1, createdAt: 1};
 
 /**
  * removes fields that should

@@ -47,12 +47,13 @@
             @update="helper.phone = true"
           />
           <b-form-invalid-feedback class="text-center">
-            {{ signUpValidationMessages[0] }}
-          </b-form-invalid-feedback>
+          {{ signUpValidationMessages.phone }}
+        </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
           Start with 7, for example 712345678.
         </b-form-text>
+        
       </b-form-group>
       <b-form-group>
         <label for="password" class="sr-only">Password</label>
@@ -169,7 +170,7 @@ export default {
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null },
+      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null, name: null },
       this.helper = {
         phone: false,
         password: false
@@ -203,7 +204,7 @@ export default {
             confirmedPassword: 'Sign-up failed. Phone number already assigned to existing account',
             name: 'Sign-up failed. Phone number already assigned to existing account'
           };
-          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: false };
+          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: null };
         }
         else {
           this.signUpCreds = {
@@ -212,7 +213,7 @@ export default {
             password: '',
             confirmedPassword: '',
             role: 'donor'
-          },
+          };
           this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true, name: true };
           this.$bvModal.hide('sign-up');
         }
