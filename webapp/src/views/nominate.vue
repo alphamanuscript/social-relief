@@ -110,7 +110,6 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
-import { Auth } from '../services';
 export default {
   name: 'nominate',
   data() {

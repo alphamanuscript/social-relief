@@ -19,7 +19,7 @@
             <b-nav-item to="beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
             <b-nav-item to="middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
             <b-nav-item to="invitations" exact exact-active-class="active">Invitations</b-nav-item>
-            <b-nav-item to="history" exact exact-active-class="active" @click="handleHistoryLinkClick()">History</b-nav-item>
+            <b-nav-item to="history" exact exact-active-class="active">History</b-nav-item>
             <div class="small text-secondary mt-auto">
             <p>privacy policy</p>
             <p>terms of use</p>
