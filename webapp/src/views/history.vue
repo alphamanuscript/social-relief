@@ -75,14 +75,6 @@ export default {
       return new Date(datetime).toLocaleDateString();
     },
   },
-  async mounted() {
-    await this.getTransactions();
-  },
-  watch: {
-    transactions: function (values) {
-      this.items = values;
-    }
-  }
 }
 </script>
 <style lang="scss">
