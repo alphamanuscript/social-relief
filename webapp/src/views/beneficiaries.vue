@@ -13,7 +13,7 @@
         <div v-if="!beneficiaries.length" class="text-center">
           <p class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
           <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
-          <p> <b-link to="nominate" exact exact-active-class="active" class="text-primary">Click here to get started.</b-link> </p>
+          <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
         </div>
         <b-table v-else :items="beneficiaries" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
