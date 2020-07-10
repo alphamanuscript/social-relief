@@ -66,7 +66,7 @@ function extractTransactionInfo(data: FlutterwaveTransactionInfo): ProviderTrans
 
   return {
     userData: {
-      phone: data.customer.phone_number
+      phone: `254${data.customer.phone_number.substring(1)}` // use internal instead of local format
     },
     status,
     amount: data.charged_amount,
@@ -96,7 +96,7 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       redirect_url: this.args.redirectUrl,
       customer: {
         email: user.email,
-        phone_number: user.phone,
+        phone_number: `0${user.phone.substr(3)}`, // user local instead of internal format
         name: user.name
       },
       customizations: {
