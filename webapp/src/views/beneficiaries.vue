@@ -34,6 +34,7 @@
     <b-modal
       id="beneficiary"
       :title="currentBeneficiary.name"
+      size="lg"
       title-class="text-primary h3"
       centered
       hide-header-close
@@ -64,9 +65,6 @@
             <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
             <span v-else-if="data.item.status==='failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
             <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
-          </template>
-        <template v-slot:table-caption>
-            <span class="small">*: The anonymity of other donors is preserved</span>
           </template>
       </b-table>
       <div class="mt-3 text-right">
@@ -121,7 +119,7 @@ export default {
         },
         {
           key:'addedBy',
-          label: 'From*',
+          label: 'From',
           formatter: this.getDonor
         },
         'amount',
@@ -161,13 +159,13 @@ export default {
       if (this.user._id===id)
         return 'Me';
       else {
-        return 'Anonymous';
+        return 'Other donor';
       }
     },
     getDate(datetime) {
       return new Date(datetime).toLocaleDateString();
     },
-    getProgress(id) {
+    getProgress() {
       const thirtyDays = 30*24*60*60*1000;
       const monthTransactions = this.currentBeneficiaryTransactions.filter(t => new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
       const monthTotal =  monthTransactions.reduce((acc, t) => { acc + t.amount; }, 0);
