@@ -1,6 +1,7 @@
 <template>
   <b-modal
-    id="confirm-donation"
+    v-if="transaction"
+    id="confirm-payment"
     title="Confirmation sent!"
     title-class="text-primary"
     centered
@@ -33,8 +34,11 @@
     },
     methods: {
       hideDialog() {
-        this.$bvModal.hide('confirm-donation');
+        this.$bvModal.hide('confirm-payment');
       },
+      handlePaymentRequest() {
+        this.$bvModal.show('confirm-payment');
+      }
     }
   }
 </script>

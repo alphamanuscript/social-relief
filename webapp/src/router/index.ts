@@ -41,7 +41,12 @@ const routes = [
   {
     path: '/account',
     name: 'account',
-    component: () => import(/* webpackChunkName: "invitations" */ '../views/account.vue')
+    component: () => import(/* webpackChunkName: "account" */ '../views/account.vue')
+  },
+  {
+    path: '/post-payment/flutterwave',
+    name: 'post-payment-flutterwave',
+    component: () => import(/* webpackChunkName: "post-payment" */ '../views/post-payment-flutterwave.vue')
   }
 ]
 

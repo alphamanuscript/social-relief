@@ -7,8 +7,8 @@ export default {
   props: {
     transaction: Object
   },
-  watch: {
-    transaction(trx) {
+  methods: {
+    handlePaymentRequest(trx) {
       if (trx && trx.metadata && trx.metadata.paymentUrl) {
         window.location = trx.metadata.paymentUrl;
       }

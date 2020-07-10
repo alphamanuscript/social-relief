@@ -12,6 +12,10 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
+  async getTransaction({ commit }, id: string) {
+    const transaction = await Transactions.getTransaction(id);
+    commit('updateTransaction', transaction);
+  },
   async donate({ commit, state }, { amount }: { amount: number }) {
     if (state.user) {
       const trx = await Donations.initiateDonation({ amount });
@@ -70,6 +74,7 @@ const actions = wrapActions({
       'unsetUser',
       'unsetBeneficiaries',
       'unsetTransactions',
+      'unsetLastPaymentRequest',
       'unsetMessage',
     ].forEach((mutation) => commit(mutation));
   }

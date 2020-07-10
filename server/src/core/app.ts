@@ -98,7 +98,7 @@ export interface AppConfig {
 };
 
 export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig {
-  const webappBaseUrl = env.WEBAPP_BASE_URL || 'http:locacalhost:8080';
+  const webappBaseUrl = env.WEBAPP_BASE_URL || 'http://localhost:8080';
 
   return {
     dbName: env.DB_NAME || 'crowdrelief',
@@ -112,8 +112,8 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atWebhooksRoot: '/at-webhooks',
     manualPayWebhooksRoot: '/webhooks/manualpay',
     manualPayBaseUrl: env.MANUAL_PAY_BASE_URL || 'http://localhost:5000',
-    flutterwaveLogoUrl: `${webappBaseUrl}/logo.png`,
-    flutterwaveRedirectUrl: `${webappBaseUrl}/payment/complete`,
+    flutterwaveLogoUrl: `${webappBaseUrl}/img/logo.svg`,
+    flutterwaveRedirectUrl: `${webappBaseUrl}/post-payment/flutterwave`,
     flutterwaveSecretKey: env.FLUTTERWAVE_SECRET_KEY || '',
     flutterwaveWebhooksRoot: '/webhooks/flutterwave',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,

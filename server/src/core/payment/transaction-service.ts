@@ -57,7 +57,7 @@ export class Transactions implements TransactionService {
   async getAllByUser(userId: string): Promise<Transaction[]> {
     validators.validatesGetAllByUser(userId);
     try {
-      const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).toArray();
+      const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).sort({ createdAt: -1 }).toArray();
       return result;
     }
     catch (e) {

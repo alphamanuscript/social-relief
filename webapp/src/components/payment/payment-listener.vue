@@ -1,7 +1,8 @@
 <template>
-  <div v-if="!lastPaymentRequest"></div>
-  <MpesaHandler v-else-if="lastPaymentRequest.provider === 'africastalking-mpesa'" :transaction="lastPaymentRequest" />
-  <FlutterwaveHandler v-else-if="lastPaymentRequest.provider === 'flutterwave'" :transaction="lastPaymentRequest" />
+  <div>
+    <MpesaHandler ref="africastalking-mpesa" :transaction="lastPaymentRequest" />
+    <FlutterwaveHandler ref="flutterwave" :transaction="lastPaymentRequest" />
+  </div>
 </template>
 <script>
 import { mapState } from 'vuex';
@@ -19,7 +20,9 @@ export default {
   },
   watch: {
     lastPaymentRequest(trx) {
-      console.log('New transaction', trx);
+      if (trx) {
+        this.$refs[trx.provider].handlePaymentRequest(trx);
+      }
     }
   }
 }
