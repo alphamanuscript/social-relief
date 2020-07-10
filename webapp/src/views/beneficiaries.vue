@@ -10,7 +10,7 @@
       </div>
       <div class="">
         <h3 class="text-primary pb-3">My Nominees</h3>
-        <b-table :items="beneficiaries" :fields="fields" striped hover stacked="sm" class="bg-white rounded shadow">
+        <b-table :items="beneficiaries" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
           </template>
@@ -32,14 +32,38 @@
       title-class="text-primary h3"
       centered
       hide-header-close
-      header-class="border-bottom-0"
+      header-class="border-bottom-0 pb-0 mb-0"
       hide-footer
       @hidden="hideDialog()"
       content-class="rounded p-5"
+      scrollable
     >
-      <p class="text-secondary h5">
-        Transaction history
+      <p class="small">
+        <span class="font-weight-bold pr-2">M-PESA Number:</span> 
+        <span>+{{ currentBeneficiary.phone }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Added by:</span> 
+        <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Added on:</span> 
+        <span>{{ getDate(currentBeneficiary.createdAt) }}</span>
       </p>
+      <h5 class="text-secondary">
+        Transaction history
+      </h5>
+      <b-table :items="trans" :fields="transactionFields" stacked="sm" head-row-variant="secondary" striped>
+        <template v-slot:cell(amount)="data">
+          <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+        </template>
+        <template v-slot:cell(status)="data">
+            <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
+            <span v-else-if="data.item.status==='failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
+            <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
+          </template>
+        <template v-slot:table-caption>
+            <span class="small">*: The anonymity of other donors is preserved</span>
+          </template>
+      </b-table>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
@@ -58,7 +82,7 @@ export default {
         addedBy: '',
         createdAt: '',
       },
-      fields: [
+      beneficiaryFields: [
         {
           key: 'index',
           label: ''
@@ -66,32 +90,17 @@ export default {
         {
           key: 'name',
           label: 'Name',
-          formatter: (value) => {
-            if (!value)
-              return "Unknown";
-            return value;
-          }
+          formatter: this.getName
         },
         {
           key:'addedBy',
           label: 'Added by',
-          formatter: (value) => { 
-            if (this.user._id===value)
-              return "Me";
-            else {
-              const middleman = this.getMiddleman(value);
-              if (middleman)
-                return middleman.name;
-              return value;
-            }
-           }
+          formatter: this.getNominator
         },
         {
           key:'createdAt',
           label: 'Added on',
-          formatter: (value) => { 
-            return new Date(value).toLocaleDateString(); 
-          }
+          formatter: this.getDate
         },
         {
           key: 'progress',
@@ -99,9 +108,23 @@ export default {
         },
         'expand'
       ],
+      transactionFields: [
+        {
+          key:'updatedAt',
+          label: 'Date',
+          formatter: this.getDate
+        },
+        {
+          key:'addedBy',
+          label: 'From*',
+          formatter: this.getDonor
+        },
+        'amount',
+        'status'
+      ],
       items: [
         {
-          name: 'Mama Yake', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 0
+          name: '', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 0
         },
         {
           name: 'Mama Yake 2', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 50
@@ -112,11 +135,25 @@ export default {
         {
           name: 'Mama Yake 4', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 100
         }
+      ],
+      trans: [
+        {
+          updatedAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', amount: 2000, status: 'pending'
+        },
+        {
+          updatedAt: '2020-06-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', amount: 1000, status: 'success'
+        },
+        {
+          updatedAt: '2020-06-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', amount: 2000, status: 'failed'
+        }
       ]
     }
   }, 
   computed: {
-    ...mapState(['beneficiaries', 'user', 'middlemen'])
+    ...mapState(['beneficiaries', 'user', 'middlemen', 'transactions']),
+    currentBeneficiaryTransactions () {
+      return this.transactions.filter( t => t.to === this.currentBeneficiary._id )
+    }
   },
   methods: {
     ...mapActions(['getTransactions', 'getBeneficiaries', 'getMiddlemen']),
@@ -127,8 +164,28 @@ export default {
     hideDialog() {
       this.$bvModal.hide('beneficiary');
     },
-    getMiddleman(id) {
-      return this.middlemen.find( m => m._id === id );
+    getName(name) {
+      return name ? name : 'Unknown';
+    },
+    getNominator(id) {
+      if (this.user._id===id)
+        return 'Me';
+      else {
+        const middleman = this.middlemen.find( m => m._id === id );
+        if (middleman)
+          return middleman.name;
+        return id;
+      }
+    },
+    getDonor(id) {
+      if (this.user._id===id)
+        return 'Me';
+      else {
+        return 'Anonymous';
+      }
+    },
+    getDate(datetime) {
+      return new Date(datetime).toLocaleDateString();
     }
   },
   async mounted() {
