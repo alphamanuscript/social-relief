@@ -150,21 +150,27 @@ export default {
       return name ? name : 'Unknown';
     },
     getNominator(id) {
-      if (this.user._id===id)
-        return 'Me';
-      else {
-        const middleman = this.middlemen.find( m => m._id === id );
-        if (middleman)
-          return middleman.name;
-        return id;
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          const middleman = this.middlemen.find( m => m._id === id );
+          if (middleman)
+            return middleman.name;
+          return id;
+        }
       }
+      return '';
     },
     getDonor(id) {
-      if (this.user._id===id)
-        return 'Me';
-      else {
-        return 'Other donor';
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          return 'Other donor';
+        }
       }
+      return '';
     },
     getDate(datetime) {
       return new Date(datetime).toLocaleDateString();
