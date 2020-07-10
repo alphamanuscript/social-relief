@@ -1,339 +1,188 @@
 <template>
-  <div class="outermost-container">
-    <div class="inner-container">
-      <div class="page-intro">
-        <h3>Beneficiaries</h3>
+  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+    <div class="ml-lg-5">
+      <div class="">
+        <h3 class="text-primary">Beneficiaries</h3>
         <p>
-          <span>All nominees get <span class="max-amount-per-month">Ksh 3,500</span> to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="beneficiary-count">13,600 +</span> people who </span>
-          <span>are currently enlisted as beneficiaries of this system. We at social relief want to say a big <span class="thank-you-span">THANK YOU</span> for your kindness and support.</span>
+          All nominees get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
+          are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>
-      <div class="my-nominees">
-        <h3>My Nominees</h3>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <td></td>
-                <td>Name</td>
-                <td>Middleman</td>
-                <td>Host</td>
-                <td>Location</td>
-                <td>Progress</td>
-                <td>Status</td>
-                <td>Date</td>
-                <td>Expand</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1.</td>
-                <td>Mama Yake</td>
-                <td>N/a</td>
-                <td>N/a</td>
-                <td>Mukuru</td>
-                <td>100%</td>
-                <td class="status">Completed</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>2.</td>
-                <td>Mama Yake 2</td>
-                <td>Baba Yake</td>
-                <td>Baba Yake</td>
-                <td>Kibera</td>
-                <td>75%</td>
-                <td class="status">Ongoing</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>3.</td>
-                <td>Mama Yake</td>
-                <td>N/a</td>
-                <td>N/a</td>
-                <td>Mukuru</td>
-                <td>100%</td>
-                <td class="status">Completed</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>4.</td>
-                <td>Mama Yake 2</td>
-                <td>Baba Yake</td>
-                <td>Baba Yake</td>
-                <td>Kibera</td>
-                <td>75%</td>
-                <td class="status">Ongoing</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>5.</td>
-                <td>Mama Yake</td>
-                <td>N/a</td>
-                <td>N/a</td>
-                <td>Mukuru</td>
-                <td>100%</td>
-                <td class="status">Completed</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>6.</td>
-                <td>Mama Yake 2</td>
-                <td>Baba Yake</td>
-                <td>Baba Yake</td>
-                <td>Kibera</td>
-                <td>75%</td>
-                <td class="status">Ongoing</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>7.</td>
-                <td>Mama Yake</td>
-                <td>N/a</td>
-                <td>N/a</td>
-                <td>Mukuru</td>
-                <td>100%</td>
-                <td class="status">Completed</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>8.</td>
-                <td>Mama Yake 2</td>
-                <td>Baba Yake</td>
-                <td>Baba Yake</td>
-                <td>Kibera</td>
-                <td>75%</td>
-                <td class="status">Ongoing</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>9.</td>
-                <td>Mama Yake</td>
-                <td>N/a</td>
-                <td>N/a</td>
-                <td>Mukuru</td>
-                <td>100%</td>
-                <td class="status">Completed</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-              <tr>
-                <td>10.</td>
-                <td>Mama Yake 2</td>
-                <td>Baba Yake</td>
-                <td>Baba Yake</td>
-                <td>Kibera</td>
-                <td>75%</td>
-                <td class="status">Ongoing</td>
-                <td>12-04-2020</td>
-                <td><i class="fas fa-expand"></i></td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="table-nav">
-            <span class="page-count">1 of 3 pages</span>
-            <span class="more-btn">More ></span>
-          </div>
+      <div class="">
+        <h3 class="text-primary pb-3">My Nominees</h3>
+        <div v-if="!beneficiaries.length" class="text-center">
+          <p class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
+          <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
+          <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
         </div>
+        <b-table v-else :items="beneficiaries" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
+          <template v-slot:cell(index)="data">
+            <span class="font-weight-bold">{{ data.index + 1 }}.</span>
+          </template>
+          <template v-slot:cell(progress)="data">
+            <span class="text-secondary font-weight-bold"> {{ getProgress(data.item._id) }} %</span>
+          </template>
+          <template v-slot:cell(expand)="data">
+            <b-button variant="outline-primary" @click="handleExpand(data.item)" class="border-0"><i class="fas fa-expand"></i></b-button>
+          </template>
+          <template v-slot:table-caption>
+            <span class="small">*: Progress is calculated out of Ksh 2,000 in the past 30 days</span>
+          </template>
+        </b-table>
       </div>
     </div>
-  </div>
+    <b-modal
+      id="beneficiary"
+      :title="currentBeneficiary.name"
+      size="lg"
+      title-class="text-primary h3"
+      centered
+      hide-header-close
+      header-class="border-bottom-0 pb-0 mb-0"
+      hide-footer
+      @hidden="hideDialog()"
+      content-class="rounded p-5"
+      scrollable
+    >
+      <p class="small">
+        <span class="font-weight-bold pr-2">Added by:</span> 
+        <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Added on:</span> 
+        <span>{{ getDate(currentBeneficiary.createdAt) }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Total received:</span> 
+        <span>Ksh {{ getTotalSuccessful() }}</span>
+      </p>
+      <h5 class="text-secondary">
+        Transaction history
+      </h5>
+      <b-table :items="currentBeneficiaryDistributions" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
+        <template v-slot:cell(amount)="data">
+          <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+        </template>
+        <template v-slot:cell(status)="data">
+            <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
+            <span v-else-if="data.item.status==='failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
+            <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
+          </template>
+      </b-table>
+      <div class="mt-3 text-right">
+        <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
+      </div>
+    </b-modal>
+  </b-container>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
-import { Auth } from '../services';
+import { mapState, mapGetters } from 'vuex';
 export default {
   name: 'beneficiaries',
-  components: { }, 
+  data() {
+    return {
+      currentBeneficiary: {
+        _id: '',
+        name: '',
+        addedBy: '',
+        createdAt: '',
+      },
+      beneficiaryFields: [
+        {
+          key: 'index',
+          label: ''
+        },
+        {
+          key: 'name',
+          label: 'Name',
+          formatter: this.getName
+        },
+        {
+          key:'addedBy',
+          label: 'Added by',
+          formatter: this.getNominator
+        },
+        {
+          key:'createdAt',
+          label: 'Added on',
+          formatter: this.getDate
+        },
+        {
+          key: 'progress',
+          label: 'Progress*',
+        },
+        'expand'
+      ],
+      distributionFields: [
+        {
+          key:'updatedAt',
+          label: 'Date',
+          formatter: this.getDate
+        },
+        {
+          key:'addedBy',
+          label: 'From',
+          formatter: this.getDonor
+        },
+        'amount',
+        'status'
+      ]
+   }
+  }, 
   computed: {
-    ...mapState(['user'])
+    ...mapState(['beneficiaries', 'user', 'middlemen']),
+    ...mapGetters(['distributions']),
+    currentBeneficiaryDistributions () {
+      return this.distributions.filter( t => t.to === this.currentBeneficiary._id )
+    }
   },
   methods: {
-    ...mapActions(['getCurrentUser', 'getBeneficiaries']),
-  },
-  async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
-      await this.getCurrentUser();
-      await this.getBeneficiaries();
-    }
-    else if (!Auth.isAuthenticated()) this.$router.push({ name: 'home' });
-  },
-}
-</script>
-<style lang="scss" scoped>
-  .outermost-container {
-    margin: 0 0 0 1rem;
-    .inner-container {
-
-      .page-intro {
-        margin-top: .6rem;
-
-        h3 {
-          color: #EF5A24;
-        }
-
-        p {
-          margin-top: 1rem;
-          font-size: .8rem;
-
-          span {
-            display: block;
-            margin-bottom: .1rem;
-
-            &:first-child {
-              span {
-                display: inline-block;
-                color: #9D1A63;
-              }
-            }
-
-            &:last-child {
-              span {
-                display: inline-block;
-                color: #9D1A63;
-              }
-            }
-          }
+    handleExpand(beneficiary) {
+      this.currentBeneficiary = beneficiary;
+      this.$bvModal.show('beneficiary');
+    },
+    hideDialog() {
+      this.$bvModal.hide('beneficiary');
+    },
+    getName(name) {
+      return name ? name : 'Unknown';
+    },
+    getNominator(id) {
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          const middleman = this.middlemen.find( m => m._id === id );
+          if (middleman)
+            return middleman.name;
+          return id;
         }
       }
-
-      .my-nominees {
-        margin-top: 1.0rem;
-        h3 {
-          color: #EF5A24;
-        }
-
-        .table-container {
-          background-color: #FFF;
-          height: 25rem;
-          border-radius: .8rem;
-          box-shadow: 0 2px 5px #E2E2E2;
-
-          table {
-            border-radius: .8rem;
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-
-            thead {
-              font-weight: bold;
-              font-size: .9rem;
-
-              tr {
-                height: 2.5rem;
-
-                td {
-                  white-space: nowrap;
-
-                  &:first-child{
-                    width: 3rem;
-                  }
-
-                  &:nth-child(2){
-                    padding-left: 2rem; 
-                  }
-
-                  &:nth-child(6) {
-                    text-align: right;
-                    padding-right: 2rem;
-                  }
-
-                  &:last-child {
-                    text-align: center;
-                  }
-                }
-              }
-            }
-
-            tbody {
-              font-size: .9rem;
-              font-weight: 400;
-
-              tr {
-                &:nth-child(odd) {
-                  background-color: #F5F5F5;
-                  height: 1.8rem;
-
-                  .status {
-                    color: #34A20B
-                  }
-                }
-
-                &:nth-child(even) {
-                  height: 2.2rem;
-                  .status {
-                    color: #EF5A24
-                  }
-                }
-
-                td {
-                  &:first-child{
-                    text-align: right; 
-                  }
-
-                  &:nth-child(2){
-                    padding-left: 2rem; 
-                  }
-
-                  &:nth-child(6) {
-                    text-align: right;
-                    padding-right: 2rem;
-                    color: #9D1A63;
-                  }
-
-                  &:last-child {
-                    text-align: center;
-                    color: #EF5A24
-                  }
-                }
-              }
-            }
-          }
-
-          .table-nav {
-            width: 91%;
-            margin: auto;
-            height: 2.4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: .7rem;
-
-            .page-count {
-              color: #9D1A63;
-            }
-
-            .more-btn {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              border-radius: 3rem;
-              width: 7rem;
-              height: 1.7rem;
-              text-align: center;
-              background: #EF5A24;
-              color: #fff;
-              transition: all 0.5s;
-              box-shadow: 0 2px 5px #E2E2E2;
-              border: none;
-              font-weight: bold;
-
-              &:hover {
-                background-image: linear-gradient(to bottom, #EF5A24, #9D1A63);
-              }
-            }
-
-          }
+      return '';
+    },
+    getDonor(id) {
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          return 'Other donor';
         }
       }
+      return '';
+    },
+    getDate(datetime) {
+      return new Date(datetime).toLocaleDateString();
+    },
+    getProgress(id) {
+      const monthlyMax = 2000;
+      const thirtyDays = 30*24*60*60*1000;
+      const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
+      const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
+      return monthTotal*100/monthlyMax;
+    },
+    getTotalSuccessful() {
+      return this.currentBeneficiaryDistributions.filter(t => t.status === 'success')
+        .map(t => t.amount)
+        .reduce((a, b) => a + b, 0);
     }
   }
-</style>
+}
+</script>

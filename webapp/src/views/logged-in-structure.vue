@@ -82,13 +82,13 @@ export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'message']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
-    },
+    }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'getBeneficiaries', 'getMiddlemen', 'getTransactions']),
     async signOut() {
       await this.signUserOut();
     },
@@ -96,11 +96,38 @@ export default {
       this.$bvModal.show('donate');
     }
   },
-  async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
-      await this.getCurrentUser();
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user) {
+        await this.getCurrentUser();
+      }
+      await this.getBeneficiaries();
+      await this.getTransactions();
+      await this.getMiddlemen();
     }
-    else if (!Auth.isAuthenticated()) this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    else
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },
+  watch: {
+    message() {
+      switch (this.message.type) {
+        case '':
+          break;
+        case 'error':
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'danger',
+            solid: true
+          });
+          break;
+        default:
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'info',
+            solid: true
+          });
+      }
+    }
+  }
 }
 </script>
