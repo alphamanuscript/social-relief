@@ -16,10 +16,10 @@
                 </div>
               </div>
             </b-nav-text>
-            <b-nav-item to="beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
-            <b-nav-item to="middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
-            <b-nav-item to="invitations" exact exact-active-class="active">Invitations</b-nav-item>
-            <b-nav-item to="history" exact exact-active-class="active">History</b-nav-item>
+            <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
+            <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
+            <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
+            <b-nav-item to="/history" exact exact-active-class="active">History</b-nav-item>
             <div class="small text-secondary mt-auto">
             <p>privacy policy</p>
             <p>terms of use</p>
@@ -37,13 +37,13 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
-                <b-nav-item to="nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-2">Nominate</b-nav-item>
+                <b-nav-item to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-2">Nominate</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
-                  <b-nav-item to="beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
-                  <b-nav-item to="middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
-                  <b-nav-item to="invitations" exact exact-active-class="active">Invitations</b-nav-item>
-                  <b-nav-item to="history" exact exact-active-class="active">History</b-nav-item>
-                  <b-nav-item to="account" exact exact-active-class="active">My Account</b-nav-item>
+                  <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
+                  <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
+                  <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
+                  <b-nav-item to="/history" exact exact-active-class="active">History</b-nav-item>
+                  <b-nav-item to="/account" exact exact-active-class="active">My Account</b-nav-item>
                   <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
                 <b-button variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
@@ -60,7 +60,7 @@
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>
-                    <b-dropdown-item to="account">My Account</b-dropdown-item>
+                    <b-dropdown-item to="/account">My Account</b-dropdown-item>
                     <b-dropdown-item href="#" @click="signOut()"><span class="text-secondary">Sign Out</span></b-dropdown-item>
                   </b-nav-item-dropdown>
               </b-nav>
