@@ -10,7 +10,7 @@
       </div>
       <div class="">
         <h3 class="text-primary pb-3">My Nominees</h3>
-        <b-table :items="items" :fields="fields" striped hover stacked="sm" class="bg-white rounded shadow">
+        <b-table :items="beneficiaries" :fields="fields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
           </template>
@@ -68,7 +68,7 @@ export default {
           label: 'Name',
           formatter: (value) => {
             if (!value)
-              return "John Doe";
+              return "Unknown";
             return value;
           }
         },
@@ -78,7 +78,12 @@ export default {
           formatter: (value) => { 
             if (this.user._id===value)
               return "Me";
-            return value;
+            else {
+              const middleman = this.getMiddleman(value);
+              if (middleman)
+                return middleman.name;
+              return value;
+            }
            }
         },
         {
@@ -106,39 +111,15 @@ export default {
         },
         {
           name: 'Mama Yake 4', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 100
-        },
-        {
-          name: 'Mama Yake', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 0
-        },
-        {
-          name: 'Mama Yake 2', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 50
-        },
-        {
-          name: 'Mama Yake 3', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 75
-        },
-        {
-          name: 'Mama Yake 4', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 100
-        },
-        {
-          name: 'Mama Yake', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 0
-        },
-        {
-          name: 'Mama Yake 2', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: '605ffc7344792a551722d5903ba7463a', progress: 50
-        },
-        {
-          name: 'Mama Yake 3', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 75
-        },
-        {
-          name: 'Mama Yake 4', createdAt: '2020-07-06T11:23:29.068+00:00', addedBy: 'Middleman John Doe', progress: 100
         }
       ]
     }
   }, 
   computed: {
-    ...mapState(['beneficiaries', 'user'])
+    ...mapState(['beneficiaries', 'user', 'middlemen'])
   },
   methods: {
-    ...mapActions(['getTransactions', 'getBeneficiaries']),
+    ...mapActions(['getTransactions', 'getBeneficiaries', 'getMiddlemen']),
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -146,10 +127,14 @@ export default {
     hideDialog() {
       this.$bvModal.hide('beneficiary');
     },
+    getMiddleman(id) {
+      return this.middlemen.find( m => m._id === id );
+    }
   },
   async mounted() {
     await this.getBeneficiaries();
     await this.getTransactions();
+    await this.getMiddlemen();
   }
 }
 </script>
