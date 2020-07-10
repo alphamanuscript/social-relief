@@ -56,11 +56,14 @@
         <br/>
         <span class="font-weight-bold pr-2">Added on:</span> 
         <span>{{ getDate(currentBeneficiary.createdAt) }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Total received:</span> 
+        <span>Ksh {{ getTotalSuccessful() }}</span>
       </p>
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table :items="currentBeneficiaryTransactions" :fields="transactionFields" stacked="sm" head-row-variant="secondary" striped>
+      <b-table :items="currentBeneficiaryDistributions" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
         <template v-slot:cell(amount)="data">
           <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
         </template>
@@ -77,7 +80,7 @@
   </b-container>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 export default {
   name: 'beneficiaries',
   data() {
@@ -85,6 +88,7 @@ export default {
       currentBeneficiary: {
         _id: '',
         name: '',
+        phone: '',
         addedBy: '',
         createdAt: '',
       },
@@ -114,7 +118,7 @@ export default {
         },
         'expand'
       ],
-      transactionFields: [
+      distributionFields: [
         {
           key:'updatedAt',
           label: 'Date',
@@ -128,12 +132,13 @@ export default {
         'amount',
         'status'
       ]
-    }
+   }
   }, 
   computed: {
-    ...mapState(['beneficiaries', 'user', 'middlemen', 'transactions']),
-    currentBeneficiaryTransactions () {
-      return this.transactions.filter( t => t.type === 'donation' && t.to === this.currentBeneficiary._id )
+    ...mapState(['beneficiaries', 'user', 'middlemen']),
+    ...mapGetters(['distributions']),
+    currentBeneficiaryDistributions () {
+      return this.distributions.filter( t => t.to === this.currentBeneficiary._id )
     }
   },
   methods: {
@@ -168,19 +173,20 @@ export default {
     getDate(datetime) {
       return new Date(datetime).toLocaleDateString();
     },
-    getProgress() {
-      const thirtyDays = 30*24*60*60*1000;
+    getProgress(id) {
       const monthlyMax = 2000;
-      const monthTransactions = this.currentBeneficiaryTransactions.filter(t => new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
-      const monthTotal =  monthTransactions.reduce((acc, t) => { 
-        if (t.status === 'success')
-          acc += t.amount; 
-        return acc;
-      }, 0);
+      const thirtyDays = 30*24*60*60*1000;
+      const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
+      const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
+    },
+    getTotalSuccessful() {
+      return this.currentBeneficiaryDistributions.filter(t => t.status === 'success')
+        .map(t => t.amount)
+        .reduce((a, b) => a + b, 0);
     }
   },
-  async mounted() {
+  async created() {
     await this.getBeneficiaries();
     await this.getTransactions();
     await this.getMiddlemen();
