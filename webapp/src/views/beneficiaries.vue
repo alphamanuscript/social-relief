@@ -20,7 +20,7 @@
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
           </template>
           <template v-slot:cell(createdAt)="data">
-            <span class="text-secondary font-weight-bold"> {{ getDate(data.createdAt) }}</span>
+            <span class="text-secondary font-weight-bold"> {{ getDate(data.item.createdAt) }}</span>
           </template>
           <template v-slot:cell(progress)="data">
             <span class="text-secondary font-weight-bold"> {{ getProgress(data.item._id) }} %</span>

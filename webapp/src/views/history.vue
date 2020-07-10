@@ -23,7 +23,7 @@
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
         <template v-slot:cell(updatedAt)="data">
-          <span v-if="data.updatedAt" class="font-weight-bold"> {{ getDate(data.updatedAt) }}</span>
+          <span class=""> {{ getDate(data.item.updatedAt) }}</span>
         </template>
       </b-table>
     </div>
@@ -54,7 +54,6 @@ export default {
           label: 'Transaction code'
         }
       ],
-      items: []
     }
   },
   computed: {
@@ -73,7 +72,6 @@ export default {
       }
     },
     getDate(datetime) {
-      console.log(new Date(datetime).toLocaleDateString());
       return new Date(datetime).toLocaleDateString();
     },
   },
@@ -82,21 +80,10 @@ export default {
   },
   watch: {
     transactions: function (values) {
-      console.log('transactions: ', values);
       this.items = values;
-      console.log('this.items: ', this.items);
-    },
-    user: async function () {
-      if (this.user) {
-        console.log('this.$route.name: ', this.$route.name);
-        await this.getTransactions();
-      }
     }
   }
 }
 </script>
 <style lang="scss">
-  .custom-container {
-    // border: 1px solid #000;
-  }
 </style>

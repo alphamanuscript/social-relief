@@ -12,7 +12,7 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">1,500</div>
+                  <div class="h4">{{ totalAmountDonated - totalAmountDistributed }}</div>
                 </div>
               </div>
             </b-nav-text>
@@ -74,7 +74,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import HomeFooter from '../components/home-footer';
@@ -83,6 +83,10 @@ export default {
   components: { HomeFooter },
   computed: {
     ...mapState(['user']),
+    ...mapGetters([
+      'totalAmountDonated',
+      'totalAmountDistributed',
+    ]),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -94,15 +98,12 @@ export default {
     },
     handleDonateBtn() {
       this.$bvModal.show('donate');
-    },
-    async handleHistoryLinkClick() {
-      console.log('History link clicked');
-      await this.getTransactions();
     }
   },
   async mounted() {
     if (Auth.isAuthenticated() && !this.user) {
       await this.getCurrentUser();
+      await this.getTransactions();
     }
     else if (!Auth.isAuthenticated()) this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },
