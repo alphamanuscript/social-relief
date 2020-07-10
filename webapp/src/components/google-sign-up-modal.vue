@@ -122,7 +122,12 @@ export default {
       };
       this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
       if (this.googleUser && this.signUpValidationResults[0]) {
-        await this.createUser({ phone: `254${this.signUpCreds.phone}`, googleIdToken: this.googleUser.getAuthResponse().id_token });
+        await this.createUser({ 
+          name: this.googleUser.getBasicProfile().getName(),
+          phone: `254${this.signUpCreds.phone}`,
+          email: this.googleUser.getBasicProfile().getEmail(),
+          googleIdToken: this.googleUser.getAuthResponse().id_token 
+        });
         if (!this.user) {
           this.signUpValidationMessages = [
             'Sign-up failed. Phone number already assigned to existing account'

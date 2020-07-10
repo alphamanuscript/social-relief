@@ -56,7 +56,8 @@
                     <b-dropdown-header>
                       <p>
                         <span class="h5 text-body">{{ user && user.name }}</span> <br/>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user ? user.phone : '' }}</span>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{user && user.phone }}</span>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user && user.email }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>

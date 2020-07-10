@@ -18,6 +18,7 @@
     </template>
     <b-form>
       <b-form-group>
+        <label for="name" class="sr-only">Name</label>
         <b-form-input
           v-model="signUpCreds.name"
           type="text"
@@ -25,7 +26,6 @@
           class="custom-dialog-input"
           placeholder="Enter name"
           id="name"
-          @update="helper.name = true"
         />
         <b-form-invalid-feedback class="text-center">
           {{ signUpValidationMessages.name }}
@@ -46,12 +46,26 @@
             id="phone"
             @update="helper.phone = true"
           />
+          <b-form-invalid-feedback class="text-center">
+            {{ signUpValidationMessages.phone }}
+          </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
           Start with 7, for example 712345678.
         </b-form-text>
+      </b-form-group>
+      <b-form-group>
+        <label for="email" class="sr-only">Email</label>
+        <b-form-input
+          v-model="signUpCreds.email"
+          type="text"
+          :state="signUpValidationResults.email"
+          class="custom-dialog-input"
+          placeholder="Enter email"
+          id="email"
+        />
         <b-form-invalid-feedback class="text-center">
-          {{ signUpValidationMessages.phone }}
+          {{ signUpValidationMessages.email }}
         </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group>
@@ -117,21 +131,25 @@ export default {
         phone: '',
         password: '',
         confirmedPassword: '',
+        email: '',
         role: 'donor'
       },
       
       signUpValidationMessages: {
+        name: 'Name is required',
         phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
         password: 'Invalid password. Must range between 8 and 18 characters',
-        confirmedPassword: 'Confirmed password does not match with password'
+        confirmedPassword: 'Confirmed password does not match with password',
+        email: 'Invalid email'
       },
       signUpValidationRules: {
         name: { test: (creds) => !!creds.name.trim().length },
         phone: { test: (creds) => /^7\d{8}$/.test(creds.phone) },
         password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
-        confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password }
+        confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password },
+        email: { test: (creds) => /\S+@\S+\.\S+/.test(String(creds.email))}
       },
-      signUpValidationResults: { phone: null, password: null, confirmedPassword: null },
+      signUpValidationResults: { name: null, phone: null, password: null, confirmedPassword: null, email: null },
       params: {
         clientId: GOOGLE_CLIENT_ID
       },
@@ -165,11 +183,12 @@ export default {
       this.signUpCreds = {
         name: '',
         phone: '',
+        email: '',
         password: '',
         confirmedPassword: '',
         role: 'donor'
       },
-      this.signUpValidationResults = { phone: null, password: null, confirmedPassword: null },
+      this.signUpValidationResults = { name: null, phone: null, password: null, confirmedPassword: null, email: null },
       this.helper = {
         phone: false,
         password: false
@@ -180,7 +199,8 @@ export default {
         phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
         password: 'Invalid password. Must range between 8 and 18 characters',
         confirmedPassword: 'Confirmed password does not match with password',
-        name: 'Name is required'
+        name: 'Name is required',
+        email: 'Invalid email'
       };
       this.helper = {
         phone: false,
@@ -193,27 +213,30 @@ export default {
           name: this.signUpCreds.name.trim(),
           phone: `254${this.signUpCreds.phone}`,
           password: this.signUpCreds.password,
+          email: this.signUpCreds.email,
         };
         await this.createUser(data);
 
         if (!this.user) {
           this.signUpValidationMessages = {
-            phone: 'Sign-up failed. Phone number already assigned to existing account',
-            password: 'Sign-up failed. Phone number already assigned to existing account',
-            confirmedPassword: 'Sign-up failed. Phone number already assigned to existing account',
-            name: 'Sign-up failed. Phone number already assigned to existing account'
+            phone: 'Sign-up failed. Phone number or email already assigned to existing account',
+            password: '',
+            confirmedPassword: '',
+            name: '',
+            email: 'Sign-up failed. Phone number or email already assigned to existing account',
           };
-          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: false };
+          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: null, email: false };
         }
         else {
           this.signUpCreds = {
             name: '',
             phone: '',
+            email: '',
             password: '',
             confirmedPassword: '',
             role: 'donor'
           },
-          this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true, name: true };
+          this.signUpValidationResults = { phone: true, password: true, confirmedPassword: true, name: true, email: true };
           this.$bvModal.hide('sign-up');
         }
       }
