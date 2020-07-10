@@ -5,6 +5,9 @@ const mutations: MutationTree<AppState> = {
   addTransaction(state, trx) {
     state.transactions.push(trx);
   },
+  setPaymentRequest(state, trx) {
+    state.lastPaymentRequest = trx;
+  },
   addBeneficiary(state, bnf) {
     state.beneficiaries.push(bnf);
   },
