@@ -72,6 +72,10 @@ export interface AppConfig {
    */
   flutterwaveRedirectUrl: string;
   /**
+   * Root path for flutterwave webhooks
+   */
+  flutterwaveWebhooksRoot: string;
+  /**
    * Maximum amount of funds a beneficiary can receive
    * from donation distributions in a given period
    */
@@ -111,6 +115,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     flutterwaveLogoUrl: `${webappBaseUrl}/logo.png`,
     flutterwaveRedirectUrl: `${webappBaseUrl}/payment/complete`,
     flutterwaveSecretKey: env.FLUTTERWAVE_SECRET_KEY || '',
+    flutterwaveWebhooksRoot: '/webhooks/flutterwave',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,

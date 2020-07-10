@@ -1,8 +1,9 @@
 import * as axios from 'axios';
-import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult } from './types';
+import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult, TransactionStatus } from './types';
 import { User } from '../user';
 import { generateId } from '../util';
-import { createAppError, createFlutterwaveApiError } from '../error';
+import { createFlutterwaveApiError } from '../error';
+import { not } from '@hapi/joi';
 
 const API_BASE_URL = 'https://api.flutterwave.com/v3';
 
@@ -27,6 +28,30 @@ interface FlutterwaveInitiatePaymentResponse {
   }
 }
 
+interface FlutterwaveNotification {
+  event: string;
+  'event.type': string;
+  data: {
+    id: string;
+    tx_ref: string;
+    flw_ref: string;
+    amount: number;
+    currency: string;
+    charged_amount: number;
+    amount_settled: number;
+    status: string;
+    payment_type: string;
+    narration: string;
+    processor_response: string;
+    customer: {
+      id: string;
+      name: string;
+      phone_number: string;
+      created_at: string;
+    }
+  }
+}
+
 export class FlutterwavePaymentProvider implements PaymentProvider {
 
   constructor(private args: FlutterwavePaymentProviderArgs) {
@@ -47,7 +72,7 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       redirect_url: this.args.redirectUrl,
       customer: {
         email: user.email,
-        phonenumber: user.phone,
+        phone_number: user.phone,
         name: user.name
       },
       customizations: {
@@ -64,7 +89,7 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       const res = await axios.default.post<FlutterwaveInitiatePaymentResponse>(
         getUrl('/payments'),
         data,
-        { headers: { Authorization: `Bearer ${this.args.secretKey}`} });
+        { headers: { Authorization: `Bearer ${this.args.secretKey}` } });
 
       return {
         providerTransactionId: data.tx_ref,
@@ -79,9 +104,24 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
     }
   }
 
-  handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
-    throw new Error('Method not implemented.');
+  async handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
+    const notification: FlutterwaveNotification = payload;
+    const { data } = notification;
+    const status: TransactionStatus = data.status === 'successful' ? 'success' :
+      data.status === 'failed' ? 'failed' : 'pending';
+
+    return {
+      userData: {
+        phone: data.customer.phone_number
+      },
+      status,
+      amount: data.charged_amount,
+      providerTransactionId: data.tx_ref,
+      metadata: data,
+      failureReason: status === 'failed' ? data.processor_response: ''
+    };
   }
+
   getTransaction(id: string): Promise<ProviderTransactionInfo> {
     throw new Error('Method not implemented.');
   }
