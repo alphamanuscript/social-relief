@@ -18,17 +18,23 @@ function selectAppTargets () {
 function setOutputs(appTarget) {
   const herokuApp = core.getInput(`heroku-${appTarget}`);
   const firebaseApp = core.getInput(`firebase-${appTarget}`);
+  const manualpayApp = core.getInput(`manualpay-${appTarget}`);
 
   if (!herokuApp) {
     return core.setFailed(`Heroku app not specified for ${appTarget}`);
   }
 
   if (!firebaseApp) {
-    return core.setFailed(`FFirebase app not specified for ${appTarget}`);
+    return core.setFailed(`Firebase app not specified for ${appTarget}`);
+  }
+
+  if (!manualpayApp) {
+    return core.setFailed(`Manualpay app not specified for ${appTarget}`);
   }
 
   core.setOutput('heroku-app', herokuApp);
   core.setOutput('firebase-app', firebaseApp);
+  core.setOutput('manualpay-app', manualpayApp);
 }
 
 selectAppTargets();
