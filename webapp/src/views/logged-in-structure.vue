@@ -88,7 +88,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'getBeneficiaries', 'getMiddlemen', 'getTransactions']),
     async signOut() {
       await this.signUserOut();
     },
@@ -99,6 +99,9 @@ export default {
   async mounted() {
     if (Auth.isAuthenticated() && !this.user) {
       await this.getCurrentUser();
+      await this.getBeneficiaries();
+      await this.getTransactions();
+      await this.getMiddlemen();
     }
     else if (!Auth.isAuthenticated()) this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },

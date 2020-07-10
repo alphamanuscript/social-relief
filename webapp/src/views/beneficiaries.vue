@@ -77,7 +77,7 @@
   </b-container>
 </template>
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
   name: 'beneficiaries',
   data() {
@@ -139,7 +139,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getTransactions', 'getBeneficiaries', 'getMiddlemen']),
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -182,11 +181,6 @@ export default {
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
     }
-  },
-  async created() {
-    await this.getBeneficiaries();
-    await this.getTransactions();
-    await this.getMiddlemen();
   }
 }
 </script>
