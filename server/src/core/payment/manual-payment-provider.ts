@@ -1,5 +1,5 @@
 import * as axios from 'axios';
-import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult, TransactionStatus } from './types';
+import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult, TransactionStatus, Transaction } from './types';
 import { User } from '../user';
 import { createManualPayApiError, isAppError } from '../error';
 
@@ -68,7 +68,8 @@ export class ManualPaymentProvider implements PaymentProvider {
     return convertTransaction(tx);
   }
 
-  async getTransaction(id: string): Promise<ProviderTransactionInfo> {
+  async getTransaction(localTransaction: Transaction): Promise<ProviderTransactionInfo> {
+    const id = localTransaction.providerTransactionId;
     try {
       const res = await axios.default.get<ManualPayTransaction>(this.getTransactionsUrl(`/${id}`));
 

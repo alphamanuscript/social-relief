@@ -199,7 +199,7 @@ export class Transactions implements TransactionService {
         return trx;
       }
 
-      const providerResult = await this.provider(trx.provider).getTransaction(trx.providerTransactionId);
+      const providerResult = await this.provider(trx.provider).getTransaction(trx);
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id }, 
         {
