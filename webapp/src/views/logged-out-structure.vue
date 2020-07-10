@@ -29,7 +29,6 @@ import HomeFooter from '../components/home-footer'
 import { mapState } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
-import { createDecipheriv } from 'crypto';
 export default {
   name: 'logged-out-structure',
   components: { HomeFooter },
