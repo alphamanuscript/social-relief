@@ -130,7 +130,7 @@ export default {
   computed: {
     ...mapState(['beneficiaries', 'user', 'middlemen', 'transactions']),
     currentBeneficiaryTransactions () {
-      return this.transactions.filter( t => t.to === this.currentBeneficiary._id )
+      return this.transactions.filter( t => t.type === 'donation' && t.to === this.currentBeneficiary._id )
     }
   },
   methods: {
@@ -167,9 +167,14 @@ export default {
     },
     getProgress() {
       const thirtyDays = 30*24*60*60*1000;
+      const monthlyMax = 2000;
       const monthTransactions = this.currentBeneficiaryTransactions.filter(t => new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
-      const monthTotal =  monthTransactions.reduce((acc, t) => { acc + t.amount; }, 0);
-      return monthTotal*100/2000;
+      const monthTotal =  monthTransactions.reduce((acc, t) => { 
+        if (t.status === 'success')
+          acc += t.amount; 
+        return acc;
+      }, 0);
+      return monthTotal*100/monthlyMax;
     }
   },
   async mounted() {
