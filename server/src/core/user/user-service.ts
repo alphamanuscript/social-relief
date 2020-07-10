@@ -124,6 +124,7 @@ export class Users implements UserService {
     try {
       if (args.password) {
         user.password = await hashPassword(args.password);
+        user.email = args.email;
       }
       else if (args.googleIdToken) {
         const googleUserData = await verifyGoogleIdToken(args.googleIdToken);
@@ -138,10 +139,11 @@ export class Users implements UserService {
       rethrowIfAppError(e);
 
       if (isMongoDuplicateKeyError(e, args.phone)) {
-        const existingUser = await this.collection.findOne({ phone: args.phone });
-        if (existingUser.email && user.email && existingUser.email === user.email)
-          return getSafeUser(existingUser)
         throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+      }
+
+      if (isMongoDuplicateKeyError(e, args.email)) {
+        throw createUniquenessFailedError(messages.ERROR_EMAIL_ALREADY_IN_USE);
       }
 
       throw createDbOpFailedError(e.message);
