@@ -85,6 +85,7 @@ export default {
       currentBeneficiary: {
         _id: '',
         name: '',
+        phone: '',
         addedBy: '',
         createdAt: '',
       },
@@ -172,7 +173,7 @@ export default {
     getProgress(id) {
       const monthlyMax = 2000;
       const thirtyDays = 30*24*60*60*1000;
-      const thirtyDaysDistributions = this.distributions.filter(t => t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
+      const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
       const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
     },
@@ -182,7 +183,7 @@ export default {
         .reduce((a, b) => a + b, 0);
     }
   },
-  async mounted() {
+  async created() {
     await this.getBeneficiaries();
     await this.getTransactions();
     await this.getMiddlemen();
