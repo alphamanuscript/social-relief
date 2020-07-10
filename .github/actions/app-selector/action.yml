@@ -19,6 +19,15 @@ inputs:
   firebase-production:
     description: 'Firebase production app'
     required: true
+  manualpay-review1:
+    description: 'Manualpay review1 app'
+    required: true
+  manualpay-staging:
+    description: 'Manualpay staging app'
+    required: true
+  manualpay-production:
+    description: 'Manualpay production app'
+    required: true
 outputs:
   heroku-app:
     description: 'Selected heroku app'
