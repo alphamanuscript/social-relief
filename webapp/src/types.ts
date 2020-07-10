@@ -45,7 +45,7 @@ export interface LoginResult {
 export interface UserNominateArgs {
   name: string,
   phone: string,
-  email: string,
+  email?: string,
   nominator: string
 }
 

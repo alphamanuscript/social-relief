@@ -8,6 +8,10 @@ const actions = wrapActions({
     const beneficiaries = await Users.getBeneficiaries();
     commit('setBeneficiaries', beneficiaries);
   },
+  async getMiddlemen({ commit }) {
+    const middlemen = await Users.getMiddlemen();
+    commit('setMiddlemen', middlemen);
+  },
   async getTransactions({ commit}) {
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
@@ -68,6 +72,7 @@ const actions = wrapActions({
     [
       'unsetUser',
       'unsetBeneficiaries',
+      'unsetMiddlemen',
       'unsetTransactions',
       'unsetMessage',
     ].forEach((mutation) => commit(mutation));

@@ -30,6 +30,10 @@ export const Users = {
     const res = await axios.get<User>('/users/beneficiaries');
     return res.data;
   },
+  async getMiddlemen() {
+    const res = await axios.get<User>('/users/middlemen');
+    return res.data;
+  },
   async getCurrentUser () {
     const res = await axios.get<User>('/users/me');
     return res.data;
