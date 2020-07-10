@@ -21,15 +21,20 @@ export const users = [
     _id: 'donor4',
     roles: ['donor']
   },
+  // this donor has no transactions
+  {
+    _id: 'donor5',
+    roles: ['donor']
+  },
   {
     _id: 'beneficiary1',
     roles: ['beneficiary'],
-    donors: ['donor1']
+    donors: ['donor1', 'donor5']
   },
   {
     _id: 'beneficiary2',
     roles: ['beneficiary'],
-    donors: ['donor2', 'donor3']
+    donors: ['donor2', 'donor3', 'donor5']
   },
   {
     _id: 'beneficiary3',

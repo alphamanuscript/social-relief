@@ -31,7 +31,7 @@ describe('Donation distribution steps', () => {
       const result = await findEligibleBeneficiaries(dbUtils.getDb(), 2000, 30);
       expect(result).toEqual([
         // 500 + 1000
-        { _id: 'beneficiary1', donors: ['donor1'], totalReceived: 500, remaining: 1500 },
+        { _id: 'beneficiary1', donors: ['donor1', 'donor5'], totalReceived: 500, remaining: 1500 },
         // 1200 + 170
         { _id: 'beneficiary3', donors: ['donor1', 'donor2'], totalReceived: 1370, remaining: 630 },
         // has no transactions, therefore totalReceived == 0
@@ -44,7 +44,7 @@ describe('Donation distribution steps', () => {
 
   describe('computeDonorsBalances', () => {
     test('should compute the balance of each donor based on their transactions', async () => {
-      const result = await computeDonorsBalances(dbUtils.getDb(), ['donor1', 'donor2', 'donor3']);
+      const result = await computeDonorsBalances(dbUtils.getDb(), ['donor1', 'donor2', 'donor3', 'donor5']);
       result.sort((a, b) => a._id.localeCompare(b._id));
       expect(result).toEqual([
         // 5000 - 1000 - 500 - 170
@@ -52,7 +52,9 @@ describe('Donation distribution steps', () => {
         // 2500 - 600
         { _id: 'donor2', balance: 1900 },
         // 4000 + 200 - 1400 - 1200
-        { _id: 'donor3', balance: 1600 }
+        { _id: 'donor3', balance: 1600 },
+        // donor5 has no transactions => balance is 0
+        { _id: 'donor5', balance: 0 }
       ]);
     });
   });
