@@ -178,7 +178,12 @@ export async function computeDonorsBalances(db: Db, donors: string[]): Promise<D
       }
     },
     {
-      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
+      $replaceRoot: {
+        newRoot: {
+           // if there are no transactions, the balance should be set to 0
+          $mergeObjects: [ { balance: 0 }, { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ]
+        }
+      }
     },
     {
       $project: { _id: 1, balance: 1 }

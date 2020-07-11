@@ -510,6 +510,10 @@ function selectAppTargets () {
   switch (branch) {
     case 'refs/heads/review1':
       return setOutputs('review1');
+    case 'refs/heads/review2':
+      return setOutputs('review2');
+    case 'refs/heads/review3':
+      return setOutputs('review3');
     case 'refs/heads/master':
       return setOutputs('staging');
     case 'refs/heads/release':
@@ -528,7 +532,7 @@ function setOutputs(appTarget) {
   }
 
   if (!firebaseApp) {
-    return core.setFailed(`FFirebase app not specified for ${appTarget}`);
+    return core.setFailed(`Firebase app not specified for ${appTarget}`);
   }
 
   core.setOutput('heroku-app', herokuApp);

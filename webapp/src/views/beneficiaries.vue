@@ -15,7 +15,7 @@
           <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
           <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
         </div>
-        <b-table v-else :items="beneficiaries" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
+        <b-table v-else :items="beneficiaryItems" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
           </template>
@@ -23,7 +23,7 @@
             <span class="text-secondary font-weight-bold"> {{ getDate(data.item.createdAt) }}</span>
           </template>
           <template v-slot:cell(progress)="data">
-            <span class="text-secondary font-weight-bold"> {{ getProgress(data.item._id) }} %</span>
+            <span class="text-secondary font-weight-bold"> {{ data.item.progress }} %</span>
           </template>
           <template v-slot:cell(expand)="data">
             <b-button variant="outline-primary" @click="handleExpand(data.item)" class="border-0"><i class="fas fa-expand"></i></b-button>
@@ -49,20 +49,21 @@
     >
       <p class="small">
         <span class="font-weight-bold pr-2">Added by:</span> 
-        <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
+        <span>{{ currentBeneficiary.addedBy }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Added on:</span> 
-        <span>{{ getDate(currentBeneficiary.createdAt) }}</span>
+        <span>{{ currentBeneficiary.createdAt }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Total received:</span> 
-        <span>Ksh {{ getTotalSuccessful() }}</span>
+        <span>Ksh {{ getTotalSuccessful }}</span>
       </p>
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table :items="currentBeneficiaryDistributions" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
+      <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped hover stacked="sm" >
         <template v-slot:cell(amount)="data">
-          <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+          <span v-if="data.item.status==='success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+          <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
         </template>
         <template v-slot:cell(status)="data">
             <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
@@ -70,6 +71,7 @@
             <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
           </template>
       </b-table>
+      <p v-else> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
@@ -77,7 +79,9 @@
   </b-container>
 </template>
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'beneficiaries',
   data() {
@@ -87,44 +91,28 @@ export default {
         name: '',
         addedBy: '',
         createdAt: '',
+        progress: 0
       },
       beneficiaryFields: [
         {
           key: 'index',
           label: ''
         },
-        {
-          key: 'name',
-          label: 'Name',
-          formatter: this.getName
-        },
-        {
-          key:'addedBy',
-          label: 'Added by',
-          formatter: this.getNominator
-        },
+        'name',
+        'addedBy',
         {
           key:'createdAt',
-          label: 'Added on',
-          formatter: this.getDate
+          label: 'Added on'
         },
-        {
-          key: 'progress',
-          label: 'Progress*',
-        },
+        'progress',
         'expand'
       ],
       distributionFields: [
         {
           key:'updatedAt',
           label: 'Date',
-          formatter: this.getDate
         },
-        {
-          key:'addedBy',
-          label: 'From',
-          formatter: this.getDonor
-        },
+        'from',
         'amount',
         'status'
       ]
@@ -133,20 +121,51 @@ export default {
   computed: {
     ...mapState(['beneficiaries', 'user', 'middlemen']),
     ...mapGetters(['distributions']),
-    currentBeneficiaryDistributions () {
-      return this.distributions.filter( t => t.to === this.currentBeneficiary._id )
+    beneficiaryItems() {
+      return this.beneficiaries.map(b => {
+        return { 
+          _id: b._id,
+          name: b.name,
+          addedBy: this.getNominator(b.addedBy),
+          createdAt: this.getDate(b.createdAt),
+          progress: this.getProgress(b._id)
+        }
+      });
+    },
+    distributionItems () {
+      return this.distributions.filter( d => d.to === this.currentBeneficiary._id )
+        .map( d => {
+          return {
+            _id: d._id,
+            updatedAt: this.getDate(d.updatedAt),
+            from: this.getDonor(d.from),
+            amount: d.amount,
+            expectedAmount: d.expectedAmount,
+            status: d.status
+          }
+        });
+    },
+    getTotalSuccessful() {
+      return this.distributionItems.filter(d => d.status === 'success')
+        .map(d => d.amount)
+        .reduce((a, b) => a + b, 0);
     }
   },
   methods: {
+    ...mapActions(['getCurrentUser','refreshData']),
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
     },
     hideDialog() {
+      this.currentBeneficiary = {
+        _id: '',
+        name: '',
+        addedBy: '',
+        createdAt: '',
+        progress: 0
+      };
       this.$bvModal.hide('beneficiary');
-    },
-    getName(name) {
-      return name ? name : 'Unknown';
     },
     getNominator(id) {
       if (this.user) {
@@ -177,14 +196,19 @@ export default {
     getProgress(id) {
       const monthlyMax = 2000;
       const thirtyDays = 30*24*60*60*1000;
-      const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
-      const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
+      const thirtyDaysDistributions = this.distributions.filter(d => d.to === id && d.status === 'success' && new Date().getTime() - new Date(d.updatedAt).getTime() < thirtyDays);
+      const monthTotal = thirtyDaysDistributions.map(d => d.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
-    },
-    getTotalSuccessful() {
-      return this.currentBeneficiaryDistributions.filter(t => t.status === 'success')
-        .map(t => t.amount)
-        .reduce((a, b) => a + b, 0);
+    }
+  },
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+      await this.refreshData();
+    }
+    else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   }
 }

@@ -24,6 +24,10 @@ export interface AppConfig {
    */
   dbName: string;
   /**
+   * base url of the web app
+   */
+  webappBaseUrl: string;
+  /**
    * Africa's Talking username
    */
   atUsername: string;
@@ -56,6 +60,22 @@ export interface AppConfig {
    */
   manualPayBaseUrl: string;
   /**
+   * Flutterwave's API secret key
+   */
+  flutterwaveSecretKey: string;
+  /**
+   * URL of the logo to display on Flutterwave's payment dialog
+   */
+  flutterwaveLogoUrl: string;
+  /**
+   * URL to redirect the user to after payment is complete
+   */
+  flutterwaveRedirectUrl: string;
+  /**
+   * Root path for flutterwave webhooks
+   */
+  flutterwaveWebhooksRoot: string;
+  /**
    * Maximum amount of funds a beneficiary can receive
    * from donation distributions in a given period
    */
@@ -78,17 +98,24 @@ export interface AppConfig {
 };
 
 export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig {
+  const webappBaseUrl = env.WEBAPP_BASE_URL || 'http://localhost:8080';
+
   return {
     dbName: env.DB_NAME || 'crowdrelief',
     dbUri: env.DB_URL || 'mongodb://localhost:27017/crowdrelief',
     port: (env.PORT && Number(env.PORT)) || 3000,
+    webappBaseUrl,
     atApiKey: env.AT_API_KEY || '',
     atUsername: env.AT_USERNAME || 'sandbox',
     atPaymentsProductName: env.AT_PAYMENTS_PRODUCT_NAME || 'TestCrowdRelief',
     atPaymentsProviderChannel: env.AT_PAYMENTS_PROVIDER_CHANNEL || '50000',
-    atWebhooksRoot: '/at-webhooks',
-    manualPayWebhooksRoot: '/webhooks/manualpay',
+    atWebhooksRoot: env.AT_WEBHOOKS || '/webhooks/at',
+    manualPayWebhooksRoot: env.MANUAL_PAY_WEBHOOKS || '/webhooks/manualpay',
     manualPayBaseUrl: env.MANUAL_PAY_BASE_URL || 'http://localhost:5000',
+    flutterwaveLogoUrl: `${webappBaseUrl}/img/logo.svg`,
+    flutterwaveRedirectUrl: `${webappBaseUrl}/post-payment/flutterwave`,
+    flutterwaveSecretKey: env.FLUTTERWAVE_SECRET_KEY || '',
+    flutterwaveWebhooksRoot: env.FLUTTERWAVE_WEBHOOKS || '/webhooks/flutterwave',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,

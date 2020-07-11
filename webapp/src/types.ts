@@ -100,4 +100,6 @@ export interface AppState {
   middlemen: User[];
   transactions: Transaction[];
   message: AppMessage;
+  // keeps track of payment request that has just been created
+  lastPaymentRequest?: Transaction;
 }
