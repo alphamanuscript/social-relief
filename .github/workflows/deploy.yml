@@ -1,4 +1,4 @@
-name: Deploy to review1
+name: Deploy
 
 env:
   NODE_VERSION: 12.16.x
@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - review1
+      - review2
+      - review3
       - master
       - release
 
@@ -23,17 +25,26 @@ jobs:
         uses: ./.github/actions/app-selector
         with:
           heroku-review1: ${{ secrets.HEROKU_REVIEW1_APP }}
+          heroku-review2: ${{ secrets.HEROKU_REVIEW2_APP }}
+          heroku-review3: ${{ secrets.HEROKU_REVIEW3_APP }}
           heroku-staging: ${{ secrets.HEROKU_STAGING_APP }}
           heroku-production: ${{ secrets.HEROKU_PRODUCTION_APP }}
           firebase-review1: ${{ secrets.FIREBASE_REVIEW1_APP }}
+          firebase-review2: ${{ secrets.FIREBASE_REVIEW2_APP }}
+          firebase-review3: ${{ secrets.FIREBASE_REVIEW3_APP }}
           firebase-staging: ${{ secrets.FIREBASE_STAGING_APP }}
           firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
-      - name: 'Deploy to Heroku'
+      - name: 'Prepare config for deployment'
         run: |
           heroku config:set NPM_PRODUCTION=false YARN_PRODUCTION=false --app ${{ steps.selector.outputs.heroku-app }}
-          git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ steps.selector.outputs.heroku-app }}.git review1:master
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: 'Deploy server'
+        run: |
+          git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ steps.selector.outputs.heroku-app }}.git ${{ github.ref }}:master
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+    
 
   deploy-client:
     name: "Deploy client"
@@ -45,9 +56,13 @@ jobs:
         uses: ./.github/actions/app-selector
         with:
           heroku-review1: ${{ secrets.HEROKU_REVIEW1_APP }}
+          heroku-review2: ${{ secrets.HEROKU_REVIEW2_APP }}
+          heroku-review3: ${{ secrets.HEROKU_REVIEW3_APP }}
           heroku-staging: ${{ secrets.HEROKU_STAGING_APP }}
           heroku-production: ${{ secrets.HEROKU_PRODUCTION_APP }}
           firebase-review1: ${{ secrets.FIREBASE_REVIEW1_APP }}
+          firebase-review2: ${{ secrets.FIREBASE_REVIEW2_APP }}
+          firebase-review3: ${{ secrets.FIREBASE_REVIEW3_APP }}
           firebase-staging: ${{ secrets.FIREBASE_STAGING_APP }}
           firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
       - uses: actions/setup-node@v1

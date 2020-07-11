@@ -23,6 +23,8 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
   name: 'post-payment-flutterwave',
@@ -37,12 +39,22 @@ export default {
   computed: {
     ...mapState(['transactions'])
   },
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user) {
+        await this.getCurrentUser();
+      }
+
+      await this.getTransactions();
+    } else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    }
+  },
   methods: {
-    ...mapActions(['getTransaction']),
+    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions']),
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
-      const query = this.$route.query;
 
       const txRef = this.checkTransactionAndStatus();
       if (this.cancelled) {
