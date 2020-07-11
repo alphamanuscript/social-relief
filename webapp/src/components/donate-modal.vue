@@ -19,19 +19,7 @@
     </template>
     <b-form>
       <b-form-group>
-        <label for="phone" class="sr-only">Phone Number</label>
-        <b-form-input
-          v-model="donationInputs.phone" 
-          type="text"
-          :state="validationResults[0]"
-          class="custom-dialog-input-phone"
-          id="phone"
-          :value="donationInputs.phone"
-          disabled
-        />
-      </b-form-group>
-      <b-form-group>
-        <label for="amount" class="sr-only">Amount</label>
+        <label for="amount">Amount to donate</label>
         <b-form-input 
           v-model="donationInputs.amount" 
           type="number" 
@@ -61,7 +49,7 @@ export default {
     return {
       donationInputs: {
         phone: '',
-        amount: 100
+        amount: 1000
       },
       validationMessages: [
         'Invalid phone number. Must start with 7 and be 9 digit long',
@@ -86,7 +74,7 @@ export default {
     showDonateDialog() {
       this.donationInputs = {
         phone: '',
-        amount: 100
+        amount: 1000
       },
       this.validationResults = [null, null];
       this.$bvModal.show('sign-up');
@@ -94,7 +82,7 @@ export default {
     hideDialog() {
       this.donationInputs = {
         phone: '',
-        amount: 100
+        amount: 1000
       },
       this.validationResults = [null, null];
     },
@@ -120,7 +108,7 @@ export default {
         else {
           this.donationInputs = {
             phone: '',
-            amount: 100
+            amount: 1000
           },
           this.validationResults = [null, null];
           this.$bvModal.hide('donate');

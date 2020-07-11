@@ -1,16 +1,19 @@
 import { loadAppConfigFromEnv, bootstrap } from './core';
 import { createServer } from './server';
 import { mountRestApi } from './rest';
-import { mountAtWebhooks, mountManualPaymentWebhooks } from './webhooks';
+import { mountAtWebhooks, mountManualPaymentWebhooks, mountFlutterwaveWebhooks } from './webhooks';
 
 async function startServer() {
   try {
     const config = loadAppConfigFromEnv(process.env);
     const app = await bootstrap(config);
     const server = createServer(app);
+
     mountRestApi(server, '/api');
+
     mountAtWebhooks(server, config.atWebhooksRoot);
     mountManualPaymentWebhooks(server, config.manualPayWebhooksRoot);
+    mountFlutterwaveWebhooks(server, config.flutterwaveWebhooksRoot);
 
     server.listen(config.port, () => {
       console.log(`Server listening on port ${config.port}`);
