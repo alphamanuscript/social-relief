@@ -73,6 +73,13 @@ const actions = wrapActions({
     const user = await Users.getCurrentUser();
     if (user) commit('setUser', user);
   },
+  async refreshData({ dispatch }) {
+    [
+      'getBeneficiaries',
+      'getMiddlemen',
+      'getTransactions'
+    ].forEach((action) => dispatch(action));
+  },
   async clearData({ commit }) {
     [
       'unsetUser',
