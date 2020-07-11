@@ -23,6 +23,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
@@ -53,7 +54,6 @@ export default {
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
-      const query = this.$route.query;
 
       const txRef = this.checkTransactionAndStatus();
       if (this.cancelled) {
