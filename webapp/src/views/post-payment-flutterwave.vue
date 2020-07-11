@@ -40,14 +40,14 @@ export default {
     ...mapState(['transactions'])
   },
   methods: {
-    ...mapActions(['getTransaction', 'refreshData']),
+    ...mapActions(['getTransaction', 'getTransactions']),
     async created() {
       if (Auth.isAuthenticated()) {
         if (!this.user) {
           await this.getCurrentUser();
         }
-        
-        await this.refreshData();
+
+        await this.getTransactions();
       } else {
         this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
       }
