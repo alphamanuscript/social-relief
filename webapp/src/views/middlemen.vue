@@ -13,6 +13,7 @@
         </template>
         <template v-slot:cell(beneficiaries)="data">
           <span class="text-secondary font-weight-bold"> {{ data.item.beneficiaries.length }} </span>
+          <span v-if="data.item.beneficiaries.length">: {{ data.item.beneficiaries.join(", ") }} </span>
         </template>
       </b-table>
     </div>
@@ -62,7 +63,7 @@ export default {
       return new Date(datetime).toLocaleDateString();
     },
     getBeneficiariesAdded(id) {
-      return this.beneficiaries.filter(b => b.addedBy === id);
+      return this.beneficiaries.filter(b => b.addedBy === id).map(b => b.name );
     }
   },
   async created() {
