@@ -43,11 +43,12 @@ export default {
     ...mapActions(['getTransaction', 'refreshData']),
     async created() {
       if (Auth.isAuthenticated()) {
-      if (!this.user)
-        await this.getCurrentUser();
+        if (!this.user) {
+          await this.getCurrentUser();
+        }
+        
         await this.refreshData();
-      }
-      else {
+      } else {
         this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
       }
     },
