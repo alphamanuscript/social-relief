@@ -48,9 +48,6 @@
       scrollable
     >
       <p class="small">
-        <span class="font-weight-bold pr-2">M-PESA Number:</span> 
-        <span>+{{ currentBeneficiary.phone }}</span>
-        <br/>
         <span class="font-weight-bold pr-2">Added by:</span> 
         <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
         <br/>
@@ -80,7 +77,7 @@
   </b-container>
 </template>
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
   name: 'beneficiaries',
   data() {
@@ -88,7 +85,6 @@ export default {
       currentBeneficiary: {
         _id: '',
         name: '',
-        phone: '',
         addedBy: '',
         createdAt: '',
       },
@@ -142,7 +138,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getTransactions', 'getBeneficiaries', 'getMiddlemen']),
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -154,21 +149,27 @@ export default {
       return name ? name : 'Unknown';
     },
     getNominator(id) {
-      if (this.user._id===id)
-        return 'Me';
-      else {
-        const middleman = this.middlemen.find( m => m._id === id );
-        if (middleman)
-          return middleman.name;
-        return id;
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          const middleman = this.middlemen.find( m => m._id === id );
+          if (middleman)
+            return middleman.name;
+          return id;
+        }
       }
+      return '';
     },
     getDonor(id) {
-      if (this.user._id===id)
-        return 'Me';
-      else {
-        return 'Other donor';
+      if (this.user) {
+        if (this.user._id===id)
+          return 'Me';
+        else {
+          return 'Other donor';
+        }
       }
+      return '';
     },
     getDate(datetime) {
       return new Date(datetime).toLocaleDateString();
@@ -185,11 +186,6 @@ export default {
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
     }
-  },
-  async created() {
-    await this.getBeneficiaries();
-    await this.getTransactions();
-    await this.getMiddlemen();
   }
 }
 </script>

@@ -37,8 +37,8 @@ const actions = wrapActions({
    * createUser({phone, password}) OR
    * createUser({phone, googleIdToken})
    */
-  async createUser({ commit }, { name, phone, password, googleIdToken }: { name: string; phone: string; password: string; googleIdToken: string }) {
-    const user = await Users.createUser({ name, phone, password, googleIdToken });
+  async createUser({ commit }, { name, phone, password, email, googleIdToken }: { name: string; phone: string; password: string; email: string; googleIdToken: string }) {
+    const user = await Users.createUser({ name, phone, password, email, googleIdToken });
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
 

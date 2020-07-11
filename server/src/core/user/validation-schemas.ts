@@ -40,7 +40,6 @@ export const createInputSchema = joi.alternatives().try(
     email: emailSchema
   }),
   joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
-  joi.object().keys({ googleIdToken: googleIdTokenValidationSchema })
 );; 
 
 export const loginInputSchema = joi.alternatives().try(

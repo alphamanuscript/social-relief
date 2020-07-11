@@ -181,7 +181,7 @@ export default {
           this.$bvModal.show('nominate-success');
         }
       }
-    },
+    }
   }
 }
 </script>
