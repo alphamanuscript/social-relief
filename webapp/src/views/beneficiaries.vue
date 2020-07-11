@@ -46,10 +46,10 @@
     >
       <p class="small">
         <span class="font-weight-bold pr-2">Added by:</span> 
-        <span>{{ getNominator(currentBeneficiary.addedBy) }}</span>
+        <span>{{ currentBeneficiary.addedBy }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Added on:</span> 
-        <span>{{ getDate(currentBeneficiary.createdAt) }}</span>
+        <span>{{ currentBeneficiary.createdAt }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Total received:</span> 
         <span>Ksh {{ getTotalSuccessful() }}</span>
@@ -67,6 +67,7 @@
             <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
           </template>
       </b-table>
+      <p v-if="!distributionItems.length" class="text-center"> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
@@ -141,6 +142,11 @@ export default {
             status: d.status
           }
         });
+    },
+    getTotalSuccessful() {
+      return this.distributionItems.filter(t => t.status === 'success')
+        .map(t => t.amount)
+        .reduce((a, b) => a + b, 0);
     }
   },
   methods: {
@@ -191,11 +197,6 @@ export default {
       const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
       const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
-    },
-    getTotalSuccessful() {
-      return this.distributionItems.filter(t => t.status === 'success')
-        .map(t => t.amount)
-        .reduce((a, b) => a + b, 0);
     }
   },
   async created() {
