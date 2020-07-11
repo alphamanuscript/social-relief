@@ -23,6 +23,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
   name: 'post-payment-flutterwave',
@@ -38,7 +39,17 @@ export default {
     ...mapState(['transactions'])
   },
   methods: {
-    ...mapActions(['getTransaction']),
+    ...mapActions(['getTransaction', 'refreshData']),
+    async created() {
+      if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+        await this.refreshData();
+      }
+      else {
+        this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+      }
+    },
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
