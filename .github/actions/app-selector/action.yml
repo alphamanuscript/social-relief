@@ -7,7 +7,7 @@ inputs:
   heroku-review2:
     description: 'Heroku review2 app'
     required: true
-  heroku-review13:
+  heroku-review3:
     description: 'Heroku review3 app'
     required: true
   heroku-staging:
