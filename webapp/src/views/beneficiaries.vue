@@ -15,12 +15,12 @@
           <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
           <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
         </div>
-        <b-table v-else :items="beneficiaries" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
+        <b-table v-else :items="beneficiaryItems" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
           </template>
           <template v-slot:cell(progress)="data">
-            <span class="text-secondary font-weight-bold"> {{ getProgress(data.item._id) }} %</span>
+            <span class="text-secondary font-weight-bold"> {{ data.item.progress }} %</span>
           </template>
           <template v-slot:cell(expand)="data">
             <b-button variant="outline-primary" @click="handleExpand(data.item)" class="border-0"><i class="fas fa-expand"></i></b-button>
@@ -57,7 +57,7 @@
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table :items="currentBeneficiaryDistributions" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
+      <b-table :items="distributionItems" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
         <template v-slot:cell(amount)="data">
           <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
         </template>
@@ -84,43 +84,30 @@ export default {
         name: '',
         addedBy: '',
         createdAt: '',
+        progress: 0
       },
       beneficiaryFields: [
         {
           key: 'index',
           label: ''
         },
-        {
-          key: 'name',
-          label: 'Name',
-          formatter: this.getName
-        },
-        {
-          key:'addedBy',
-          label: 'Added by',
-          formatter: this.getNominator
-        },
+        'name',
+        'addedBy',
         {
           key:'createdAt',
-          label: 'Added on',
-          formatter: this.getDate
+          label: 'Added on'
         },
-        {
-          key: 'progress',
-          label: 'Progress*',
-        },
+        'progress',
         'expand'
       ],
       distributionFields: [
         {
           key:'updatedAt',
           label: 'Date',
-          formatter: this.getDate
         },
         {
           key:'addedBy',
           label: 'From',
-          formatter: this.getDonor
         },
         'amount',
         'status'
@@ -130,8 +117,28 @@ export default {
   computed: {
     ...mapState(['beneficiaries', 'user', 'middlemen']),
     ...mapGetters(['distributions']),
-    currentBeneficiaryDistributions () {
+    beneficiaryItems() {
+      return this.beneficiaries.map(b => {
+        return { 
+          _id: b._id,
+          name: b.name,
+          addedBy: this.getNominator(b.addedBy),
+          createdAt: this.getDate(b.createdAt),
+          progress: this.getProgress(b._id)
+        }
+      });
+    },
+    distributionItems () {
       return this.distributions.filter( t => t.to === this.currentBeneficiary._id )
+        .map( d => {
+          return {
+            _id: d._id,
+            updatedAt: this.getDate(d.updatedAt),
+            addedBy: this.getDonor(d.addedBy),
+            amount: d.amount,
+            status: d.status
+          }
+        });
     }
   },
   methods: {
@@ -140,10 +147,14 @@ export default {
       this.$bvModal.show('beneficiary');
     },
     hideDialog() {
+      this.currentBeneficiary = {
+        _id: '',
+        name: '',
+        addedBy: '',
+        createdAt: '',
+        progress: 0
+      };
       this.$bvModal.hide('beneficiary');
-    },
-    getName(name) {
-      return name ? name : 'Unknown';
     },
     getNominator(id) {
       if (this.user) {
@@ -179,7 +190,7 @@ export default {
       return monthTotal*100/monthlyMax;
     },
     getTotalSuccessful() {
-      return this.currentBeneficiaryDistributions.filter(t => t.status === 'success')
+      return this.distributionItems.filter(t => t.status === 'success')
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
     }
