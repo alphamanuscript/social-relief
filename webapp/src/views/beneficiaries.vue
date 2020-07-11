@@ -57,7 +57,7 @@
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table :items="distributionItems" :fields="distributionFields" stacked="sm" head-row-variant="secondary" striped>
+      <b-table v-if="distributionItems.length" :items="distributionItems" thead-class="bg-secondary text-white" striped>
         <template v-slot:cell(amount)="data">
           <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
         </template>
@@ -67,7 +67,7 @@
             <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
           </template>
       </b-table>
-      <p v-if="!distributionItems.length" class="text-center"> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
+      <p v-else class="text-center"> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
@@ -194,7 +194,7 @@ export default {
     getProgress(id) {
       const monthlyMax = 2000;
       const thirtyDays = 30*24*60*60*1000;
-      const thirtyDaysDistributions = this.distributions.filter(t =>t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
+      const thirtyDaysDistributions = this.distributions.filter(t => t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
       const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
     }
