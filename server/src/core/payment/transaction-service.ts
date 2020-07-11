@@ -1,10 +1,11 @@
 import { Db, Collection } from 'mongodb';
 import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
 import { generateId } from '../util';
-import { createDbOpFailedError, AppError, createResourceNotFoundError } from '../error';
+import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError } from '../error';
 import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
+import { request } from 'express';
 
 const COLLECTION = 'transactions';
 
@@ -56,7 +57,7 @@ export class Transactions implements TransactionService {
   async getAllByUser(userId: string): Promise<Transaction[]> {
     validators.validatesGetAllByUser(userId);
     try {
-      const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).toArray();
+      const result = await this.collection.find({ $or: [{ from: userId }, { to: userId }] }).sort({ createdAt: -1 }).toArray();
       return result;
     }
     catch (e) {
@@ -83,11 +84,13 @@ export class Transactions implements TransactionService {
       const requestResult = await provider.requestPaymentFromUser(user, args.amount);
       trxArgs.providerTransactionId = requestResult.providerTransactionId;
       trxArgs.status = requestResult.status;
+      trxArgs.metadata = requestResult.metadata;
+
       const result = await this.create(trxArgs);
       return result;
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }
@@ -196,7 +199,7 @@ export class Transactions implements TransactionService {
         return trx;
       }
 
-      const providerResult = await this.provider(trx.provider).getTransaction(trx.providerTransactionId);
+      const providerResult = await this.provider(trx.provider).getTransaction(trx);
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id }, 
         {
@@ -227,7 +230,7 @@ export class Transactions implements TransactionService {
       status: args.status || 'pending',
       createdAt: now,
       updatedAt: now,
-      metadata: {}
+      metadata: args.metadata || {}
     };
 
     if (args.providerTransactionId) {

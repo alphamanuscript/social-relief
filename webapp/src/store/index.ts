@@ -13,6 +13,7 @@ const state: AppState = {
   middlemen: [],
   transactions: [],
   message: { type: '', message: '' },
+  lastPaymentRequest: undefined
 }
 
 const store = new Vuex.Store({
