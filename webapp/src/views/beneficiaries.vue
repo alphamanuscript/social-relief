@@ -67,7 +67,7 @@
             <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
           </template>
       </b-table>
-      <p v-else class="text-center"> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
+      <p v-else> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
