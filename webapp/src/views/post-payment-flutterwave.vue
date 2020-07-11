@@ -39,19 +39,19 @@ export default {
   computed: {
     ...mapState(['transactions'])
   },
-  methods: {
-    ...mapActions(['getTransaction', 'getTransactions']),
-    async created() {
-      if (Auth.isAuthenticated()) {
-        if (!this.user) {
-          await this.getCurrentUser();
-        }
-
-        await this.getTransactions();
-      } else {
-        this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user) {
+        await this.getCurrentUser();
       }
-    },
+
+      await this.getTransactions();
+    } else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    }
+  },
+  methods: {
+    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions']),
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
