@@ -34,9 +34,13 @@ jobs:
           firebase-review3: ${{ secrets.FIREBASE_REVIEW3_APP }}
           firebase-staging: ${{ secrets.FIREBASE_STAGING_APP }}
           firebase-production: ${{ secrets.FIREBASE_PRODUCTION_APP }}
-      - name: 'Deploy server'
+      - name: 'Prepare config for deployment'
         run: |
           heroku config:set NPM_PRODUCTION=false YARN_PRODUCTION=false --app ${{ steps.selector.outputs.heroku-app }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: 'Deploy server'
+        run: |
           git push -f https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ steps.selector.outputs.heroku-app }}.git #{{ github.ref }}:master
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
