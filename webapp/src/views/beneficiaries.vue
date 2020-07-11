@@ -57,7 +57,7 @@
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped>
+      <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped hover stacked="sm" >
         <template v-slot:cell(amount)="data">
           <span v-if="data.item.status==='success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
           <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
