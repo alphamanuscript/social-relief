@@ -52,7 +52,7 @@
         <span>{{ currentBeneficiary.createdAt }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Total received:</span> 
-        <span>Ksh {{ getTotalSuccessful() }}</span>
+        <span>Ksh {{ getTotalSuccessful }}</span>
       </p>
       <h5 class="text-secondary">
         Transaction history
