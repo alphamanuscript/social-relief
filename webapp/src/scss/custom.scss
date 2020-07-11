@@ -6,6 +6,7 @@ $light: #F5F5F5;
 // rounded for cards and dialogs
 $border-radius: 1rem;
 
+$btn-disabled-opacity: 1;
 //nav links
 .nav-link {
     @extend .text-body;
@@ -35,6 +36,10 @@ $border-radius: 1rem;
 }
 
 .custom-dialog-input-phone {
+    @extend .pl-4;
+    @extend .pl-sm-5;
+    @extend .pl-md-3;
+    @extend .pl-lg-2;
     @extend .shadow-sm;
     @extend .border-0;
     @extend .bg-light;

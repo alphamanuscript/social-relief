@@ -12,7 +12,9 @@ export interface Token {
 
 export interface User {
   _id: string,
+  name: string,
   phone: string,
+  email: string,
   addedBy: string,
   donors: string[],
   roles: UserRole[],
@@ -24,6 +26,7 @@ export interface UserCreateArgs {
   name: string,
   phone: string,
   password: string,
+  email: string,
   googleIdToken: string
 }
 
@@ -42,7 +45,7 @@ export interface LoginResult {
 export interface UserNominateArgs {
   name: string,
   phone: string,
-  email: string,
+  email?: string,
   nominator: string
 }
 

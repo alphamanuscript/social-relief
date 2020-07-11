@@ -55,8 +55,11 @@
                     </template>
                     <b-dropdown-header>
                       <p>
-                        <span class="h5 text-body">{{ user && user.name }}</span> <br/>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user ? user.phone : '' }}</span>
+                        <span class="h5 text-body">{{ user && user.name }}</span>
+                      </p>
+                      <p>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{user && user.phone }}</span> <br/>
+                        <span class="text-primary small">Email: </span> <span class="text-secondary small">{{ user && user.email }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>
@@ -82,13 +85,13 @@ export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'message']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
-    },
+    }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser', 'getTransactions']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'getBeneficiaries', 'getMiddlemen', 'getTransactions']),
     async signOut() {
       await this.signUserOut();
     },
@@ -96,14 +99,38 @@ export default {
       this.$bvModal.show('donate');
     }
   },
-  async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
-      await this.getCurrentUser();
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user) {
+        await this.getCurrentUser();
+      }
+      await this.getBeneficiaries();
       await this.getTransactions();
+      await this.getMiddlemen();
     }
-    else if (!Auth.isAuthenticated()) {
+    else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
-    }
   },
+  watch: {
+    message() {
+      switch (this.message.type) {
+        case '':
+          break;
+        case 'error':
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'danger',
+            solid: true
+          });
+          break;
+        default:
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'info',
+            solid: true
+          });
+      }
+    }
+  }
 }
 </script>

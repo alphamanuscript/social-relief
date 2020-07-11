@@ -8,6 +8,10 @@ const actions = wrapActions({
     const beneficiaries = await Users.getBeneficiaries();
     commit('setBeneficiaries', beneficiaries);
   },
+  async getMiddlemen({ commit }) {
+    const middlemen = await Users.getMiddlemen();
+    commit('setMiddlemen', middlemen);
+  },
   async getTransactions({ commit}) {
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
@@ -38,8 +42,8 @@ const actions = wrapActions({
    * createUser({phone, password}) OR
    * createUser({phone, googleIdToken})
    */
-  async createUser({ commit }, { name, phone, password, googleIdToken }: { name: string; phone: string; password: string; googleIdToken: string }) {
-    const user = await Users.createUser({ name, phone, password, googleIdToken });
+  async createUser({ commit }, { name, phone, password, email, googleIdToken }: { name: string; phone: string; password: string; email: string; googleIdToken: string }) {
+    const user = await Users.createUser({ name, phone, password, email, googleIdToken });
     await Users.login({ phone, password, googleIdToken });
     commit('setUser', user);
 
@@ -73,6 +77,7 @@ const actions = wrapActions({
     [
       'unsetUser',
       'unsetBeneficiaries',
+      'unsetMiddlemen',
       'unsetTransactions',
       'unsetLastPaymentRequest',
       'unsetMessage',

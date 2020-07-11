@@ -33,7 +33,7 @@ export default {
   name: 'logged-out-structure',
   components: { HomeFooter },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'message']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -43,9 +43,30 @@ export default {
       this.$bvModal.show('login');
     }
   },
-  async mounted() {
-    if (Auth.isAuthenticated() && !this.user) {
+  async created() {
+    if (Auth.isAuthenticated()) {
       this.$router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+    }
+  },
+  watch: {
+    message() {
+      switch (this.message.type) {
+        case '':
+          break;
+        case 'error':
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'danger',
+            solid: true
+          });
+          break;
+        default:
+          this.$bvToast.toast(this.message.message, {
+            title: this.message.type.toUpperCase(),
+            variant: 'info',
+            solid: true
+          });
+      }
     }
   }
 }

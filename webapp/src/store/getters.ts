@@ -20,6 +20,9 @@ const getters: GetterTree<AppState, AppState> = {
   },
   donations: ({ transactions }) => {
     return transactions.filter(t => t.type == 'donation').reverse();
+  },
+  distributions: ({ transactions }) => {
+    return transactions.filter(t => t.type == 'distribution').reverse();
   }
 }
 

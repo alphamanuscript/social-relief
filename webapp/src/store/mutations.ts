@@ -42,6 +42,12 @@ const mutations: MutationTree<AppState> = {
   unsetBeneficiaries(state) {
     state.beneficiaries = []
   },
+  setMiddlemen(state, middlemen) {
+    state.middlemen = middlemen
+  },
+  unsetMiddlemen(state) {
+    state.middlemen = []
+  },
   setTransactions(state, transactions) {
     state.transactions = transactions
   },
