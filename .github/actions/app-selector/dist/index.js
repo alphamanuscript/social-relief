@@ -510,6 +510,10 @@ function selectAppTargets () {
   switch (branch) {
     case 'refs/heads/review1':
       return setOutputs('review1');
+    case 'refs/heads/review2':
+      return setOutputs('review2');
+    case 'refs/heads/review3':
+      return setOutputs('review3');
     case 'refs/heads/master':
       return setOutputs('staging');
     case 'refs/heads/release':
@@ -522,7 +526,6 @@ function selectAppTargets () {
 function setOutputs(appTarget) {
   const herokuApp = core.getInput(`heroku-${appTarget}`);
   const firebaseApp = core.getInput(`firebase-${appTarget}`);
-  const manualpayApp = core.getInput(`manualpay-${appTarget}`);
 
   if (!herokuApp) {
     return core.setFailed(`Heroku app not specified for ${appTarget}`);
@@ -532,13 +535,8 @@ function setOutputs(appTarget) {
     return core.setFailed(`Firebase app not specified for ${appTarget}`);
   }
 
-  if (!manualpayApp) {
-    return core.setFailed(`Manualpay app not specified for ${appTarget}`);
-  }
-
   core.setOutput('heroku-app', herokuApp);
   core.setOutput('firebase-app', firebaseApp);
-  core.setOutput('manualpay-app', manualpayApp);
 }
 
 selectAppTargets();
