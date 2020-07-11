@@ -74,7 +74,9 @@
   </b-container>
 </template>
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'beneficiaries',
   data() {
@@ -142,6 +144,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getCurrentUser','refreshData']),
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -194,6 +197,15 @@ export default {
         .map(t => t.amount)
         .reduce((a, b) => a + b, 0);
     }
+  },
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+      await this.refreshData();
+    }
+    else
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   }
 }
 </script>
