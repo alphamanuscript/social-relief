@@ -1,4 +1,4 @@
-name: Deploy to review1
+name: Deploy
 
 env:
   NODE_VERSION: 12.16.x
@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - review1
+      - review2
+      - review3
       - master
       - release
 
