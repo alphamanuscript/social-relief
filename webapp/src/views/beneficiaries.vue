@@ -204,8 +204,9 @@ export default {
         await this.getCurrentUser();
       await this.refreshData();
     }
-    else
+    else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    }
   }
 }
 </script>

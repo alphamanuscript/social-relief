@@ -55,6 +55,7 @@ export type ErrorCode =
   | 'serverError'
   | 'atApiError'
   | 'manualPayApiError'
+  | 'flutterwaveApiError'
   | 'serverError'
   | 'nominationFailed'
   | 'validationError'
@@ -101,6 +102,10 @@ export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) 
 
 export function createManualPayApiError(message: string) {
   return createAppError(message, 'manualPayApiError');
+}
+
+export function createFlutterwaveApiError(message: string) {
+  return createAppError(message, 'flutterwaveApiError');
 }
 
 export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {

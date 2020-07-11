@@ -5,6 +5,22 @@ const mutations: MutationTree<AppState> = {
   addTransaction(state, trx) {
     state.transactions.push(trx);
   },
+  updateTransaction(state, trx) {
+    const index = state.transactions.findIndex(tx => tx._id === trx._id);
+    if (index > -1) {
+      // update transactions if already exists
+      state.transactions[index] = trx;
+    }
+    else {
+      state.transactions.push(trx);
+    }
+  },
+  setPaymentRequest(state, trx) {
+    state.lastPaymentRequest = trx;
+  },
+  unsetLastPaymentRequest(state) {
+    state.lastPaymentRequest = undefined;
+  },
   addBeneficiary(state, bnf) {
     state.beneficiaries.push(bnf);
   },

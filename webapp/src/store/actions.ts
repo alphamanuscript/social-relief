@@ -16,10 +16,15 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
+  async getTransaction({ commit }, id: string) {
+    const transaction = await Transactions.getTransaction(id);
+    commit('updateTransaction', transaction);
+  },
   async donate({ commit, state }, { amount }: { amount: number }) {
     if (state.user) {
       const trx = await Donations.initiateDonation({ amount });
       commit('addTransaction', trx);
+      commit('setPaymentRequest', trx);
     }   
   },
   async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: string }) {
@@ -81,6 +86,7 @@ const actions = wrapActions({
       'unsetBeneficiaries',
       'unsetMiddlemen',
       'unsetTransactions',
+      'unsetLastPaymentRequest',
       'unsetMessage',
     ].forEach((mutation) => commit(mutation));
   }

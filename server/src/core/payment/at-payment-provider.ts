@@ -1,6 +1,6 @@
 import createAtClient = require('africastalking');
 import { PaymentsService as AtPaymentService, MobileCheckoutArgs, TransactionInfo, MobileB2CArgs } from 'africastalking-types';
-import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult } from './types';
+import { Transaction, PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult } from './types';
 import { AppError, createPaymentRequestFailedError, createAtApiError, createFundsToUserFailedError } from '../error';
 import { User } from '../user/types';
 
@@ -104,7 +104,9 @@ export class AtPaymentProvider implements PaymentProvider {
     return Promise.resolve(this.extractTransactionInfo(payload));
   }
 
-  async getTransaction(id: string): Promise<ProviderTransactionInfo> {
+  async getTransaction(localTransaction: Transaction): Promise<ProviderTransactionInfo> {
+    const id = localTransaction.providerTransactionId;
+    
     try {
       const result = await this.payments.findTransaction({ transactionId: id });
       if (result.status !== 'Success') throw createAtApiError(result.errorMessage);

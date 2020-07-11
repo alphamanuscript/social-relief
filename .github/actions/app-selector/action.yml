@@ -4,6 +4,12 @@ inputs:
   heroku-review1:
     description: 'Heroku review1 app'
     required: true
+  heroku-review2:
+    description: 'Heroku review2 app'
+    required: true
+  heroku-review3:
+    description: 'Heroku review3 app'
+    required: true
   heroku-staging:
     description: 'Heroku staging app'
     required: true
@@ -12,6 +18,12 @@ inputs:
     required: true
   firebase-review1:
     description: 'Firebase review1 app'
+    required: true
+  firebase-review2:
+    description: 'Firebase review2 app'
+    required: true
+  firebase-review3:
+    description: 'Firebase review3 app'
     required: true
   firebase-staging:
     description: 'Firebase staging app'
