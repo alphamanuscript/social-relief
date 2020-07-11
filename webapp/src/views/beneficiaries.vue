@@ -57,9 +57,10 @@
       <h5 class="text-secondary">
         Transaction history
       </h5>
-      <b-table v-if="distributionItems.length" :items="distributionItems" thead-class="bg-secondary text-white" striped>
+      <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped>
         <template v-slot:cell(amount)="data">
-          <span class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+          <span v-if="data.item.status==='success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+          <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
         </template>
         <template v-slot:cell(status)="data">
             <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
@@ -108,10 +109,7 @@ export default {
           key:'updatedAt',
           label: 'Date',
         },
-        {
-          key:'addedBy',
-          label: 'From',
-        },
+        'from',
         'amount',
         'status'
       ]
@@ -132,20 +130,21 @@ export default {
       });
     },
     distributionItems () {
-      return this.distributions.filter( t => t.to === this.currentBeneficiary._id )
+      return this.distributions.filter( d => d.to === this.currentBeneficiary._id )
         .map( d => {
           return {
             _id: d._id,
             updatedAt: this.getDate(d.updatedAt),
-            addedBy: this.getDonor(d.addedBy),
+            from: this.getDonor(d.from),
             amount: d.amount,
+            expectedAmount: d.expectedAmount,
             status: d.status
           }
         });
     },
     getTotalSuccessful() {
-      return this.distributionItems.filter(t => t.status === 'success')
-        .map(t => t.amount)
+      return this.distributionItems.filter(d => d.status === 'success')
+        .map(d => d.amount)
         .reduce((a, b) => a + b, 0);
     }
   },
@@ -194,8 +193,8 @@ export default {
     getProgress(id) {
       const monthlyMax = 2000;
       const thirtyDays = 30*24*60*60*1000;
-      const thirtyDaysDistributions = this.distributions.filter(t => t.to === id && t.status === 'success' && new Date().getTime() - new Date(t.updatedAt).getTime() < thirtyDays);
-      const monthTotal = thirtyDaysDistributions.map(t => t.amount).reduce((a, b) => a + b, 0);
+      const thirtyDaysDistributions = this.distributions.filter(d => d.to === id && d.status === 'success' && new Date().getTime() - new Date(d.updatedAt).getTime() < thirtyDays);
+      const monthTotal = thirtyDaysDistributions.map(d => d.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
     }
   },
