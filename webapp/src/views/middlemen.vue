@@ -45,7 +45,7 @@
         Beneficiaries added <span class="">({{ currentMiddleman.beneficiaries.length }})</span>
       </h5>
       <p v-if="currentMiddleman.beneficiaries.length"> {{ currentMiddleman.beneficiaries.join(", ") }} </p>
-      <p v-else> The beneficiaries {{ currentMiddleman.name }} added for you will be displayed here.</p>
+      <p v-else> The beneficiaries added for you by {{ currentMiddleman.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
       </div>
