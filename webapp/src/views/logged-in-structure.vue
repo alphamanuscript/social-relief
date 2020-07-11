@@ -55,8 +55,11 @@
                     </template>
                     <b-dropdown-header>
                       <p>
-                        <span class="h5 text-body">{{ user && user.name }}</span> <br/>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{ user ? user.phone : '' }}</span>
+                        <span class="h5 text-body">{{ user && user.name }}</span>
+                      </p>
+                      <p>
+                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{user && user.phone }}</span> <br/>
+                        <span class="text-primary small">Email: </span> <span class="text-secondary small">{{ user && user.email }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>
@@ -88,7 +91,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser', 'getBeneficiaries', 'getMiddlemen', 'getTransactions']),
+    ...mapActions(['signUserOut', 'getCurrentUser']),
     async signOut() {
       await this.signUserOut();
     },
@@ -98,12 +101,7 @@ export default {
   },
   async created() {
     if (Auth.isAuthenticated()) {
-      if (!this.user) {
-        await this.getCurrentUser();
-      }
-      await this.getBeneficiaries();
-      await this.getTransactions();
-      await this.getMiddlemen();
+      await this.getCurrentUser();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
