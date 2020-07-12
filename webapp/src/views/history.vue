@@ -57,7 +57,7 @@
       scrollable
     >
       <p>
-        <span class="font-weight-bold pr-2">Transaction code:</span> 
+        <span class="font-weight-bold pr-2">Transaction ID:</span> 
         <span>{{ currentTransaction._id }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Created:</span> 
