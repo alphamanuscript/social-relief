@@ -59,7 +59,7 @@
       </h5>
       <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped hover stacked="sm" >
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.status==='success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
+          <span v-if="data.item.status==='Success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
           <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
         </template>
         <template v-slot:cell(status)="data">
@@ -149,7 +149,7 @@ export default {
         });
     },
     getTotalSuccessful() {
-      return this.distributionItems.filter(d => d.status === 'success')
+      return this.distributionItems.filter(d => d.status === 'Success')
         .map(d => d.amount)
         .reduce((a, b) => a + b, 0);
     }
