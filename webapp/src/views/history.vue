@@ -1,5 +1,5 @@
 <template>
-  <b-container class="vh-100 custom-container">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <b-row>
         <b-col>
@@ -22,7 +22,7 @@
           <p> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
         </b-col>
       </b-row>
-      <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="xl" class="mt-3 shadow bg-white rounded">
+      <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="md" class="mt-3 shadow bg-white rounded">
         <template v-slot:cell(index)="data">
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
@@ -39,8 +39,56 @@
           <span v-else-if="data.item.status==='Failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
           <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
         </template>
+        <template v-slot:cell(expand)="data">
+          <b-button variant="outline-primary" @click="handleExpand(data.item)" class="border-0"><i class="fas fa-expand"></i></b-button>
+        </template>
       </b-table>
     </div>
+    <b-modal
+      id="transaction"
+      title="Transaction"
+      title-class="text-primary h3"
+      centered
+      hide-header-close
+      header-class="border-bottom-0 pb-0 mb-0"
+      hide-footer
+      @hidden="hideDialog()"
+      content-class="rounded p-5"
+      scrollable
+    >
+      <p class="">
+        <span class="font-weight-bold pr-2">Transaction code:</span> 
+        <span>+{{ currentTransaction._id }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Created:</span> 
+        <span>{{ currentTransaction.createdAt }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Last updated:</span> 
+        <span>{{ currentTransaction.updatedAt }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Type:</span> 
+        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary"> {{ currentTransaction.type }}</span>
+          <span v-else class="font-weight-bold text-primary"> {{ currentTransaction.type }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Amount (Ksh):</span> 
+        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
+        <span v-else class="font-weight-bold text-primary">+{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">From:</span> 
+        <span>{{ currentTransaction.from }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">To:</span> 
+        <span>{{ currentTransaction.to }}</span>
+        <br/>
+        <span class="font-weight-bold pr-2">Status:</span> 
+        <span v-if="currentTransaction.status==='Success'" class="text-success font-weight-bold"> {{ currentTransaction.status }} </span>
+        <span v-else-if="currentTransaction.status==='Failed'" class="text-danger font-weight-bold"> {{ currentTransaction.status }} </span>
+        <span v-else class="text-warning font-weight-bold"> {{ currentTransaction.status }} </span>
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
+      </div>
+    </b-modal>
   </b-container>
 </template>
 <script>
@@ -51,14 +99,21 @@ export default {
   name: 'history',
   data() {
     return {
+      currentTransaction: {
+        _id: '',
+        createdAt: '',
+        updatedAt: '',
+        status: '',
+        expectedAmount: 0,
+        amount: 0,
+        from: '',
+        to: '',
+        type: '',
+      },
       transactionFields: [
         {
           key: 'index',
           label: ''
-        },
-        {
-          key: '_id',
-          label: 'Transaction code'
         },
         {
           key: 'type',
@@ -80,6 +135,7 @@ export default {
           key: 'updatedAt',
           label: 'Last updated'
         },
+        'expand'
       ],
     }
   },
@@ -109,6 +165,24 @@ export default {
     ...mapActions(['getCurrentUser','getTransactions', 'getBeneficiaries']),
     handleDonateBtn() {
       this.$bvModal.show('donate');
+    },
+    handleExpand(transaction) {
+      this.currentTransaction = transaction;
+      this.$bvModal.show('transaction');
+    },
+    hideDialog() {
+      this.currentTransaction = {
+        _id: '',
+        createdAt: '',
+        updatedAt: '',
+        status: '',
+        expectedAmount: 0,
+        amount: 0,
+        from: '',
+        to: '',
+        type: '',
+      };
+      this.$bvModal.hide('transaction');
     },
     getDate(datetime) {
       return new Date(datetime).toLocaleDateString();
