@@ -100,7 +100,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentUser','refreshData']),
+    ...mapActions(['getCurrentUser','getMiddlemen', 'getBeneficiaries']),
     handleExpand(middleman) {
       this.currentMiddleman = middleman;
       this.$bvModal.show('middleman');
@@ -122,11 +122,12 @@ export default {
       return this.beneficiaries.filter(b => b.addedBy === id).map(b => b.name );
     }
   },
-  async created() {
+  async mounted() {
     if (Auth.isAuthenticated()) {
       if (!this.user)
         await this.getCurrentUser();
-      await this.refreshData();
+      await this.getBeneficiaries();
+      await this.getMiddlemen();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });

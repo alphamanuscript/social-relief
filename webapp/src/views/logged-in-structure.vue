@@ -95,7 +95,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData']),
     async signOut() {
       await this.signUserOut();
     },
@@ -106,6 +106,7 @@ export default {
   async created() {
     if (Auth.isAuthenticated()) {
       await this.getCurrentUser();
+      await this.refreshData();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
