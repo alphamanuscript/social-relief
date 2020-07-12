@@ -18,7 +18,7 @@
     </template>
     <div v-if="googleUser" class="text-center text-secondary">
         <h5>Welcome <span class="text-primary">{{ googleUser.getBasicProfile().getName() }}</span>,</h5>
-        <p class="small">please enter your phone number to finish creating your account.</p>
+        <p>please enter your phone number to finish creating your account.</p>
     </div>
     <b-form>
       <b-form-group>

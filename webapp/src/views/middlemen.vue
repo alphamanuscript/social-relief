@@ -34,7 +34,7 @@
       content-class="rounded p-5"
       scrollable
     >
-      <p class="small">
+      <p>
         <span class="font-weight-bold pr-2">Phone Number:</span> 
         <span>+{{ currentMiddleman.phone }}</span>
         <br/>
@@ -81,7 +81,10 @@ export default {
           key:'beneficiaries',
           label: 'Beneficiaries added'
         },
-        'expand'
+        {
+          key: 'expand',
+          label: 'Details'
+        }
       ]
    }
   }, 

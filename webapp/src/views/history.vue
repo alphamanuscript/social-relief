@@ -56,9 +56,9 @@
       content-class="rounded p-5"
       scrollable
     >
-      <p class="">
+      <p>
         <span class="font-weight-bold pr-2">Transaction code:</span> 
-        <span>+{{ currentTransaction._id }}</span>
+        <span>{{ currentTransaction._id }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Created:</span> 
         <span>{{ currentTransaction.createdAt }}</span>
@@ -84,6 +84,9 @@
         <span v-if="currentTransaction.status==='Success'" class="text-success font-weight-bold"> {{ currentTransaction.status }} </span>
         <span v-else-if="currentTransaction.status==='Failed'" class="text-danger font-weight-bold"> {{ currentTransaction.status }} </span>
         <span v-else class="text-warning font-weight-bold"> {{ currentTransaction.status }} </span>
+        <br/>
+        <span v-if="currentTransaction.status==='Failed' && currentTransaction.failureReason" class="font-weight-bold pr-2">Failure reason:</span>
+        <span v-if="currentTransaction.status==='Failed' && currentTransaction.failureReason">{{ currentTransaction.failureReason }}</span> 
       </p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button" @click.prevent="hideDialog()">Close</b-button>
@@ -109,6 +112,7 @@ export default {
         from: '',
         to: '',
         type: '',
+        failureReason: ''
       },
       transactionFields: [
         {
@@ -135,7 +139,10 @@ export default {
           key: 'updatedAt',
           label: 'Last updated'
         },
-        'expand'
+        {
+          key: 'expand',
+          label: 'Details'
+        }
       ],
     }
   },
@@ -157,6 +164,7 @@ export default {
           from: this.getDonor(t.from),
           to: this.getRecipient(t.to),
           type: this.formatType(t.type),
+          failureReason: t.failureReason
         }
       });
     }
@@ -181,6 +189,7 @@ export default {
         from: '',
         to: '',
         type: '',
+        failureReason: ''
       };
       this.$bvModal.hide('transaction');
     },

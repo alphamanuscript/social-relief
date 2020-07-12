@@ -58,8 +58,8 @@
                         <span class="h5 text-body">{{ user && user.name }}</span>
                       </p>
                       <p>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{user && user.phone }}</span> <br/>
-                        <span class="text-primary small">Email: </span> <span class="text-secondary small">{{ user && user.email }}</span>
+                        <span class="text-primary">Phone Number: </span> <span class="text-secondary">+{{user && user.phone }}</span> <br/>
+                        <span class="text-primary ">Email: </span> <span class="text-secondary">{{ user && user.email }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>

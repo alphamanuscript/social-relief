@@ -44,7 +44,7 @@
       content-class="rounded p-5"
       scrollable
     >
-      <p class="small">
+      <p>
         <span class="font-weight-bold pr-2">Added by:</span> 
         <span>{{ currentBeneficiary.addedBy }}</span>
         <br/>
@@ -102,7 +102,10 @@ export default {
           label: 'Added on'
         },
         'progress',
-        'expand'
+        {
+          key: 'expand',
+          label: 'Details'
+        }
       ],
       distributionFields: [
         {
