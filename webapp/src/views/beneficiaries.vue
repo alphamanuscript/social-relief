@@ -1,5 +1,5 @@
 <template>
-  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <div class="">
         <h3 class="text-primary">Beneficiaries</h3>
@@ -18,9 +18,6 @@
         <b-table v-else :items="beneficiaryItems" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">
             <span class="font-weight-bold">{{ data.index + 1 }}.</span>
-          </template>
-          <template v-slot:cell(createdAt)="data">
-            <span class="text-secondary font-weight-bold"> {{ getDate(data.item.createdAt) }}</span>
           </template>
           <template v-slot:cell(progress)="data">
             <span class="text-secondary font-weight-bold"> {{ data.item.progress }} %</span>

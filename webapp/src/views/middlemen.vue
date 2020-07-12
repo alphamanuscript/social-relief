@@ -1,5 +1,5 @@
 <template>
-  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <h3 class="text-primary pb-3">My Middlemen</h3>
       <div v-if="!middlemanItems.length" class="text-center">
@@ -76,10 +76,6 @@ export default {
         {
           key:'phone',
           label: 'Phone Number'
-        },
-        {
-          key:'createdAt',
-          label: 'Added on'
         },
         {
           key:'beneficiaries',

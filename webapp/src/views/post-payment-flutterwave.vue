@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container class="custom-container">
     <b-card v-if="verifying">Your transaction is being verified...</b-card>
     <b-card v-else-if="transaction">
       <span v-if="transaction.status === 'success'" class="text-success">

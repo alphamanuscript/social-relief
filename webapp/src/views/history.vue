@@ -12,7 +12,7 @@
             <span class="font-weight-bold">Total amount contributed: </span> <span class="font-weight-bold text-primary">Ksh {{ totalAmountDonated }}</span>
           </div>
           <div  align="end">
-            <span class="font-weight-bold">Total amount distributed: </span><span class="font-weight-bold text-secondary">Ksh {{ totalAmountDistributed * -1 }}</span>
+            <span class="font-weight-bold">Total amount distributed: </span><span class="font-weight-bold text-secondary">Ksh {{ totalAmountDistributed }}</span>
           </div>
         </b-col>
       </b-row>
@@ -44,6 +44,8 @@
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'history',
   data() {
@@ -55,7 +57,7 @@ export default {
         },
         {
           key: '_id',
-          label: 'Transaction code'
+          label: 'Transaction code',
         },
         {
           key: 'expectedAmount',
@@ -92,7 +94,7 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions(['getTransactions']),
+    ...mapActions(['getCurrentUser','refreshData']),
     handleDonateBtn() {
       this.$bvModal.show('donate');
     },
@@ -127,5 +129,15 @@ export default {
       }
     }
   },
+  async created() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+      await this.refreshData();
+    }
+    else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
+    }
+  }
 }
 </script>

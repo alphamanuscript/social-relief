@@ -1,5 +1,5 @@
 <template>
-  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <p>
         <span class="h3 text-primary">Nominate</span>

@@ -1,3 +1,7 @@
 <template>
-  <b-container class="vh-100">Invitations</b-container>
+  <b-container class="custom-container">
+    <div class="vh-100">
+      Invitations
+    </div>
+  </b-container>
 </template>

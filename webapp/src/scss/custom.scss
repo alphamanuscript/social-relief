@@ -69,4 +69,11 @@ $btn-disabled-opacity: 1;
     @extend .px-5;
 }
 
+// for pages in logged-in-structure
+.custom-container {
+    @extend .mw-100;
+    @extend .my-3;
+    @extend .px-lg-2;
+    @extend .px-xl-5;
+}
 
