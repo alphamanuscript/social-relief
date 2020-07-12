@@ -2,6 +2,8 @@
 $primary:#EF5A24;
 $secondary: #9D1A69;
 $light: #F5F5F5;
+$warning: orange;
+$font-size-base: .875rem; // 14px
 
 // rounded for cards and dialogs
 $border-radius: 1rem;
@@ -69,4 +71,11 @@ $btn-disabled-opacity: 1;
     @extend .px-5;
 }
 
+// for pages in logged-in-structure
+.custom-container {
+    @extend .mw-100;
+    @extend .my-3;
+    @extend .px-lg-2;
+    @extend .px-xl-5;
+}
 

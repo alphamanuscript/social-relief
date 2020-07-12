@@ -1,5 +1,5 @@
 <template>
-  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <h3 class="text-primary pb-3">My Middlemen</h3>
       <div v-if="!middlemanItems.length" class="text-center">
@@ -34,7 +34,7 @@
       content-class="rounded p-5"
       scrollable
     >
-      <p class="small">
+      <p>
         <span class="font-weight-bold pr-2">Phone Number:</span> 
         <span>+{{ currentMiddleman.phone }}</span>
         <br/>
@@ -78,14 +78,13 @@ export default {
           label: 'Phone Number'
         },
         {
-          key:'createdAt',
-          label: 'Added on'
-        },
-        {
           key:'beneficiaries',
           label: 'Beneficiaries added'
         },
-        'expand'
+        {
+          key: 'expand',
+          label: 'Details'
+        }
       ]
    }
   }, 
@@ -104,7 +103,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentUser','refreshData']),
+    ...mapActions(['getCurrentUser','getMiddlemen', 'getBeneficiaries']),
     handleExpand(middleman) {
       this.currentMiddleman = middleman;
       this.$bvModal.show('middleman');
@@ -126,11 +125,12 @@ export default {
       return this.beneficiaries.filter(b => b.addedBy === id).map(b => b.name );
     }
   },
-  async created() {
+  async mounted() {
     if (Auth.isAuthenticated()) {
       if (!this.user)
         await this.getCurrentUser();
-      await this.refreshData();
+      await this.getBeneficiaries();
+      await this.getMiddlemen();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });

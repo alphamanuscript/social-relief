@@ -1,5 +1,5 @@
 <template>
-  <b-container class="mw-100 my-3 px-lg-2 px-xl-5">
+  <b-container class="custom-container">
     <div class="ml-lg-5">
       <div class="">
         <h3 class="text-primary">Beneficiaries</h3>
@@ -10,7 +10,7 @@
       </div>
       <div class="">
         <h3 class="text-primary pb-3">My Nominees</h3>
-        <div v-if="!beneficiaries.length" class="text-center">
+        <div v-if="!beneficiaryItems.length" class="text-center">
           <p class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
           <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
           <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
@@ -44,7 +44,7 @@
       content-class="rounded p-5"
       scrollable
     >
-      <p class="small">
+      <p>
         <span class="font-weight-bold pr-2">Added by:</span> 
         <span>{{ currentBeneficiary.addedBy }}</span>
         <br/>
@@ -63,10 +63,10 @@
           <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
         </template>
         <template v-slot:cell(status)="data">
-            <span v-if="data.item.status==='success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
-            <span v-else-if="data.item.status==='failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
-            <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
-          </template>
+          <span v-if="data.item.status==='Success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
+          <span v-else-if="data.item.status==='Failed'" class="text-danger font-weight-bold"> {{ data.item.status }} </span>
+          <span v-else class="text-warning font-weight-bold"> {{ data.item.status }} </span>
+        </template>
       </b-table>
       <p v-else> The transactions made to {{ currentBeneficiary.name }} will be displayed here.</p>
       <div class="mt-3 text-right">
@@ -102,7 +102,10 @@ export default {
           label: 'Added on'
         },
         'progress',
-        'expand'
+        {
+          key: 'expand',
+          label: 'Details'
+        }
       ],
       distributionFields: [
         {
@@ -110,7 +113,10 @@ export default {
           label: 'Date',
         },
         'from',
-        'amount',
+        {
+          key:'amount',
+          label: 'Amount (Ksh)',
+        },
         'status'
       ]
    }
@@ -138,7 +144,7 @@ export default {
             from: this.getDonor(d.from),
             amount: d.amount,
             expectedAmount: d.expectedAmount,
-            status: d.status
+            status: this.formatStatus(d.status)
           }
         });
     },
@@ -196,9 +202,25 @@ export default {
       const thirtyDaysDistributions = this.distributions.filter(d => d.to === id && d.status === 'success' && new Date().getTime() - new Date(d.updatedAt).getTime() < thirtyDays);
       const monthTotal = thirtyDaysDistributions.map(d => d.amount).reduce((a, b) => a + b, 0);
       return monthTotal*100/monthlyMax;
+    },
+    formatStatus(status) {
+      switch(status) {
+        case 'paymentRequested': 
+          return 'Payment Requested';
+        case 'pending': 
+          return 'Pending';
+        case 'paymentQueued': 
+          return 'Payment Queued';
+        case 'failed': 
+          return 'Failed';
+        case 'success': 
+          return 'Success';
+        default: 
+          return '';
+      }
     }
   },
-  async created() {
+  async mounted() {
     if (Auth.isAuthenticated()) {
       if (!this.user)
         await this.getCurrentUser();

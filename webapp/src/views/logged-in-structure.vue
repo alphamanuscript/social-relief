@@ -12,7 +12,7 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">1,500</div>
+                  <div class="h4">{{ totalAmountDonated - totalAmountDistributed }}</div>
                 </div>
               </div>
             </b-nav-text>
@@ -58,8 +58,8 @@
                         <span class="h5 text-body">{{ user && user.name }}</span>
                       </p>
                       <p>
-                        <span class="text-primary small">Phone Number: </span> <span class="text-secondary small">+{{user && user.phone }}</span> <br/>
-                        <span class="text-primary small">Email: </span> <span class="text-secondary small">{{ user && user.email }}</span>
+                        <span class="text-primary">Phone Number: </span> <span class="text-secondary">+{{user && user.phone }}</span> <br/>
+                        <span class="text-primary ">Email: </span> <span class="text-secondary">{{ user && user.email }}</span>
                       </p>
                     </b-dropdown-header>
                     <b-dropdown-divider></b-dropdown-divider>
@@ -77,7 +77,7 @@
   </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import HomeFooter from '../components/home-footer';
@@ -86,12 +86,16 @@ export default {
   components: { HomeFooter },
   computed: {
     ...mapState(['user', 'message']),
+    ...mapGetters([
+      'totalAmountDonated',
+      'totalAmountDistributed',
+    ]),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData']),
     async signOut() {
       await this.signUserOut();
     },
@@ -102,6 +106,7 @@ export default {
   async created() {
     if (Auth.isAuthenticated()) {
       await this.getCurrentUser();
+      await this.refreshData();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
