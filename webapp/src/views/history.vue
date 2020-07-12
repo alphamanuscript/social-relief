@@ -22,7 +22,7 @@
           <p> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
         </b-col>
       </b-row>
-      <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="md" class="mt-3 shadow bg-white rounded">
+      <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="lg" class="mt-3 shadow bg-white rounded">
         <template v-slot:cell(index)="data">
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
