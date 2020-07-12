@@ -27,7 +27,7 @@
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  data.item.status === 'Success' ? data.item.amount : data.item.expectedAmount }}</span>
+          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? data.item.amount : data.item.expectedAmount }}</span>
           <span v-else class="font-weight-bold text-primary">+{{  data.item.status === 'Success' ? data.item.amount : data.item.expectedAmount }}</span>
         </template>
         <template v-slot:cell(type)="data">
@@ -74,12 +74,14 @@
         <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
         <span v-else class="font-weight-bold text-primary">+{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
         <br/>
-        <span class="font-weight-bold pr-2">From:</span> 
-        <span>{{ currentTransaction.from }}</span>
-        <br/>
-        <span class="font-weight-bold pr-2">To:</span> 
-        <span>{{ currentTransaction.to }}</span>
-        <br/>
+        <span v-if="currentTransaction.type === 'Distribution'">
+          <span class="font-weight-bold pr-2">From:</span> 
+          <span>{{ currentTransaction.from }}</span>
+          <br/>
+          <span class="font-weight-bold pr-2">To:</span> 
+          <span>{{ currentTransaction.to }}</span>
+          <br/>
+        </span>
         <span class="font-weight-bold pr-2">Status:</span> 
         <span v-if="currentTransaction.status==='Success'" class="text-success font-weight-bold"> {{ currentTransaction.status }} </span>
         <span v-else-if="currentTransaction.status==='Failed'" class="text-danger font-weight-bold"> {{ currentTransaction.status }} </span>
@@ -161,8 +163,8 @@ export default {
           status: this.formatStatus(t.status),
           expectedAmount: t.expectedAmount,
           amount: t.amount,
-          from: this.getDonor(t.from),
-          to: this.getRecipient(t.to),
+          from: this.getDonor(t.from, t.type),
+          to: this.getRecipient(t.to, t.type),
           type: this.formatType(t.type),
           failureReason: t.failureReason
         }
@@ -216,8 +218,8 @@ export default {
           return '';
       }
     },
-    getDonor(id) {
-      if (this.user) {
+    getDonor(id, type) {
+      if (type === 'distribution' && this.user) {
         if (this.user._id===id)
           return 'Me';
         else {
@@ -226,11 +228,14 @@ export default {
       }
       return '';
     },
-    getRecipient(id) {
-      const beneficiary = this.beneficiaries.find( b => b._id  === id);
-      if (beneficiary)
-        return beneficiary.name;
-      return id;
+    getRecipient(id, type) {
+      if (type === 'distribution') {
+        const beneficiary = this.beneficiaries.find( b => b._id  === id);
+        if (beneficiary)
+          return beneficiary.name;
+        return id;
+      }
+      return '';
     }
   },
   async mounted() {
