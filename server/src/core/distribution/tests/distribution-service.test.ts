@@ -55,8 +55,11 @@ describe('DonationDistributionService tests', () => {
   
     test('should distribute donations and save distribution details and release distribution lock', async () => {
       const distributionService = createDistributionService();
-      jest.spyOn(systemLockService.distribution(), 'lock');
-      jest.spyOn(systemLockService.distribution(), 'unlock');
+      const lock = systemLockService.distribution();
+      // return the previous lock when distribution() is called, so that we can spy on it
+      jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock);
+      jest.spyOn(lock, 'lock');
+      jest.spyOn(lock, 'unlock');
       const started = new Date();
       const res = await distributionService.distributeDonations();
       const finished = new Date();
@@ -94,21 +97,28 @@ describe('DonationDistributionService tests', () => {
         }
       ]);
 
-      expect(systemLockService.distribution().lock).toHaveBeenCalledTimes(1);
-      expect(systemLockService.distribution().unlock).toHaveBeenCalledTimes(1);
-      await systemLockService.distribution().ensureUnlocked();
+      expect(lock.lock).toHaveBeenCalledTimes(1);
+      expect(lock.unlock).toHaveBeenCalledTimes(1);
+      await lock.ensureUnlocked();
     });
 
     test('should not run if distribution lock is locked', async () => {
-      await systemLockService.distribution().lock();
-      jest.spyOn(systemLockService.distribution(), 'lock');
-      jest.spyOn(systemLockService.distribution(), 'unlock');
+      const lock = systemLockService.distribution();
+      const lock2 = systemLockService.distribution();
+      // return lock2 on subsequent requests for a distribution lock handle, so that we can spy on it
+      jest.spyOn(systemLockService, 'distribution').mockReturnValue(lock2);
+      jest.spyOn(lock2, 'lock');
+      jest.spyOn(lock2, 'unlock');
+
+      await lock.lock();
+
       const distributionService = createDistributionService();
       await expectAsyncAppError(() => distributionService.distributeDonations(), 'systemLockLocked');
 
-      expect(systemLockService.distribution().lock).toHaveBeenCalledTimes(1);
-      expect(systemLockService.distribution().unlock).not.toHaveBeenCalled();
-      await systemLockService.distribution().unlock();
+      expect(lock2.lock).toHaveBeenCalledTimes(1);
+      expect(lock2.unlock).toHaveBeenCalledTimes(1);
+
+      await lock.unlock();
     });
 
     test('should release distribution lock even if error occurs', async () => {
@@ -128,7 +138,8 @@ describe('DonationDistributionService tests', () => {
       jest.spyOn(systemLockService, 'distribution').mockReturnValue({
         lock: jest.fn().mockResolvedValue({}),
         unlock: jest.fn().mockResolvedValue({}),
-        ensureUnlocked: jest.fn().mockResolvedValue({})
+        ensureUnlocked: jest.fn().mockResolvedValue({}),
+        getKey: jest.fn().mockReturnValue('')
       });
       
       const distributionService = createDistributionService();
