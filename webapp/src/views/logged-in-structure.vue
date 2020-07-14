@@ -85,7 +85,7 @@ export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
   computed: {
-    ...mapState(['user', 'message']),
+    ...mapState(['user', 'beneficiaries', 'middlemen', 'message']),
     ...mapGetters([
       'totalAmountDonated',
       'totalAmountDistributed',
@@ -102,14 +102,6 @@ export default {
     handleDonateBtn() {
       this.$bvModal.show('donate');
     }
-  },
-  async created() {
-    if (Auth.isAuthenticated()) {
-      await this.getCurrentUser();
-      await this.refreshData();
-    }
-    else
-      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
   },
   watch: {
     message() {

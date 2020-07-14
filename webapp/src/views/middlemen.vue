@@ -103,7 +103,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentUser','getMiddlemen', 'getBeneficiaries']),
+    ...mapActions(['getCurrentUser', 'refreshData']),
     handleExpand(middleman) {
       this.currentMiddleman = middleman;
       this.$bvModal.show('middleman');
@@ -129,8 +129,7 @@ export default {
     if (Auth.isAuthenticated()) {
       if (!this.user)
         await this.getCurrentUser();
-      await this.getBeneficiaries();
-      await this.getMiddlemen();
+      await this.refreshData();
     }
     else
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
