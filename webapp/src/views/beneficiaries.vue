@@ -193,7 +193,7 @@ export default {
       return '';
     },
     getDate(datetime) {
-      return new Date(datetime).toLocaleDateString();
+      return new Date(datetime).toLocaleDateString() + ' ' + new Date(datetime).toLocaleTimeString();
     },
     getProgress(id) {
       const monthlyMax = 2000;
