@@ -9,10 +9,10 @@
         </b-col>
         <b-col>
           <div  align="end">
-            <span class="font-weight-bold">Total amount contributed: </span> <span class="font-weight-bold text-primary">Ksh {{ totalAmountDonated }}</span>
+            <span class="font-weight-bold">Total amount contributed: </span> <span class="font-weight-bold text-primary">Ksh {{ formatWithCommaSeparator(totalAmountDonated) }}</span>
           </div>
           <div  align="end">
-            <span class="font-weight-bold">Total amount distributed: </span><span class="font-weight-bold text-secondary">Ksh {{ totalAmountDistributed }}</span>
+            <span class="font-weight-bold">Total amount distributed: </span><span class="font-weight-bold text-secondary">Ksh {{ formatWithCommaSeparator(totalAmountDistributed) }}</span>
           </div>
 
         </b-col>
@@ -28,8 +28,8 @@
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? data.item.amount : data.item.expectedAmount }}</span>
-          <span v-else class="font-weight-bold text-primary">+{{  data.item.status === 'Success' ? data.item.amount : data.item.expectedAmount }}</span>
+          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
+          <span v-else class="font-weight-bold text-primary">+{{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
         </template>
         <template v-slot:cell(type)="data">
           <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary"> {{ data.item.type }}</span>
@@ -72,8 +72,8 @@
           <span v-else class="font-weight-bold text-primary"> {{ currentTransaction.type }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Amount (Ksh):</span> 
-        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
-        <span v-else class="font-weight-bold text-primary">+{{  currentTransaction.status === 'Success' ? currentTransaction.amount : currentTransaction.expectedAmount }}</span>
+        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? formatWithCommaSeparator(currentTransaction.amount) : formatWithCommaSeparator(currentTransaction.expectedAmount) }}</span>
+        <span v-else class="font-weight-bold text-primary">+{{  currentTransaction.status === 'Success' ? formatWithCommaSeparator(currentTransaction.amount) : formatWithCommaSeparator(currentTransaction.expectedAmount) }}</span>
         <br/>
         <span v-if="currentTransaction.type === 'Distribution'">
           <span class="font-weight-bold pr-2">From:</span> 
@@ -101,6 +101,7 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'history',
   data() {
@@ -174,6 +175,7 @@ export default {
   },
   methods: {
     ...mapActions(['getCurrentUser', 'refreshData']),
+    formatWithCommaSeparator,
     handleDonateBtn() {
       this.$bvModal.show('donate');
     },

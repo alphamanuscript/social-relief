@@ -58,8 +58,8 @@
       </h5>
       <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped hover stacked="sm" >
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.status==='Success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
-          <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
+          <span v-if="data.item.status==='Success'" class="text-secondary font-weight-bold"> {{ formatWithCommaSeparator(data.item.amount) }}</span>
+          <span v-else class="text-secondary font-weight-bold"> {{ formatWithCommaSeparator(data.item.expectedAmount) }} </span>
         </template>
         <template v-slot:cell(status)="data">
           <span v-if="data.item.status==='Success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
@@ -78,6 +78,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'beneficiaries',
   data() {
@@ -155,6 +156,7 @@ export default {
   },
   methods: {
     ...mapActions(['getCurrentUser','refreshData']),
+    formatWithCommaSeparator,
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -217,7 +219,12 @@ export default {
         default: 
           return '';
       }
-    }
+    }, 
+    // formatAmount(data) {
+    //   if (data.item.status === 'Success') return this.thousands_separator(data.item.amount)
+    //   return this.thousands_separator(data.item.expectedAmount)
+    // },
+
   },
   async mounted() {
     if (Auth.isAuthenticated()) {

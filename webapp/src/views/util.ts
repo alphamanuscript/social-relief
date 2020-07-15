@@ -30,3 +30,7 @@ export const validateNamedRules = (obj: any, rules: { [name: string]: Rule }): N
     return res;
   }, {});
 };
+
+export const formatWithCommaSeparator = (num: Number): String => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

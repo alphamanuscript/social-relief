@@ -12,7 +12,7 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">{{ totalAmountDonated - totalAmountDistributed }}</div>
+                  <div class="h4">{{ formatWithCommaSeparator(totalAmountDonated - totalAmountDistributed) }}</div>
                 </div>
               </div>
             </b-nav-text>
@@ -79,6 +79,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import HomeFooter from '../components/home-footer';
+import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
@@ -94,6 +95,7 @@ export default {
   },
   methods: {
     ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData']),
+    formatWithCommaSeparator,
     async signOut() {
       await this.signUserOut();
     },
