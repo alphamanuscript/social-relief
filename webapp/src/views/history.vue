@@ -14,6 +14,7 @@
           <div  align="end">
             <span class="font-weight-bold">Total amount distributed: </span><span class="font-weight-bold text-secondary">Ksh {{ totalAmountDistributed }}</span>
           </div>
+          
         </b-col>
       </b-row>
       <b-row v-if="!transactionItems.length" class="text-center ">
