@@ -33,9 +33,9 @@
             </b-col>
             <b-col>
               <b-input-group>
-                <template v-slot:prepend >
-                  <img :src="imageUrl" width="50" height="30" class="rounded-pill align-self-end" alt="Social Relief Logo">
-                </template>
+                <b-input-group-prepend>
+                  <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
+                </b-input-group-prepend>
                 <b-form-input 
                   v-model="nomineeCreds.phone"
                   type="text" 
@@ -136,9 +136,6 @@ export default {
   components: { },
   computed: {
     ...mapState(['message']),
-    imageUrl () {
-      return require(`@/assets/Flag_of_Kenya.png`);
-    }
   },
   methods: {
     ...mapActions(['nominate']),

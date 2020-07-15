@@ -92,8 +92,6 @@
               <b-card-text>
                 Contact us at <a href="mailto:socialrelief@manuscript.live">socialrelief@manuscript.live</a> 
               </b-card-text>
-
-              <!-- <b-button href="#" variant="primary">Go somewhere</b-button> -->
             </b-card>
           </div> 
       </section>
