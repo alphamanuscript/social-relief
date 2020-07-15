@@ -71,7 +71,7 @@ export class Transactions implements TransactionService {
     const provider = this.receivingProvider();
 
     const trxArgs: TransactionCreateArgs = {
-      expectedAmount: args.amount,
+      expectedAmount: Math.floor(args.amount),
       to: user._id,
       from: '',
       fromExternal: true,
