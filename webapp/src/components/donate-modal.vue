@@ -32,6 +32,7 @@
         <b-form-invalid-feedback class="text-center">
           {{ validationMessages[1] }}
         </b-form-invalid-feedback>
+        <span class="small">*: A transaction fee may be charged by the provider</span>
       </b-form-group>
       <div class="text-center">
         <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="submitDonation">Submit</b-button>
