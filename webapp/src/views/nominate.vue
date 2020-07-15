@@ -2,7 +2,7 @@
   <b-container class="custom-container">
     <div class="ml-lg-5">
       <p>
-        <span class="h3 text-primary">Nominate</span>
+        <span class="h3 text-primary">Nominate people</span>
         <b-link to="invitations" class="text-body ml-5">View invitations</b-link>
       </p>
       <div class="bg-white rounded p-5 shadow-sm">

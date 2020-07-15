@@ -37,7 +37,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
-                <b-nav-item to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-2">Nominate</b-nav-item>
+                <b-nav-item to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-3">Nominate people</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
                   <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
@@ -78,8 +78,6 @@
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import { Auth } from '../services';
-import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import HomeFooter from '../components/home-footer';
 export default {
   name: 'logged-in-structure',
