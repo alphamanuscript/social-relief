@@ -195,7 +195,8 @@ export default {
       return '';
     },
     getDate(datetime) {
-      return new Date(datetime).toLocaleDateString() + ' ' + new Date(datetime).toLocaleTimeString();
+      const dateObj = new Date(datetime);
+      return dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
     },
     getProgress(id) {
       const monthlyMax = 2000;
@@ -219,12 +220,7 @@ export default {
         default: 
           return '';
       }
-    }, 
-    // formatAmount(data) {
-    //   if (data.item.status === 'Success') return this.thousands_separator(data.item.amount)
-    //   return this.thousands_separator(data.item.expectedAmount)
-    // },
-
+    },
   },
   async mounted() {
     if (Auth.isAuthenticated()) {

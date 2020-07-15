@@ -199,7 +199,8 @@ export default {
       this.$bvModal.hide('transaction');
     },
     getDate(datetime) {
-      return new Date(datetime).toLocaleDateString() + ' ' + new Date(datetime).toLocaleTimeString();
+      const dateObj = new Date(datetime);
+      return dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
     },
     formatType(type) {
       if (type === 'donation') return 'Contribution';

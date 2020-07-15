@@ -110,6 +110,8 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'nominate',
   data() {
@@ -135,10 +137,10 @@ export default {
   },
   components: { },
   computed: {
-    ...mapState(['message']),
+    ...mapState(['user', 'message']),
   },
   methods: {
-    ...mapActions(['nominate']),
+    ...mapActions(['nominate', 'getCurrentUser','refreshData']),
     validateObj,
     hideDialog() {
       this.nomineeCreds = {
@@ -174,6 +176,16 @@ export default {
           this.$bvModal.show('nominate-success');
         }
       }
+    }
+  },
+  async mounted() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+      await this.refreshData();
+    }
+    else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   }
 }

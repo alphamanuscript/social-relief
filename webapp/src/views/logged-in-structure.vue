@@ -114,6 +114,7 @@ export default {
             variant: 'danger',
             solid: true
           });
+          this.resetMessage();
           break;
         default:
           this.$bvToast.toast(this.message.message, {
@@ -121,7 +122,10 @@ export default {
             variant: 'info',
             solid: true
           });
+          this.resetMessage();
       }
+
+
     }
   }
 }
