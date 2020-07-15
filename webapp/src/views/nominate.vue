@@ -171,12 +171,8 @@ export default {
         }
 
         await this.nominate(data);
-        
-        if (this.message.type === 'error') {
-          this.validationMessages = [this.message.message, this.message.message, this.message.message];
-          this.validationResults = [false, false, false];
-        }
-        else {
+
+        if (this.message.type !== 'error') {
           this.validationResults = [null, null];
           this.$bvModal.show('nominate-success');
         }

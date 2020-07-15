@@ -101,11 +101,7 @@ export default {
 
       if (!this.validationResults.includes(false)) {
         await this.donate({ amount: this.donationInputs.amount });
-        if (this.message.type === 'error') {
-          this.validationMessages = [this.message.message, this.message.message];
-          this.validationResults = [false, false];
-        }
-        else {
+        if (this.message.type !== 'error') {
           this.donationInputs = {
             phone: '',
             amount: 1000
