@@ -28,7 +28,7 @@
           </b-nav>
         </b-col>
         <b-col>
-          <b-navbar toggleable="sm" variant="light" sticky>
+          <b-navbar toggleable="sm" variant="light" sticky style="margin-bottom: 1.5rem">
             <b-navbar-brand to="#" class="d-md-none">
               <img :src="imageUrl" width="150" alt="Social Relief Logo">
             </b-navbar-brand>
