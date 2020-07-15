@@ -35,7 +35,7 @@
       <section class="my-5 pt-5 text-center" id="beneficiaries">
         <h1 class="text-primary mb-5">The Beneficiaries</h1>
         <p>
-          All nominees get <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
+          All beneficiaries get <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
           to get basic supplies during this trying period. <br/>
           Here are some of the people whom your contribution will go along to help.
         </p>
