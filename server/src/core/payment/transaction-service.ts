@@ -67,12 +67,12 @@ export class Transactions implements TransactionService {
 
   async initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction> {
     validators.validatesInitiateDonation({ userId: user._id, amount: args.amount });
-    args.amount = Math.floor(args.amount);
+    const amount = Math.floor(args.amount);
 
     const provider = this.receivingProvider();
 
     const trxArgs: TransactionCreateArgs = {
-      expectedAmount: args.amount,
+      expectedAmount: amount,
       to: user._id,
       from: '',
       fromExternal: true,
@@ -82,7 +82,7 @@ export class Transactions implements TransactionService {
     };
 
     try {
-      const requestResult = await provider.requestPaymentFromUser(user, args.amount);
+      const requestResult = await provider.requestPaymentFromUser(user, amount);
       trxArgs.providerTransactionId = requestResult.providerTransactionId;
       trxArgs.status = requestResult.status;
       trxArgs.metadata = requestResult.metadata;
@@ -98,11 +98,11 @@ export class Transactions implements TransactionService {
 
   async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
     validators.validatesSendDonation({ from: from._id, to: to._id, amountArg: args });
-    args.amount = Math.floor(args.amount);
-    
+    const amount = Math.floor(args.amount);
+
     const provider = this.sendingProvider();
     const trxArgs: TransactionCreateArgs = {
-      expectedAmount: args.amount,
+      expectedAmount: amount,
       to: to._id,
       from: from._id,
       fromExternal: false,
@@ -129,7 +129,7 @@ export class Transactions implements TransactionService {
       // transaction, then we'll simply mark this transaction record as failed
       // and that's enough to synchronize the system
       trx = await this.create(trxArgs);
-      const providerResult = await provider.sendFundsToUser(to, args.amount, { transaction: trx._id });
+      const providerResult = await provider.sendFundsToUser(to, amount, { transaction: trx._id });
       const updatedRes = await this.collection.findOneAndUpdate(
         { _id: trx._id },
         { 
