@@ -32,6 +32,9 @@
         <b-form-invalid-feedback class="text-center">
           {{ validationMessages[1] }}
         </b-form-invalid-feedback>
+        <div class="text-center">
+          <span class="small">A transaction fee may be charged by the provider</span>
+        </div>
       </b-form-group>
       <div class="text-center">
         <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="submitDonation">Submit</b-button>
@@ -101,11 +104,7 @@ export default {
 
       if (!this.validationResults.includes(false)) {
         await this.donate({ amount: this.donationInputs.amount });
-        if (this.message.type === 'error') {
-          this.validationMessages = [this.message.message, this.message.message];
-          this.validationResults = [false, false];
-        }
-        else {
+        if (this.message.type !== 'error') {
           this.donationInputs = {
             phone: '',
             amount: 1000

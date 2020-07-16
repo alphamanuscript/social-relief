@@ -152,14 +152,7 @@ export default {
       this.signInValidationResults = this.validateObj(this.signInCreds, this.signInValidationRules);
       if (!this.signInValidationResults.includes(false)) {
         await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
-        if (!this.user) {
-          this.signInValidationMessages = [
-            'Login failed. Incorrect phone or password',
-            'Login failed. Incorrect phone or password'
-          ];
-          this.signInValidationResults = [false, false];
-        }
-        else {
+        if (this.user) {
           this.signInCreds = {
             phone: '',
             password: ''

@@ -216,18 +216,7 @@ export default {
           email: this.signUpCreds.email,
         };
         await this.createUser(data);
-
-        if (!this.user) {
-          this.signUpValidationMessages = {
-            phone: 'Sign-up failed. Phone number or email already assigned to existing account',
-            password: '',
-            confirmedPassword: '',
-            name: '',
-            email: 'Sign-up failed. Phone number or email already assigned to existing account',
-          };
-          this.signUpValidationResults = { phone: false, password: null, confirmedPassword: null, name: null, email: false };
-        }
-        else {
+        if (this.user) {
           this.signUpCreds = {
             name: '',
             phone: '',

@@ -2,14 +2,13 @@
   <b-container class="custom-container">
     <div class="ml-lg-5">
       <div class="">
-        <h3 class="text-primary">Beneficiaries</h3>
+        <h3 class="text-primary">My Beneficiaries</h3>
         <p>
-          All nominees get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
+          All beneficiaries get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
           are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>
       <div class="">
-        <h3 class="text-primary pb-3">My Nominees</h3>
         <div v-if="!beneficiaryItems.length" class="text-center">
           <p class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
           <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
@@ -59,8 +58,8 @@
       </h5>
       <b-table v-if="distributionItems.length" :items="distributionItems" :fields="distributionFields" thead-class="bg-secondary text-white" striped hover stacked="sm" >
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.status==='Success'" class="text-secondary font-weight-bold"> {{ data.item.amount }}</span>
-          <span v-else class="text-secondary font-weight-bold"> {{ data.item.expectedAmount }} </span>
+          <span v-if="data.item.status==='Success'" class="text-secondary font-weight-bold"> {{ formatWithCommaSeparator(data.item.amount) }}</span>
+          <span v-else class="text-secondary font-weight-bold"> {{ formatWithCommaSeparator(data.item.expectedAmount) }} </span>
         </template>
         <template v-slot:cell(status)="data">
           <span v-if="data.item.status==='Success'" class="text-success font-weight-bold"> {{ data.item.status }} </span>
@@ -79,6 +78,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'beneficiaries',
   data() {
@@ -156,6 +156,7 @@ export default {
   },
   methods: {
     ...mapActions(['getCurrentUser','refreshData']),
+    formatWithCommaSeparator,
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
       this.$bvModal.show('beneficiary');
@@ -194,7 +195,8 @@ export default {
       return '';
     },
     getDate(datetime) {
-      return new Date(datetime).toLocaleDateString();
+      const dateObj = new Date(datetime);
+      return dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
     },
     getProgress(id) {
       const monthlyMax = 2000;
@@ -218,7 +220,7 @@ export default {
         default: 
           return '';
       }
-    }
+    },
   },
   async mounted() {
     if (Auth.isAuthenticated()) {

@@ -2,7 +2,7 @@
   <b-container class="custom-container">
     <div class="ml-lg-5">
       <p>
-        <span class="h3 text-primary">Nominate</span>
+        <span class="h3 text-primary">Nominate people</span>
         <b-link to="invitations" class="text-body ml-5">View invitations</b-link>
       </p>
       <div class="bg-white rounded p-5 shadow-sm">
@@ -33,9 +33,9 @@
             </b-col>
             <b-col>
               <b-input-group>
-                <template v-slot:prepend >
-                  <img :src="imageUrl" width="50" height="30" class="rounded-pill align-self-end" alt="Social Relief Logo">
-                </template>
+                <b-input-group-prepend>
+                  <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
+                </b-input-group-prepend>
                 <b-form-input 
                   v-model="nomineeCreds.phone"
                   type="text" 
@@ -110,6 +110,8 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import { validateObj } from '../views/util';
+import { Auth } from '../services';
+import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'nominate',
   data() {
@@ -135,13 +137,10 @@ export default {
   },
   components: { },
   computed: {
-    ...mapState(['message']),
-    imageUrl () {
-      return require(`@/assets/Flag_of_Kenya.png`);
-    }
+    ...mapState(['user', 'message']),
   },
   methods: {
-    ...mapActions(['nominate']),
+    ...mapActions(['nominate', 'getCurrentUser','refreshData']),
     validateObj,
     hideDialog() {
       this.nomineeCreds = {
@@ -171,16 +170,22 @@ export default {
         }
 
         await this.nominate(data);
-        
-        if (this.message.type === 'error') {
-          this.validationMessages = [this.message.message, this.message.message, this.message.message];
-          this.validationResults = [false, false, false];
-        }
-        else {
+
+        if (this.message.type !== 'error') {
           this.validationResults = [null, null];
           this.$bvModal.show('nominate-success');
         }
       }
+    }
+  },
+  async mounted() {
+    if (Auth.isAuthenticated()) {
+      if (!this.user)
+        await this.getCurrentUser();
+      await this.refreshData();
+    }
+    else {
+      this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   }
 }

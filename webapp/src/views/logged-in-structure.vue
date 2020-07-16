@@ -12,14 +12,14 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">{{ totalAmountDonated - totalAmountDistributed }}</div>
+                  <div class="h4">{{ formatWithCommaSeparator(totalAmountDonated - totalAmountDistributed) }}</div>
                 </div>
               </div>
             </b-nav-text>
             <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
             <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
             <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
-            <b-nav-item to="/history" exact exact-active-class="active">History</b-nav-item>
+            <b-nav-item to="/history" exact exact-active-class="active">Transaction history</b-nav-item>
             <div class="small text-secondary mt-auto">
             <p>privacy policy</p>
             <p>terms of use</p>
@@ -28,7 +28,7 @@
           </b-nav>
         </b-col>
         <b-col>
-          <b-navbar toggleable="sm" variant="light" sticky>
+          <b-navbar toggleable="sm" variant="light" sticky style="margin-bottom: 1.5rem">
             <b-navbar-brand to="#" class="d-md-none">
               <img :src="imageUrl" width="150" alt="Social Relief Logo">
             </b-navbar-brand>
@@ -37,7 +37,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
-                <b-nav-item to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-2">Nominate</b-nav-item>
+                <b-nav-item to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-3">Nominate people</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
                   <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
@@ -78,9 +78,8 @@
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import { Auth } from '../services';
-import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import HomeFooter from '../components/home-footer';
+import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'logged-in-structure',
   components: { HomeFooter },
@@ -96,6 +95,7 @@ export default {
   },
   methods: {
     ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData']),
+    formatWithCommaSeparator,
     async signOut() {
       await this.signUserOut();
     },
@@ -114,6 +114,7 @@ export default {
             variant: 'danger',
             solid: true
           });
+          this.resetMessage();
           break;
         default:
           this.$bvToast.toast(this.message.message, {
@@ -121,7 +122,10 @@ export default {
             variant: 'info',
             solid: true
           });
+          this.resetMessage();
       }
+
+
     }
   }
 }

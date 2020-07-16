@@ -80,6 +80,9 @@ const actions = wrapActions({
       'getTransactions'
     ].forEach((action) => dispatch(action));
   },
+  async resetMessage({ commit }) {
+    commit('unsetMessage');
+  },
   async clearData({ commit }) {
     [
       'unsetUser',
