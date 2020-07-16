@@ -69,7 +69,7 @@ function extractTransactionInfo(data: FlutterwaveTransactionInfo): ProviderTrans
       phone: `254${data.customer.phone_number.substring(1)}` // use internal instead of local format
     },
     status,
-    amount: data.charged_amount,
+    amount: data.amount,
     providerTransactionId: data.tx_ref,
     metadata: data,
     failureReason: status === 'failed' ? data.processor_response: ''

@@ -66,12 +66,13 @@ export class Transactions implements TransactionService {
   }
 
   async initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction> {
-    validators.validatesInitiateDonation({ userId: user._id, amount: args.amount })
+    validators.validatesInitiateDonation({ userId: user._id, amount: args.amount });
+    args.amount = Math.floor(args.amount);
 
     const provider = this.receivingProvider();
 
     const trxArgs: TransactionCreateArgs = {
-      expectedAmount: Math.floor(args.amount),
+      expectedAmount: args.amount,
       to: user._id,
       from: '',
       fromExternal: true,
@@ -97,6 +98,8 @@ export class Transactions implements TransactionService {
 
   async sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction> {
     validators.validatesSendDonation({ from: from._id, to: to._id, amountArg: args });
+    args.amount = Math.floor(args.amount);
+    
     const provider = this.sendingProvider();
     const trxArgs: TransactionCreateArgs = {
       expectedAmount: args.amount,
