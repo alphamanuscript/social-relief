@@ -1,4 +1,5 @@
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+export type NominationRoles = 'beneficiary' | 'middleman';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution';
 
@@ -46,6 +47,7 @@ export interface UserNominateArgs {
   name: string,
   phone: string,
   email?: string,
+  role: NominationRoles,
   nominator: string
 }
 
@@ -94,11 +96,24 @@ export interface AppMessage {
   message: string;
 }
 
+export interface Invitation {
+  _id: string;
+  invitor: string; // id of inviting user
+  inviteeName: string; // name of invited user
+  inviteePhone: string; // phone of invited user
+  inviteeEmail?: string; // email of invited user
+  inviteeRole: NominationRoles; // role of invited user (i.e. beneficiary | middleman)
+  expiresAt: Date; // time at which record will self-delete
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export interface AppState {
   user?: User;
   beneficiaries: User[];
   middlemen: User[];
   transactions: Transaction[];
+  invitations: Invitation[];
   message: AppMessage;
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;

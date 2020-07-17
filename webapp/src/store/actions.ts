@@ -2,6 +2,7 @@ import { wrapActions, googleSignOut } from './util';
 import { Users, Transactions, Donations } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { NominationRoles } from '@/types';
 
 const actions = wrapActions({
   async getBeneficiaries({ commit }) {
@@ -27,14 +28,11 @@ const actions = wrapActions({
       commit('setPaymentRequest', trx);
     }   
   },
-  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: string }) {
-    if (state.user && role === 'Beneficiary') {
-      const beneficiary = await Users.nominateBeneficiary({ phone: nominee, name, email, nominator: state.user._id });
-      commit('addBeneficiary', beneficiary);
-    }
-    else if (state.user && role === 'Middleman') {
-      const middleman = await Users.nominateMiddleman({ phone: nominee, name, email, nominator: state.user._id });
-      commit('addMiddleman', middleman);
+  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRoles }) {
+    if (state.user) {
+      const invitation = await Users.nominate({ phone: nominee, name, email, role, nominator: state.user._id });
+      console.log('invitation: ', invitation);
+      commit('addInvitation', invitation);
     }
   },
   /**
@@ -89,6 +87,7 @@ const actions = wrapActions({
       'unsetBeneficiaries',
       'unsetMiddlemen',
       'unsetTransactions',
+      'unsetInvitations',
       'unsetLastPaymentRequest',
       'unsetMessage',
     ].forEach((mutation) => commit(mutation));

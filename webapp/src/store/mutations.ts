@@ -5,6 +5,9 @@ const mutations: MutationTree<AppState> = {
   addTransaction(state, trx) {
     state.transactions.push(trx);
   },
+  addInvitation(state, invt) {
+    state.invitations.push(invt);
+  },
   updateTransaction(state, trx) {
     const index = state.transactions.findIndex(tx => tx._id === trx._id);
     if (index > -1) {
@@ -53,6 +56,12 @@ const mutations: MutationTree<AppState> = {
   },
   unsetTransactions(state) {
     state.transactions = []
+  },
+  setInvitations(state, invitations) {
+    state.invitations = invitations
+  },
+  unsetInvitations(state) {
+    state.invitations = []
   },
   setMessage(state, message) {
     state.message = message

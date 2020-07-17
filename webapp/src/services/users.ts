@@ -4,7 +4,8 @@ import {
   User,
   UserCreateArgs,
   UserLoginArgs,
-  UserNominateArgs
+  UserNominateArgs,
+  Invitation
 } from '../types';
 import { Auth } from './auth';
 
@@ -18,12 +19,8 @@ export const Users = {
     Auth.setAccessToken(res.data.token._id);
     return res.data.user;
   },
-  async nominateBeneficiary(args: UserNominateArgs) {
-    const res = await axios.post<User>('/users/beneficiaries', args);
-    return res.data;
-  },
-  async nominateMiddleman(args: UserNominateArgs) {
-    const res = await axios.post<User>('/users/middlemen', args);
+  async nominate(args: UserNominateArgs) {
+    const res = await axios.post<Invitation>('/users/nominate', args);
     return res.data;
   },
   async getBeneficiaries() {

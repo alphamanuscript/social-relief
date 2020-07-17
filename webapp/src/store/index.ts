@@ -12,6 +12,7 @@ const state: AppState = {
   beneficiaries: [],
   middlemen: [],
   transactions: [],
+  invitations: [],
   message: { type: '', message: '' },
   lastPaymentRequest: undefined
 }
