@@ -72,6 +72,13 @@ export const nominateInputSchema = joi.object().keys({
       'string.base': 'Invalid type, nominator must be a string',
       'string.empty': `Nominator id is required`,
     }),
+  role: joi.string()
+    .required()
+    .messages({
+      'any.required': `Role is required`,
+      'string.base': 'Invalid type, role must be a string',
+      'string.empty': `Role is required`,
+    })
 });
 
 export const getAllBeneficiariesInputSchema = userIdSchema;

@@ -1,6 +1,9 @@
 import { Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import { Invitation } from '../invitation';
 
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+
+export type NominationRoles = 'beneficiary' | 'middleman';
 
 export interface User {
   _id: string,
@@ -56,6 +59,7 @@ export interface UserNominateArgs {
   name: string,
   email?: string,
   nominator: string,
+  role?: NominationRoles,
 };
 
 export interface UserLoginArgs {
@@ -69,18 +73,23 @@ export interface UserLoginResult {
   token: AccessToken
 };
 
+export interface ReplyToInvitationArgs {
+  id: string,
+  reply: boolean,
+}
+
 export interface UserService {
-  /**
-   * ensures that all required database indexes
-   * for this service are created.
-   * This method is idempotent
-   */
-  createIndexes(): Promise<void>;
   /**
    * creates a user
    * @param args 
    */
   create(args: UserCreateArgs): Promise<User>;
+  /**
+   * Creates and returns an invitation 
+   * to the nominated person/user
+   * @param args 
+   */
+  nominate(args: UserNominateArgs): Promise<Invitation>;
   /**
    * nominates an existing user as a beneficiary
    * only if they're not a donor. If user does not
@@ -144,4 +153,10 @@ export interface UserService {
    * @param to 
    */
   sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
+  // /**
+  //  * Creates/Updates user account if invitation is accepted (i.e, args.reply = true).
+  //  * Furthermore, corresponding invitation is deleted from db, if it's still there.
+  //  * @param args 
+  //  */
+  // replyToInvitation(args: ReplyToInvitationArgs): Promise<User>;
 };

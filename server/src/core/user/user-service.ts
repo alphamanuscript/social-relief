@@ -12,6 +12,7 @@ import {
   createMiddlemanNominationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
+import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -64,6 +65,7 @@ function isDonor(user: User): boolean {
 
 export interface UsersArgs {
   transactions: TransactionService,
+  invitations: InvitationService
 };
 
 export class Users implements UserService {
@@ -72,6 +74,7 @@ export class Users implements UserService {
   private tokenCollection: Collection<AccessToken>;
   private indexesCreated: boolean;
   private transactions: TransactionService;
+  private invitations: InvitationService;
 
   constructor(db: Db, args: UsersArgs) {
     this.db = db;
@@ -79,6 +82,7 @@ export class Users implements UserService {
     this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
     this.indexesCreated = false;
     this.transactions = args.transactions;
+    this.invitations = args.invitations;
   }
 
   async createIndexes(): Promise<void> {
@@ -150,13 +154,35 @@ export class Users implements UserService {
     }
   }
 
-  async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator, name } = args;
+  async nominate(args: UserNominateArgs): Promise<Invitation> {
     validators.validatesNominate(args);
-
+    const { phone, email, nominator, name, role } = args;
+    
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
       if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      const invitationArgs: InvitationCreateArgs = {
+        invitor: nominator,
+        inviteeName: name,
+        inviteePhone: phone,
+        inviteeEmail: email,
+        inviteeRole: role,
+      }
+      const invitation = await this.invitations.create(invitationArgs);
+      return invitation;
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
+    const { phone, email, nominator, name } = args;
+    // validators.validatesNominate(args);
+
+    try {
+      const nominatorUser = await this.collection.findOne({ _id: nominator });
 
       let donors: string[] = [];
       if (isDonor(nominatorUser)) {
@@ -210,11 +236,10 @@ export class Users implements UserService {
 
   async nominateMiddleman(args: UserNominateArgs): Promise<User> {
     const { phone, email, nominator, name } = args;
-    validators.validatesNominate(args);
+    // validators.validatesNominate(args);
     
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
-      if (!nominatorUser) throw createMiddlemanNominationFailedError();
 
       const insert: any = {
         _id: generateId(),

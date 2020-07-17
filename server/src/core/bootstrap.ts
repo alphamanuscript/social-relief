@@ -6,6 +6,7 @@ import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 import { AtSMSProvider } from './sms';
+import { Invitations } from './invitation';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -37,8 +38,10 @@ export async function bootstrap(config: AppConfig): Promise<App> {
 
   const systemLocks = new SystemLocks(db);
   const transactions = new Transactions(db, { paymentProviders });
+  const invitations = new Invitations(db);
   const users = new Users(db, {
     transactions,
+    invitations
   });
   const donationDistributions = new DonationDistributions(db, {
     users,
@@ -53,6 +56,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
 
   await users.createIndexes();
   await transactions.createIndexes();
+  await invitations.createIndexes();
 
   return {
     users,

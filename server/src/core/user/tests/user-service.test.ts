@@ -1,7 +1,7 @@
 import { createDbUtils, expectDatesAreClose } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
-import { DbUser } from '../types';
+import { DbUser, UserNominateArgs } from '../types';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
@@ -31,6 +31,24 @@ describe('UserService tests', () => {
     const service = new Users(dbUtils.getDb(), args);
     return service;
   }
+
+  describe('nominate', () => {
+    test('should return an invitation to the nominated user', async () => {
+      const nominateArgs: UserNominateArgs = {
+        nominator: 'middleman1', 
+        name: 'John',
+        phone: '254700444444',
+        email: 'john@gmail.com',
+        role: 'beneficiary'
+      }
+      const res = await createDefaultService().nominate(nominateArgs);
+      expect(res.invitor).toBe(nominateArgs.nominator);
+      expect(res.inviteeName).toBe(nominateArgs.name);
+      expect(res.inviteePhone).toBe(nominateArgs.phone);
+      expect(res.inviteeEmail).toBe(nominateArgs.email);
+      expect(res.inviteeRole).toBe(nominateArgs.role);
+    })
+  })
 
   describe('nominateBeneficiary', () => {
     describe('when nominator is a middleman', () => {
