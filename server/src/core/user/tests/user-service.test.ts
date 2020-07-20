@@ -2,6 +2,8 @@ import { createDbUtils, expectDatesAreClose } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
 import { DbUser, UserNominateArgs } from '../types';
+import { InvitationCreateArgs } from '../../invitation';
+import { generateId } from '../../util';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
@@ -27,7 +29,24 @@ describe('UserService tests', () => {
   }
 
   function createDefaultService() {
-    const args: any = { transactions: {} };
+    const now = new Date();
+    const args: any = { 
+      transactions: {}, 
+      invitations: { 
+        create: jest.fn().mockImplementation((args: InvitationCreateArgs) => Promise.resolve({
+          _id: generateId(),
+          invitor: args.invitor, 
+          inviteeName: args.inviteeName,
+          inviteePhone: args.inviteePhone,
+          inviteeEmail: args.inviteeEmail,
+          inviteeRole: args.inviteeRole,
+          status: 'pending',
+          expiresAt: now,
+          createdAt: now,
+          updatedAt: now,
+        })) 
+      }
+    };
     const service = new Users(dbUtils.getDb(), args);
     return service;
   }
@@ -50,7 +69,7 @@ describe('UserService tests', () => {
       expect(res.status).toBe('pending');
       expect(res.status).not.toHaveProperty('code');
     })
-  })
+  });
 
   // describe('nominateBeneficiary', () => {
   //   describe('when nominator is a middleman', () => {
