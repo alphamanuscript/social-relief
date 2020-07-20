@@ -1,7 +1,9 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, generateCode } from '../util';
 import { Invitation, DbInvitation, InvitationCreateArgs, InvitationService, InvitationStatus } from './types';
-import { createDbOpFailedError, rethrowIfAppError } from '../error';
+import { createDbOpFailedError, rethrowIfAppError, createResourceNotFoundError, AppError } from '../error';
+import * as validators from './validator';
+import * as messages from '../messages';
 
 const COLLECTION = 'invitations';
 const SAFE_INVITATION_PROJECTION = { 
@@ -33,6 +35,15 @@ function getSafeInvitation(invitation: DbInvitation): Invitation {
 
       return safeInvitation;
     }, {});
+}
+
+function getSafeInvitations(invitations: DbInvitation[]): Invitation[] {
+  const safeInvitations = []
+  for (let index = 0; index < invitations.length; index++) {
+    safeInvitations.push(getSafeInvitation(invitations[index]))
+  }
+  return safeInvitations;
+  // return invitations.reduce<Invitation[]>((safeInvitations: Array[], invitation: DbInvitation) => safeInvitations.push(invitation), []);
 }
 
 export class Invitations implements InvitationService {
@@ -94,25 +105,16 @@ export class Invitations implements InvitationService {
     }
   }
 
-  async delete(id: string): Promise<any> {
-    try {
-      const result = await this.collection.findOneAndDelete({ _id: id });
-      return result ? getSafeInvitation(result.value) : result;
-    }
-    catch(e) {
-      rethrowIfAppError(e);
-
-      throw createDbOpFailedError(e.message);
-    }
-  }
-
-  async accept(id: string): Promise<Invitation> {
+  async accept(invitationId: string): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
-        { _id: id },
+        { _id: invitationId },
         { $set: { status: 'accepted' } },
         { upsert: true, returnOriginal: false }
       );
+      
+      if (!result) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
+      
       return getSafeInvitation(result.value);
     }
     catch(e) {
@@ -122,13 +124,16 @@ export class Invitations implements InvitationService {
     }
   }
 
-  async reject(id: string): Promise<Invitation> {
+  async reject(invitationId: string): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
-        { _id: id },
+        { _id: invitationId },
         { $set: { status: 'rejected' } },
         { upsert: true, returnOriginal: false }
       );
+
+      if (!result) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
+
       return getSafeInvitation(result.value);
     }
     catch(e) {
@@ -138,14 +143,26 @@ export class Invitations implements InvitationService {
     }
   }
 
-  async get(id: string): Promise<any> {
+  async getAllByUser(userId: string, userPhone: string): Promise<Invitation[]> {
+    validators.validatesGetAllByUser({ userId, userPhone });
     try {
-      const result = await this.collection.findOne({ _id: id });
-      return result ? getSafeInvitation(result) : result;
+      const result = await this.collection.find({ $or: [{ nominator: userId }, { inviteePhone: userPhone }] }).sort({ createdAt: -1 }).toArray();
+      return getSafeInvitations(result);
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async get(invitationId: string): Promise<Invitation> {
+    validators.validatesGet(invitationId);
+    try {
+      const invitation = await this.collection.findOne({ _id: invitationId });
+      if (!invitation) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
+      return getSafeInvitation(invitation);
     }
     catch(e) {
       rethrowIfAppError(e);
-
       throw createDbOpFailedError(e.message);
     }
   }

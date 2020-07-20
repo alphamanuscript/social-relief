@@ -36,27 +36,28 @@ export interface InvitationService {
    */
   create(args: InvitationCreateArgs): Promise<Invitation>;
   /**
-   * deletes an invitation corresponding to the specified id
-   * @param id 
-   */
-  delete(id: string): Promise<any>;
-  /**
    * updates the status of the invitation 
-   * corresponding to the specified id
+   * corresponding to the specified invitationId
    * to 'accepted'
-   * @param id 
+   * @param invitationId 
    */
-  accept(id: string): Promise<Invitation>;
+  accept(invitationId: string): Promise<Invitation>;
   /**
    * updates the status of the invitation 
-   * corresponding to the specified id
+   * corresponding to the specified invitationId
    * to 'rejected'
-   * @param id 
+   * @param invitationId 
    */
-  reject(id: string): Promise<Invitation>;
+  reject(invitationId: string): Promise<Invitation>;
   /**
-   * gets an invitation corresponding to the specified id
-   * @param id 
+   * gets the invitation corresponding to the specified invitationId
+   * @param invitationId 
    */
-  get(id: string): Promise<any>;
+  get(invitationId: string): Promise<any>;
+  /**
+   * gets all invitations sent to and by userId/userPhone
+   * @param userId 
+   * @param userPhone 
+   */
+  getAllByUser(userId: string, userPhone: string): Promise<Invitation[]>;
 }
