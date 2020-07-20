@@ -61,6 +61,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   return {
     users,
     transactions,
+    invitations,
     donationDistributions,
     smsProvider
   };
