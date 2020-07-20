@@ -1,6 +1,6 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, generateCode } from '../util';
-import { Invitation, DbInvitation, InvitationCreateArgs, InvitationService } from './types';
+import { Invitation, DbInvitation, InvitationCreateArgs, InvitationService, InvitationStatus } from './types';
 import { createDbOpFailedError, rethrowIfAppError } from '../error';
 
 const COLLECTION = 'invitations';
@@ -11,6 +11,7 @@ const SAFE_INVITATION_PROJECTION = {
   inviteePhone: 1,
   inviteeEmail: 1,
   inviteeRole: 1,
+  status: 1,
   expiresAt: 1,
   createdAt: 1,
   updatedAt: 1
@@ -76,6 +77,7 @@ export class Invitations implements InvitationService {
       inviteePhone,
       inviteeEmail,
       inviteeRole,
+      status: 'pending',
       expiresAt: now,
       createdAt: now,
       updatedAt: now,
@@ -96,6 +98,38 @@ export class Invitations implements InvitationService {
     try {
       const result = await this.collection.findOneAndDelete({ _id: id });
       return result ? getSafeInvitation(result.value) : result;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async accept(id: string): Promise<Invitation> {
+    try {
+      const result = await this.collection.findOneAndUpdate(
+        { _id: id },
+        { $set: { status: 'accepted' } },
+        { upsert: true, returnOriginal: false }
+      );
+      return getSafeInvitation(result.value);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async reject(id: string): Promise<Invitation> {
+    try {
+      const result = await this.collection.findOneAndUpdate(
+        { _id: id },
+        { $set: { status: 'rejected' } },
+        { upsert: true, returnOriginal: false }
+      );
+      return getSafeInvitation(result.value);
     }
     catch(e) {
       rethrowIfAppError(e);

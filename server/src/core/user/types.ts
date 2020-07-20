@@ -3,7 +3,7 @@ import { Invitation } from '../invitation';
 
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 
-export type NominationRoles = 'beneficiary' | 'middleman';
+export type NominationRole = 'beneficiary' | 'middleman';
 
 export interface User {
   _id: string,
@@ -59,7 +59,7 @@ export interface UserNominateArgs {
   name: string,
   email?: string,
   nominator: string,
-  role?: NominationRoles,
+  role?: NominationRole,
 };
 
 export interface UserLoginArgs {

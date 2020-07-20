@@ -160,7 +160,10 @@ export class Users implements UserService {
     
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominator });
-      if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
+        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
+      else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+        
       const invitationArgs: InvitationCreateArgs = {
         invitor: nominator,
         inviteeName: name,

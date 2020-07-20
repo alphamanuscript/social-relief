@@ -16,6 +16,8 @@ export const validatesLogin = (args: UserLoginArgs) => {
 export const validatesNominate = (args: UserNominateArgs) => {
   const { error } = schemas.nominateInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
+  if (args.role && ['beneficiary', 'middleman'].includes(args.role) === false) 
+    throw createValidationError("Role must be either 'beneficiary' or 'middleman'");
 }
 
 export const validatesGetAllBeneficiariesByUser = (userId: string) => {

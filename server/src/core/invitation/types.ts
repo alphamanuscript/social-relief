@@ -1,6 +1,7 @@
 import { nominateInputSchema } from "../user/validation-schemas";
 
-export type NominationRoles = 'beneficiary' | 'middleman';
+export type NominationRole = 'beneficiary' | 'middleman';
+export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
 
 export interface Invitation {
   _id: string,
@@ -8,7 +9,8 @@ export interface Invitation {
   inviteeName: string, // name of invited user
   inviteePhone: string, // phone of invited user
   inviteeEmail?: string, // email of invited user
-  inviteeRole: NominationRoles, // role of invited user (i.e. beneficiary | middleman)
+  inviteeRole: NominationRole, // role of invited user (i.e. beneficiary | middleman)
+  status: InvitationStatus, // Initially set to pending. Other statuses include 'accepted' and 'rejected'
   expiresAt: Date, // time at which record will self-delete
   createdAt: Date,
   updatedAt: Date,
@@ -23,11 +25,11 @@ export interface InvitationCreateArgs {
   inviteeName: string,
   inviteePhone: string,
   inviteeEmail?: string,
-  inviteeRole: NominationRoles
+  inviteeRole: NominationRole
 };
 
 export interface InvitationService {
-  createIndexes(): Promise<void>;
+  createIndexes(): Promise<void>
   /**
    * creates an invitation
    * @param args 
@@ -38,6 +40,20 @@ export interface InvitationService {
    * @param id 
    */
   delete(id: string): Promise<any>;
+  /**
+   * updates the status of the invitation 
+   * corresponding to the specified id
+   * to 'accepted'
+   * @param id 
+   */
+  accept(id: string): Promise<Invitation>;
+  /**
+   * updates the status of the invitation 
+   * corresponding to the specified id
+   * to 'rejected'
+   * @param id 
+   */
+  reject(id: string): Promise<Invitation>;
   /**
    * gets an invitation corresponding to the specified id
    * @param id 
