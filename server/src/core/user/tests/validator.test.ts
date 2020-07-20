@@ -66,7 +66,7 @@ describe('validatesNominate', () => {
   it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesNominate, [
       { phone: '254729291091', nominator: 'nominator1', name: 'James', role: 'beneficiary' },
-      { phone: '254729311023', nominator: 'nominator1', name: 'John', role: 'middleman' }
+      { phone: '254729311023', nominator: 'nominator1', name: 'John', role: 'middleman' },
       { phone: '254729311023', nominator: 'nominator1', name: 'James John', role: 'middleman' }
     ]);
   });
