@@ -94,7 +94,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData']),
+    ...mapActions(['signUserOut', 'getCurrentUser', 'refreshData', 'resetMessage']),
     formatWithCommaSeparator,
     async signOut() {
       await this.signUserOut();

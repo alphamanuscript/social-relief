@@ -18,6 +18,16 @@ const mutations: MutationTree<AppState> = {
       state.transactions.push(trx);
     }
   },
+  updateInvitation(state, invt) {
+    const index = state.invitations.findIndex(inv => inv._id === invt._id);
+    if (index > -1) {
+      // update invitations if already exists
+      state.invitations[index] = invt;
+    }
+    else {
+      state.invitations.push(invt);
+    }
+  },
   setPaymentRequest(state, trx) {
     state.lastPaymentRequest = trx;
   },

@@ -1,6 +1,7 @@
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
-export type NominationRoles = 'beneficiary' | 'middleman';
+export type NominationRole = 'beneficiary' | 'middleman';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
+export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
 export type TransactionType = 'donation' | 'distribution';
 
 export interface Token {
@@ -47,7 +48,7 @@ export interface UserNominateArgs {
   name: string,
   phone: string,
   email?: string,
-  role: NominationRoles,
+  role: NominationRole,
   nominator: string
 }
 
@@ -71,6 +72,19 @@ export interface Transaction {
   provider: string,
   providerTransactionId?: string,
   metadata: any
+}
+
+export interface Invitation {
+  _id: string,
+  invitor: string,
+  inviteeName: string,
+  inviteePhone: string,
+  inviteeEmail?: string,
+  inviteeRole: NominationRole,
+  status: InvitationStatus, 
+  expiresAt: Date, 
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 export interface Nominator {
@@ -98,12 +112,12 @@ export interface AppMessage {
 
 export interface Invitation {
   _id: string;
-  invitor: string; // id of inviting user
-  inviteeName: string; // name of invited user
-  inviteePhone: string; // phone of invited user
-  inviteeEmail?: string; // email of invited user
-  inviteeRole: NominationRoles; // role of invited user (i.e. beneficiary | middleman)
-  expiresAt: Date; // time at which record will self-delete
+  invitor: string;
+  inviteeName: string;
+  inviteePhone: string;
+  inviteeEmail?: string; 
+  inviteeRole: NominationRole; 
+  expiresAt: Date; 
   createdAt: Date;
   updatedAt: Date;
 };

@@ -1,8 +1,8 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations } from '../services';
+import { Users, Transactions, Donations, Invitations } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
-import { NominationRoles } from '@/types';
+import { NominationRole } from '@/types';
 
 const actions = wrapActions({
   async getBeneficiaries({ commit }) {
@@ -17,6 +17,10 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
+  async getInvitations({ commit}) {
+    const invitations = await Invitations.getInvitations();
+    commit('setInvitations', invitations);
+  },
   async getTransaction({ commit }, id: string) {
     const transaction = await Transactions.getTransaction(id);
     commit('updateTransaction', transaction);
@@ -28,7 +32,7 @@ const actions = wrapActions({
       commit('setPaymentRequest', trx);
     }   
   },
-  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRoles }) {
+  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRole }) {
     if (state.user) {
       const invitation = await Users.nominate({ phone: nominee, name, email, role, nominator: state.user._id });
       console.log('invitation: ', invitation);
@@ -75,7 +79,8 @@ const actions = wrapActions({
     [
       'getBeneficiaries',
       'getMiddlemen',
-      'getTransactions'
+      'getTransactions',
+      'getInvitations'
     ].forEach((action) => dispatch(action));
   },
   async resetMessage({ commit }) {
