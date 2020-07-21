@@ -35,7 +35,8 @@ describe('UserService tests', () => {
       invitations: { 
         create: jest.fn().mockImplementation((args: InvitationCreateArgs) => Promise.resolve({
           _id: generateId(),
-          invitor: args.invitor, 
+          invitorId: args.invitorId, 
+          invitorName: args.invitorName, 
           inviteeName: args.inviteeName,
           inviteePhone: args.inviteePhone,
           inviteeEmail: args.inviteeEmail,
@@ -54,14 +55,16 @@ describe('UserService tests', () => {
   describe('nominate', () => {
     test('should return an invitation to the nominated user', async () => {
       const nominateArgs: UserNominateArgs = {
-        nominator: 'middleman1', 
+        nominatorId: 'middleman1', 
+        nominatorName: 'John Doe', 
         name: 'John',
         phone: '254700444444',
         email: 'john@gmail.com',
         role: 'beneficiary'
       }
       const res = await createDefaultService().nominate(nominateArgs);
-      expect(res.invitor).toBe(nominateArgs.nominator);
+      expect(res.invitorId).toBe(nominateArgs.nominatorId);
+      expect(res.invitorName).toBe(nominateArgs.nominatorName);
       expect(res.inviteeName).toBe(nominateArgs.name);
       expect(res.inviteePhone).toBe(nominateArgs.phone);
       expect(res.inviteeEmail).toBe(nominateArgs.email);
