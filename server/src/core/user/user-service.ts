@@ -155,6 +155,7 @@ export class Users implements UserService {
   }
 
   async nominate(args: UserNominateArgs): Promise<Invitation> {
+    console.log('In nominate, args: ', args);
     validators.validatesNominate(args);
     const { phone, email, nominatorId, nominatorName, name, role } = args;
     

@@ -29,5 +29,5 @@ users.get('/middlemen', requireAuth(), wrapResponse(
   req => req.core.users.getAllMiddlemenByUser(req.user._id)));
 
 users.post('/nominate', requireAuth(), wrapResponse(
-  req => req.core.users.nominate({ ...req.body, nominator: req.user._id })));
+  req => req.core.users.nominate({ ...req.body })));
 
