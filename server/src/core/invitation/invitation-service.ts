@@ -148,7 +148,7 @@ export class Invitations implements InvitationService {
   async getAllByUser(userId: string, userPhone: string): Promise<Invitation[]> {
     validators.validatesGetAllByUser({ userId, userPhone });
     try {
-      const result = await this.collection.find({ $or: [{ invitor: userId }, { inviteePhone: userPhone }] }).sort({ createdAt: -1 }).toArray();
+      const result = await this.collection.find({ $or: [{ invitorId: userId }, { inviteePhone: userPhone }] }).sort({ createdAt: -1 }).toArray();
       return getSafeInvitations(result);
     }
     catch (e) {
