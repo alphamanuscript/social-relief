@@ -156,16 +156,17 @@ export class Users implements UserService {
 
   async nominate(args: UserNominateArgs): Promise<Invitation> {
     validators.validatesNominate(args);
-    const { phone, email, nominator, name, role } = args;
+    const { phone, email, nominatorId, nominatorName, name, role } = args;
     
     try {
-      const nominatorUser = await this.collection.findOne({ _id: nominator });
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId });
       if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
         throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
         
       const invitationArgs: InvitationCreateArgs = {
-        invitor: nominator,
+        invitorId: nominatorId,
+        invitorName: nominatorName,
         inviteeName: name,
         inviteePhone: phone,
         inviteeEmail: email,
@@ -181,15 +182,15 @@ export class Users implements UserService {
   }
 
   async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator, name } = args;
+    const { phone, email, nominatorId, name } = args;
     // validators.validatesNominate(args);
 
     try {
-      const nominatorUser = await this.collection.findOne({ _id: nominator });
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId });
 
       let donors: string[] = [];
       if (isDonor(nominatorUser)) {
-        donors.push(nominator);
+        donors.push(nominatorId);
       }
 
       if (isMiddleman(nominatorUser) && Array.isArray(nominatorUser.middlemanFor)) {
@@ -213,7 +214,7 @@ export class Users implements UserService {
         password: '', 
         phone,
         name,
-        addedBy: nominator, 
+        addedBy: nominatorId, 
         createdAt: new Date(),
       }
       if (email) insert.email = email;
@@ -238,25 +239,25 @@ export class Users implements UserService {
   }
 
   async nominateMiddleman(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator, name } = args;
+    const { phone, email, nominatorId, name } = args;
     // validators.validatesNominate(args);
     
     try {
-      const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId, roles: 'donor' });
 
       const insert: any = {
         _id: generateId(),
         password: '',
         phone,
         name,
-        addedBy: nominator,
+        addedBy: nominatorId,
         createdAt: new Date()
       }
       if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone },
         {
-          $addToSet: { roles: 'middleman', middlemanFor: nominator },
+          $addToSet: { roles: 'middleman', middlemanFor: nominatorId },
           $currentDate: { updatedAt: true },
           $setOnInsert: insert
         },

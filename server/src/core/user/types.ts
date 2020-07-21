@@ -58,7 +58,8 @@ export interface UserNominateArgs {
   phone: string,
   name: string,
   email?: string,
-  nominator: string,
+  nominatorId: string,
+  nominatorName: string,
   role?: NominationRole,
 };
 

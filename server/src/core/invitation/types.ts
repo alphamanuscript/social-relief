@@ -5,7 +5,8 @@ export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
 
 export interface Invitation {
   _id: string,
-  invitor: string, // id of inviting user
+  invitorId: string, // id of inviting user
+  invitorName: string, // name of inviting user
   inviteeName: string, // name of invited user
   inviteePhone: string, // phone of invited user
   inviteeEmail?: string, // email of invited user
@@ -21,7 +22,8 @@ export interface DbInvitation extends Invitation {
 }
 
 export interface InvitationCreateArgs {
-  invitor: string,
+  invitorId: string,
+  invitorName: string,
   inviteeName: string,
   inviteePhone: string,
   inviteeEmail?: string,

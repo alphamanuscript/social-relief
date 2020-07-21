@@ -65,12 +65,19 @@ export const nominateInputSchema = joi.object().keys({
       'string.empty': 'Name is required'
     }),
   email: emailSchema,
-  nominator: joi.string()
+  nominatorId: joi.string()
     .required()
     .messages({
       'any.required': `Nominator id is required`,
-      'string.base': 'Invalid type, nominator must be a string',
+      'string.base': 'Invalid type, nominator id must be a string',
       'string.empty': `Nominator id is required`,
+    }),
+  nominatorName: joi.string()
+    .required()
+    .messages({
+      'any.required': `Nominator name is required`,
+      'string.base': 'Invalid type, nominator name must be a string',
+      'string.empty': `Nominator name is required`,
     }),
   role: joi.string()
     .required()

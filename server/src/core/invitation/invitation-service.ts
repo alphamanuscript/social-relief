@@ -8,7 +8,8 @@ import * as messages from '../messages';
 const COLLECTION = 'invitations';
 const SAFE_INVITATION_PROJECTION = { 
   _id: 1,
-  invitor: 1,
+  invitorId: 1,
+  invitorName: 1,
   inviteeName: 1,
   inviteePhone: 1,
   inviteeEmail: 1,
@@ -78,12 +79,13 @@ export class Invitations implements InvitationService {
   }
 
   async create(args: InvitationCreateArgs): Promise<Invitation> {
-    const { invitor, inviteeName, inviteePhone, inviteeEmail, inviteeRole } = args;
+    const { invitorId, invitorName, inviteeName, inviteePhone, inviteeEmail, inviteeRole } = args;
     const now = new Date();
     const invitation: DbInvitation = {
       _id: generateId(),
       code: generateCode(),
-      invitor, 
+      invitorId, 
+      invitorName, 
       inviteeName,
       inviteePhone,
       inviteeEmail,
