@@ -6,61 +6,18 @@
       </div>
       <div>
         <h5 class="mt-4">Invitations sent to me</h5>
-        <b-card-group deck>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
+        <div v-if="!invitationsReceived.length" class="text-center">
+          <p class="h2 font-weight-light">You haven't received any invitations yet...</p>
+          <p class="">You receive an invitation when someone nominates you as either a beneficiary or middleman</p>
+        </div>
+        <b-card-group v-else deck>
+          <b-card 
+            v-for="invitation in invitationsReceived"
+            :key="invitation._id"
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>{{ invitation.nominator }}</b-card-title>
             <b-card-text>
-              wants me to be a middleman
-            </b-card-text>
-            <template v-slot:footer>
-              <b-button variant="primary" class="mr-5">Accept</b-button>
-              <b-button variant="danger" class="">Decline</b-button>
-            </template>
-          </b-card>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
-            <b-card-text>
-              wants me to be a middleman
-            </b-card-text>
-            <template v-slot:footer>
-              <b-button variant="primary" class="mr-5">Accept</b-button>
-              <b-button variant="danger" class="">Decline</b-button>
-            </template>
-          </b-card>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
-            <b-card-text>
-              wants me to be a middleman
-            </b-card-text>
-            <template v-slot:footer>
-              <b-button variant="primary" class="mr-5">Accept</b-button>
-              <b-button variant="danger" class="">Decline</b-button>
-            </template>
-          </b-card>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
-            <b-card-text>
-              wants me to be a middleman
-            </b-card-text>
-            <template v-slot:footer>
-              <b-button variant="primary" class="mr-5">Accept</b-button>
-              <b-button variant="danger" class="">Decline</b-button>
-            </template>
-          </b-card>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
-            <b-card-text>
-              wants me to be a middleman
-            </b-card-text>
-            <template v-slot:footer>
-              <b-button variant="primary" class="mr-5">Accept</b-button>
-              <b-button variant="danger" class="">Decline</b-button>
-            </template>
-          </b-card>
-          <b-card class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
-            <b-card-title>John Doe</b-card-title>
-            <b-card-text>
-              wants me to be a middleman
+              wants me to be a {{ invitation.role }}
             </b-card-text>
             <template v-slot:footer>
               <b-button variant="primary" class="mr-5">Accept</b-button>
