@@ -25,7 +25,7 @@ const getters: GetterTree<AppState, AppState> = {
     return transactions.filter(t => t.type == 'distribution').reverse();
   },
   invitationsSent: ({ invitations, user }) => {
-    return invitations.filter(invt => user && invt.invitor === user._id);
+    return invitations.filter(invt => user && invt.invitorId === user._id);
   },
   invitationsReceived: ({ invitations, user}) => {
     return invitations.filter(invt => user && invt.inviteePhone === user.phone);
