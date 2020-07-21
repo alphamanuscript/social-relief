@@ -49,7 +49,8 @@ export interface UserNominateArgs {
   phone: string,
   email?: string,
   role: NominationRole,
-  nominator: string
+  nominatorId: string,
+  nominatorName: string,
 }
 
 export interface InitiateDonationArgs {
@@ -112,11 +113,13 @@ export interface AppMessage {
 
 export interface Invitation {
   _id: string;
-  invitor: string;
+  invitorId: string;
+  invitorName: string;
   inviteeName: string;
   inviteePhone: string;
   inviteeEmail?: string; 
   inviteeRole: NominationRole; 
+  status: InvitationStatus;
   expiresAt: Date; 
   createdAt: Date;
   updatedAt: Date;

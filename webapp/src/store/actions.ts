@@ -21,6 +21,16 @@ const actions = wrapActions({
     const invitations = await Invitations.getInvitations();
     commit('setInvitations', invitations);
   },
+  async acceptInvitation({ commit}, id: string) {
+    console.log('In acceptInvitation, id: ', id);
+    const invitation = await Invitations.acceptInvitation(id);
+    commit('updateInvitation', invitation);
+  },
+  async rejectInvitation({ commit}, id: string) {
+    console.log('In rejectInvitation, id: ', id);
+    const invitation = await Invitations.rejectInvitation(id);
+    commit('updateInvitation', invitation);
+  },
   async getTransaction({ commit }, id: string) {
     const transaction = await Transactions.getTransaction(id);
     commit('updateTransaction', transaction);
@@ -34,7 +44,7 @@ const actions = wrapActions({
   },
   async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRole }) {
     if (state.user) {
-      const invitation = await Users.nominate({ phone: nominee, name, email, role, nominator: state.user._id });
+      const invitation = await Users.nominate({ phone: nominee, name, email, role, nominatorId: state.user._id, nominatorName: state.user.name });
       console.log('invitation: ', invitation);
       commit('addInvitation', invitation);
     }

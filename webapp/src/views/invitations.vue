@@ -6,12 +6,12 @@
       </div>
       <div>
         <h5 class="mt-4">Invitations sent to me</h5>
-        <div v-if="!invitationsReceived.length" class="text-center">
+        <div v-if="invitationsReceived.length" class="text-center">
           <p class="h2 font-weight-light">You haven't received any invitations yet...</p>
           <p class="">You receive an invitation when someone nominates you as either a beneficiary or middleman</p>
         </div>
         <b-card-group v-else deck>
-          <b-card 
+          <!-- <b-card 
             v-for="invitation in invitationsReceived"
             :key="invitation._id"
             class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
@@ -22,6 +22,149 @@
             <template v-slot:footer>
               <b-button variant="primary" class="mr-5">Accept</b-button>
               <b-button variant="danger" class="">Decline</b-button>
+            </template>
+          </b-card> -->
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
+            </template>
+          </b-card>
+          <b-card
+            class="text-center mb-3 px-0 col-sm-12" style="min-width: 18.45rem; max-height: 15rem">
+            <b-card-title>John Doe</b-card-title>
+            <b-card-text>
+              wants me to be a middleman
+            </b-card-text>
+            <template v-slot:footer>
+              <b-button variant="primary" class="mr-5" @click="handleAcceptBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Accept</b-button>
+              <b-button variant="danger" class="" @click="handleRejectBtnClick({ _id: 'dhjqks', invitor: '47727391003' })">Reject</b-button>
             </template>
           </b-card>
         </b-card-group>
@@ -55,6 +198,85 @@
         </b-card-group>
       </div>
     </div>
+    <b-modal
+      id="accept-invitation"
+      title="Accept Invitation?"
+      title-class="text-primary h3"
+      centered
+      hide-header-close
+      header-class="border-bottom-0 pb-0 mb-0"
+      hide-footer
+      @hidden="hideDialog('accept-invitation')"
+      content-class="rounded p-5"
+      scrollable
+    >
+      <p>
+        <span>You're about to accept this invitation by <span class="font-bold">{{ currentInvitation.invitor }}</span>.</span> 
+        <span>As a middleman, you will be able to add beneficiaries on behalf of <span class="font-bold">{{ currentInvitation.invitor }}</span></span>
+        <span>As a beneficiary, you will be able to receive money from either John Doe or their donors, if they exist</span>
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="primary" class="custom-submit-button mr-5" @click.prevent="handleInvitationAcceptance()">Proceed</b-button>
+        <b-button variant="danger" class="custom-submit-button ml-4" @click.prevent="hideDialog('accept-invitation')">Cancel</b-button>
+      </div>
+    </b-modal>
+    <b-modal
+      id="reject-invitation"
+      title="Reject Invitation?"
+      title-class="text-primary h3"
+      centered
+      hide-header-close
+      header-class="border-bottom-0 pb-0 mb-0"
+      hide-footer
+      @hidden="hideDialog('reject-invitation')"
+      content-class="rounded p-5"
+      scrollable
+    >
+      <p>
+        <span>You're about to reject this invitation by <span class="font-bold">{{ currentInvitation.invitor }}</span>.</span>
+        <span>Click proceed if this is wht you want</span>
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="primary" class="custom-submit-button mr-5" @click.prevent="handleInvitationRejection()">Proceed</b-button>
+        <b-button variant="danger" class="custom-submit-button ml-4" @click.prevent="hideDialog('reject-invitation')">Cancel</b-button>
+      </div>
+    </b-modal>
+    <b-modal
+      id="accept-invitation-success"
+      title="Invitation Accepted!"
+      title-class="text-primary"
+      centered
+      hide-header-close
+      header-class="border-bottom-0"
+      hide-footer
+      @hidden="hideDialog('accept-invitation-success')"
+      content-class="rounded p-5"
+    >
+      <p>
+        You have successfully accepted <span class="font-bold">{{ currentInvitation.invitor }}</span>'s invitation to become a <span class="text-secondary">{{ currentInvitation.role }}</span>.
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="secondary" class="custom-submit-button" @click.prevent="hideDialog('accept-invitation-success')">Close</b-button>
+      </div>
+    </b-modal>
+    <b-modal
+      id="reject-invitation-success"
+      title="Invitation Rejected!"
+      title-class="text-primary"
+      centered
+      hide-header-close
+      header-class="border-bottom-0"
+      hide-footer
+      @hidden="hideDialog('reject-invitation-success')"
+      content-class="rounded p-5"
+    >
+      <p>
+        You have successfully rejected <span class="font-bold">{{ currentInvitation.invitor }}</span>'s invitation to become a <span class="text-secondary">{{ currentInvitation.role }}</span>.
+      </p>
+      <div class="mt-3 text-right">
+        <b-button variant="secondary" class="custom-submit-button" @click.prevent="hideDialog('reject-invitation-success')">Close</b-button>
+      </div>
+    </b-modal>
   </b-container>
 </template>
 <script>
@@ -63,6 +285,22 @@ import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'invitations',
+  data() {
+    return {
+      currentInvitation: {
+        _id: '',
+        invitor: '',
+        inviteeName: '',
+        inviteePhone: '',
+        inviteeEmail: '', 
+        inviteeRole: '',
+        status: '',
+        expiresAt: '',
+        createdAt: '',
+        updatedAt: '',
+      },
+    }
+  },
   computed: {
     ...mapState(['invitations']),
     ...mapGetters([
@@ -71,7 +309,48 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation']),
+    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation', 'acceptInvitation', 'rejectInvitation']),
+    hideDialog(dialogId) {
+      this.currentInvitation = {
+        _id: '',
+        invitor: '',
+        inviteeName: '',
+        inviteePhone: '',
+        inviteeEmail: '', 
+        inviteeRole: '',
+        status: '',
+        expiresAt: '',
+        createdAt: '',
+        updatedAt: '',
+      };
+      this.$bvModal.hide(dialogId);
+    },
+    handleAcceptBtnClick(invitation) {
+      this.currentInvitation = invitation;
+      this.$bvModal.show('accept-invitation');
+    },
+    handleRejectBtnClick(invitation) {
+      this.currentInvitation = invitation;
+      this.$bvModal.show('reject-invitation');
+    },
+    async handleInvitationAcceptance() {
+      console.log('Handling Invitation Acceptance...');
+      console.log('this.currentInvitation: ', this.currentInvitation);
+      await this.acceptInvitation(this.currentInvitation._id);
+      if (this.message.type !== 'error') {
+        this.$bvModal.hide('accept-invitation');
+        this.$bvModal.show('accept-invitation-success');
+      }
+    },
+    async handleInvitationRejection() {
+      console.log('Handling Invitation Acceptance...');
+      console.log('this.currentInvitation: ', this.currentInvitation);
+      await this.rejectInvitation(this.currentInvitation._id);
+      if (this.message.type !== 'error') {
+        this.$bvModal.hide('reject-invitation');
+        this.$bvModal.show('reject-invitation-success');
+      }
+    }
   },
   async mounted() {
     if (Auth.isAuthenticated()) {
