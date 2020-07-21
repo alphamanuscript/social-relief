@@ -108,6 +108,7 @@ export class Invitations implements InvitationService {
   }
 
   async accept(invitationId: string): Promise<Invitation> {
+    console.log('In accept, invitationId: ', invitationId);
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId },
@@ -127,6 +128,7 @@ export class Invitations implements InvitationService {
   }
 
   async reject(invitationId: string): Promise<Invitation> {
+    console.log('In reject, invitationId: ', invitationId);
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId },
