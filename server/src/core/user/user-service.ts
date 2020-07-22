@@ -196,7 +196,7 @@ export class Users implements UserService {
         phone: invitation.inviteePhone,
         name: invitation.inviteeName,
         email: invitation.inviteeEmail,
-        nominatorId: invitation.invitatorId,
+        nominatorId: invitation.invitorId,
       }
       if (invitation.inviteeRole === 'beneficiary') return this.activateBeneficiary(args);
       else if(invitation.inviteeRole === 'middleman') return this.activateMiddleman(args);
