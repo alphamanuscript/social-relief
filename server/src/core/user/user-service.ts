@@ -191,17 +191,15 @@ export class Users implements UserService {
       const invitation = await this.invitations.get(invitationId);
       if (invitation.status !== 'accepted') 
         throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
-       
-      if (invitation.inviteeRole === 'beneficiary') {
-        const args: UserActivateBeneficiaryArgs = {
-          phone: invitation.inviteePhone,
-          name: invitation.inviteeName,
-          email: invitation.inviteeEmail,
-          nominatorId: invitation.invitatorId,
-        }
-
-        return this.activateBeneficiary(args);
-      } 
+      
+      const args = {
+        phone: invitation.inviteePhone,
+        name: invitation.inviteeName,
+        email: invitation.inviteeEmail,
+        nominatorId: invitation.invitatorId,
+      }
+      if (invitation.inviteeRole === 'beneficiary') return this.activateBeneficiary(args);
+      else if(invitation.inviteeRole === 'middleman') return this.activateMiddleman(args);
     }
     catch(e) {
       if (e instanceof AppError) throw e;
