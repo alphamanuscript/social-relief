@@ -39,6 +39,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "invitations" */ '../views/invitations.vue')
   },
   {
+    path: '/invitations/:id',
+    name: 'non-user invitation',
+    component: () => import(/* webpackChunkName: "invitations" */ '../views/accept-decline-invitation.vue')
+  },
+  {
     path: '/account',
     name: 'account',
     component: () => import(/* webpackChunkName: "account" */ '../views/account.vue')
