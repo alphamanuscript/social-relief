@@ -163,7 +163,8 @@ export class Users implements UserService {
       if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
         throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
-        
+
+      const inviteeUser = await this.collection.findOne({ phone });
       const invitationArgs: InvitationCreateArgs = {
         invitorId: nominatorId,
         invitorName: nominatorName,
@@ -171,6 +172,7 @@ export class Users implements UserService {
         inviteePhone: phone,
         inviteeEmail: email,
         inviteeRole: role,
+        hasAccount: inviteeUser ? true : false
       }
       const invitation = await this.invitations.create(invitationArgs);
       return invitation;

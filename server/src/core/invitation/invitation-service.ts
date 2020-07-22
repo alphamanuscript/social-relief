@@ -14,6 +14,7 @@ const SAFE_INVITATION_PROJECTION = {
   inviteePhone: 1,
   inviteeEmail: 1,
   inviteeRole: 1,
+  hasAccount: 1,
   status: 1,
   expiresAt: 1,
   createdAt: 1,
@@ -79,7 +80,7 @@ export class Invitations implements InvitationService {
   }
 
   async create(args: InvitationCreateArgs): Promise<Invitation> {
-    const { invitorId, invitorName, inviteeName, inviteePhone, inviteeEmail, inviteeRole } = args;
+    const { invitorId, invitorName, inviteeName, inviteePhone, inviteeEmail, inviteeRole, hasAccount } = args;
     const now = new Date();
     const invitation: DbInvitation = {
       _id: generateId(),
@@ -90,6 +91,7 @@ export class Invitations implements InvitationService {
       inviteePhone,
       inviteeEmail,
       inviteeRole,
+      hasAccount,
       status: 'pending',
       expiresAt: now,
       createdAt: now,
@@ -108,7 +110,6 @@ export class Invitations implements InvitationService {
   }
 
   async accept(invitationId: string): Promise<Invitation> {
-    console.log('In accept, invitationId: ', invitationId);
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId },
@@ -128,7 +129,6 @@ export class Invitations implements InvitationService {
   }
 
   async reject(invitationId: string): Promise<Invitation> {
-    console.log('In reject, invitationId: ', invitationId);
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId },

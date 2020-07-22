@@ -41,6 +41,7 @@ describe('UserService tests', () => {
           inviteePhone: args.inviteePhone,
           inviteeEmail: args.inviteeEmail,
           inviteeRole: args.inviteeRole,
+          hasAccount: true,
           status: 'pending',
           expiresAt: now,
           createdAt: now,

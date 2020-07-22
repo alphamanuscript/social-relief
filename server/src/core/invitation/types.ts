@@ -11,6 +11,7 @@ export interface Invitation {
   inviteePhone: string, // phone of invited user
   inviteeEmail?: string, // email of invited user
   inviteeRole: NominationRole, // role of invited user (i.e. beneficiary | middleman)
+  hasAccount: boolean, // Indicates whether or not the invitee has an account
   status: InvitationStatus, // Initially set to pending. Other statuses include 'accepted' and 'rejected'
   expiresAt: Date, // time at which record will self-delete
   createdAt: Date,
@@ -27,7 +28,8 @@ export interface InvitationCreateArgs {
   inviteeName: string,
   inviteePhone: string,
   inviteeEmail?: string,
-  inviteeRole: NominationRole
+  inviteeRole: NominationRole,
+  hasAccount: boolean
 };
 
 export interface InvitationService {
