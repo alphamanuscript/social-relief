@@ -3,13 +3,14 @@ import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generate
 import { 
   User, DbUser, UserCreateArgs, UserService, 
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
+  UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs
 } from './types';
 import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createBeneficiaryNominationFailedError,
-  createMiddlemanNominationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
+  createUniquenessFailedError, createBeneficiaryActivationFailedError,
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
@@ -161,7 +162,7 @@ export class Users implements UserService {
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominatorId });
       if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
-        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
+        throw createBeneficiaryActivationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       const inviteeUser = await this.collection.findOne({ phone });
@@ -183,10 +184,40 @@ export class Users implements UserService {
     }
   }
 
-  async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominatorId, name } = args;
-    // validators.validatesNominate(args);
+  async activate(args: UserActivateArgs): Promise<User> {
+    validators.validatesActivate(args);
+    const { invitationId } = args;
+    try {
+      const invitation = await this.invitations.get(invitationId);
+      if (invitation.status !== 'accepted') 
+        throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
+       
+      if (invitation.inviteeRole === 'beneficiary') {
+        const args: UserActivateBeneficiaryArgs = {
+          phone: invitation.inviteePhone,
+          name: invitation.inviteeName,
+          email: invitation.inviteeEmail,
+          nominatorId: invitation.invitatorId,
+        }
 
+        return this.activateBeneficiary(args);
+      } 
+    }
+    catch(e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  /**
+   * activates an existing user as a beneficiary
+   * only if they're not a donor. If user does not
+   * exist, however, a user account is created 
+   * with the role 'beneficiary'
+   * @param args 
+   */
+  private async activateBeneficiary(args: UserActivateBeneficiaryArgs): Promise<User> {
+    const { phone, email, nominatorId, name } = args;
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominatorId });
 
@@ -197,10 +228,6 @@ export class Users implements UserService {
 
       if (isMiddleman(nominatorUser) && Array.isArray(nominatorUser.middlemanFor)) {
         donors = donors.concat(nominatorUser.middlemanFor);
-      }
-
-      if (!donors.length) {
-        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       }
 
       /*
@@ -234,15 +261,22 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (isMongoDuplicateKeyError(e, args.phone)) {
-        throw createBeneficiaryNominationFailedError();
+        throw createBeneficiaryActivationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }
   }
 
-  async nominateMiddleman(args: UserNominateArgs): Promise<User> {
+  /**
+   * activates a user as a middleman to the nominating donor.
+   * A user account is created for the middleman if does not already exist
+   * @param args
+   * @params args.nominatorId ID donor nominating the middleman
+   * @params args.phone phone of the nominated middleman
+   * @params args.email email of the nominated middleman
+   */
+  private async activateMiddleman(args: UserActivateMiddlemanArgs): Promise<User> {
     const { phone, email, nominatorId, name } = args;
-    // validators.validatesNominate(args);
     
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominatorId, roles: 'donor' });
@@ -270,7 +304,7 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (isMongoDuplicateKeyError(e, args.phone)) {
-        throw createMiddlemanNominationFailedError();
+        throw createMiddlemanActivationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }

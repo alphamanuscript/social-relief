@@ -63,6 +63,19 @@ export interface UserNominateArgs {
   role?: NominationRole,
 };
 
+export interface UserActivateArgs {
+  invitationId: string
+}
+
+export interface UserActivateBeneficiaryArgs {
+  phone: string,
+  name: string,
+  email?: string,
+  nominatorId: string
+}
+
+export interface UserActivateMiddlemanArgs extends UserActivateBeneficiaryArgs {}
+
 export interface UserLoginArgs {
   phone: string,
   password: string,
@@ -92,22 +105,12 @@ export interface UserService {
    */
   nominate(args: UserNominateArgs): Promise<Invitation>;
   /**
-   * nominates an existing user as a beneficiary
-   * only if they're not a donor. If user does not
-   * exist, however, a user account is created 
-   * with the role 'beneficiary'
+   * Activates an account for the invited user referenced by args.invitationId 
+   * if they don't already have one. Otherwise, the existing user assumes a new role
+   * specified by the corresponding invitation
    * @param args 
    */
-  nominateBeneficiary(args: UserNominateArgs): Promise<User>;
-  /**
-   * nominates a user as a middleman to the nominating donor.
-   * A user account is created for the middleman if does not already exist
-   * @param args
-   * @params args.nominator ID donor nominating the middleman
-   * @params args.phone phone of the middleman being nominated
-   * @params args.email email of the middleman being nominated
-   */
-  nominateMiddleman(args: UserNominateArgs): Promise<User>;
+  activate(args: UserActivateArgs): Promise<User>;
   /**
    * retrieves all the users 
    * nominated by the specified user
@@ -154,10 +157,4 @@ export interface UserService {
    * @param to 
    */
   sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
-  // /**
-  //  * Creates/Updates user account if invitation is accepted (i.e, args.reply = true).
-  //  * Furthermore, corresponding invitation is deleted from db, if it's still there.
-  //  * @param args 
-  //  */
-  // replyToInvitation(args: ReplyToInvitationArgs): Promise<User>;
 };

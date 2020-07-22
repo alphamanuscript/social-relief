@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -18,6 +18,11 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (error) throw createValidationError(error.details[0].message);
   if (args.role && ['beneficiary', 'middleman'].includes(args.role) === false) 
     throw createValidationError("Role must be either 'beneficiary' or 'middleman'");
+}
+
+export const validatesActivate = (args: UserActivateArgs) => {
+  const { error } = schemas.activateInputSchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
 }
 
 export const validatesGetAllBeneficiariesByUser = (userId: string) => {

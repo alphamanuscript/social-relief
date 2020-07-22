@@ -88,6 +88,18 @@ export const nominateInputSchema = joi.object().keys({
     })
 });
 
+export const activateInputSchema = joi.object().keys({
+  invitorId: joi.string()
+    .required()
+    .pattern(/^[a-fA-F0-9]{32}$/)
+    .messages({
+      'any.required': `invitorId is required`,
+      'string.base': `Invalid type, invitorId  must be a string`,
+      'string.empty': `Please enter invitorId`,
+      'string.pattern.base': `Invalid invitorId. Must contain hexadecimals only and be 32 characters long`
+    }),
+});
+
 export const getAllBeneficiariesInputSchema = userIdSchema;
 
 export const logoutInputSchema = userTokenIdSchema;
