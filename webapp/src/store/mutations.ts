@@ -49,6 +49,12 @@ const mutations: MutationTree<AppState> = {
   unsetUser(state) {
     state.user = undefined
   },
+  setCurrentInvitation(state, currentInvitation) {
+    state.currentInvitation = currentInvitation;
+  },
+  unsetCurrentInvitation(state) {
+    state.currentInvitation = undefined
+  },
   setBeneficiaries(state, beneficiaries) {
     state.beneficiaries = beneficiaries
   },

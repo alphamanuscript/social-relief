@@ -124,8 +124,6 @@ export default {
           });
           this.resetMessage();
       }
-
-
     }
   }
 }

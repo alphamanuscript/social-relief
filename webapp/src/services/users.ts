@@ -35,6 +35,10 @@ export const Users = {
     const res = await axios.get<User>('/users/me');
     return res.data;
   },
+  async assumeNewRole (invitationId: string) {
+    const res = await axios.post<User>('/users/activate-invitee', { invitationId });
+    return res.data;
+  },
   async logout () {
     const res = await axios.post('/users/logout');
     Auth.deleteAccessToken();

@@ -55,6 +55,7 @@
       </div>
     </div>
     <b-modal
+      v-if="currentInvitation"
       id="accept-invitation"
       title="Accept Invitation?"
       title-class="text-primary h3"
@@ -77,6 +78,7 @@
       </div>
     </b-modal>
     <b-modal
+      v-if="currentInvitation"
       id="reject-invitation"
       title="Reject Invitation?"
       title-class="text-primary h3"
@@ -98,6 +100,7 @@
       </div>
     </b-modal>
     <b-modal
+      v-if="currentInvitation"
       id="accept-invitation-success"
       title="Invitation Accepted!"
       title-class="text-primary"
@@ -116,6 +119,7 @@
       </div>
     </b-modal>
     <b-modal
+      v-if="currentInvitation"
       id="reject-invitation-success"
       title="Invitation Rejected!"
       title-class="text-primary"
@@ -142,43 +146,18 @@ import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 export default {
   name: 'invitations',
   data() {
-    return {
-      currentInvitation: {
-        _id: '',
-        invitor: '',
-        inviteeName: '',
-        inviteePhone: '',
-        inviteeEmail: '', 
-        inviteeRole: '',
-        status: '',
-        expiresAt: '',
-        createdAt: '',
-        updatedAt: '',
-      },
-    }
+    return {}
   },
   computed: {
-    ...mapState(['invitations', 'message']),
+    ...mapState(['invitations', 'message', 'currentInvitation']),
     ...mapGetters([
       'invitationsSent',
       'invitationsReceived',
     ]),
   },
   methods: {
-    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation', 'acceptInvitation', 'rejectInvitation']),
+    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation', 'acceptInvitation', 'rejectInvitation', 'assumeNewRole', 'getCurrentInvitation']),
     hideDialog(dialogId) {
-      this.currentInvitation = {
-        _id: '',
-        invitor: '',
-        inviteeName: '',
-        inviteePhone: '',
-        inviteeEmail: '', 
-        inviteeRole: '',
-        status: '',
-        expiresAt: '',
-        createdAt: '',
-        updatedAt: '',
-      };
       this.$bvModal.hide(dialogId);
     },
     getClassnames(status) {
@@ -193,28 +172,27 @@ export default {
           return '';
       }
     },
-    handleAcceptBtnClick(invitation) {
-      this.currentInvitation = invitation;
-      this.$bvModal.show('accept-invitation');
+    async handleAcceptBtnClick(invitation) {
+      await this.getCurrentInvitation(invitation._id);
+      if (this.message.type !== 'error') this.$bvModal.show('accept-invitation');
     },
-    handleRejectBtnClick(invitation) {
-      this.currentInvitation = invitation;
-      this.$bvModal.show('reject-invitation');
+    async handleRejectBtnClick(invitation) {
+      await this.getCurrentInvitation(invitation._id);
+      if (this.message.type !== 'error') this.$bvModal.show('reject-invitation');
     },
     async handleInvitationAcceptance() {
-      console.log('Handling Invitation Acceptance...');
-      console.log('this.currentInvitation: ', this.currentInvitation);
       await this.acceptInvitation(this.currentInvitation._id);
+      await this.assumeNewRole(this.currentInvitation._id);
       if (this.message.type !== 'error') {
+        await this.refreshData();
         this.$bvModal.hide('accept-invitation');
         this.$bvModal.show('accept-invitation-success');
       }
     },
     async handleInvitationRejection() {
-      console.log('Handling Invitation Acceptance...');
-      console.log('this.currentInvitation: ', this.currentInvitation);
       await this.rejectInvitation(this.currentInvitation._id);
       if (this.message.type !== 'error') {
+        await this.refreshData();
         this.$bvModal.hide('reject-invitation');
         this.$bvModal.show('reject-invitation-success');
       }

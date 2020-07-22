@@ -82,6 +82,7 @@ export interface Invitation {
   inviteePhone: string,
   inviteeEmail?: string,
   inviteeRole: NominationRole,
+  hasAccount: boolean,
   status: InvitationStatus, 
   expiresAt: Date, 
   createdAt: Date,
@@ -119,6 +120,7 @@ export interface Invitation {
   inviteePhone: string;
   inviteeEmail?: string; 
   inviteeRole: NominationRole; 
+  hasAccount: boolean;
   status: InvitationStatus;
   expiresAt: Date; 
   createdAt: Date;
@@ -131,6 +133,7 @@ export interface AppState {
   middlemen: User[];
   transactions: Transaction[];
   invitations: Invitation[];
+  currentInvitation?: Invitation;
   message: AppMessage;
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;
