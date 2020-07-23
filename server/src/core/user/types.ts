@@ -140,6 +140,13 @@ export interface UserService {
    */
   getByToken(token: string): Promise<User>;
   /**
+   * updates name and password of user account 
+   * corresponding to userId
+   * @param userId 
+   * @param args 
+   */
+  put(userId: string, args: UserPutArgs): Promise<User>;
+  /**
    * retrieves the newly created whose id is userId
    * and whose password has yet to be set
    * @param userId 
