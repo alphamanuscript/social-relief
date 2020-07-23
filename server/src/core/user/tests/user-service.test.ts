@@ -70,8 +70,11 @@ describe('UserService tests', () => {
       expect(res.inviteePhone).toBe(nominateArgs.phone);
       expect(res.inviteeEmail).toBe(nominateArgs.email);
       expect(res.inviteeRole).toBe(nominateArgs.role);
+      expect(res).toHaveProperty('hasAccount');
       expect(res.status).toBe('pending');
-      expect(res.status).not.toHaveProperty('code');
+      expect(res).toHaveProperty('expiresAt');
+      expect(res).toHaveProperty('createdAt');
+      expect(res).toHaveProperty('updatedAt');
     })
   });
 

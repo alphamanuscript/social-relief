@@ -1,52 +1,11 @@
 import { Db, Collection } from 'mongodb';
-import { generateId, generateCode } from '../util';
+import { generateId } from '../util';
 import { Invitation, DbInvitation, InvitationCreateArgs, InvitationService, InvitationStatus } from './types';
 import { createDbOpFailedError, rethrowIfAppError, createResourceNotFoundError, AppError } from '../error';
 import * as validators from './validator';
 import * as messages from '../messages';
 
 const COLLECTION = 'invitations';
-const SAFE_INVITATION_PROJECTION = { 
-  _id: 1,
-  invitorId: 1,
-  invitorName: 1,
-  inviteeName: 1,
-  inviteePhone: 1,
-  inviteeEmail: 1,
-  inviteeRole: 1,
-  hasAccount: 1,
-  status: 1,
-  expiresAt: 1,
-  createdAt: 1,
-  updatedAt: 1
-};
-
-
-/**
- * removes fields that should
- * not be shared from the invitation
- * @param invitation 
- */
-function getSafeInvitation(invitation: DbInvitation): Invitation {
-  const invitationDict: any = invitation;
-  return Object.keys(SAFE_INVITATION_PROJECTION)
-    .reduce<any>((safeInvitation, field) => {
-      if (field in invitation) {
-        safeInvitation[field] = invitationDict[field];
-      }
-
-      return safeInvitation;
-    }, {});
-}
-
-function getSafeInvitations(invitations: DbInvitation[]): Invitation[] {
-  const safeInvitations = []
-  for (let index = 0; index < invitations.length; index++) {
-    safeInvitations.push(getSafeInvitation(invitations[index]))
-  }
-  return safeInvitations;
-  // return invitations.reduce<Invitation[]>((safeInvitations: Array[], invitation: DbInvitation) => safeInvitations.push(invitation), []);
-}
 
 export class Invitations implements InvitationService {
   private db: Db;
@@ -84,7 +43,6 @@ export class Invitations implements InvitationService {
     const now = new Date();
     const invitation: DbInvitation = {
       _id: generateId(),
-      code: generateCode(),
       invitorId, 
       invitorName, 
       inviteeName,
@@ -100,7 +58,7 @@ export class Invitations implements InvitationService {
 
     try {
       const res = await this.collection.insertOne(invitation);
-      return getSafeInvitation(res.ops[0]);
+      return res.ops[0];
     }
     catch (e) {
       rethrowIfAppError(e);
@@ -119,7 +77,7 @@ export class Invitations implements InvitationService {
       
       if (!result) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
       
-      return getSafeInvitation(result.value);
+      return result.value;
     }
     catch(e) {
       rethrowIfAppError(e);
@@ -138,7 +96,7 @@ export class Invitations implements InvitationService {
 
       if (!result) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
 
-      return getSafeInvitation(result.value);
+      return result.value;
     }
     catch(e) {
       rethrowIfAppError(e);
@@ -151,7 +109,7 @@ export class Invitations implements InvitationService {
     validators.validatesGetAllByUser({ userId, userPhone });
     try {
       const result = await this.collection.find({ $or: [{ invitorId: userId }, { inviteePhone: userPhone }] }).sort({ createdAt: -1 }).toArray();
-      return getSafeInvitations(result);
+      return result;
     }
     catch (e) {
       throw createDbOpFailedError(e.message);
@@ -163,7 +121,7 @@ export class Invitations implements InvitationService {
     try {
       const invitation = await this.collection.findOne({ _id: invitationId });
       if (!invitation) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
-      return getSafeInvitation(invitation);
+      return invitation;
     }
     catch(e) {
       rethrowIfAppError(e);

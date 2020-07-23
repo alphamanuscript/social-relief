@@ -18,9 +18,7 @@ export interface Invitation {
   updatedAt: Date,
 };
 
-export interface DbInvitation extends Invitation {
-  code: string,
-}
+export interface DbInvitation extends Invitation {}
 
 export interface InvitationCreateArgs {
   invitorId: string,
