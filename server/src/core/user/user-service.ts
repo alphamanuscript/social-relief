@@ -442,6 +442,20 @@ export class Users implements UserService {
     }
   }
 
+  async getNew(id: string): Promise<User> {
+    validators.validatesGetNew(id);
+    try {
+      const user = await this.collection.findOne({ _id: id, password: '' }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return getSafeUser(user);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
     validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {

@@ -135,6 +135,12 @@ export interface UserService {
    */
   getByToken(token: string): Promise<User>;
   /**
+   * retrieves the newly created whose id is userId
+   * and whose password has yet to be set
+   * @param userId 
+   */
+  getNew(userId: string): Promise<User>;
+  /**
    * invalidates the specified access token
    * @param token 
    */

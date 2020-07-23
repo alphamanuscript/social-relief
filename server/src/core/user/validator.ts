@@ -52,3 +52,5 @@ export const validatesInitiateDonation = ({ userId, amount } : { userId: string;
   if (error) throw createValidationError(error.details[0].message);
 }
 
+export const validatesGetNew = validatesLogoutAll;
+
