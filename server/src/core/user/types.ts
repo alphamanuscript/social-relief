@@ -24,6 +24,11 @@ export interface User {
   updatedAt: Date
 };
 
+export interface UserPutArgs {
+  name: string,
+  password: string,
+}
+
 export interface DbUser extends User {
   password?: string
 }

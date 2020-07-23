@@ -127,3 +127,22 @@ export const initiateDonationInputSchema = joi.object().keys({
       'number.min': `amount must be 100 or more`,
     })
 });
+
+export const putInputSchema = joi.object().keys({
+  userId: joi.string()
+    .required()
+    .pattern(/^[a-fA-F0-9]{32}$/)
+    .messages({
+      'any.required': `userId is required`,
+      'string.base': 'Invalid type, userId must be a string',
+      'string.empty': `Please enter userId`,
+      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
+    }),
+  name: joi.string()
+    .required()
+    .messages({
+      'any.required': 'name is required',
+      'string.empty': 'name is required'
+    }),
+  password: passwordValidationSchema
+})

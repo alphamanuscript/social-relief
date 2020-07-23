@@ -1,7 +1,7 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
 import { 
-  User, DbUser, UserCreateArgs, UserService, 
+  User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs
 } from './types';
@@ -442,15 +442,37 @@ export class Users implements UserService {
     }
   }
 
-  async getNew(id: string): Promise<User> {
-    validators.validatesGetNew(id);
+  async getNew(userId: string): Promise<User> {
+    validators.validatesGetNew(userId);
     try {
-      const user = await this.collection.findOne({ _id: id, password: '' }, { projection: SAFE_USER_PROJECTION });
+      const user = await this.collection.findOne({ _id: userId, password: '' }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       return getSafeUser(user);
     }
     catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async put(userId: string, args: UserPutArgs): Promise<User> {
+    validators.validatesPut({ userId, args });
+    const { name, password } = args;
+    try {
+      const updatedUser = await this.collection.findOneAndUpdate(
+        { _id: userId },
+        { 
+          $set: { name, password },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if (!updatedUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      return getSafeUser(updatedUser.value);
+    }
+    catch (e) {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }

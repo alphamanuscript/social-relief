@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -53,4 +53,10 @@ export const validatesInitiateDonation = ({ userId, amount } : { userId: string;
 }
 
 export const validatesGetNew = validatesLogoutAll;
+
+export const validatesPut = ({ userId, args } : { userId: string, args: UserPutArgs}) => {
+  const { name, password } = args;
+  const { error } = schemas.putInputSchema.validate({ userId, name, password });
+  if (error) throw createValidationError(error.details[0].message);
+}
 
