@@ -458,6 +458,7 @@ export class Users implements UserService {
 
   async put(userId: string, args: UserPutArgs): Promise<User> {
     validators.validatesPut({ userId, args });
+    args.password = await hashPassword(args.password);
     const { name, email, password } = args;
     try {
       const updatedUser = await this.collection.findOneAndUpdate(
