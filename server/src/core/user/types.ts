@@ -26,6 +26,7 @@ export interface User {
 
 export interface UserPutArgs {
   name: string,
+  email: string,
   password: string,
 }
 
@@ -140,7 +141,7 @@ export interface UserService {
    */
   getByToken(token: string): Promise<User>;
   /**
-   * updates name and password of user account 
+   * updates name, email, password of user account 
    * corresponding to userId
    * @param userId 
    * @param args 

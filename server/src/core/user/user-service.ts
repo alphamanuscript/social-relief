@@ -458,12 +458,12 @@ export class Users implements UserService {
 
   async put(userId: string, args: UserPutArgs): Promise<User> {
     validators.validatesPut({ userId, args });
-    const { name, password } = args;
+    const { name, email, password } = args;
     try {
       const updatedUser = await this.collection.findOneAndUpdate(
         { _id: userId },
         { 
-          $set: { name, password },
+          $set: { name, email, password },
           $currentDate: { updatedAt: true },
         },
         { upsert: true, returnOriginal: false }

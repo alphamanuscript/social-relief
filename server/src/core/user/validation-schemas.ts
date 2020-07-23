@@ -1,5 +1,5 @@
 import * as joi from '@hapi/joi';
-import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema } from '../util/validation-util';
+import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema } from '../util/validation-util';
 
 const emailSchema = joi.string()
   .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
@@ -144,5 +144,6 @@ export const putInputSchema = joi.object().keys({
       'any.required': 'name is required',
       'string.empty': 'name is required'
     }),
+  email: emailValidationSchema,
   password: passwordValidationSchema
 })
