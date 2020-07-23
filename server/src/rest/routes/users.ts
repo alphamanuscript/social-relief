@@ -35,4 +35,4 @@ users.post('/activate-invitee', wrapResponse(
   req => req.core.users.activate({ ... req.body })));
 
 users.get('/:id', wrapResponse(
-  req => req.core.users.getNew(req.user._id)));
+  req => req.core.users.getNew(req.params.id)));
