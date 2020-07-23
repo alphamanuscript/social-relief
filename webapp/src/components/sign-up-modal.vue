@@ -37,7 +37,19 @@
             <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
           </b-input-group-prepend>
           <label for="phone" class="sr-only">Phone Number</label>
-          <b-form-input 
+          <b-form-input
+            v-if="newUser"
+            v-model="signUpCreds.phone" 
+            type="text" 
+            :state="signUpValidationResults.phone"
+            class="custom-dialog-input-phone"
+            placeholder="Enter phone number"
+            id="phone"
+            @update="helper.phone = true"
+            disabled
+          />
+          <b-form-input
+            v-else
             v-model="signUpCreds.phone" 
             type="text" 
             :state="signUpValidationResults.phone"
@@ -163,7 +175,7 @@ export default {
     GoogleLogin
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'newUser']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -175,7 +187,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['createUser']),
+    ...mapActions(['createUser', 'updateNewUser']),
     showLoginDialog() {
       this.$bvModal.show('login');
     },
@@ -215,7 +227,7 @@ export default {
           password: this.signUpCreds.password,
           email: this.signUpCreds.email,
         };
-        await this.createUser(data);
+        this.newUser ? await this.updateNewUser(data) : await this.createUser(data);
         if (this.user) {
           this.signUpCreds = {
             name: '',
@@ -251,6 +263,21 @@ export default {
         variant: 'warning',
         solid: true
       });
+    }
+  },
+  watch: {
+    newUser() {
+      if (this.newUser) {
+        const { name, phone, email, roles } = this.newUser;
+        this.signUpCreds = {
+          name,
+          phone: phone.substring(3),
+          password: '',
+          confirmedPassword: '',
+          email: !email ? '' : email,
+          role: roles[0]
+        }
+      }
     }
   }
 }

@@ -37,7 +37,8 @@ export default {
   computed: {
     showLoggedInNavigation () {
       if (this.$route.name === DEFAULT_SIGNED_OUT_PAGE ||
-          this.$route.name === 'non-user invitation') 
+          this.$route.name === 'accept-invitation' ||
+          this.$route.name === 'signup-new-user') 
         return false
       return true
     },

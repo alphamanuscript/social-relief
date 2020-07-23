@@ -30,8 +30,28 @@ const actions = wrapActions({
     commit('updateInvitation', invitation);
   },
   async assumeNewRole({ commit }, invitationId: string) {
-    const updatedUser = await Users.assumeNewRole(invitationId);
+    const updatedUser = await Users.createNewUserOrAssumeNewRole(invitationId);
     commit('setUser', updatedUser);
+  },
+  async createNewUser({ commit }, invitationId: string) {
+    const newUser = await Users.createNewUserOrAssumeNewRole(invitationId);
+    commit('setNewUser', newUser);
+  },
+  async getNewUser({ commit }, userId: string) {
+    const newUser = await Users.getUser(userId);
+    commit('setNewUser', newUser);
+  },
+  async updateNewUser({ commit, state }, { name, email, password, googleIdToken }: { userId: string; name: string; email: string; password: string; googleIdToken: string}) {
+    if (state.newUser) {
+      const updatedUser = await Users.updateUser(state.newUser._id, { name, email, password });
+      const { phone } = state.newUser;
+      await Users.login({ phone, password, googleIdToken });
+      commit('setUser', updatedUser);
+      
+      if (updatedUser) {
+        router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+      }
+    }
   },
   async getTransaction({ commit }, id: string) {
     const transaction = await Transactions.getTransaction(id);
@@ -109,6 +129,7 @@ const actions = wrapActions({
       'unsetMiddlemen',
       'unsetTransactions',
       'unsetInvitations',
+      'unsetCurrentInvitation',
       'unsetLastPaymentRequest',
       'unsetMessage',
     ].forEach((mutation) => commit(mutation));

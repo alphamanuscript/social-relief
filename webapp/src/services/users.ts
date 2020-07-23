@@ -5,7 +5,8 @@ import {
   UserCreateArgs,
   UserLoginArgs,
   UserNominateArgs,
-  Invitation
+  Invitation,
+  UserPutArgs
 } from '../types';
 import { Auth } from './auth';
 
@@ -35,8 +36,16 @@ export const Users = {
     const res = await axios.get<User>('/users/me');
     return res.data;
   },
-  async assumeNewRole (invitationId: string) {
+  async getUser(userId: string) {
+    const res = await axios.get<User>(`/users/${userId}`);
+    return res.data;
+  },
+  async createNewUserOrAssumeNewRole (invitationId: string) {
     const res = await axios.post<User>('/users/activate-invitee', { invitationId });
+    return res.data;
+  },
+  async updateUser (userId: string, args: UserPutArgs) {
+    const res = await axios.put<User>(`/users/${userId}`, args);
     return res.data;
   },
   async logout () {

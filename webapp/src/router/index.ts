@@ -11,6 +11,11 @@ const routes = [
     component: Home
   },
   {
+    path: '/signup/new/:id',
+    name: 'signup-new-user',
+    component: Home
+  },
+  {
     path: '/beneficiaries',
     name: 'beneficiaries',
     component: () => import(/* webpackChunkName: "beneficiaries" */ '../views/beneficiaries.vue')
@@ -40,8 +45,8 @@ const routes = [
   },
   {
     path: '/invitations/:id',
-    name: 'non-user invitation',
-    component: () => import(/* webpackChunkName: "invitations" */ '../views/accept-decline-invitation.vue')
+    name: 'accept-invitation',
+    component: () => import(/* webpackChunkName: "invitations" */ '../views/accept-invitation.vue')
   },
   {
     path: '/account',

@@ -32,6 +32,12 @@ export interface UserCreateArgs {
   googleIdToken: string
 }
 
+export interface UserPutArgs {
+  name: string,
+  email: string,
+  password: string
+}
+
 export interface UserLoginArgs {
   phone: string,
   password: string,
@@ -129,6 +135,7 @@ export interface Invitation {
 
 export interface AppState {
   user?: User;
+  newUser?: User;
   beneficiaries: User[];
   middlemen: User[];
   transactions: Transaction[];

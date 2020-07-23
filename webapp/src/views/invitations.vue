@@ -156,7 +156,7 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation', 'acceptInvitation', 'rejectInvitation', 'assumeNewRole', 'getCurrentInvitation']),
+    ...mapActions(['refreshData', 'getCurrentUser', 'getInvitation', 'acceptInvitation', 'rejectInvitation', 'createNewUserOrAssumeNewRole', 'getCurrentInvitation']),
     hideDialog(dialogId) {
       this.$bvModal.hide(dialogId);
     },
@@ -182,7 +182,7 @@ export default {
     },
     async handleInvitationAcceptance() {
       await this.acceptInvitation(this.currentInvitation._id);
-      await this.assumeNewRole(this.currentInvitation._id);
+      await this.createNewUserOrAssumeNewRole(this.currentInvitation._id);
       if (this.message.type !== 'error') {
         await this.refreshData();
         this.$bvModal.hide('accept-invitation');
