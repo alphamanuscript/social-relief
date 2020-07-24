@@ -268,7 +268,6 @@ export default {
   watch: {
     newUser() {
       if (this.newUser && this.newUser.roles) {
-        console.log('this.newUser: ', this.newUser);
         const { name, phone, email, roles } = this.newUser;
         this.signUpCreds = {
           name,
