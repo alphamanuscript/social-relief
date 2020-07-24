@@ -22,7 +22,7 @@
           Something went wrong
         </h3>
         <div class="py-3">
-          One of two things could be the reason. Either the invitation is no longer valid or has already been accepted. 
+          The referenced invitation is not valid.
         </div>
       </div>
     </section>

@@ -30,7 +30,7 @@
           </b-card>
         </b-card-group>
       </div>
-      <div>
+      <div v-if="user && !user.roles.includes('beneficiary')">
         <h5 class="mt-4">Invitations sent by me</h5>
         <div v-if="!invitationsSent.length" class="text-center">
           <p class="h2 font-weight-light">You haven't sent any invitations yet...</p>
@@ -149,7 +149,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapState(['invitations', 'message', 'currentInvitation']),
+    ...mapState(['user', 'invitations', 'message', 'currentInvitation']),
     ...mapGetters([
       'invitationsSent',
       'invitationsReceived',
