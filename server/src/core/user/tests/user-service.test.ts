@@ -101,6 +101,7 @@ describe('UserService tests', () => {
     describe('when nominator is a middleman', () => {
       test('should add represented donors to existing beneficiary', async () => {
         const now = new Date();
+        console.log('invitationIds[0]: ', invitationIds[0]);
         const res = await createDefaultService().activate(
           { invitationId: invitationIds[0] }
         );
