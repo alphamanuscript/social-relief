@@ -49,8 +49,8 @@ describe('UserService tests', () => {
           updatedAt: now,
         })),
         get: jest.fn().mockImplementation((invitationId: string) => {
-          console.log('In get and invitationId: ', invitationId, invitationIds[0]);
           if (invitationId === invitationIds[0]) {
+            console.log('Returning invitationId: ', invitationId);
             return Promise.resolve({
               _id: invitationIds[0],
               invitorId: 'middleman1', 
