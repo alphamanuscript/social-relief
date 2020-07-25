@@ -49,6 +49,7 @@ describe('UserService tests', () => {
           updatedAt: now,
         })),
         get: jest.fn().mockImplementation((invitationId: string) => {
+          console.log('In get and invitationId: ', invitationId, invitationIds[0]);
           if (invitationId === invitationIds[0]) {
             return Promise.resolve({
               _id: invitationIds[0],
@@ -101,7 +102,6 @@ describe('UserService tests', () => {
     describe('when nominator is a middleman', () => {
       test('should add represented donors to existing beneficiary', async () => {
         const now = new Date();
-        console.log('invitationIds[0]: ', invitationIds[0]);
         const res = await createDefaultService().activate(
           { invitationId: invitationIds[0] }
         );
