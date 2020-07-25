@@ -46,7 +46,25 @@ describe('UserService tests', () => {
           expiresAt: now,
           createdAt: now,
           updatedAt: now,
-        })) 
+        })),
+        get: jest.fn().mockImplementation((invitationId: string) => {
+          if (invitationId === 'invitationId1') {
+            return Promise.resolve({
+              _id: 'invitationId1',
+              invitorId: 'middleman1', 
+              invitorName: 'John Doe', 
+              inviteeName: 'John',
+              inviteePhone: '254700444444',
+              inviteeEmail: 'john@gmail.com',
+              inviteeRole: 'beneficiary',
+              hasAccount: false,
+              status: 'pending',
+              expiresAt: now,
+              createdAt: now,
+              updatedAt: now,
+            })
+          }
+        })
       }
     };
     const service = new Users(dbUtils.getDb(), args);
@@ -78,45 +96,57 @@ describe('UserService tests', () => {
     })
   });
 
-  // describe('nominateBeneficiary', () => {
-  //   describe('when nominator is a middleman', () => {
-  //     test('should add represented donors to existing beneficiary', async () => {
-  //       const res = await createDefaultService().nominateBeneficiary(
-  //         { phone: '254700444444', nominator: 'middleman1', name: 'John' });
-  //       expect(res).toEqual({ _id: 'beneficiary1', phone: '254700444444' });
-  //       const updatedBeneficiary = await usersColl().findOne({ _id: res._id });
-  //       updatedBeneficiary.donors.sort((a, b) => a.localeCompare(b));
-  //       const expectedDonors = ['donor1', 'donor2']
-  //       expect(updatedBeneficiary.donors).toEqual(expectedDonors);
-  //     });
+  describe('activate', () => {
+    describe('when nominator is a middleman', () => {
+      test('should add represented donors to existing beneficiary', async () => {
+        const now = new Date();
+        const res = await createDefaultService().activate(
+          { invitationId: 'invitationId1' }
+        );
+        expect(res.phone).toBe('254700444444');
+        expect(res.name).toBe('John');
+        expect(res.email).toBe('john@gmail.com');
+        expect(res.addedBy).toBe('middleman1');
+        expect(res.donors).toContain('middleman1');
+        expect(res.roles).toContain('beneficiary');
+        expect(res).not.toHaveProperty('middlemanFor');
+        expectDatesAreClose(now, res.updatedAt);
+        // const res = await createDefaultService().activate(
+        //   { phone: '254700444444', nominator: 'middleman1', name: 'John' });
+        // expect(res).toEqual({ _id: 'beneficiary1', phone: '254700444444' });
+        // const updatedBeneficiary = await usersColl().findOne({ _id: res._id });
+        // updatedBeneficiary.donors.sort((a, b) => a.localeCompare(b));
+        // const expectedDonors = ['donor1', 'donor2']
+        // expect(updatedBeneficiary.donors).toEqual(expectedDonors);
+      });
 
-  //     test('should also add middleman to beneficiary donors if middleman is also a donor', async () => {
-  //       const now = new Date();
-  //       const res = await createDefaultService().nominateBeneficiary(
-  //         { phone: '254700444444', nominator: 'donorMiddleman1', name: 'John' });
-  //       expect(res._id).toBe('beneficiary1');
-  //       const updatedBeneficiary = await usersColl().findOne({ _id: res._id });
-  //       updatedBeneficiary.donors.sort((a, b) => a.localeCompare(b));
-  //       const expectedDonors = ['donor1', 'donor2', 'donorMiddleman1']
-  //       expect(updatedBeneficiary.donors).toEqual(expectedDonors);
-  //       expectDatesAreClose(now, updatedBeneficiary.updatedAt);
-  //     });
+      // test('should also add middleman to beneficiary donors if middleman is also a donor', async () => {
+      //   const now = new Date();
+      //   const res = await createDefaultService().nominateBeneficiary(
+      //     { phone: '254700444444', nominator: 'donorMiddleman1', name: 'John' });
+      //   expect(res._id).toBe('beneficiary1');
+      //   const updatedBeneficiary = await usersColl().findOne({ _id: res._id });
+      //   updatedBeneficiary.donors.sort((a, b) => a.localeCompare(b));
+      //   const expectedDonors = ['donor1', 'donor2', 'donorMiddleman1']
+      //   expect(updatedBeneficiary.donors).toEqual(expectedDonors);
+      //   expectDatesAreClose(now, updatedBeneficiary.updatedAt);
+      // });
 
-  //     test('should create beneficiary if does not already exist', async () => {
-  //       const now = new Date();
-  //       const res = await createDefaultService().nominateBeneficiary(
-  //         { phone: '254711222333', nominator: 'donorMiddleman1', name: 'John' });
-  //       const createdBeneficiary = await usersColl().findOne({ _id: res._id });
-  //       createdBeneficiary.donors.sort((a, b) => a.localeCompare(b));
-  //       expect(createdBeneficiary.phone).toBe('254711222333');
-  //       expect(createdBeneficiary.donors).toEqual(['donor1', 'donorMiddleman1']);
-  //       expect(createdBeneficiary.roles).toEqual(['beneficiary']);
-  //       expect(createdBeneficiary.addedBy).toBe('donorMiddleman1');
-  //       expectDatesAreClose(now, createdBeneficiary.createdAt);
-  //       expectDatesAreClose(now, createdBeneficiary.updatedAt);
-  //     });
-  //   });
-  // });
+      // test('should create beneficiary if does not already exist', async () => {
+      //   const now = new Date();
+      //   const res = await createDefaultService().nominateBeneficiary(
+      //     { phone: '254711222333', nominator: 'donorMiddleman1', name: 'John' });
+      //   const createdBeneficiary = await usersColl().findOne({ _id: res._id });
+      //   createdBeneficiary.donors.sort((a, b) => a.localeCompare(b));
+      //   expect(createdBeneficiary.phone).toBe('254711222333');
+      //   expect(createdBeneficiary.donors).toEqual(['donor1', 'donorMiddleman1']);
+      //   expect(createdBeneficiary.roles).toEqual(['beneficiary']);
+      //   expect(createdBeneficiary.addedBy).toBe('donorMiddleman1');
+      //   expectDatesAreClose(now, createdBeneficiary.createdAt);
+      //   expectDatesAreClose(now, createdBeneficiary.updatedAt);
+      // });
+    });
+  });
 
   // describe('nominateMiddleman', () => {
   //   test('should add donor to the list of donors the middleman represents and add middleman role', async () => {
