@@ -7,6 +7,7 @@ import { generateId } from '../../util';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
+const invitationIds = [generateId()];
 
 
 describe('UserService tests', () => {
@@ -48,9 +49,9 @@ describe('UserService tests', () => {
           updatedAt: now,
         })),
         get: jest.fn().mockImplementation((invitationId: string) => {
-          if (invitationId === 'invitationId1') {
+          if (invitationId === invitationIds[0]) {
             return Promise.resolve({
-              _id: 'invitationId1',
+              _id: invitationIds[0],
               invitorId: 'middleman1', 
               invitorName: 'John Doe', 
               inviteeName: 'John',
@@ -101,7 +102,7 @@ describe('UserService tests', () => {
       test('should add represented donors to existing beneficiary', async () => {
         const now = new Date();
         const res = await createDefaultService().activate(
-          { invitationId: 'invitationId1' }
+          { invitationId: invitationIds[0] }
         );
         expect(res.phone).toBe('254700444444');
         expect(res.name).toBe('John');
