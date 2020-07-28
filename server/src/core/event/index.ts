@@ -1,0 +1,1 @@
+export { EventBus, createEvent } from './event-bus';
