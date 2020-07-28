@@ -5,15 +5,15 @@ export interface Event<T> {
   data: T;
 }
 
+export function createEvent<T>(data: T) {
+  return {
+      time: new Date(),
+      data
+  }; 
+}
+
 export class EventService extends EventEmitter {
   constructor() {
     super();
-  }
-
-  createEvent<T> (data: T): Event<T> {
-    return {
-        time: new Date(),
-        data
-     };
   }
 }
