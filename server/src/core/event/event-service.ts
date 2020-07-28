@@ -12,7 +12,7 @@ export function createEvent<T>(data: T) {
   }; 
 }
 
-export class EventService extends EventEmitter {
+export class EventBus extends EventEmitter {
   constructor() {
     super();
   }

@@ -6,7 +6,7 @@ import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 import { AtSMSProvider } from './sms';
-import { EventService as EventBus } from './event';
+import { EventBus } from './event';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);

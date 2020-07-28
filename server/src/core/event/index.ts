@@ -1,1 +1,1 @@
-export { EventService, createEvent } from './event-service';
+export { EventBus, createEvent } from './event-service';
