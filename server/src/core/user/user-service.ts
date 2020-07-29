@@ -88,7 +88,6 @@ export class Users implements UserService {
     this.transactions = args.transactions;
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
-    console.log('In constructor, args.eventBus: ', args.eventBus);
   }
 
   async createIndexes(): Promise<void> {

@@ -1,7 +1,7 @@
 import { createDbUtils, expectDatesAreClose } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
-import { DbUser, UserNominateArgs } from '../types';
+import { DbUser, UserNominateArgs, UserInvitationEventData } from '../types';
 import { InvitationCreateArgs } from '../../invitation';
 import { generateId } from '../../util';
 import { EventBus } from '../../event';
@@ -32,7 +32,6 @@ describe('UserService tests', () => {
 
   function createDefaultService() {
     const now = new Date();
-    const eventBus = new EventBus();
     const args: any = { 
       transactions: {}, 
       invitations: { 
@@ -69,7 +68,9 @@ describe('UserService tests', () => {
           }
         })
       },
-      eventBus
+      eventBus: {
+        emitUserInvitationCreated: jest.fn().mockImplementation((eventData: UserInvitationEventData) => {})
+      }
     };
     const service = new Users(dbUtils.getDb(), args);
     return service;
