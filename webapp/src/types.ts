@@ -1,5 +1,7 @@
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+export type NominationRole = 'beneficiary' | 'middleman';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
+export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
 export type TransactionType = 'donation' | 'distribution';
 
 export interface Token {
@@ -30,6 +32,12 @@ export interface UserCreateArgs {
   googleIdToken: string
 }
 
+export interface UserPutArgs {
+  name: string,
+  email: string,
+  password: string
+}
+
 export interface UserLoginArgs {
   phone: string,
   password: string,
@@ -46,7 +54,9 @@ export interface UserNominateArgs {
   name: string,
   phone: string,
   email?: string,
-  nominator: string
+  role: NominationRole,
+  nominatorId: string,
+  nominatorName: string,
 }
 
 export interface InitiateDonationArgs {
@@ -69,6 +79,20 @@ export interface Transaction {
   provider: string,
   providerTransactionId?: string,
   metadata: any
+}
+
+export interface Invitation {
+  _id: string,
+  invitor: string,
+  inviteeName: string,
+  inviteePhone: string,
+  inviteeEmail?: string,
+  inviteeRole: NominationRole,
+  hasAccount: boolean,
+  status: InvitationStatus, 
+  expiresAt: Date, 
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 export interface Nominator {
@@ -94,11 +118,29 @@ export interface AppMessage {
   message: string;
 }
 
+export interface Invitation {
+  _id: string;
+  invitorId: string;
+  invitorName: string;
+  inviteeName: string;
+  inviteePhone: string;
+  inviteeEmail?: string; 
+  inviteeRole: NominationRole; 
+  hasAccount: boolean;
+  status: InvitationStatus;
+  expiresAt: Date; 
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export interface AppState {
   user?: User;
+  newUser?: User;
   beneficiaries: User[];
   middlemen: User[];
   transactions: Transaction[];
+  invitations: Invitation[];
+  currentInvitation?: Invitation;
   message: AppMessage;
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;

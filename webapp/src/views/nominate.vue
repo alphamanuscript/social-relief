@@ -162,7 +162,7 @@ export default {
         const data = {
           nominee: `254${this.nomineeCreds.phone}`,
           name: this.nomineeCreds.name.trim(),
-          role: this.nomineeCreds.role
+          role: this.nomineeCreds.role.toLowerCase()
         };
 
         if (this.nomineeCreds.email) {

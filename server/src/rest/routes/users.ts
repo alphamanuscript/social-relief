@@ -22,15 +22,20 @@ users.post('/logout-all', requireAuth(), wrapResponse(
 users.get('/me', requireAuth(), wrapResponse(
   req => Promise.resolve(req.user)));
 
-users.post('/beneficiaries', requireAuth(), wrapResponse(
-  req => req.core.users.nominateBeneficiary({ ...req.body, nominator: req.user._id })));
-
 users.get('/beneficiaries', requireAuth(), wrapResponse(
   req => req.core.users.getAllBeneficiariesByUser(req.user._id)));
-
-users.post('/middlemen', requireAuth(), wrapResponse(
-  req => req.core.users.nominateMiddleman({ ...req.body, nominator: req.user._id })));
 
 users.get('/middlemen', requireAuth(), wrapResponse(
   req => req.core.users.getAllMiddlemenByUser(req.user._id)));
 
+users.post('/nominate', requireAuth(), wrapResponse(
+  req => req.core.users.nominate({ ...req.body })));
+
+users.post('/activate-invitee', wrapResponse(
+  req => req.core.users.activate({ ... req.body })));
+
+users.get('/:id', wrapResponse(
+  req => req.core.users.getNew(req.params.id)));
+
+users.put('/:id', wrapResponse(
+  req => req.core.users.put(req.params.id, { ... req.body })));

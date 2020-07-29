@@ -1,14 +1,14 @@
 import { AtSMSProvider } from '../sms';
 import { EventBus, Event, EventName } from '../event';
-import { UserNotificationArgs } from './types';
+import { UserNotificationsArgs } from './types';
 import { UserInvitationEventData } from '../user';
 
-export class UserNotification {
+export class UserNotifications {
   smsProvider: AtSMSProvider;
   eventBus: EventBus;
   webappBaseUrl: string;
 
-  constructor(args: UserNotificationArgs) {
+  constructor(args: UserNotificationsArgs) {
       this.smsProvider = args.smsProvider;
       this.eventBus = args.eventBus;
       this.webappBaseUrl = args.webappBaseUrl;

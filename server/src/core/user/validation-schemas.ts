@@ -1,5 +1,5 @@
 import * as joi from '@hapi/joi';
-import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema } from '../util/validation-util';
+import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema } from '../util/validation-util';
 
 const emailSchema = joi.string()
   .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
@@ -65,12 +65,38 @@ export const nominateInputSchema = joi.object().keys({
       'string.empty': 'Name is required'
     }),
   email: emailSchema,
-  nominator: joi.string()
+  nominatorId: joi.string()
     .required()
     .messages({
       'any.required': `Nominator id is required`,
-      'string.base': 'Invalid type, nominator must be a string',
+      'string.base': 'Invalid type, nominator id must be a string',
       'string.empty': `Nominator id is required`,
+    }),
+  nominatorName: joi.string()
+    .required()
+    .messages({
+      'any.required': `Nominator name is required`,
+      'string.base': 'Invalid type, nominator name must be a string',
+      'string.empty': `Nominator name is required`,
+    }),
+  role: joi.string()
+    .required()
+    .messages({
+      'any.required': `Role is required`,
+      'string.base': 'Invalid type, role must be a string',
+      'string.empty': `Role is required`,
+    })
+});
+
+export const activateInputSchema = joi.object().keys({
+  invitationId: joi.string()
+    .required()
+    .pattern(/^[a-fA-F0-9]{32}$/)
+    .messages({
+      'any.required': `invitationId is required`,
+      'string.base': `Invalid type, invitationId  must be a string`,
+      'string.empty': `Please enter invitationId`,
+      'string.pattern.base': `Invalid invitationId. Must contain hexadecimals only and be 32 characters long`
     }),
 });
 
@@ -101,3 +127,23 @@ export const initiateDonationInputSchema = joi.object().keys({
       'number.min': `amount must be 100 or more`,
     })
 });
+
+export const putInputSchema = joi.object().keys({
+  userId: joi.string()
+    .required()
+    .pattern(/^[a-fA-F0-9]{32}$/)
+    .messages({
+      'any.required': `userId is required`,
+      'string.base': 'Invalid type, userId must be a string',
+      'string.empty': `Please enter userId`,
+      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
+    }),
+  name: joi.string()
+    .required()
+    .messages({
+      'any.required': 'name is required',
+      'string.empty': 'name is required'
+    }),
+  email: emailValidationSchema,
+  password: passwordValidationSchema
+})
