@@ -4,6 +4,7 @@ import { Users } from '../user-service';
 import { DbUser, UserNominateArgs } from '../types';
 import { InvitationCreateArgs } from '../../invitation';
 import { generateId } from '../../util';
+import { EventBus } from '../../event';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
@@ -66,7 +67,8 @@ describe('UserService tests', () => {
             })
           }
         })
-      }
+      },
+      eventBus: new EventBus()
     };
     const service = new Users(dbUtils.getDb(), args);
     return service;
