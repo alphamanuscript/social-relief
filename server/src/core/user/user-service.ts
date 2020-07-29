@@ -88,6 +88,7 @@ export class Users implements UserService {
     this.transactions = args.transactions;
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
+    console.log('In constructor: ', this.eventBus);
   }
 
   async createIndexes(): Promise<void> {
@@ -180,6 +181,7 @@ export class Users implements UserService {
         hasAccount: inviteeUser ? true : false
       }
       const invitation = await this.invitations.create(invitationArgs);
+      console.log('In nominate: ', this.eventBus);
       this.eventBus.emitUserInvitationCreated({
         recipientName: invitation.inviteeName,
         recipientPhone: invitation.inviteePhone,
