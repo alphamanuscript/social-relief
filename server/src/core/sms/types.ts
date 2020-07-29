@@ -18,5 +18,5 @@ export interface SMSRecipient {
 }
 
 export interface SMSProvider {
-  sendMessageToUser(user: string, message: string): Promise<SendResult>;
+  sendSms(to: string, message: string): Promise<SendResult>;
 }

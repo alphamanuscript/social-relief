@@ -1,13 +1,14 @@
 import { AtSMSProvider } from '../sms';
-import { EventBus } from '../event';
-import { UserNotificationsArgs } from './types';
+import { EventBus, Event, EventName } from '../event';
+import { UserNotificationArgs } from './types';
+import { UserInvitationEventData } from '../user';
 
-export class UserNotifications {
+export class UserNotification {
   smsProvider: AtSMSProvider;
   eventBus: EventBus;
   webappBaseUrl: string;
 
-  constructor(args: UserNotificationsArgs) {
+  constructor(args: UserNotificationArgs) {
       this.smsProvider = args.smsProvider;
       this.eventBus = args.eventBus;
       this.webappBaseUrl = args.webappBaseUrl;
@@ -16,11 +17,11 @@ export class UserNotifications {
   }
 
   registerHandlers() {
-    this.eventBus.on(EVENT_USER_INVITATION_CREATED, this.handleUserInvitation.bind(this));
+    this.eventBus.on(EventName.USER_INVITATION_CREATED, this.handleUserInvitation.bind(this));
   }
 
-  handleUserInvitation({ data }: Event<UserInvitationEvent>) {
-    const message = `Hello ${data.recipient.name}, ${data.sender.name} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${this.webappBaseUrl}/invitations/${data.invitiationId};`
-    this.smsProvider.sendSms(data.recipient.phone, message);
+  handleUserInvitation({ data }: Event<UserInvitationEventData>) {
+    const message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${this.webappBaseUrl}/invitations/${data.invitationId};`
+    this.smsProvider.sendSms(data.recipientPhone, message);
   }
 }

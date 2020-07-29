@@ -1,7 +1,7 @@
 import { EventBus } from '../event';
 import { AtSMSProvider } from '../sms';
 
-export interface UserNotificationsArgs {
+export interface UserNotificationArgs {
   smsProvider: AtSMSProvider;
   eventBus: EventBus;
   webappBaseUrl: string;

@@ -18,9 +18,9 @@ export class AtSMSProvider implements SMSProvider {
     this.smses = this.atClient.SMSes;
   }
 
-  async sendMessageToUser(user: string, message: string): Promise<SendResult> {
+  async sendSms(to: string, message: string): Promise<SendResult> {
     const args: SendArgs = {
-      to: [user],
+      to: [to],
       message
     };
 

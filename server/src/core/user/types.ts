@@ -70,8 +70,11 @@ export interface UserLoginResult {
 };
 
 export interface UserInvitationEventData {
-  sender: User,
-  recipient: User,
+  senderName: string,
+  recipientName: string,
+  recipientPhone: string,
+  role: string,
+  invitationId: string
 }
 
 export interface UserService {

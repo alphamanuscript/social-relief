@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import { UserInvititationEventData } from '../user';
+import { UserInvitationEventData } from '../user';
+import { USER_INVITATION_CREATED } from './event-name';
 
 export interface Event<T> {
   time: Date,
@@ -19,13 +20,15 @@ export class EventBus extends EventEmitter {
     this.subcribeInboundEvents();
   }
 
-  on()
-
   private subcribeInboundEvents () {
     // this.on(EventName.FILE_IMPORT_COMPLETE, (data: any) => this.onFileImportComplete(data));
   }
 
-  emitUserInvitationCreated(eventData: UserInvititationEventData) {
-
+  emitUserInvitationCreated(eventData: UserInvitationEventData): void {
+    this.emit(USER_INVITATION_CREATED, createEvent(eventData))
   }
+
+  // onUserInvitationCreated(eventData: Event<UserInvitationEventData>): void {
+  //   this.on(EVENT_USER_INVITATION_CREATED, )
+  // }
 }

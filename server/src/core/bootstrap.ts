@@ -7,6 +7,7 @@ import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 import { AtSMSProvider } from './sms';
 import { EventBus } from './event';
+import { UserNotification } from './user-notification';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -51,6 +52,12 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const smsProvider = new AtSMSProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
+  });
+
+  const userNotifications = new UserNotification({
+    smsProvider,
+    eventBus,
+    webappBaseUrl: config.webappBaseUrl
   });
 
   await users.createIndexes();
