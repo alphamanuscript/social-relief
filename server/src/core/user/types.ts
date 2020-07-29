@@ -69,6 +69,11 @@ export interface UserLoginResult {
   token: AccessToken
 };
 
+export interface UserInvitationEventData {
+  sender: User,
+  recipient: User,
+}
+
 export interface UserService {
   /**
    * ensures that all required database indexes

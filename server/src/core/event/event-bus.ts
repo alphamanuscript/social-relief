@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { UserInvititationEventData } from '../user';
 
 export interface Event<T> {
   time: Date,
@@ -15,5 +16,16 @@ export function createEvent<T>(data: T) {
 export class EventBus extends EventEmitter {
   constructor() {
     super();
+    this.subcribeInboundEvents();
+  }
+
+  on()
+
+  private subcribeInboundEvents () {
+    // this.on(EventName.FILE_IMPORT_COMPLETE, (data: any) => this.onFileImportComplete(data));
+  }
+
+  emitUserInvitationCreated(eventData: UserInvititationEventData) {
+
   }
 }
