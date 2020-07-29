@@ -32,6 +32,7 @@ describe('UserService tests', () => {
 
   function createDefaultService() {
     const now = new Date();
+    const eventBus = new EventBus();
     const args: any = { 
       transactions: {}, 
       invitations: { 
@@ -68,7 +69,7 @@ describe('UserService tests', () => {
           }
         })
       },
-      eventBus: new EventBus()
+      eventBus
     };
     const service = new Users(dbUtils.getDb(), args);
     return service;
