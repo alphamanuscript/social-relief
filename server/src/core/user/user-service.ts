@@ -181,7 +181,6 @@ export class Users implements UserService {
         hasAccount: inviteeUser ? true : false
       }
       const invitation = await this.invitations.create(invitationArgs);
-      console.log('In nominate: ', this.eventBus);
       this.eventBus.emitUserInvitationCreated({
         recipientName: invitation.inviteeName,
         recipientPhone: invitation.inviteePhone,
