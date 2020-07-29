@@ -22,6 +22,6 @@ export class UserNotifications {
 
   handleUserInvitation({ data }: Event<UserInvitationEventData>) {
     const message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${this.webappBaseUrl}/invitations/${data.invitationId};`
-    this.smsProvider.sendSms(data.recipientPhone, message);
+    this.smsProvider.sendSms(`+${data.recipientPhone}`, message);
   }
 }

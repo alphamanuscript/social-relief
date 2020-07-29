@@ -15,7 +15,7 @@ export class AtSMSProvider implements SMSProvider {
 
   constructor(args: AtArgs) {
     this.atClient = createAtClient({ username: args.username, apiKey: args.apiKey });
-    this.smses = this.atClient.SMSes;
+    this.smses = this.atClient.SMS;
   }
 
   async sendSms(to: string, message: string): Promise<SendResult> {
