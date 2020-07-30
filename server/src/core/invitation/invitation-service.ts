@@ -68,29 +68,18 @@ export class Invitations implements InvitationService {
   }
 
   async accept(invitationId: string): Promise<Invitation> {
-    try {
-      const result = await this.collection.findOneAndUpdate(
-        { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
-        { $set: { status: 'accepted' } },
-        { upsert: true, returnOriginal: false }
-      );
-      
-      if (!result) throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
-      
-      return result.value;
-    }
-    catch(e) {
-      rethrowIfAppError(e);
-
-      throw createDbOpFailedError(e.message);
-    }
+    return this.updateStatus(invitationId, 'accepted');
   }
 
   async reject(invitationId: string): Promise<Invitation> {
+    return this.updateStatus(invitationId, 'rejected');
+  }
+
+  private async updateStatus(invitationId: string, reply: InvitationStatus): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
-        { $set: { status: 'rejected' } },
+        { $set: { status: reply } },
         { upsert: true, returnOriginal: false }
       );
 
