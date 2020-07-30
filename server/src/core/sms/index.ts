@@ -1,2 +1,2 @@
 export * from './types';
-export { AtSMSProvider } from './sms-provider';
+export { AtSmsProvider } from './sms-provider';

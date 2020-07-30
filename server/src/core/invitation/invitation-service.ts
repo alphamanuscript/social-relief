@@ -28,7 +28,7 @@ export class Invitations implements InvitationService {
       */
       await this.collection.createIndex(
         { expiresAt: 1},
-        { expireAfterSeconds: 172800 }
+        { expireAfterSeconds: 0 }
       );
       
       this.indexesCreated = true;
@@ -51,7 +51,7 @@ export class Invitations implements InvitationService {
       inviteeRole,
       hasAccount,
       status: 'pending',
-      expiresAt: now,
+      expiresAt: new Date( Date.now() + 2 * 24 * 60 * 60 * 1000),
       createdAt: now,
       updatedAt: now,
     }
@@ -70,7 +70,7 @@ export class Invitations implements InvitationService {
   async accept(invitationId: string): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
-        { _id: invitationId },
+        { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
         { $set: { status: 'accepted' } },
         { upsert: true, returnOriginal: false }
       );
@@ -89,7 +89,7 @@ export class Invitations implements InvitationService {
   async reject(invitationId: string): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
-        { _id: invitationId },
+        { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
         { $set: { status: 'rejected' } },
         { upsert: true, returnOriginal: false }
       );

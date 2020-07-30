@@ -5,15 +5,42 @@ export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
 
 export interface Invitation {
   _id: string,
-  invitorId: string, // id of inviting user
-  invitorName: string, // name of inviting user
-  inviteeName: string, // name of invited user
-  inviteePhone: string, // phone of invited user
-  inviteeEmail?: string, // email of invited user
-  inviteeRole: NominationRole, // role of invited user (i.e. beneficiary | middleman)
-  hasAccount: boolean, // Indicates whether or not the invitee has an account
-  status: InvitationStatus, // Initially set to pending. Other statuses include 'accepted' and 'rejected'
-  expiresAt: Date, // time at which record will self-delete
+  /** 
+   * id of inviting user
+   */
+  invitorId: string,
+  /** 
+   * name of inviting user
+   */
+  invitorName: string, 
+  /** 
+   * name of invited user
+   */
+  inviteeName: string, 
+  /** 
+   * phone of invited user
+   */
+  inviteePhone: string, 
+  /** 
+   * email of invited user
+   */
+  inviteeEmail?: string, 
+  /** 
+   * role of invited user (i.e. beneficiary | middleman)
+   */
+  inviteeRole: NominationRole, 
+  /** 
+   * Indicates whether or not the invitee has an account
+   */
+  hasAccount: boolean, 
+  /** 
+   * Initially set to pending. Other statuses include 'accepted' and 'rejected'
+   */
+  status: InvitationStatus, 
+  /** 
+   * time at which record will self-delete
+   */
+  expiresAt: Date, 
   createdAt: Date,
   updatedAt: Date,
 };

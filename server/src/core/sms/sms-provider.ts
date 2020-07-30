@@ -1,6 +1,6 @@
 import createAtClient = require('africastalking');
 import { SmsService as AtSMSService, SendArgs } from 'africastalking-types';
-import { SMSProvider, SendResult } from './types';
+import { SmsProvider, SendResult } from './types';
 import { AppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
 import { User } from '../user/types';
 
@@ -9,7 +9,7 @@ export interface AtArgs {
   apiKey: string
 };
 
-export class AtSMSProvider implements SMSProvider {
+export class AtSmsProvider implements SmsProvider {
   private atClient: any;
   private smses: AtSMSService;
 

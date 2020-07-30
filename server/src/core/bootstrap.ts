@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
-import { AtSMSProvider } from './sms';
+import { AtSmsProvider } from './sms';
 import { Invitations } from './invitation';
 import { EventBus } from './event';
 import { UserNotifications } from './user-notification';
@@ -54,7 +54,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     periodLength: config.distributionPeriodLength,
     periodLimit: config.distributionPeriodLimit
   });
-  const smsProvider = new AtSMSProvider({
+  const smsProvider = new AtSmsProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
   });
@@ -73,9 +73,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     users,
     transactions,
     invitations,
-    donationDistributions,
-    smsProvider,
-    userNotifications
+    donationDistributions
   };
 }
 

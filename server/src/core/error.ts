@@ -57,6 +57,7 @@ export type ErrorCode =
   | 'manualPayApiError'
   | 'flutterwaveApiError'
   | 'serverError'
+  | 'nominationFailed'
   | 'activationFailed'
   | 'validationError'
   | 'batchQueueError'
@@ -106,6 +107,10 @@ export function createManualPayApiError(message: string) {
 
 export function createFlutterwaveApiError(message: string) {
   return createAppError(message, 'flutterwaveApiError');
+}
+
+export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_USER_CANNOT_ADD_BENEFICIARY) {
+  return createAppError(message, 'nominationFailed');
 }
 
 export function createBeneficiaryActivationFailedError(message: string = messages.ERROR_BENEFICIARY_ACTIVATION_FAILED) {

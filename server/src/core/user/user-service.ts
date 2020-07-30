@@ -9,7 +9,7 @@ import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createBeneficiaryActivationFailedError,
+  createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
   createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
 import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
@@ -88,7 +88,6 @@ export class Users implements UserService {
     this.transactions = args.transactions;
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
-    console.log('In constructor: ', this.eventBus);
   }
 
   async createIndexes(): Promise<void> {
@@ -167,7 +166,7 @@ export class Users implements UserService {
     try {
       const nominatorUser = await this.collection.findOne({ _id: nominatorId });
       if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
-        throw createBeneficiaryActivationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
+        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
       const inviteeUser = await this.collection.findOne({ phone });
@@ -210,8 +209,10 @@ export class Users implements UserService {
         email: invitation.inviteeEmail,
         nominatorId: invitation.invitorId,
       }
-      if (invitation.inviteeRole === 'beneficiary') return this.activateBeneficiary(args);
-      else if(invitation.inviteeRole === 'middleman') return this.activateMiddleman(args);
+      if (invitation.inviteeRole === 'beneficiary') { 
+        return this.activateBeneficiary(args); 
+      }
+      return this.activateMiddleman(args);
     }
     catch(e) {
       if (e instanceof AppError) throw e;

@@ -17,6 +17,6 @@ export interface SMSRecipient {
   messageId: string;
 }
 
-export interface SMSProvider {
+export interface SmsProvider {
   sendSms(to: string, message: string): Promise<SendResult>;
 }
