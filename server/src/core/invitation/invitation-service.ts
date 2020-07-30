@@ -75,11 +75,11 @@ export class Invitations implements InvitationService {
     return this.updateStatus(invitationId, 'rejected');
   }
 
-  private async updateStatus(invitationId: string, reply: InvitationStatus): Promise<Invitation> {
+  private async updateStatus(invitationId: string, status: InvitationStatus): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
         { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
-        { $set: { status: reply } },
+        { $set: { status } },
         { upsert: true, returnOriginal: false }
       );
 
