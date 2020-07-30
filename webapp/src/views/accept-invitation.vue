@@ -8,7 +8,7 @@
         <div class="py-3">
           <p>
             <span class="text-black font-weight-bold">{{ currentInvitation.invitorName }}</span> has invited you to be their {{currentInvitation.inviteeRole}}. <br>
-            <span v-if="currentInvitation.inviteeRole === 'middleman'">As a middleman, you will be able to appoint/nominate other people on {{ currentInvitation.invitorName }}'s behalf.<br></span>
+            <span v-if="currentInvitation.inviteeRole === 'middleman'">As a middleman, you will be able to add beneficiaries on {{ currentInvitation.invitorName }}'s behalf.<br></span>
             <span v-else-if="currentInvitation.inviteeRole === 'beneficiary'">As a beneficiary, you will receive money from {{ currentInvitation.invitorName }} or their donors.<br></span>
             To accept this invitation, click the button below
           </p>
@@ -63,7 +63,7 @@
     >
       <p>
         You have successfully accepted <span class="font-bold">{{ currentInvitation.invitorName }}</span>'s invitation to become a <span class="text-secondary">{{ currentInvitation.inviteeRole }}</span>.
-        Close this dialog so that you can be redirected to the signup page where you will be able to provide both your name, email, and password
+        Close this dialog and you will be redirected to the signup page to create or login to your account
       </p>
       <div class="mt-3 text-right">
         <b-button variant="secondary" class="custom-submit-button" @click.prevent="handleCloseBtnClick('accept-invitation-success')">Close</b-button>

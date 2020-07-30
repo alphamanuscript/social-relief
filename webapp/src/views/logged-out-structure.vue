@@ -45,7 +45,10 @@ export default {
     }
   },
   async created() {
-    if (Auth.isAuthenticated()) {
+    if (Auth.isAuthenticated() && this.$route.name === 'accept-invitation') {
+      this.$router.push({ name: 'invitations' });
+    }
+    else if (Auth.isAuthenticated()) {
       this.$router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }
   },
