@@ -7,8 +7,11 @@ describe('validatesCreate', () => {
     testValidationSucceeds(validators.validatesCreate, [
       { phone: '254729291091', password: 'dsksjjn,', name: 'John' },
       { phone: '254729291091', password: 'dsks12jnDM4', name: 'John' },
+      { phone: '254032929109', password: 'dsks12jnDM4', name: 'John' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', name: 'John' },
-      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' }
+      { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254029291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254019291091', googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
   it('should throw error if inputs are not valid', () => {
@@ -73,8 +76,9 @@ describe('validatesNominate', () => {
   it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesNominate, [
       { phone: '25472929109', nominatorId: '' },
-      { phone: '25472929109', nominatorId: 'nominator1', name: {} },
-      { phone: '25472929109', nominatorId: 'nominator1', name: '' },
+      { phone: '25405929109', nominatorId: '' },
+      { phone: '25462929109', nominatorId: 'nominator1', name: {} },
+      { phone: '25482929109', nominatorId: 'nominator1', name: '' },
       { phone: '+254729291091', nominatorId: {} },
       { phone: '254829291091' },
       { nominatorId: 'donor1' },

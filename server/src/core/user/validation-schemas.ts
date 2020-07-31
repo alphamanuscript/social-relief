@@ -51,12 +51,12 @@ export const loginInputSchema = joi.alternatives().try(
 export const nominateInputSchema = joi.object().keys({
   phone: joi.string()
     .required()
-    .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
+    .pattern(/^254\d{9}$/) // Starts with 254 and ends with 9 digits
     .messages({
       'any.required': 'Phone is required',
       'string.base': 'Invalid type, phone must be a string',
       'string.empty': 'Please enter phone number',
-      'string.pattern.base': 'Invalid phone number. Must start with 2547 and be 12 digit long'
+      'string.pattern.base': 'Invalid phone number. Must start with 254 and be 12 digit long'
     }),
   name: joi.string()
     .required()
