@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -6,6 +6,7 @@ import { makeValidatorFromJoiSchema } from '../util';
 export const validatesCreate = (args: UserCreateArgs) => {
   const { error } = schemas.createInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
 
 export const validatesLogin = (args: UserLoginArgs) => {
@@ -15,6 +16,14 @@ export const validatesLogin = (args: UserLoginArgs) => {
 
 export const validatesNominate = (args: UserNominateArgs) => {
   const { error } = schemas.nominateInputSchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
+  if (args.role && ['beneficiary', 'middleman'].includes(args.role) === false) 
+    throw createValidationError("Role must be either 'beneficiary' or 'middleman'");
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
+}
+
+export const validatesActivate = (args: UserActivateArgs) => {
+  const { error } = schemas.activateInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
 }
 
@@ -42,6 +51,14 @@ export const validatesInitiateDonation = ({ userId, amount } : { userId: string;
   // The convert: false object is very important when dealing with number validation
   // and ensures that input is not converted from one type to another type during validation
   const { error } = schemas.initiateDonationInputSchema.validate({ userId, amount }, {convert: false}); 
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const validatesGetNew = validatesLogoutAll;
+
+export const validatesPut = ({ userId, args } : { userId: string, args: UserPutArgs}) => {
+  const { name, email, password } = args;
+  const { error } = schemas.putInputSchema.validate({ userId, name, email, password });
   if (error) throw createValidationError(error.details[0].message);
 }
 

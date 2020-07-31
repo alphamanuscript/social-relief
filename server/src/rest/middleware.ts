@@ -32,7 +32,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'uniquenessFailed':
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
       case 'paymentRequestFailed':
-      case 'nominationFailed':
+      case 'activationFailed':
       case 'validationError':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       case 'messageDeliveryFailed':

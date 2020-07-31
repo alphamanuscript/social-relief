@@ -22,12 +22,12 @@ export const validateId = makeValidatorFromJoiSchema(idValidationSchema);
 
 export const phoneValidationSchema = joi.string()
   .required()
-  .pattern(/^2547\d{8}$/) // Starts with 2547 and ends with 8 digits
+  .pattern(/^254\d{9}$/) // Starts with 254 and ends with 8 digits
   .messages({
     'any.required': 'Phone is required',
     'string.base': 'Invalid type, phone must be a string',
     'string.empty': 'Please enter your phone number',
-    'string.pattern.base': 'Invalid phone number. Must start with 2547 and be 12 digit long'
+    'string.pattern.base': 'Invalid phone number. Must start with 254 and be 12 digit long'
   });
 
 export const passwordValidationSchema = joi.string()

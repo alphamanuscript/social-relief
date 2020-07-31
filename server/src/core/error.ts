@@ -58,6 +58,7 @@ export type ErrorCode =
   | 'flutterwaveApiError'
   | 'serverError'
   | 'nominationFailed'
+  | 'activationFailed'
   | 'validationError'
   | 'batchQueueError'
   | 'systemLockLocked'
@@ -108,12 +109,16 @@ export function createFlutterwaveApiError(message: string) {
   return createAppError(message, 'flutterwaveApiError');
 }
 
-export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
+export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_USER_CANNOT_ADD_BENEFICIARY) {
   return createAppError(message, 'nominationFailed');
 }
 
-export function createMiddlemanNominationFailedError(message: string = messages.ERROR_MIDDLEMAN_NOMINATION_FAILED) {
-  return createAppError(message, 'nominationFailed');
+export function createBeneficiaryActivationFailedError(message: string = messages.ERROR_BENEFICIARY_ACTIVATION_FAILED) {
+  return createAppError(message, 'activationFailed');
+}
+
+export function createMiddlemanActivationFailedError(message: string = messages.ERROR_MIDDLEMAN_ACTIVATION_FAILED) {
+  return createAppError(message, 'activationFailed');
 }
 
 export function createSystemLockBusyError(message: string = messages.ERROR_CONFLICTING_OPERATION_IN_PROGRESS) {

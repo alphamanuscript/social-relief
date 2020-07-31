@@ -37,7 +37,19 @@
             <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
           </b-input-group-prepend>
           <label for="phone" class="sr-only">Phone Number</label>
-          <b-form-input 
+          <b-form-input
+            v-if="newUser"
+            v-model="signUpCreds.phone" 
+            type="text" 
+            :state="signUpValidationResults.phone"
+            class="custom-dialog-input-phone"
+            placeholder="Enter phone number"
+            id="phone"
+            @update="helper.phone = true"
+            disabled
+          />
+          <b-form-input
+            v-else
             v-model="signUpCreds.phone" 
             type="text" 
             :state="signUpValidationResults.phone"
@@ -51,7 +63,7 @@
           </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
-          Start with 7, for example 712345678.
+          For example 712345678.
         </b-form-text>
       </b-form-group>
       <b-form-group>
@@ -137,14 +149,14 @@ export default {
       
       signUpValidationMessages: {
         name: 'Name is required',
-        phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
+        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
         password: 'Invalid password. Must range between 8 and 18 characters',
         confirmedPassword: 'Confirmed password does not match with password',
         email: 'Invalid email'
       },
       signUpValidationRules: {
         name: { test: (creds) => !!creds.name.trim().length },
-        phone: { test: (creds) => /^7\d{8}$/.test(creds.phone) },
+        phone: { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
         confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password },
         email: { test: (creds) => /\S+@\S+\.\S+/.test(String(creds.email))}
@@ -163,7 +175,7 @@ export default {
     GoogleLogin
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'newUser']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -175,7 +187,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['createUser']),
+    ...mapActions(['createUser', 'updateNewUser']),
     showLoginDialog() {
       this.$bvModal.show('login');
     },
@@ -196,7 +208,7 @@ export default {
     },
     async signUp() {
       this.signUpValidationMessages = {
-        phone: 'Invalid Phone number. Must start with 7 and be 9 digits long',
+        phone: 'Invalid Phone number. Must be 9 digits long',
         password: 'Invalid password. Must range between 8 and 18 characters',
         confirmedPassword: 'Confirmed password does not match with password',
         name: 'Name is required',
@@ -215,7 +227,7 @@ export default {
           password: this.signUpCreds.password,
           email: this.signUpCreds.email,
         };
-        await this.createUser(data);
+        this.newUser ? await this.updateNewUser(data) : await this.createUser(data);
         if (this.user) {
           this.signUpCreds = {
             name: '',
@@ -251,6 +263,21 @@ export default {
         variant: 'warning',
         solid: true
       });
+    }
+  },
+  watch: {
+    newUser() {
+      if (this.newUser && this.newUser.roles) {
+        const { name, phone, email, roles } = this.newUser;
+        this.signUpCreds = {
+          name,
+          phone: phone.substring(3),
+          password: '',
+          confirmedPassword: '',
+          email: !email ? '' : email,
+          role: roles[0]
+        }
+      }
     }
   }
 }

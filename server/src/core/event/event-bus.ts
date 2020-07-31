@@ -1,4 +1,6 @@
 import { EventEmitter } from 'events';
+import { UserInvitationEventData } from '../user';
+import { USER_INVITATION_CREATED } from './event-name';
 
 export interface Event<T> {
   time: Date,
@@ -15,5 +17,9 @@ export function createEvent<T>(data: T) {
 export class EventBus extends EventEmitter {
   constructor() {
     super();
+  }
+
+  emitUserInvitationCreated(eventData: UserInvitationEventData): void {
+    this.emit(USER_INVITATION_CREATED, createEvent(eventData))
   }
 }

@@ -9,9 +9,12 @@ Vue.use(Vuex)
 
 const state: AppState = {
   user: undefined,
+  newUser: undefined,
   beneficiaries: [],
   middlemen: [],
   transactions: [],
+  invitations: [],
+  currentInvitation: undefined,
   message: { type: '', message: '' },
   lastPaymentRequest: undefined
 }

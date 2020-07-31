@@ -1,1 +1,4 @@
-export { EventBus, createEvent } from './event-bus';
+import * as EventName from './event-name';
+import { EventBus, Event } from './event-bus';
+
+export { EventBus, Event, EventName };

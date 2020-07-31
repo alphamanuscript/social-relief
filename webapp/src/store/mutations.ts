@@ -5,6 +5,9 @@ const mutations: MutationTree<AppState> = {
   addTransaction(state, trx) {
     state.transactions.push(trx);
   },
+  addInvitation(state, invt) {
+    state.invitations.push(invt);
+  },
   updateTransaction(state, trx) {
     const index = state.transactions.findIndex(tx => tx._id === trx._id);
     if (index > -1) {
@@ -13,6 +16,16 @@ const mutations: MutationTree<AppState> = {
     }
     else {
       state.transactions.push(trx);
+    }
+  },
+  updateInvitation(state, invt) {
+    const index = state.invitations.findIndex(inv => inv._id === invt._id);
+    if (index > -1) {
+      // update invitations if already exists
+      state.invitations[index] = invt;
+    }
+    else {
+      state.invitations.push(invt);
     }
   },
   setPaymentRequest(state, trx) {
@@ -36,6 +49,18 @@ const mutations: MutationTree<AppState> = {
   unsetUser(state) {
     state.user = undefined
   },
+  setNewUser(state, newUser) {
+    state.newUser = newUser;
+  },
+  unsetNewUser(state) {
+    state.newUser = undefined
+  },
+  setCurrentInvitation(state, currentInvitation) {
+    state.currentInvitation = currentInvitation;
+  },
+  unsetCurrentInvitation(state) {
+    state.currentInvitation = undefined
+  },
   setBeneficiaries(state, beneficiaries) {
     state.beneficiaries = beneficiaries
   },
@@ -53,6 +78,12 @@ const mutations: MutationTree<AppState> = {
   },
   unsetTransactions(state) {
     state.transactions = []
+  },
+  setInvitations(state, invitations) {
+    state.invitations = invitations
+  },
+  unsetInvitations(state) {
+    state.invitations = []
   },
   setMessage(state, message) {
     state.message = message

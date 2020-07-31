@@ -5,8 +5,10 @@ import { MongoClient } from 'mongodb';
 import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
-import { AtSMSProvider } from './sms';
+import { AtSmsProvider } from './sms';
+import { Invitations } from './invitation';
 import { EventBus } from './event';
+import { UserNotifications } from './user-notification';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -39,28 +41,39 @@ export async function bootstrap(config: AppConfig): Promise<App> {
 
   const systemLocks = new SystemLocks(db);
   const transactions = new Transactions(db, { paymentProviders });
+  const invitations = new Invitations(db);
   const users = new Users(db, {
     transactions,
+    invitations,
+    eventBus
   });
+  
   const donationDistributions = new DonationDistributions(db, {
     users,
     systemLocks,
     periodLength: config.distributionPeriodLength,
     periodLimit: config.distributionPeriodLimit
   });
-  const smsProvider = new AtSMSProvider({
+  const smsProvider = new AtSmsProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
   });
 
+  const userNotifications = new UserNotifications({
+    smsProvider,
+    eventBus,
+    webappBaseUrl: config.webappBaseUrl
+  });
+
   await users.createIndexes();
   await transactions.createIndexes();
+  await invitations.createIndexes();
 
   return {
     users,
     transactions,
-    donationDistributions,
-    smsProvider
+    invitations,
+    donationDistributions
   };
 }
 

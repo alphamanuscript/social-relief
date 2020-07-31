@@ -20,7 +20,7 @@
       <b-row v-if="!transactionItems.length" class="text-center ">
         <b-col>
           <p class="h2 font-weight-light">No transaction history as of yet...</p>
-          <p> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
+          <p v-if="user && user.roles.includes('donor')"> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
         </b-col>
       </b-row>
       <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="lg" class="mt-3 shadow bg-white rounded">

@@ -98,11 +98,22 @@
     </b-container>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
+  computed: {
+    ...mapState(['newUser', 'message']),
+  },
   methods: {
+    ...mapActions(['getNewUser']),
     handleDonateBtn() {
       this.$bvModal.show('login');
+    }
+  },
+  async mounted(){
+    if (this.$route.name === 'signup-new-user' && this.$route.params.id && this.$route.params.id.length) {
+      await this.getNewUser(this.$route.params.id);
+      if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
   } 
 }
