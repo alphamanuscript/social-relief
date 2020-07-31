@@ -10,9 +10,10 @@
       </div>
       <div class="">
         <div v-if="!beneficiaryItems.length" class="text-center">
-          <p class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
-          <p class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
-          <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
+          <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" class="h2 font-weight-light">You don't have any beneficiaries yet...</p>
+          <p v-else class="h2 font-weight-light">You do not qualify to have or nominate beneficiaries</p>
+          <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" class="">You can add a beneficiary directly, or nominate a middleman to add beneficiaries on your behalf.</p>
+          <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')"> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
         </div>
         <b-table v-else :items="beneficiaryItems" :fields="beneficiaryFields" striped hover stacked="sm" class="bg-white rounded shadow">
           <template v-slot:cell(index)="data">

@@ -70,7 +70,7 @@
       <p>
         <span>You're about to accept this invitation by <span class="font-bold">{{ currentInvitation.invitorName }}</span>. </span> 
         <span v-if="currentInvitation.inviteeRole === 'middleman'">As a middleman, you will be able to add beneficiaries on <span class="font-bold">{{ currentInvitation.invitorName }}</span>'s behalf</span>
-        <span v-else>As a beneficiary, you will be able to receive money from either <span class="font-bold">{{ currentInvitation.invitorName }}</span> or their donors (if they exist)</span>
+        <span v-else>As a beneficiary, you will be able to receive money from <span class="font-bold">{{ currentInvitation.invitorName }}</span> and affiliated donors</span>
       </p>
       <div class="mt-3 text-right">
         <b-button variant="primary" class="custom-submit-button mr-5" @click.prevent="handleInvitationAcceptance()">Proceed</b-button>

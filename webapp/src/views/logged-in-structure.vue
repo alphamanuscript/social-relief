@@ -37,7 +37,7 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
-                <b-nav-item v-if="user && !user.roles.includes('beneficiary')" to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-3">Nominate people</b-nav-item>
+                <b-nav-item v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-3">Nominate people</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
                   <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
@@ -46,7 +46,7 @@
                   <b-nav-item to="/account" exact exact-active-class="active">My Account</b-nav-item>
                   <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
-                <b-button v-if="user && !user.roles.includes('beneficiary')" variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
+                <b-button v-if="user && user.roles.includes('donor')" variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
               </b-nav>
               <b-nav class="ml-auto d-none d-md-block">
                 <b-nav-item-dropdown dropleft no-caret>
