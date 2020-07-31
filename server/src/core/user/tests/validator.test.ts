@@ -51,7 +51,7 @@ describe('validatesLogin', () => {
     testValidationFails(validators.validatesLogin, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '+254729291091', password: 'dsks12jnDM4' },
-      { phone: '254829291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '2548292910916', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254738103012', password: 'f' },
       { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
