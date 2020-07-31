@@ -41,7 +41,7 @@
                   type="text" 
                   :state="validationResults[0]"
                   class="custom-input"  
-                  placeholder="7xxxxxxxx"
+                  placeholder="xxxxxxxxx"
                   id="phone-number"
                 />
                 <b-form-invalid-feedback>
@@ -123,12 +123,12 @@ export default {
         role: 'Beneficiary'
       },
       validationMessages: [
-        'Invalid phone number. Must start with 7 and be 9 digits long',
+        'Invalid phone number. Must be 9 digits long',
         'Invalid email',
         'Name is required'
       ],
       validationRules: [
-        { test: (nomineeCreds) => nomineeCreds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
+        { test: (nomineeCreds) => /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
         { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))},
         { test: (nomineeCreds) => !!nomineeCreds.name.trim().length }
       ],
@@ -153,7 +153,7 @@ export default {
     },
     async submitNomination() {
       this.validationMessages = [
-        'Invalid phone number. Must start with 7 and be 9 digits long',
+        'Invalid phone number. Must be 9 digits long',
         'Invalid email',
         'Name is required'
       ];
