@@ -1,20 +1,23 @@
 import createAtClient = require('africastalking');
 import { SmsService as AtSMSService, SendArgs } from 'africastalking-types';
 import { SmsProvider, SendResult } from './types';
-import { AppError, rethrowIfAppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
+import { rethrowIfAppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
 
-export interface AtArgs {
+export interface AtSmsProviderArgs {
   username: string,
-  apiKey: string
+  apiKey: string,
+  sender: string
 };
 
 export class AtSmsProvider implements SmsProvider {
   private atClient: any;
   private smses: AtSMSService;
+  private sender: string;
 
-  constructor(args: AtArgs) {
+  constructor(args: AtSmsProviderArgs) {
     this.atClient = createAtClient({ username: args.username, apiKey: args.apiKey });
     this.smses = this.atClient.SMS;
+    this.sender = args.sender;
   }
 
   async sendSms(to: string, message: string): Promise<SendResult> {
@@ -22,6 +25,10 @@ export class AtSmsProvider implements SmsProvider {
       to: [to],
       message
     };
+
+    if (this.sender) {
+      args.from = this.sender;
+    }
 
     try {
       const res = await this.smses.send(args);
@@ -31,7 +38,8 @@ export class AtSmsProvider implements SmsProvider {
       throw createMessageDeliveryFailedError('Failed to send message');
     }
     catch (e) {
-      console.error(e);
+      rethrowIfAppError(e);
+      throw createAtApiError(e.message);
     }
   }
 }

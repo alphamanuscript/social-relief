@@ -44,6 +44,11 @@ export interface AppConfig {
    */
   atPaymentsProviderChannel: string;
   /**
+   * The short code or alphanumeric Sender ID from which
+   * SMS via Africa's Talking API are sent
+   */
+  atSmsSender: string;
+  /**
    * Root path of Africa's Talking callback URLS
    * this should be a random and secret string for security
    * to avoid attackers sending fake notifications to our app
@@ -110,6 +115,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atPaymentsProductName: env.AT_PAYMENTS_PRODUCT_NAME || 'TestCrowdRelief',
     atPaymentsProviderChannel: env.AT_PAYMENTS_PROVIDER_CHANNEL || '50000',
     atWebhooksRoot: env.AT_WEBHOOKS || '/webhooks/at',
+    atSmsSender: env.AT_SENDER_ID || '',
     manualPayWebhooksRoot: env.MANUAL_PAY_WEBHOOKS || '/webhooks/manualpay',
     manualPayBaseUrl: env.MANUAL_PAY_BASE_URL || 'http://localhost:5000',
     flutterwaveLogoUrl: `${webappBaseUrl}/img/logo.svg`,

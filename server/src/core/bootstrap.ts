@@ -57,9 +57,11 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const smsProvider = new AtSmsProvider({
     username: config.atUsername,
     apiKey: config.atApiKey,
+    sender: config.atSmsSender
   });
 
-  const userNotifications = new UserNotifications({
+  // starts listening to events when instantiated
+  new UserNotifications({
     smsProvider,
     eventBus,
     webappBaseUrl: config.webappBaseUrl
