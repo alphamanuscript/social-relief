@@ -31,8 +31,7 @@ export class AtSmsProvider implements SmsProvider {
       throw createMessageDeliveryFailedError('Failed to send message');
     }
     catch (e) {
-      if (e instanceof AppError) rethrowIfAppError(e);
-      throw createAtApiError(e.message);
+      console.log(e);
     }
   }
 }
