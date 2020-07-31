@@ -6,6 +6,7 @@ import { makeValidatorFromJoiSchema } from '../util';
 export const validatesCreate = (args: UserCreateArgs) => {
   const { error } = schemas.createInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
 
 export const validatesLogin = (args: UserLoginArgs) => {
@@ -18,6 +19,7 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (error) throw createValidationError(error.details[0].message);
   if (args.role && ['beneficiary', 'middleman'].includes(args.role) === false) 
     throw createValidationError("Role must be either 'beneficiary' or 'middleman'");
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
 
 export const validatesActivate = (args: UserActivateArgs) => {
