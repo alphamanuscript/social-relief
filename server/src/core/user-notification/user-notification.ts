@@ -27,7 +27,7 @@ export class UserNotifications {
 
   registerHandlers() {
     this.eventBus.onUserInvitationCreated(event => this.handleUserInvitation(event));
-    this.eventBus.onTransactionCompleted(event => this.handlerTransactionCompleted(event));
+    this.eventBus.onTransactionCompleted(event => this.handleTransactionCompleted(event));
   }
 
   async handleUserInvitation(event: Event<UserInvitationEventData>) {
@@ -43,7 +43,7 @@ export class UserNotifications {
     }
   }
 
-  async handlerTransactionCompleted(event: Event<TransactionCreatedEventData>) {
+  async handleTransactionCompleted(event: Event<TransactionCreatedEventData>) {
     const { data: { transaction } } = event;
     
     // notify donor and beneficiary of a successful distribution
