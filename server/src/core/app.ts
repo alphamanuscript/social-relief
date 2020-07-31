@@ -115,7 +115,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atPaymentsProductName: env.AT_PAYMENTS_PRODUCT_NAME || 'TestCrowdRelief',
     atPaymentsProviderChannel: env.AT_PAYMENTS_PROVIDER_CHANNEL || '50000',
     atWebhooksRoot: env.AT_WEBHOOKS || '/webhooks/at',
-    atSmsSender: env.AT_SENDER_ID || '',
+    atSmsSender: env.AT_SMS_SENDER || '',
     manualPayWebhooksRoot: env.MANUAL_PAY_WEBHOOKS || '/webhooks/manualpay',
     manualPayBaseUrl: env.MANUAL_PAY_BASE_URL || 'http://localhost:5000',
     flutterwaveLogoUrl: `${webappBaseUrl}/img/logo.svg`,
