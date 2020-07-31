@@ -1,5 +1,5 @@
 import createAtClient = require('africastalking');
-import { SmsService as AtSMSService, SendArgs } from 'africastalking-types';
+import { SmsService as AtSmsService, SendArgs } from 'africastalking-types';
 import { SmsProvider, SendResult } from './types';
 import { rethrowIfAppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
 
@@ -11,7 +11,7 @@ export interface AtSmsProviderArgs {
 
 export class AtSmsProvider implements SmsProvider {
   private atClient: any;
-  private smses: AtSMSService;
+  private smses: AtSmsService;
   private sender: string;
 
   constructor(args: AtSmsProviderArgs) {
@@ -22,7 +22,8 @@ export class AtSmsProvider implements SmsProvider {
 
   async sendSms(to: string, message: string): Promise<SendResult> {
     const args: SendArgs = {
-      to: [to],
+      // Africa's Talking phone numbers should have the leading + symbol
+      to: [`+${to}`],
       message
     };
 

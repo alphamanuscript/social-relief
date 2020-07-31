@@ -40,7 +40,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   paymentProviders.setPreferredForSending(manualPayProvider.name());
 
   const systemLocks = new SystemLocks(db);
-  const transactions = new Transactions(db, { paymentProviders });
+  const transactions = new Transactions(db, { paymentProviders, eventBus });
   const invitations = new Invitations(db);
   const users = new Users(db, {
     transactions,
@@ -64,6 +64,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   new UserNotifications({
     smsProvider,
     eventBus,
+    users,
     webappBaseUrl: config.webappBaseUrl
   });
 

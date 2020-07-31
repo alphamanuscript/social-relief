@@ -5,12 +5,13 @@ import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIf
 import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
-import { request } from 'express';
+import { EventBus } from '../event';
 
 const COLLECTION = 'transactions';
 
 export interface TransactionsArgs {
   paymentProviders: PaymentProviderRegistry;
+  eventBus: EventBus;
 }
 
 const isFinalStatus = (status: TransactionStatus) =>
@@ -20,12 +21,14 @@ export class Transactions implements TransactionService {
   private db: Db;
   private collection: Collection<Transaction>;
   private providers: PaymentProviderRegistry;
+  private eventBus: EventBus;
   private indexesCreated: boolean;
 
   constructor(db: Db, args: TransactionsArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.providers = args.paymentProviders;
+    this.eventBus = args.eventBus;
     this.indexesCreated = false;
   }
 
@@ -166,7 +169,7 @@ export class Transactions implements TransactionService {
       const provider = this.provider(providerName);
       const result = await this.provider(providerName).handlePaymentNotification(payload);
 
-      const updateRes = await this.collection.findOneAndUpdate(
+      const updatedRes = await this.collection.findOneAndUpdate(
         { providerTransactionId: result.providerTransactionId, provider: provider.name() },
         {
           $set: {
@@ -178,13 +181,17 @@ export class Transactions implements TransactionService {
           },
         }, { returnOriginal: false });
       
-      if (!updateRes.value) {
+      if (!updatedRes.value) {
         // TODO: handle notifications that don't correspond to transactions
         // these are transactions that were not initiated for the app by a user
         throw createResourceNotFoundError(messages.ERROR_TRANSACTION_REQUESTED);
       }
 
-      return updateRes.value;
+      if (updatedRes.value.status === 'success') {
+        this.eventBus.emitTransactionCompleted({ transaction: updatedRes.value });
+      }
+
+      return updatedRes.value;
     }
     catch (e) {
       if (e instanceof AppError) throw e;
