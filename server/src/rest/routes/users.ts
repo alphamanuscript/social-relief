@@ -32,7 +32,7 @@ users.post('/nominate', requireAuth(), wrapResponse(
   req => req.core.users.nominate({ ...req.body })));
 
 users.post('/activate-invitee', wrapResponse(
-  req => req.core.users.activate({ ... req.body })));
+  req => req.core.users.activate({ ...req.body })));
 
 users.get('/:id', wrapResponse(
   req => req.core.users.getNew(req.params.id)));

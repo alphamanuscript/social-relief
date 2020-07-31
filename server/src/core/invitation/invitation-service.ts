@@ -27,7 +27,7 @@ export class Invitations implements InvitationService {
       after 172800 seconds (i.e., two days) have passed since creation
       */
       await this.collection.createIndex(
-        { expiresAt: 1},
+        { expiresAt: 1 },
         { expireAfterSeconds: 0 }
       );
       
@@ -68,17 +68,17 @@ export class Invitations implements InvitationService {
   }
 
   async accept(invitationId: string): Promise<Invitation> {
-    return this.updateStatus(invitationId, 'accepted');
+    return await this.updateStatus(invitationId, 'accepted');
   }
 
   async reject(invitationId: string): Promise<Invitation> {
-    return this.updateStatus(invitationId, 'rejected');
+    return await this.updateStatus(invitationId, 'rejected');
   }
 
   private async updateStatus(invitationId: string, status: InvitationStatus): Promise<Invitation> {
     try {
       const result = await this.collection.findOneAndUpdate(
-        { _id: invitationId, status: 'pending', expiresAt: { $lt: new Date() } },
+        { _id: invitationId, status: 'pending', expiresAt: { $gt: new Date() } },
         { $set: { status } },
         { upsert: true, returnOriginal: false }
       );
