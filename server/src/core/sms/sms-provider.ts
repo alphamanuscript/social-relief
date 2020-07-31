@@ -1,8 +1,7 @@
 import createAtClient = require('africastalking');
 import { SmsService as AtSMSService, SendArgs } from 'africastalking-types';
 import { SmsProvider, SendResult } from './types';
-import { AppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
-import { User } from '../user/types';
+import { AppError, rethrowIfAppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
 
 export interface AtArgs {
   username: string,
@@ -32,7 +31,7 @@ export class AtSmsProvider implements SmsProvider {
       throw createMessageDeliveryFailedError('Failed to send message');
     }
     catch (e) {
-      if (e instanceof AppError) throw e;
+      if (e instanceof AppError) rethrowIfAppError(e);
       throw createAtApiError(e.message);
     }
   }

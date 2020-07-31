@@ -2,6 +2,7 @@ import { SmsProvider } from '../sms';
 import { EventBus, Event, EventName } from '../event';
 import { UserNotificationsArgs } from './types';
 import { UserInvitationEventData } from '../user';
+import { AppError, rethrowIfAppError, createAtApiError } from '../error';
 
 export class UserNotifications {
   smsProvider: SmsProvider;
@@ -22,6 +23,12 @@ export class UserNotifications {
 
   handleUserInvitation({ data }: Event<UserInvitationEventData>) {
     const message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${this.webappBaseUrl}/invitations/${data.invitationId}`
-    this.smsProvider.sendSms(`+${data.recipientPhone}`, message);
+    try {
+      this.smsProvider.sendSms(`+${data.recipientPhone}`, message);
+    }
+    catch(e) {
+      if (e instanceof AppError) rethrowIfAppError(e);
+      throw createAtApiError(e.message);
+    }
   }
 }
