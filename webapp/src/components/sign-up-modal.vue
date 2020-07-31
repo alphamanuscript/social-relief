@@ -149,14 +149,14 @@ export default {
       
       signUpValidationMessages: {
         name: 'Name is required',
-        phone: 'Invalid Phone number. Must be 9 digits long',
+        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
         password: 'Invalid password. Must range between 8 and 18 characters',
         confirmedPassword: 'Confirmed password does not match with password',
         email: 'Invalid email'
       },
       signUpValidationRules: {
         name: { test: (creds) => !!creds.name.trim().length },
-        phone: { test: (creds) => /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        phone: { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
         confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password },
         email: { test: (creds) => /\S+@\S+\.\S+/.test(String(creds.email))}

@@ -89,11 +89,11 @@ export default {
         password: ''
       },
       signInValidationMessages: [
-        'Invalid phone number. Must be 9 digits long',
+        'Invalid phone number. Must be 9 digits long and cannot start with 0',
         'Password required'
       ],
       signInValidationRules: [
-        { test: (creds) => /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
       signInValidationResults: [null, null],
@@ -142,7 +142,7 @@ export default {
     },
     async signIn() {
       this.signInValidationMessages = [
-        'Invalid phone number. Must be 9 digits long',
+        'Invalid phone number. Must be 9 digits long and cannot start with 0',
         'Password required'
       ];
       this.helper = {
