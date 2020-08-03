@@ -1,6 +1,6 @@
 import createAtClient = require('africastalking');
 import { SmsService as AtSmsService, SendArgs } from 'africastalking-types';
-import { SmsProvider, SendResult } from './types';
+import { SmsProvider } from './types';
 import { rethrowIfAppError, createMessageDeliveryFailedError, createAtApiError } from '../error';
 
 export interface AtSmsProviderArgs {
@@ -20,7 +20,7 @@ export class AtSmsProvider implements SmsProvider {
     this.sender = args.sender;
   }
 
-  async sendSms(to: string, message: string): Promise<SendResult> {
+  async sendSms(to: string, message: string): Promise<void> {
     const args: SendArgs = {
       // Africa's Talking phone numbers should have the leading + symbol
       to: [`+${to}`],
@@ -34,9 +34,12 @@ export class AtSmsProvider implements SmsProvider {
     try {
       const res = await this.smses.send(args);
 
-      if (res.SMSMessageData.Recipients[0].status === 'Success') return res;
-      
-      throw createMessageDeliveryFailedError('Failed to send message');
+      console.log('AT SMS', to, message);
+      console.log('RES', JSON.stringify(res, null, 2));
+
+      if (res.SMSMessageData.Recipients[0].status !== 'Success') {
+        throw createMessageDeliveryFailedError('Failed to send message');
+      }
     }
     catch (e) {
       rethrowIfAppError(e);

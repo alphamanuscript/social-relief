@@ -52,6 +52,8 @@ export class UserNotifications {
       return;
     }
 
+    console.log('Preparing notifications to donor and beneficiary');
+
     try {
       const donor = await this.users.getById(transaction.from);
       const beneficiary = await this.users.getById(transaction.to);
@@ -59,6 +61,7 @@ export class UserNotifications {
       const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been sent from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
       const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
 
+      console.log('donor', donor.phone, donor.name, 'message', donorMessage);
       await Promise.all([
         () => this.smsProvider.sendSms(donor.phone, donorMessage),
         () => this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
