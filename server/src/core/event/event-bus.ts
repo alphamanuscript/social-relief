@@ -25,7 +25,7 @@ export class EventBus extends EventEmitter {
   }
 
   emitUserInvitationCreated(eventData: UserInvitationEventData): void {
-    this.emit(EventName.USER_INVITATION_CREATED, createEvent(eventData))
+    this.innerEmit(EventName.USER_INVITATION_CREATED, eventData);
   }
 
   onUserInvitationCreated(listener: Listener<UserInvitationEventData>): void {
@@ -33,10 +33,16 @@ export class EventBus extends EventEmitter {
   }
 
   emitTransactionCompleted(eventData: TransactionCreatedEventData): void {
-    this.emit(EventName.TRANSACTION_COMPLETED, createEvent(eventData));
+    this.innerEmit(EventName.TRANSACTION_COMPLETED, eventData);
   }
 
   onTransactionCompleted(listener: Listener<TransactionCreatedEventData>): void {
     this.on(EventName.TRANSACTION_COMPLETED, listener);
+  }
+
+  private innerEmit<T>(eventName: string, data: T) {
+    const event = createEvent(data);
+    console.log('Event emitted', JSON.stringify(event, null, 2));
+    this.emit(eventName, event);
   }
 }
