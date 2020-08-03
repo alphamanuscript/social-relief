@@ -29,7 +29,7 @@ export class EventBus extends EventEmitter {
   }
 
   onUserInvitationCreated(listener: Listener<UserInvitationEventData>): void {
-    this.on(EventName.TRANSACTION_COMPLETED, listener);
+    this.on(EventName.USER_INVITATION_CREATED, listener);
   }
 
   emitTransactionCompleted(eventData: TransactionCreatedEventData): void {
