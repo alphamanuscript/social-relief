@@ -143,6 +143,11 @@ export interface UserService {
    */
   login(args: UserLoginArgs): Promise<UserLoginResult>;
   /**
+   * retrieves user by id
+   * @param id
+   */
+  getById(id: string): Promise<User>;
+  /**
    * retrieves the user who owns the token, provided
    * the token is valid
    * @param token 

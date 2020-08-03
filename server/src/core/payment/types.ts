@@ -21,6 +21,10 @@ export interface Transaction {
   metadata: any
 };
 
+export interface TransactionCreatedEventData {
+  transaction: Transaction;
+}
+
 export interface TransactionCreateArgs {
   expectedAmount: number,
   from: string,

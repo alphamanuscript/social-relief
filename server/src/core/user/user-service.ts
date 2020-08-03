@@ -442,7 +442,7 @@ export class Users implements UserService {
     }
   }
 
-  private async getById(id: string): Promise<User> {
+  public async getById(id: string): Promise<User> {
     try {
       const user = await this.collection.findOne({ _id: id }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);

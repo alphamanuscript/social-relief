@@ -1,1 +1,1 @@
-export { UserNotifications } from './user-notification';
+export { UserNotifications, UserNotificationsArgs } from './user-notification';
