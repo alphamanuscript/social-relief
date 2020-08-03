@@ -34,9 +34,6 @@ export class AtSmsProvider implements SmsProvider {
     try {
       const res = await this.smses.send(args);
 
-      console.log('AT SMS', to, message);
-      console.log('RES', JSON.stringify(res, null, 2));
-
       if (res.SMSMessageData.Recipients[0].status !== 'Success') {
         throw createMessageDeliveryFailedError('Failed to send message');
       }

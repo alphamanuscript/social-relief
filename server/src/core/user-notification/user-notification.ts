@@ -56,14 +56,13 @@ export class UserNotifications {
       const donor = await this.users.getById(transaction.from);
       const beneficiary = await this.users.getById(transaction.to);
 
-      const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been sent from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
+      const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
       const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
 
-      // TODO: should use Promise.all instead, but for some reason it didn't work when I tried it
-      const donorPromise = this.smsProvider.sendSms(donor.phone, donorMessage);
-      const beneficiaryPromise = this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage);
-      await donorPromise;
-      await beneficiaryPromise;
+      await Promise.all([
+        this.smsProvider.sendSms(donor.phone, donorMessage),
+        this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
+      ]);
 
     }
     catch (error) {
