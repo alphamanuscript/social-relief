@@ -17,6 +17,9 @@ module.exports = {
       .plugin('html')
       .tap(args => {
         args[0].title = 'Social Relief';
+        args[0].appleTouchIcon = 'favicon.svg';
+        args[0].maskIcon = 'favicon.svg';
+        args[0].msTileImage = 'favicon.svg';
         return args;
       });
   }
