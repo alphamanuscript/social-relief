@@ -4,7 +4,10 @@ module.exports = {
     iconPaths: {
       favicon32: 'favicon.svg',
       favicon16: 'favicon.svg'
-    }
+    },
+    themeColor: '#EF5A24',
+    msTileColor: '#EF5A24',
+    appleMobileWebAppCapable: '#EF5A24'
   },
   chainWebpack: config => {
     config
