@@ -1,12 +1,13 @@
 module.exports = {
   pwa: {
     name: 'Social Relief',
-    icons: [
-      {
-        src: 'favicon.svg',
-        type: 'image/svg'
-      }
-    ],
+    manifestOptions: {
+      icons: [
+        {
+          src: 'favicon.svg',
+        }
+      ],
+    },
     iconPaths: {
       favicon32: 'favicon.svg',
       favicon16: 'favicon.svg',
