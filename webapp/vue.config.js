@@ -7,7 +7,7 @@ module.exports = {
     },
     themeColor: '#EF5A24',
     msTileColor: '#EF5A24',
-    appleMobileWebAppCapable: '#EF5A24'
+    appleMobileWebAppStatusBarStyle: '#EF5A24'
   },
   chainWebpack: config => {
     config
