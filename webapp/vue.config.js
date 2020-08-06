@@ -2,11 +2,10 @@ module.exports = {
   pwa: {
     name: 'Social Relief',
     icons: [
-        {
-            src: 'favicon.svg',
-            sizes: '192x192',
-            type: 'image/svg',
-        },
+      {
+        src: 'favicon.svg',
+        type: 'image/svg'
+      }
     ],
     iconPaths: {
       favicon32: 'favicon.svg',
