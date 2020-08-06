@@ -1,6 +1,13 @@
 module.exports = {
   pwa: {
     name: 'Social Relief',
+    icons: [
+        {
+            src: 'favicon.svg',
+            sizes: '192x192',
+            type: 'image/svg',
+        },
+    ],
     iconPaths: {
       favicon32: 'favicon.svg',
       favicon16: 'favicon.svg',
@@ -17,9 +24,6 @@ module.exports = {
       .plugin('html')
       .tap(args => {
         args[0].title = 'Social Relief';
-        args[0].appleTouchIcon = 'favicon.svg';
-        args[0].maskIcon = 'favicon.svg';
-        args[0].msTileImage = 'favicon.svg';
         return args;
       });
   }
