@@ -10,7 +10,7 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
-  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createRefundRejectedError } from '../error';
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError } from '../error';
 import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
@@ -501,6 +501,9 @@ export class Users implements UserService {
     validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {
       const user = await this.getById(userId);
+      
+      if (user.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const trx = await this.transactions.initiateDonation(user, args);
       return trx;
     }
@@ -515,6 +518,9 @@ export class Users implements UserService {
       const users = await this.collection.find({ _id: { $in: [from, to] } }, { projection: SAFE_USER_PROJECTION } ).toArray();
       const donor = users.find(u => u._id === from);
       const beneficiary = users.find(u => u._id === to);
+
+      if (donor.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const result = await this.transactions.sendDonation(donor, beneficiary, args);
       return result;
     }
@@ -534,11 +540,12 @@ export class Users implements UserService {
       }, {
         $set: {
           locked: true,
+          // block future transactions while refund is pending
           transactionsBlockedReason: 'refundPending'
         }
       });
 
-      if (!result.value) throw createRefundRejectedError();
+      if (!result.value) throw createTransactionRejectedError(messages.ERROR_REFUND_REQUEST_REJECTED);
 
       const transaction = await this.transactions.initiateRefund(result.value);
       return transaction;

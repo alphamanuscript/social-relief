@@ -1,7 +1,7 @@
 import { Db, Collection } from 'mongodb';
 import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
 import { generateId } from '../util';
-import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createRefundRejectedError } from '../error';
+import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createTransactionRejectedError } from '../error';
 import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
@@ -128,7 +128,7 @@ export class Transactions implements TransactionService {
       // we refund the user the current total balance on their account
       const balance = await this.getConfirmedUserBalance(user._id);
       
-      if (balance <= 0) throw createRefundRejectedError(messages.ERROR_NO_BALANCE_FOR_REFUNDS);
+      if (balance <= 0) throw createTransactionRejectedError(messages.ERROR_NO_BALANCE_FOR_REFUNDS);
 
       const args: TransactionCreateArgs = {
         expectedAmount: balance,
