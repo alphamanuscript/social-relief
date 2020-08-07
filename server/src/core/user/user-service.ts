@@ -30,6 +30,7 @@ const SAFE_USER_PROJECTION = {
   donors: 1,
   middlemanFor: 1,
   roles: 1,
+  transactionsBlockedReason: 1,
   createdAt: 1,
   updatedAt: 1
 };
