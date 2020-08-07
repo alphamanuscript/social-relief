@@ -1,7 +1,7 @@
 
 import { User } from '../user/types';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'paymentQueued' |'failed' | 'success';
-export type TransactionType = 'donation' | 'distribution';
+export type TransactionType = 'donation' | 'distribution' | 'refund';
 
 export interface Transaction {
   _id: string,
@@ -52,6 +52,7 @@ export interface TransactionService {
   createIndexes(): Promise<void>;
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
   sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction>;
+  initiateRefund(user: User): Promise<Transaction>;
   handleProviderNotification(providerName: string, payload: any): Promise<Transaction>;
   getAllByUser(userId: string): Promise<Transaction[]>;
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;

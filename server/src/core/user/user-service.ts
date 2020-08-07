@@ -11,10 +11,11 @@ import {
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
   createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
-import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
-import { EventBus, EventName} from '../event';
+import { EventBus } from '../event';
+import { SystemLockService } from '../system-lock';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
@@ -68,6 +69,7 @@ function isDonor(user: User): boolean {
 export interface UsersArgs {
   transactions: TransactionService,
   invitations: InvitationService,
+  systemLocks: SystemLockService,
   eventBus: EventBus;
 };
 
@@ -79,6 +81,7 @@ export class Users implements UserService {
   private transactions: TransactionService;
   private invitations: InvitationService;
   private eventBus: EventBus;
+  private systemLocks: SystemLockService;
 
   constructor(db: Db, args: UsersArgs) {
     this.db = db;
@@ -88,6 +91,7 @@ export class Users implements UserService {
     this.transactions = args.transactions;
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
+    this.systemLocks = args.systemLocks;
   }
 
   async createIndexes(): Promise<void> {
@@ -512,6 +516,31 @@ export class Users implements UserService {
       const beneficiary = users.find(u => u._id === to);
       const result = await this.transactions.sendDonation(donor, beneficiary, args);
       return result;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async initiateRefund(userId: string): Promise<Transaction> {
+    const lock = this.systemLocks.distribution();
+    try {
+      await lock.ensureUnlocked();
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: { $exists: false }
+      }, {
+        $set: {
+          locked: true,
+          transactionsBlockedReason: 'refundPending'
+        }
+      });
+
+      if (!result.value) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);// todo use refund failed error
+
+      const transaction = await this.transactions.initiateRefund(result.value);
+      return transaction;
     }
     catch (e) {
       rethrowIfAppError(e);

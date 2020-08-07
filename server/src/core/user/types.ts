@@ -5,6 +5,8 @@ export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 
 export type NominationRole = 'beneficiary' | 'middleman';
 
+export type UserTransactionsBlockedReason = 'refundPending';
+
 export interface User {
   _id: string,
   phone: string,
@@ -20,6 +22,16 @@ export interface User {
    */
   middlemanFor?: string[],
   roles: UserRole[],
+  /**
+   * indicates whether the user is blocked from making transactions
+   * and why. If it's set and not null, then the user is blocked
+   * from making transactions, otherwise the user is not blocked.
+   * The transactions that should be blocked include donations, distributions
+   * and refunds.
+   * This is meant to protect from double-spending (e.g. getting
+   * a refund while a distribution of the same fund is in progress)
+   */
+  transactionsBlockedReason?: UserTransactionsBlockedReason;
   createdAt: Date,
   updatedAt: Date
 };
@@ -189,4 +201,12 @@ export interface UserService {
    * @param to 
    */
   sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
+  /**
+   * initiates a refund for the specified user,
+   * this will fail if a distribution is in progress
+   * the donor will be blocked from participating in distributions
+   * until the refund has been fulfilled
+   * @param user the donor to refund
+   */
+  initiateRefund(user: string): Promise<Transaction>;
 };
