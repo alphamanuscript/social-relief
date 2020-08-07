@@ -21,7 +21,7 @@ export interface Transaction {
   metadata: any
 };
 
-export interface TransactionCreatedEventData {
+export interface TransactionCompletedEventData {
   transaction: Transaction;
 }
 

@@ -1,7 +1,7 @@
 import { SmsProvider } from '../sms';
 import { EventBus, Event} from '../event';
 import { UserService, UserInvitationEventData } from '../user';
-import { TransactionCreatedEventData } from '../payment';
+import { TransactionCompletedEventData, Transaction } from '../payment';
 
 export interface UserNotificationsArgs {
   smsProvider: SmsProvider;
@@ -43,30 +43,42 @@ export class UserNotifications {
     }
   }
 
-  async handleTransactionCompleted(event: Event<TransactionCreatedEventData>) {
+  async handleTransactionCompleted(event: Event<TransactionCompletedEventData>) {
     const { data: { transaction } } = event;
-    
-    // notify donor and beneficiary of a successful distribution
-
-    if (!(transaction.type === 'distribution' && transaction.status === 'success')) {
-      return;
-    }
 
     try {
-      const donor = await this.users.getById(transaction.from);
-      const beneficiary = await this.users.getById(transaction.to);
+      if (transaction.type === 'distribution' && transaction.status === 'success') {
+        // notify donor and beneficiary of a successful distribution
+        await this.sendSuccessfulDistributionMessages(transaction);
+      }
 
-      const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
-      const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
-
-      await Promise.all([
-        this.smsProvider.sendSms(donor.phone, donorMessage),
-        this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
-      ]);
+      if (transaction.type === 'refund' && transaction.status === 'success') {
+        // notify user of successful refund
+        await this.sendSuccessfulRefundMessage(transaction);
+      }
 
     }
     catch (error) {
       console.error('Error occurred when handling event', event, error);
     }
+  }
+
+  async sendSuccessfulDistributionMessages(transaction: Transaction) {
+    const donor = await this.users.getById(transaction.from);
+    const beneficiary = await this.users.getById(transaction.to);
+
+    const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
+    const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
+
+    await Promise.all([
+      this.smsProvider.sendSms(donor.phone, donorMessage),
+      this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
+    ]);
+  }
+
+  async sendSuccessfulRefundMessage(transaction: Transaction) {
+    const user = await this.users.getById(transaction.to);
+    const message = `Hello ${user.name}, your refund of Ksh ${transaction.amount} from SocialRelief has been issued.`;
+    await this.smsProvider.sendSms(user.phone, message);
   }
 }

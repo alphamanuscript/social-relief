@@ -11,10 +11,10 @@ import {
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
   createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError } from '../error';
-import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs, TransactionCompletedEventData } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
-import { EventBus } from '../event';
+import { EventBus, Event } from '../event';
 import { SystemLockService } from '../system-lock';
 
 const COLLECTION = 'users';
@@ -93,6 +93,8 @@ export class Users implements UserService {
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
     this.systemLocks = args.systemLocks;
+
+    this.registerEventHandlers();
   }
 
   async createIndexes(): Promise<void> {
@@ -553,6 +555,29 @@ export class Users implements UserService {
     catch (e) {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private registerEventHandlers() {
+    this.eventBus.onTransactionCompleted(event => this.handleRefundCompleted(event));
+  }
+
+  private async handleRefundCompleted(event: Event<TransactionCompletedEventData>) {
+    const { data: { transaction } } = event;
+
+    if (!(transaction.status === 'success' && transaction.type === 'refund')) return;
+
+    try {
+      // remove transaction block from user if the block is due to the refund
+      await this.collection.findOneAndUpdate({
+        _id: transaction.to,
+        transactionsBlockedReason: 'refundPending'
+      }, {
+        $unset: { transactionsBlockedReason: '' }
+      });
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
     }
   }
 }
