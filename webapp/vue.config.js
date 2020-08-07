@@ -2,13 +2,15 @@ module.exports = {
   pwa: {
     name: 'Social Relief',
     manifestOptions: {
-      icons: {
-        favicon32: 'favicon.svg',
-        favicon16: 'favicon.svg',
-        appleTouchIcon: 'favicon.svg',
-        maskIcon: 'favicon.svg',
-        msTileImage: 'favicon.svg',
-      },
+      icons: [
+        {
+          favicon32: 'favicon.svg',
+          favicon16: 'favicon.svg',
+          appleTouchIcon: 'favicon.svg',
+          maskIcon: 'favicon.svg',
+          msTileImage: 'favicon.svg',
+        },
+      ]
     },
     iconPaths: {
       favicon32: 'favicon.svg',
