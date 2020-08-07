@@ -20,6 +20,7 @@ import { SystemLockService } from '../system-lock';
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
+const MAX_ALLOWED_REFUNDS = 3;
 
 const SAFE_USER_PROJECTION = { 
   _id: 1,
@@ -34,6 +35,7 @@ const SAFE_USER_PROJECTION = {
   createdAt: 1,
   updatedAt: 1
 };
+
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1, createdAt: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1, addedBy: 1, createdAt: 1};
 
@@ -545,12 +547,59 @@ export class Users implements UserService {
           // block future transactions while refund is pending
           transactionsBlockedReason: 'refundPending'
         }
+      }, {
+        returnOriginal: false
       });
 
       if (!result.value) throw createTransactionRejectedError(messages.ERROR_REFUND_REQUEST_REJECTED);
 
       const transaction = await this.transactions.initiateRefund(result.value);
       return transaction;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async removeTransactionBlockFromRefund(userId: string) {
+    try {
+      const res = await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: 'refundPending'
+      }, {
+        $unset: { transactionsBlockedReason: '' }
+      });
+
+      if (!res.value) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async incrementRefundCount(userId: string) {
+    try {
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+      }, {
+        $inc: { numRefunds: 1 }
+      }, {
+        returnOriginal: false
+      });
+
+      if (!result.value) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+
+      if (result.value.numRefunds >= MAX_ALLOWED_REFUNDS) {
+        await this.collection.updateOne({
+          _id: userId
+        }, {
+          $set: { transactionsBlockedReason: 'maxRefundsExceeded' }
+        });
+      }
     }
     catch (e) {
       rethrowIfAppError(e);
@@ -568,13 +617,17 @@ export class Users implements UserService {
     if (!(transaction.status === 'success' && transaction.type === 'refund')) return;
 
     try {
-      // remove transaction block from user if the block is due to the refund
-      await this.collection.findOneAndUpdate({
-        _id: transaction.to,
-        transactionsBlockedReason: 'refundPending'
-      }, {
-        $unset: { transactionsBlockedReason: '' }
-      });
+      await this.removeTransactionBlockFromRefund(transaction.to);
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
+    }
+
+    // user separate try-catch blocks because we want to try both
+    // independently of errors thrown in one
+
+    try {
+      await this.incrementRefundCount(transaction.to);
     }
     catch (e) {
       console.error('Error occurred when handling event', event, e);

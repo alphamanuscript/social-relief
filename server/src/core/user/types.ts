@@ -5,7 +5,7 @@ export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 
 export type NominationRole = 'beneficiary' | 'middleman';
 
-export type UserTransactionsBlockedReason = 'refundPending';
+export type UserTransactionsBlockedReason = 'refundPending' | 'maxRefundsExceeded';
 
 export interface User {
   _id: string,
@@ -32,6 +32,10 @@ export interface User {
    * a refund while a distribution of the same fund is in progress)
    */
   transactionsBlockedReason?: UserTransactionsBlockedReason;
+  /**
+   * number of completed refunds
+   */
+  numRefunds?: number;
   createdAt: Date,
   updatedAt: Date
 };
