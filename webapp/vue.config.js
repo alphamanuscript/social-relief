@@ -2,13 +2,7 @@ module.exports = {
   pwa: {
     name: 'Social Relief',
     manifestOptions: {
-      icons: [
-        {
-          src: './image/logo.jpg',
-          sizes: '1134x678',
-          type: 'image/jpg'
-        },
-      ]
+      icons: []
     },
     iconPaths: {
       favicon32: 'favicon.svg',
