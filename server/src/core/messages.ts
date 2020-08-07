@@ -7,6 +7,7 @@ export const ERROR_RESOURCE_NOT_FOUND = 'Resource not found';
 export const ERROR_TRANSACTION_REQUESTED = 'No such transaction was initiated';
 export const ERROR_TRANSACTION_NOT_FOUND = 'Transaction not found';
 export const ERROR_USER_NOT_FOUND = 'User not found';
+export const ERROR_STAT_NOT_FOUND = 'Stat not found';
 export const ERROR_SERVER_ERROR = 'Server error occurred';
 export const ERROR_ROUTE_NOT_FOUND = 'Route does not exist';
 export const ERROR_PHONE_ALREADY_IN_USE = 'The specified phone number is already in use';

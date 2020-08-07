@@ -2,12 +2,14 @@ import { UserService } from './user';
 import { TransactionService } from './payment';
 import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
+import { StatService } from './stat';
 
 export interface App {
   users: UserService;
   transactions: TransactionService;
   invitations: InvitationService;
   donationDistributions: DonationDistributionService;
+  stats: StatService;
 };
 
 export interface AppConfig {
