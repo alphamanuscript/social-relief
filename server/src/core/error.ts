@@ -63,7 +63,8 @@ export type ErrorCode =
   | 'batchQueueError'
   | 'systemLockLocked'
   | 'systemLockInvalidState'
-  | 'messageDeliveryFailed';
+  | 'messageDeliveryFailed'
+  | 'refundRequestRejected';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -139,4 +140,8 @@ export function createDbConnectionFailedError (message: string = messages.ERROR_
 
 export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
+}
+
+export function createRefundRejectedError(message: string = messages.ERROR_REFUND_REQUEST_REJECTED) {
+  return createAppError(message, 'refundRequestRejected');
 }

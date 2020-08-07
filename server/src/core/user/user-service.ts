@@ -10,7 +10,7 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
-  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createRefundRejectedError } from '../error';
 import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
@@ -537,7 +537,7 @@ export class Users implements UserService {
         }
       });
 
-      if (!result.value) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);// todo use refund failed error
+      if (!result.value) throw createRefundRejectedError();
 
       const transaction = await this.transactions.initiateRefund(result.value);
       return transaction;

@@ -34,6 +34,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'paymentRequestFailed':
       case 'activationFailed':
       case 'validationError':
+      case 'refundRequestRejected':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       case 'messageDeliveryFailed':
         return sendErrorResponse(res, statusCodes.INTERNAL_SERVER_ERROR, error);
