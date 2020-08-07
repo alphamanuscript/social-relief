@@ -4,11 +4,9 @@ module.exports = {
     manifestOptions: {
       icons: [
         {
-          favicon32: 'favicon.svg',
-          favicon16: 'favicon.svg',
-          appleTouchIcon: 'favicon.svg',
-          maskIcon: 'favicon.svg',
-          msTileImage: 'favicon.svg',
+          src: './image/logo.jpg',
+          sizes: '1134x678',
+          type: 'image/jpg'
         },
       ]
     },
