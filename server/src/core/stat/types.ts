@@ -6,31 +6,32 @@ export interface StatsArgs {
   transactions: TransactionService
 }
 
-export interface Stat {
+export interface Stats {
   _id: string,
   numContributors: number,
   totalContributed: number,
   numBeneficiaries: number, 
   totalDistributed: number,
-  createdAt: Date,
   updatedAt: Date
 }
 
-export interface DbStat extends Stat {}
-
-export interface StatCreateArgs {
+export interface StatsCreateArgs {
   numContributors: number,
   totalContributed: number,
   numBeneficiaries: number, 
   totalDistributed: number,
 }
 
-export interface StatUpdateArgs extends StatCreateArgs {}
+export interface StatsUpdateArgs extends StatsCreateArgs {}
 
-export interface StatService {
+export interface StatsService {
   /**
-   * retrieves the one stat document 
+   * retrieves the one stats document 
    * in the database
    */
-  get(): Promise<Stat>;
+  get(): Promise<Stats>;
+  /**
+   * updates the stats document
+   */
+  update(): Promise<Stats>;
 }

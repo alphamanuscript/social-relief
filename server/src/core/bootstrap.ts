@@ -9,7 +9,7 @@ import { AtSmsProvider } from './sms';
 import { Invitations } from './invitation';
 import { EventBus } from './event';
 import { UserNotifications } from './user-notification';
-import { Stats } from './stat';
+import { Statistics } from './stat';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -69,7 +69,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     webappBaseUrl: config.webappBaseUrl
   });
 
-  const stats = new Stats(db, { 
+  const stats = new Statistics(db, { 
     users,
     transactions
   });

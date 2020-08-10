@@ -4,12 +4,12 @@ import { generateId } from '../util';
 import * as messages from '../messages';
 import { UserService }  from '../user';
 import { TransactionService } from '../payment';
-import { StatService, DbStat, StatsArgs, Stat, StatCreateArgs, StatUpdateArgs } from './types';
+import { StatsService, StatsArgs, Stats, StatsCreateArgs, StatsUpdateArgs } from './types';
 
 const COLLECTION = 'stats';
-export class Stats implements StatService {
+export class Statistics implements StatsService {
   private db: Db;
-  private collection: Collection<DbStat>;
+  private collection: Collection<Stats>;
   private users: UserService;
   private transactions: TransactionService;
 
@@ -18,33 +18,35 @@ export class Stats implements StatService {
     this.collection = this.db.collection(COLLECTION);
     this.users = args.users;
     this.transactions = args.transactions;
-    // Compute and/or update stats every 5 minutes 
-    let intervalId = setInterval(this.compute, 5 * 60 * 1000);
+    this.create();
   }
 
-  private async create(args: StatCreateArgs): Promise<Stat> {
-    const now = new Date();
-    const stat: DbStat = {
-      _id: 'stats',
-      numContributors: args.numContributors,
-      totalContributed: args.totalContributed,
-      numBeneficiaries: args.numBeneficiaries,
-      totalDistributed: args.totalDistributed,
-      createdAt: now,
-      updatedAt: now
-    };
+  private async create(): Promise<Stats> {
+    const stats = await this.get();
+    if (!stats) {
+      const now = new Date();
+      const stat: Stats = {
+        _id: 'stats',
+        numContributors: 0,
+        totalContributed: 0,
+        numBeneficiaries: 0,
+        totalDistributed: 0,
+        updatedAt: now
+      };
 
-    try {
-      const res = await this.collection.insertOne(stat);
-      return res.ops[0];
+      try {
+        const res = await this.collection.insertOne(stat);
+        return res.ops[0];
+      }
+      catch (e) {
+        rethrowIfAppError(e);
+        throw createDbOpFailedError(e.message);
+      }
     }
-    catch (e) {
-      rethrowIfAppError(e);
-      throw createDbOpFailedError(e.message);
-    }
+    else return stats;
   }
 
-  async get(): Promise<Stat> {
+  async get(): Promise<Stats> {
     try {
       const stats = await this.collection.findOne({ _id: 'stats' });
       return stats;
@@ -55,9 +57,33 @@ export class Stats implements StatService {
     }
   }
 
-  private async update(args: StatUpdateArgs): Promise<Stat> {
-    const { numContributors, totalContributed, numBeneficiaries, totalDistributed } = args;
+  async update(): Promise<Stats> {
     try {
+      const numContributorsRes = await this.users.aggregate([
+        { $match: { roles: { $in: ['donor'] } } },
+        { $count: 'numContributors' }
+      ]);
+
+      const numBeneficiariesRes = await this.users.aggregate([
+        { $match: { roles: { $in: ['beneficiary'] } } },
+        { $count: 'numBeneficiaries' }
+      ]);
+
+      const totalContributedRes = await this.transactions.aggregate([
+        { $match: { type: 'donation', status: 'success' } },
+        { $project: { _id: 0, totalContributed: { $sum: "$amount" } } }
+      ]);
+
+      const totalDistributedRes = await this.transactions.aggregate([
+        { $match: { type: 'distribution', status: 'success' } },
+        { $project: { _id: 0, totalDistributed: { $sum: "$amount" } } }
+      ]);
+
+      const numContributors = numContributorsRes.length ? numContributorsRes[0].numContributors : 0;
+      const numBeneficiaries = numBeneficiariesRes.length ? numBeneficiariesRes[0].numBeneficiaries : 0;
+      const totalContributed = totalContributedRes.length ? totalContributedRes[0].totalContributed : 0;
+      const totalDistributed = totalDistributedRes.length ? totalDistributedRes[0].totalDistributed : 0;
+
       const updatedStats = await this.collection.findOneAndUpdate(
         { _id: 'stats' },
         { 
@@ -67,7 +93,7 @@ export class Stats implements StatService {
         { upsert: true, returnOriginal: false }
       );
 
-      if (!updatedStats) throw createResourceNotFoundError(messages.ERROR_STAT_NOT_FOUND);
+      if (!updatedStats) throw createResourceNotFoundError(messages.ERROR_STATS_NOT_FOUND);
       return updatedStats.value;
     }
     catch (e) {

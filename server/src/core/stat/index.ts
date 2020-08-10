@@ -1,2 +1,2 @@
-export { StatService } from './types';
-export { Stats } from './stat-service';
+export { StatsService } from './types';
+export { Statistics } from './stat-service';

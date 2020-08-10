@@ -2,14 +2,14 @@ import { UserService } from './user';
 import { TransactionService } from './payment';
 import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
-import { StatService } from './stat';
+import { StatsService } from './stat';
 
 export interface App {
   users: UserService;
   transactions: TransactionService;
   invitations: InvitationService;
   donationDistributions: DonationDistributionService;
-  stats: StatService;
+  stats: StatsService;
 };
 
 export interface AppConfig {
@@ -99,6 +99,11 @@ export interface AppConfig {
    */
   distributionInterval: number;
   /**
+   * Interval delay in minutes between two
+   * processes of computing statistics
+   */
+  statsComputationInterval: number;
+  /**
    * Google API Client ID
    */
   googleClientId: string;
@@ -127,6 +132,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
+    statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID
   };
 }

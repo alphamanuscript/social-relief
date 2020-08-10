@@ -518,4 +518,15 @@ export class Users implements UserService {
       throw createDbOpFailedError(e.message);
     }
   }
+
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    try {
+      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+      return results;
+    }
+    catch(e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
 }

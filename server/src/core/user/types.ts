@@ -189,4 +189,9 @@ export interface UserService {
    * @param to 
    */
   sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
+  /**
+   * 
+   * @param pipeline
+   */
+  aggregate(pipeline: any[]): Promise<any[]>;
 };
