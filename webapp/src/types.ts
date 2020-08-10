@@ -133,6 +133,15 @@ export interface Invitation {
   updatedAt: Date;
 };
 
+export interface Stats {
+  _id: string,
+  numContributors: number,
+  totalContributed: number,
+  numBeneficiaries: number, 
+  totalDistributed: number,
+  updatedAt: Date
+}
+
 export interface AppState {
   user?: User;
   newUser?: User;
@@ -144,4 +153,5 @@ export interface AppState {
   message: AppMessage;
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;
+  stats?: Stats;
 }

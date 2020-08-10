@@ -34,6 +34,12 @@ const mutations: MutationTree<AppState> = {
   unsetLastPaymentRequest(state) {
     state.lastPaymentRequest = undefined;
   },
+  setStats(state, stats) {
+    state.stats = stats;
+  },
+  unsetStats(state) {
+    state.stats = undefined;
+  },
   addBeneficiary(state, bnf) {
     state.beneficiaries.push(bnf);
   },
