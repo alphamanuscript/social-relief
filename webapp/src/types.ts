@@ -20,6 +20,7 @@ export interface User {
   addedBy: string,
   donors: string[],
   roles: UserRole[],
+  transactionsBlockedReason?: string,
   createdAt: Date,
   updatedAt: Date
 }

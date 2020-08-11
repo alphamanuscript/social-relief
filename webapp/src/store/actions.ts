@@ -1,5 +1,5 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations, Invitations } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
@@ -68,6 +68,12 @@ const actions = wrapActions({
       commit('addTransaction', trx);
       commit('setPaymentRequest', trx);
     }   
+  },
+  async initiateRefund({ commit, state }) {
+    if (state.user) {
+      const trx = await Refunds.initiateRefund();
+      commit('addTransaction', trx);
+    }
   },
   async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRole }) {
     if (state.user) {

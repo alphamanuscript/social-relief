@@ -15,7 +15,9 @@
                   <div class="h4">{{ formatWithCommaSeparator(totalAmountDonated - totalAmountDistributed) }}</div>
                 </div>
               </div>
+              <RefundButton />
             </b-nav-text>
+
             <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
             <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
             <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
@@ -79,10 +81,11 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import HomeFooter from '../components/home-footer';
+import RefundButton from '../components/refund-button';
 import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'logged-in-structure',
-  components: { HomeFooter },
+  components: { HomeFooter, RefundButton },
   computed: {
     ...mapState(['user', 'beneficiaries', 'middlemen', 'message']),
     ...mapGetters([
