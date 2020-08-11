@@ -64,6 +64,10 @@ export type ErrorCode =
   | 'systemLockLocked'
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
+  /**
+   * This error should only be thrown when a transaction fails
+   * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+   */
   | 'transactionRejected'
   | 'insufficientFunds';
 
@@ -143,6 +147,11 @@ export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
 }
 
+/**
+ * This error should only be thrown when a transaction fails
+ * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+ * @param message 
+ */
 export function createTransactionRejectedError(message: string = messages.ERROR_TRANSACTION_REJECTED) {
   return createAppError(message, 'transactionRejected');
 }

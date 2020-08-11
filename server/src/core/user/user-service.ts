@@ -10,7 +10,7 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
-  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError } from '../error';
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError, isAppError } from '../error';
 import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs, TransactionCompletedEventData } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
@@ -543,7 +543,6 @@ export class Users implements UserService {
         transactionsBlockedReason: { $exists: false }
       }, {
         $set: {
-          locked: true,
           // block future transactions while refund is pending
           transactionsBlockedReason: 'refundPending'
         }
@@ -557,6 +556,11 @@ export class Users implements UserService {
       return transaction;
     }
     catch (e) {
+      if (isAppError(e) && e.code !== 'transactionRejected') {
+        // if error occurs other than due to transaction block
+        // then remove transaction block otherwise user will not be able to make transactions
+        await this.removeTransactionBlockFromRefund(userId);
+      }
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }

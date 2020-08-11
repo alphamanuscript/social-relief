@@ -35,6 +35,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'activationFailed':
       case 'validationError':
       case 'transactionRejected':
+      case 'insufficientFunds':
         return sendErrorResponse(res, statusCodes.STATUS_BAD_REQUEST, error);
       case 'messageDeliveryFailed':
         return sendErrorResponse(res, statusCodes.INTERNAL_SERVER_ERROR, error);
