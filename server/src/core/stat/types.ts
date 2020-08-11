@@ -1,10 +1,3 @@
-import { UserService } from '../user';
-import { TransactionService } from '../payment'
-
-export interface StatsArgs {
-  transactions: TransactionService
-}
-
 export interface Stats {
   _id: string,
   numContributors: number,
@@ -13,15 +6,6 @@ export interface Stats {
   totalDistributed: number,
   updatedAt: Date
 }
-
-export interface StatsCreateArgs {
-  numContributors: number,
-  totalContributed: number,
-  numBeneficiaries: number, 
-  totalDistributed: number,
-}
-
-export interface StatsUpdateArgs extends StatsCreateArgs {}
 
 export interface StatsService {
   /**

@@ -4,9 +4,14 @@ import { generateId } from '../util';
 import * as messages from '../messages';
 import { UserService }  from '../user';
 import { TransactionService } from '../payment';
-import { StatsService, StatsArgs, Stats } from './types';
+import { StatsService, Stats } from './types';
 
 const COLLECTION = 'stats';
+
+export interface StatsArgs {
+  transactions: TransactionService
+}
+
 export class Statistics implements StatsService {
   private db: Db;
   private collection: Collection<Stats>;
@@ -16,37 +21,14 @@ export class Statistics implements StatsService {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
     this.transactions = args.transactions;
-    this.create();
-  }
-
-  private async create(): Promise<Stats> {
-    const stats = await this.get();
-    if (!stats) {
-      const now = new Date();
-      const stat: Stats = {
-        _id: 'stats',
-        numContributors: 0,
-        totalContributed: 0,
-        numBeneficiaries: 0,
-        totalDistributed: 0,
-        updatedAt: now
-      };
-
-      try {
-        const res = await this.collection.insertOne(stat);
-        return res.ops[0];
-      }
-      catch (e) {
-        rethrowIfAppError(e);
-        throw createDbOpFailedError(e.message);
-      }
-    }
-    else return stats;
   }
 
   async get(): Promise<Stats> {
     try {
-      const stats = await this.collection.findOne({ _id: 'stats' });
+      let stats = await this.collection.findOne({ _id: 'stats' });
+      if (!stats) {
+        stats = await this.update(); 
+      } 
       return stats;
     }
     catch (e) {
