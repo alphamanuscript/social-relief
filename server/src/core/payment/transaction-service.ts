@@ -274,7 +274,7 @@ export class Transactions implements TransactionService {
       return results;
     }
     catch(e) {
-      if (e instanceof AppError) throw e;
+      rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
   }

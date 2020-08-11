@@ -69,10 +69,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     webappBaseUrl: config.webappBaseUrl
   });
 
-  const stats = new Statistics(db, { 
-    users,
-    transactions
-  });
+  const stats = new Statistics(db, { transactions });
 
   await users.createIndexes();
   await transactions.createIndexes();

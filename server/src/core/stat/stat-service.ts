@@ -4,19 +4,17 @@ import { generateId } from '../util';
 import * as messages from '../messages';
 import { UserService }  from '../user';
 import { TransactionService } from '../payment';
-import { StatsService, StatsArgs, Stats, StatsCreateArgs, StatsUpdateArgs } from './types';
+import { StatsService, StatsArgs, Stats } from './types';
 
 const COLLECTION = 'stats';
 export class Statistics implements StatsService {
   private db: Db;
   private collection: Collection<Stats>;
-  private users: UserService;
   private transactions: TransactionService;
 
   constructor(db: Db, args: StatsArgs) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
-    this.users = args.users;
     this.transactions = args.transactions;
     this.create();
   }
@@ -59,30 +57,44 @@ export class Statistics implements StatsService {
 
   async update(): Promise<Stats> {
     try {
-      const numContributorsRes = await this.users.aggregate([
-        { $match: { roles: { $in: ['donor'] } } },
-        { $count: 'numContributors' }
+      const res = await this.transactions.aggregate([
+        {
+          $facet: {
+            numContributorsPipeline: [
+              { $match: { type: 'donation', status: 'success'} },
+              { $group: { _id: "$to" } },
+              { $count: 'numContributors' }
+            ],
+            numBeneficiariesPipeline: [
+              { $match: { type: 'distribution', status: 'success'} },
+              { $group: { _id: "$to" } },
+              { $count: 'numBeneficiaries' }
+            ],
+            totalContributedPipeline: [
+              { $match: { type: 'donation', status: 'success' } },
+              { $group: { _id: null, totalContributed: { $sum: "$amount" } } },
+              { $project: { _id: 0, totalContributed: 1 } }
+            ],
+            totalDistributedPipeline: [
+              { $match: { type: 'distribution', status: 'success' } },
+              { $group: { _id: null, totalDistributed: { $sum: "$amount" } } },
+              { $project: { _id: 0, totalDistributed: 1 } }
+            ],
+          }
+        }
       ]);
 
-      const numBeneficiariesRes = await this.users.aggregate([
-        { $match: { roles: { $in: ['beneficiary'] } } },
-        { $count: 'numBeneficiaries' }
-      ]);
+      let numContributors = 0;
+      let numBeneficiaries = 0;
+      let totalContributed = 0;
+      let totalDistributed = 0;
 
-      const totalContributedRes = await this.transactions.aggregate([
-        { $match: { type: 'donation', status: 'success' } },
-        { $project: { _id: 0, totalContributed: { $sum: "$amount" } } }
-      ]);
-
-      const totalDistributedRes = await this.transactions.aggregate([
-        { $match: { type: 'distribution', status: 'success' } },
-        { $project: { _id: 0, totalDistributed: { $sum: "$amount" } } }
-      ]);
-
-      const numContributors = numContributorsRes.length ? numContributorsRes[0].numContributors : 0;
-      const numBeneficiaries = numBeneficiariesRes.length ? numBeneficiariesRes[0].numBeneficiaries : 0;
-      const totalContributed = totalContributedRes.length ? totalContributedRes[0].totalContributed : 0;
-      const totalDistributed = totalDistributedRes.length ? totalDistributedRes[0].totalDistributed : 0;
+      if (res.length) {
+        numContributors = res[0].numContributorsPipeline.length ? res[0].numContributorsPipeline[0].numContributors : 0;
+        numBeneficiaries = res[0].numBeneficiariesPipeline.length ? res[0].numBeneficiariesPipeline[0].numBeneficiaries : 0;
+        totalContributed = res[0].totalContributedPipeline.length ? res[0].totalContributedPipeline[0].totalContributed : 0;
+        totalDistributed = res[0].totalDistributedPipeline.length ? res[0].totalDistributedPipeline[0].totalDistributed : 0;
+      }
 
       const updatedStats = await this.collection.findOneAndUpdate(
         { _id: 'stats' },
@@ -100,9 +112,5 @@ export class Statistics implements StatsService {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
-  }
-
-  private async compute(): Promise<void> {
-    // TODO
   }
 }

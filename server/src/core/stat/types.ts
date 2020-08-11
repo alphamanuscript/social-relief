@@ -2,7 +2,6 @@ import { UserService } from '../user';
 import { TransactionService } from '../payment'
 
 export interface StatsArgs {
-  users: UserService;
   transactions: TransactionService
 }
 
