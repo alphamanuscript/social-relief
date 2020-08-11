@@ -64,7 +64,8 @@ export type ErrorCode =
   | 'systemLockLocked'
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
-  | 'transactionRejected';
+  | 'transactionRejected'
+  | 'insufficientFunds';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -144,4 +145,8 @@ export function createMessageDeliveryFailedError(message: string) {
 
 export function createTransactionRejectedError(message: string = messages.ERROR_TRANSACTION_REJECTED) {
   return createAppError(message, 'transactionRejected');
+}
+
+export function createInsufficientFundsError(message: string) {
+  return createAppError(message, 'insufficientFunds');
 }
