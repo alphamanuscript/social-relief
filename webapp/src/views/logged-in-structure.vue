@@ -48,7 +48,11 @@
                   <b-nav-item to="/account" exact exact-active-class="active">My Account</b-nav-item>
                   <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
-                <b-button v-if="user && user.roles.includes('donor')" variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
+                <b-button
+                  v-if="isEligibleDonor"
+                  variant="primary" class="custom-submit-button m-auto m-md-0"
+                  @click="handleDonateBtn"
+                  >Donate</b-button>
               </b-nav>
               <b-nav class="ml-auto d-none d-md-block">
                 <b-nav-item-dropdown dropleft no-caret>
@@ -71,6 +75,12 @@
               </b-nav>
             </b-collapse>
           </b-navbar>
+          <div
+            v-if="areTransactionsPermanentlyBlocked"
+            class="alert alert-warning"
+          >
+            This account is blocked from making donations. Reason: {{ user.transactionsBlockedReason }}
+          </div>
           <router-view />
         </b-col>
       </b-row>
@@ -94,6 +104,12 @@ export default {
     ]),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
+    },
+    isEligibleDonor() {
+      return this.user && this.user.roles.includes('donor') && !this.areTransactionsPermanentlyBlocked;
+    },
+    areTransactionsPermanentlyBlocked() {
+      return this.user && this.user.transactionsBlockedReason === 'maxRefundsExceeded';
     }
   },
   methods: {
