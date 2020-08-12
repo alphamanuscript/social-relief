@@ -47,13 +47,24 @@ describe('stat-service tests', () => {
   }
 
   describe('update', () => {
-    it('should create and return a stats doc', async () => {
+    it('should create and store a stats doc if it does not exist', async () => {
       let statsDoc = await statsColl().findOne({ _id: 'stats' });
       expect(statsDoc).toBeFalsy();
-      statsDoc = await createDefaultService().update();
+      await createDefaultService().update();
+      statsDoc = await statsColl().findOne({ _id: 'stats' });
       expect(statsDoc).toBeTruthy();
     });
-    it('should return correct statistics', async () => {
+    it('should return a stats doc with the right fields', async () => {
+      await createDefaultService().update();
+      const statsDoc = await statsColl().findOne({ _id: 'stats' });
+      expect(statsDoc).toHaveProperty('_id');
+      expect(statsDoc).toHaveProperty('numContributors');
+      expect(statsDoc).toHaveProperty('numBeneficiaries');
+      expect(statsDoc).toHaveProperty('totalContributed');
+      expect(statsDoc).toHaveProperty('totalDistributed');
+      expect(statsDoc).toHaveProperty('updatedAt');
+    });
+    it('should return a stats doc with correct statistics', async () => {
       const statsDoc = await createDefaultService().update();
       expect(statsDoc.numContributors).toEqual(2);
       expect(statsDoc.numBeneficiaries).toEqual(4);
