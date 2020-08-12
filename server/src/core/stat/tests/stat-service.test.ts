@@ -36,23 +36,15 @@ describe('stat-service tests', () => {
     const now = new Date();
     const args: any = { 
       transactions: {
-        // aggregate: jest.fn().mockImplementation((pipeline: any[]) => new Promise(async (resolve, reject) => {
-        //   const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
-        //   if (results) {
-        //     resolve(results);
-        //   } 
-        //   else { 
-        //     reject({ error: 'Something went wrong'})
-        //   }
-        // }));
-        aggregate: jest.fn().mockImplementation((pipeline: any[]) => Promise.resolve([
-          {
-            numContributorsRes: [],
-            numBeneficiariesRes: [],
-            totalContributedRes: [],
-            totalDistributedRes: [],
+        aggregate: jest.fn().mockImplementation((pipeline: any[]) => new Promise(async (resolve, reject) => {
+          const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+          if (results) {
+            resolve(results);
+          } 
+          else { 
+            reject({ error: 'Something went wrong'})
           }
-        ]))
+        }));
       },
     };
     const service = new Statistics(dbUtils.getDb(), args);
