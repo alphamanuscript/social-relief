@@ -20,7 +20,7 @@ describe('stat-service tests', () => {
   });
 
   beforeEach(async () => {
-    await dbUtils.resetCollectionWith();
+    await dbUtils.resetCollectionWith([], STATS_COLLECTION);
     await dbUtils.resetCollectionWith(transactions, TRANSACTION_COLLECTION);
   });
 
@@ -48,8 +48,8 @@ describe('stat-service tests', () => {
     return service;
   }
 
-  describe('update', async () => {
-    test('should create and return a stats doc', async () => {
+  describe('update', () => {
+    test('should create and return a stats doc', async() => {
       let statsDoc = await statsColl().findOne({ _id: 'stats' });
       expect(statsDoc).toBeFalsy();
       statsDoc = await createDefaultService().update();
