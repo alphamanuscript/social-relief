@@ -37,7 +37,7 @@ describe('stat-service tests', () => {
     const args: any = { 
       transactions: {
         aggregate: jest.fn().mockImplementation((pipeline: any[]) => new Promise(async (resolve, reject) => {
-          const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+          const results = await transactionsColl().aggregate(pipeline, { allowDiskUse: true }).toArray();
           if (results) {
             resolve(results);
           } 
