@@ -36,14 +36,9 @@ describe('stat-service tests', () => {
     const now = new Date();
     const args: any = { 
       transactions: {
-        aggregate: jest.fn().mockImplementation((pipeline: any[]) => new Promise(async (resolve, reject) => {
+        aggregate: jest.fn().mockImplementation((pipeline: any[]) => new Promise(async (resolve) => {
           const results = await transactionsColl().aggregate(pipeline, { allowDiskUse: true }).toArray();
-          if (results) {
-            resolve(results);
-          } 
-          else { 
-            reject({ error: 'Something went wrong'})
-          }
+          resolve(results);
         }))
       },
     };
