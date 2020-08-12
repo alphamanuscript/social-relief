@@ -44,7 +44,7 @@ describe('stat-service tests', () => {
           else { 
             reject({ error: 'Something went wrong'})
           }
-        }));
+        }))
       },
     };
     const service = new Statistics(dbUtils.getDb(), args);
