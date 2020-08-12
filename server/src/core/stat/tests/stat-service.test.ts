@@ -52,6 +52,13 @@ describe('stat-service tests', () => {
       expect(statsDoc).toBeFalsy();
       statsDoc = await createDefaultService().update();
       expect(statsDoc).toBeTruthy();
-    })
+    });
+    it('should return correct statistics', async () => {
+      const statsDoc = await createDefaultService().update();
+      expect(statsDoc.numContributors).toEqual(2);
+      expect(statsDoc.numBeneficiaries).toEqual(4);
+      expect(statsDoc.totalContributed).toEqual(1470);
+      expect(statsDoc.totalDistributed).toEqual(880);
+    });
   })
 });
