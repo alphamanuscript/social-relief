@@ -41,7 +41,7 @@ describe('stat-service tests', () => {
     const now = new Date();
     const args: any = { 
       transactions: {
-        aggregate: jest.fn().mockImplementation((pipeline: any[]) => Promise.resolve(aggregateTransactions(pipeline)))
+        aggregate: jest.fn().mockImplementation(async (pipeline: any[]) => Promise.resolve(await aggregateTransactions(pipeline)))
       },
     };
     const service = new Statistics(dbUtils.getDb(), args);
@@ -49,7 +49,7 @@ describe('stat-service tests', () => {
   }
 
   describe('update', () => {
-    test('should create and return a stats doc', async() => {
+    it('should create and return a stats doc', async () => {
       let statsDoc = await statsColl().findOne({ _id: 'stats' });
       expect(statsDoc).toBeFalsy();
       statsDoc = await createDefaultService().update();
