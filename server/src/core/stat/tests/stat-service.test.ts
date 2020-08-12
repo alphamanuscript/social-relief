@@ -64,7 +64,7 @@ describe('stat-service tests', () => {
       expect(statsDoc).toHaveProperty('totalDistributed');
       expect(statsDoc).toHaveProperty('updatedAt');
     });
-    it('should return a stats doc with correct statistics', async () => {
+    it('should return a stats doc with correct statistic figures', async () => {
       const statsDoc = await createDefaultService().update();
       expect(statsDoc.numContributors).toEqual(2);
       expect(statsDoc.numBeneficiaries).toEqual(4);
