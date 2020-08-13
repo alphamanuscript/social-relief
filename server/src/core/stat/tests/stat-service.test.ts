@@ -46,6 +46,15 @@ describe('stat-service tests', () => {
     return service;
   }
 
+  describe('get', () => {
+    it('should call update if stats doc does not exist', async () => {
+      const statsService = createDefaultService();
+      const updateSpy = jest.spyOn(statsService, 'update');
+      await statsService.get();
+      expect(updateSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('update', () => {
     it('should create and store a stats doc if it does not exist', async () => {
       let statsDoc = await statsColl().findOne({ _id: 'stats' });
