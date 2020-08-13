@@ -55,6 +55,7 @@ export interface TransactionService {
   handleProviderNotification(providerName: string, payload: any): Promise<Transaction>;
   getAllByUser(userId: string): Promise<Transaction[]>;
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;
+  aggregate(pipeline: any[]): Promise<any[]>
 }
 
 export interface PaymentRequestResult {

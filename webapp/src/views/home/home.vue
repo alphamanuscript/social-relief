@@ -17,15 +17,15 @@
           <h4 class="text-primary">Some stats</h4>
           <b-row class="text-center shadow bg-white rounded px-4 pt-4 pb-3">
             <b-col sm="12" md="4">
-              <p class="text-secondary display-4 mb-0">6,563</p>
+              <p class="text-secondary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numContributors) : 0}}</p>
               <p>Contributors so far</p>
             </b-col>
             <b-col sm="12" md="4">
-              <p class="text-primary display-4 mb-0">2.5M+</p>
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed) + '+') : 0}}</p>
               <p>Money shared so far</p>
             </b-col>
             <b-col sm="12" md="4">
-              <p class="text-primary display-4 mb-0">36,563</p>
+              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</p>
               <p>Beneficiaries so far</p>
             </b-col>
           </b-row>
@@ -40,7 +40,7 @@
           Here are some of the people whom your contribution will go along to help.
         </p>
         <p>Your contribution will go a long to touch the lives of</p>
-        <p class="text-primary display-4">13,600+</p>
+        <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries) + '+') : 0 }}</p>
         <p>people who are currently enlisted as beneficiaries in this system.</p>
         <p>
           We at Social Relief want to say a big <span class="text-secondary font-weight-bold">thank you</span> 
@@ -98,14 +98,16 @@
     </b-container>
 </template>
 <script>
+import { formatWithCommaSeparator } from '../../views/util';
 import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message']),
+    ...mapState(['newUser', 'message', 'stats']),
   },
   methods: {
-    ...mapActions(['getNewUser']),
+    ...mapActions(['getNewUser', 'getStats']),
+    formatWithCommaSeparator,
     handleDonateBtn() {
       this.$bvModal.show('login');
     }
@@ -115,6 +117,7 @@ export default {
       await this.getNewUser(this.$route.params.id);
       if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
+    else await this.getStats();
   } 
 }
 </script>

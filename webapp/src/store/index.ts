@@ -16,7 +16,8 @@ const state: AppState = {
   invitations: [],
   currentInvitation: undefined,
   message: { type: '', message: '' },
-  lastPaymentRequest: undefined
+  lastPaymentRequest: undefined,
+  stats: undefined
 }
 
 const store = new Vuex.Store({
