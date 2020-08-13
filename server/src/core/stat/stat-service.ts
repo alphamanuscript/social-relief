@@ -1,8 +1,6 @@
 import { Db, Collection } from 'mongodb';
-import { createDbOpFailedError, rethrowIfAppError, createResourceNotFoundError } from '../error';
-import { generateId } from '../util';
+import { createDbOpFailedError, rethrowIfAppError, createAppError, ErrorCode } from '../error';
 import * as messages from '../messages';
-import { UserService }  from '../user';
 import { TransactionService } from '../payment';
 import { StatsService, Stats } from './types';
 
@@ -87,7 +85,7 @@ export class Statistics implements StatsService {
         { upsert: true, returnOriginal: false }
       );
 
-      if (!updatedStats) throw createResourceNotFoundError(messages.ERROR_STATS_NOT_FOUND);
+      if (!updatedStats) throw createAppError(messages.ERROR_SERVER_ERROR, 'serverError');
       return updatedStats.value;
     }
     catch (e) {

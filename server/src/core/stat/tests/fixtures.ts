@@ -80,4 +80,13 @@ export const transactions = [
     status: "success",
     amount: 130,
   },
+  {
+    _id: 'transaction10',
+    expectedAmount: 500,
+    to: "id 2",
+    from:"",
+    type: "donation",
+    status: "success",
+    amount: 500,
+  },
 ]

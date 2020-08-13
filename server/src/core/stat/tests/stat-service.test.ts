@@ -68,7 +68,7 @@ describe('stat-service tests', () => {
       const statsDoc = await createDefaultService().update();
       expect(statsDoc.numContributors).toEqual(2);
       expect(statsDoc.numBeneficiaries).toEqual(4);
-      expect(statsDoc.totalContributed).toEqual(1470);
+      expect(statsDoc.totalContributed).toEqual(1970);
       expect(statsDoc.totalDistributed).toEqual(880);
     });
   })
