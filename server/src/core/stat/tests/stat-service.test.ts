@@ -53,6 +53,16 @@ describe('stat-service tests', () => {
       await statsService.get();
       expect(updateSpy).toHaveBeenCalled();
     });
+    it('should not call update if stats doc exists', async () => {
+      let statsDoc = await statsColl().findOne({ _id: 'stats' });
+      expect(statsDoc).toBeFalsy();
+      statsDoc = await createDefaultService().get();
+      expect(statsDoc).toBeTruthy();
+      const statsService = createDefaultService();
+      const updateSpy = jest.spyOn(statsService, 'update');
+      await statsService.get();
+      expect(updateSpy).not.toHaveBeenCalled();
+    })
   });
 
   describe('update', () => {
