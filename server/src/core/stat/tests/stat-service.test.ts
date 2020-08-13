@@ -62,7 +62,16 @@ describe('stat-service tests', () => {
       const updateSpy = jest.spyOn(statsService, 'update');
       await statsService.get();
       expect(updateSpy).not.toHaveBeenCalled();
-    })
+    });
+    it('should return the same stats doc as stored in the db', async () => {
+      const returnedStats = await createDefaultService().get();
+      const statsInDb = await statsColl().findOne({ _id: 'stats'});
+      expect(returnedStats.numContributors).toEqual(statsInDb.numContributors);
+      expect(returnedStats.numBeneficiaries).toEqual(statsInDb.numBeneficiaries);
+      expect(returnedStats.totalContributed).toEqual(statsInDb.totalContributed);
+      expect(returnedStats.totalDistributed).toEqual(statsInDb.totalDistributed);
+      expect(returnedStats.updatedAt).toEqual(statsInDb.updatedAt);
+    });
   });
 
   describe('update', () => {
