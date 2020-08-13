@@ -89,7 +89,6 @@
         <div class="text-center">
             <h1 class="text-primary mb-5">Contact Us</h1>
             <b-card
-              img-src="https://picsum.photos/id/1/1000/500"
             >
               <b-card-text>
                 Contact us at <a href="mailto:socialrelief@manuscript.live">socialrelief@manuscript.live</a> 
