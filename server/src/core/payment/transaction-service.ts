@@ -1,6 +1,6 @@
 import { Db, Collection } from 'mongodb';
 import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
-import { generateId } from '../util';
+import { generateId, validateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createInsufficientFundsError } from '../error';
 import { User } from '../user';
 import * as messages from '../messages';
@@ -126,7 +126,7 @@ export class Transactions implements TransactionService {
   async initiateRefund(user: User): Promise<Transaction> {
     try {
       // we refund the user the current total balance on their account
-      const balance = await this.getConfirmedUserBalance(user._id);
+      const balance = await this.getUserBalance(user._id);
       
       if (balance <= 0) throw createInsufficientFundsError(messages.ERROR_NO_BALANCE_FOR_REFUNDS);
 
@@ -217,7 +217,9 @@ export class Transactions implements TransactionService {
     }
   }
 
-  private async getConfirmedUserBalance(userId: string): Promise<number> {
+  async getUserBalance(userId: string): Promise<number> {
+    validateId(userId);
+    
     try {
       const results = await this.collection.aggregate<{ balance: number }>([
         {
