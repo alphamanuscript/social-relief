@@ -68,7 +68,8 @@ describe('UserService tests', () => {
         })
       },
       eventBus: {
-        emitUserInvitationCreated: jest.fn().mockImplementation((eventData: UserInvitationEventData) => {})
+        emitUserInvitationCreated: jest.fn(),
+        onTransactionCompleted: jest.fn()
       }
     };
     const service = new Users(dbUtils.getDb(), args);
@@ -127,21 +128,21 @@ describe('UserService tests', () => {
     });
 
     describe('initiateRefund', () => {
-      test('should create refund transaction to user and block further transactions');
-      test('should fail if balance is <= 0');
-      test('should fail if distribution lock is in use');
+      test.todo('should create refund transaction to user and block further transactions');
+      test.todo('should fail if balance is <= 0');
+      test.todo('should fail if distribution lock is in use');
     });
 
     describe('when refund transaction is completed', () => {
-      test('should increment refund counter for user');
-      test('should clear transactions block if transactions were blocked by refund');
-      test('should permanently block transactions if max refunds reached');
+      test.todo('should increment refund counter for user');
+      test.todo('should clear transactions block if transactions were blocked by refund');
+      test.todo('should permanently block transactions if max refunds reached');
     });
   });
 
   describe('when transactions blocked', () => {
-    test('initiateDonation should fail');
-    test('sendDonation should fail');
-    test('initiateRefund should fail');
+    test.todo('initiateDonation should fail');
+    test.todo('sendDonation should fail');
+    test.todo('initiateRefund should fail');
   });
 });

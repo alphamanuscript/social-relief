@@ -124,6 +124,7 @@ export class Transactions implements TransactionService {
   }
 
   async initiateRefund(user: User): Promise<Transaction> {
+
     try {
       // we refund the user the current total balance on their account
       const balance = await this.getUserBalance(user._id);
@@ -132,10 +133,10 @@ export class Transactions implements TransactionService {
 
       const args: TransactionCreateArgs = {
         expectedAmount: balance,
-        to: user._id,
+        to: '',
         toExternal: true,
         fromExternal: false,
-        from: '',
+        from: user._id,
         type: 'refund',
         provider: this.sendingProvider().name()
       };
