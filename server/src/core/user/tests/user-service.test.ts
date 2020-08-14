@@ -1,4 +1,4 @@
-import { createDbUtils, expectDatesAreClose } from '../../test-util';
+import { createDbUtils } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
 import { UserNominateArgs, UserInvitationEventData, UserService } from '../types';

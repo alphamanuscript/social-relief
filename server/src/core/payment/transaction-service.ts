@@ -219,7 +219,7 @@ export class Transactions implements TransactionService {
 
   async getUserBalance(userId: string): Promise<number> {
     validateId(userId);
-    
+
     try {
       const results = await this.collection.aggregate<{ balance: number }>([
         {
@@ -234,13 +234,13 @@ export class Transactions implements TransactionService {
             ]},
         },
         {
-          $project: { amount: 1, expectedAmount: 1, status: 1 }
+          $project: { from: 1, to: 1, amount: 1, expectedAmount: 1, status: 1 }
         },
         {
-          // group by inbound (1) or unbound (-1) transactions
+          // group by incoming (1) or outgoing (-1) transactions
           $group: {
             _id: {
-              $cond: { if: { $eq: ['to', userId] }, then: 1, else: -1 }
+              $cond: { if: { $eq: ['$to', userId] }, then: 1, else: -1 }
             },
             total: {
               $sum: {
