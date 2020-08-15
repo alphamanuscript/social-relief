@@ -1,4 +1,4 @@
-import { createDbUtils } from '../../test-util';
+import { createDbUtils, expectAsyncAppError } from '../../test-util';
 import { users } from './fixtures';
 import { Users } from '../user-service';
 import { UserNominateArgs, UserInvitationEventData, UserService } from '../types';
@@ -8,6 +8,7 @@ import { SystemLockService } from '../../system-lock';
 import { TransactionService, Transactions, PaymentProviderRegistry, PaymentProviders, PaymentProvider } from '../../payment';
 import { EventBus } from '../../event';
 import { SystemLocks } from '../../system-lock';
+import { verify } from 'argon2';
 
 const DB = '_social_relief_user_service_tests_';
 const COLLECTION = 'users';
@@ -111,26 +112,58 @@ describe('UserService tests', () => {
 
   describe('refunds', () => {
     let systemLocks: SystemLockService;
-    let transactions: TransactionService;
+    let transactions: any;
     let eventBus: EventBus;
     let invitations: InvitationService;
-    let paymentProviders: PaymentProviderRegistry;
     let userService: UserService;
 
+    function createServiceForRefunds() {
+
+    }
+
     beforeEach(() => {
-      paymentProviders = new PaymentProviders();
 
       invitations = null; // not required for these tests
       eventBus = new EventBus();
       systemLocks = new SystemLocks(dbUtils.getDb());
-      transactions = new Transactions(dbUtils.getDb(), { eventBus, paymentProviders });
+      transactions = {
+        initiateRefund: jest.fn()
+      };
       userService = new Users(dbUtils.getDb(), { systemLocks, transactions, eventBus, invitations })
     });
 
     describe('initiateRefund', () => {
-      test.todo('should create refund transaction to user and block further transactions');
-      test.todo('should fail if balance is <= 0');
-      test.todo('should fail if distribution lock is in use');
+      test('should create refund transaction to user and block further transactions', async () => {
+        const userId = 'donor1';
+        const expectedTx = {
+          from: 'userId',
+          to: '',
+          toExternal: true,
+          type: 'refund',
+          expectedAmount: 1000,
+          status: 'pending'
+        };
+
+        transactions.initiateRefund = jest.fn().mockResolvedValue(expectedTx);
+
+        const res = await userService.initiateRefund(userId);
+        expect(res).toEqual(expectedTx);
+
+        const user = await dbUtils.getCollection().findOne({ _id: 'donor1' });
+        expect(user.transactionsBlockedReason).toBe('refundPending');
+      });
+
+      test('should fail if distribution lock is in use', async () => {
+        const userId = 'donor1';
+        const lock = systemLocks.distribution();
+        await lock.lock();
+        await expectAsyncAppError(async () => await userService.initiateRefund(userId), 'systemLockLocked');
+        await lock.unlock();
+
+        // user should not be transactions-blocked
+        const user = await dbUtils.getCollection().findOne({ _id: 'donor1' });
+        expect(user.transactionsBlockedReason).toBeUndefined();
+      });
     });
 
     describe('when refund transaction is completed', () => {
@@ -141,8 +174,38 @@ describe('UserService tests', () => {
   });
 
   describe('when transactions blocked', () => {
-    test.todo('initiateDonation should fail');
-    test.todo('sendDonation should fail');
-    test.todo('initiateRefund should fail');
+    let userService: UserService;
+
+    beforeEach(async () => {
+      const db = dbUtils.getDb();
+      userService = new Users(db, {
+        systemLocks: new SystemLocks(db),
+        eventBus: new EventBus(),
+        transactions: null,
+        invitations: null
+      });
+
+      await dbUtils.getCollection().updateOne({ _id: 'donor1' }, { $set: { transactionsBlockedReason: 'refundPending' } });
+    });
+
+    async function verifyTransactionsBlockNotCleared() {
+      const user = await dbUtils.getCollection().findOne({ _id: 'donor1' });
+      expect(user.transactionsBlockedReason).toBe('refundPending');
+    }
+
+    test('initiateDonation should fail', async () => {
+      await expectAsyncAppError(() => userService.initiateDonation('donor1', { amount: 1000 }), 'transactionRejected');
+      await verifyTransactionsBlockNotCleared();
+    });
+
+    test('sendDonation should fail', async () => {
+      await expectAsyncAppError(() => userService.sendDonation('donor1', 'beneficiary1', { amount: 1000 }), 'transactionRejected');
+      await verifyTransactionsBlockNotCleared();
+    });
+
+    test('initiateRefund should fail', async () => {
+      await expectAsyncAppError(() => userService.initiateRefund('donor1'), 'transactionRejected');
+      await verifyTransactionsBlockNotCleared();
+    });
   });
 });

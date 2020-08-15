@@ -73,7 +73,7 @@ describe('TransactionService tests', () => {
       const service = createService();
       const res = await service.initiateRefund({
         _id: 'u1',
-        phone: '+7123444555',
+        phone: '2547123444555',
         name: 'John',
         email: 'john@mailer.com',
         roles: ['donor'],

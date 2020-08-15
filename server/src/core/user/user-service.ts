@@ -575,7 +575,6 @@ export class Users implements UserService {
         $unset: { transactionsBlockedReason: '' }
       });
 
-      if (!res.value) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
     }
     catch (e) {
       rethrowIfAppError(e);

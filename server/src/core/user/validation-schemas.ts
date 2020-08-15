@@ -1,5 +1,5 @@
 import * as joi from '@hapi/joi';
-import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema } from '../util/validation-util';
+import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema, idValidationSchema } from '../util/validation-util';
 
 const emailSchema = joi.string()
   .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
@@ -109,15 +109,7 @@ export const getByTokenInputSchema = userTokenIdSchema;
 export const logoutAllInputSchema = userIdSchema;
 
 export const initiateDonationInputSchema = joi.object().keys({
-  userId: joi.string()
-    .required()
-    .pattern(/^[a-fA-F0-9]{32}$/)
-    .messages({
-      'any.required': `userId is required`,
-      'string.base': 'Invalid type, userId must be a string',
-      'string.empty': `Please enter userId`,
-      'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 16 characters long`
-    }),
+  userId: idValidationSchema,
   amount: joi.number()
     .required()
     .min(100)
