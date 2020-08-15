@@ -20,7 +20,7 @@ import { SystemLockService } from '../system-lock';
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
-const MAX_ALLOWED_REFUNDS = 3;
+export const MAX_ALLOWED_REFUNDS = 3;
 
 const SAFE_USER_PROJECTION = { 
   _id: 1,
@@ -535,6 +535,8 @@ export class Users implements UserService {
   }
 
   async initiateRefund(userId: string): Promise<Transaction> {
+    validateId(userId);
+    
     const lock = this.systemLocks.distribution();
     try {
       await lock.ensureUnlocked();
@@ -568,7 +570,7 @@ export class Users implements UserService {
 
   private async removeTransactionBlockFromRefund(userId: string) {
     try {
-      const res = await this.collection.findOneAndUpdate({
+      await this.collection.findOneAndUpdate({
         _id: userId,
         transactionsBlockedReason: 'refundPending'
       }, {
@@ -614,13 +616,13 @@ export class Users implements UserService {
     this.eventBus.onTransactionCompleted(event => this.handleRefundCompleted(event));
   }
 
-  private async handleRefundCompleted(event: Event<TransactionCompletedEventData>) {
+  async handleRefundCompleted(event: Event<TransactionCompletedEventData>) {
     const { data: { transaction } } = event;
 
     if (!(transaction.status === 'success' && transaction.type === 'refund')) return;
 
     try {
-      await this.removeTransactionBlockFromRefund(transaction.to);
+      await this.removeTransactionBlockFromRefund(transaction.from);
     }
     catch (e) {
       console.error('Error occurred when handling event', event, e);
@@ -630,7 +632,7 @@ export class Users implements UserService {
     // independently of errors thrown in one
 
     try {
-      await this.incrementRefundCount(transaction.to);
+      await this.incrementRefundCount(transaction.from);
     }
     catch (e) {
       console.error('Error occurred when handling event', event, e);

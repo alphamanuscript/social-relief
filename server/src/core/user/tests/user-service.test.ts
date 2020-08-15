@@ -1,11 +1,11 @@
 import { createDbUtils, expectAsyncAppError } from '../../test-util';
 import { users } from './fixtures';
-import { Users } from '../user-service';
-import { UserNominateArgs, UserInvitationEventData, UserService } from '../types';
+import { Users, MAX_ALLOWED_REFUNDS } from '../user-service';
+import { UserNominateArgs, UserInvitationEventData, UserService, DbUser, UserTransactionsBlockedReason } from '../types';
 import { InvitationCreateArgs, InvitationService } from '../../invitation';
 import { generateId } from '../../util';
 import { SystemLockService } from '../../system-lock';
-import { TransactionService, Transactions, PaymentProviderRegistry, PaymentProviders, PaymentProvider } from '../../payment';
+import { TransactionService, Transactions, PaymentProviderRegistry, PaymentProviders, PaymentProvider, Transaction } from '../../payment';
 import { EventBus } from '../../event';
 import { SystemLocks } from '../../system-lock';
 import { verify } from 'argon2';
@@ -167,9 +167,115 @@ describe('UserService tests', () => {
     });
 
     describe('when refund transaction is completed', () => {
-      test.todo('should increment refund counter for user');
-      test.todo('should clear transactions block if transactions were blocked by refund');
-      test.todo('should permanently block transactions if max refunds reached');
+      let userService: Users;
+      let eventBus: EventBus;
+      let transaction: Transaction;
+
+      beforeEach(() => {
+        const db = dbUtils.getDb();
+        eventBus = new EventBus();
+
+        userService = new Users(db, {
+          systemLocks: new SystemLocks(db),
+          eventBus,
+          transactions: null,
+          invitations: null
+        });
+
+        transaction = {
+          _id: 'tx',
+          type: 'refund',
+          to: '',
+          toExternal: true,
+          from: 'donor1',
+          fromExternal: true,
+          amount: 1000,
+          expectedAmount: 1000,
+          status: 'success',
+          provider: 'testPaymentProvider',
+          providerTransactionId: 'providerTx',
+          metadata: {},
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      /**
+       * capture the promise of the event handler so that we can
+       * detect when the function has completed execution
+       */
+      function captureEventHandlerPromise() {
+        type CapturedPromises = {
+          eventHandlerPromise: Promise<void>
+        };
+
+        const capture: CapturedPromises = {
+          eventHandlerPromise: null
+        };
+
+        const originalHandler = userService.handleRefundCompleted;
+        jest.spyOn(userService, 'handleRefundCompleted').mockImplementation((event) => {
+          capture.eventHandlerPromise = originalHandler.bind(userService)(event);
+          return capture.eventHandlerPromise;
+        });
+
+        return capture;
+      }
+
+      test('should increment refund counter for user', async () => {
+        const capturedPromises = captureEventHandlerPromise();
+
+        eventBus.emitTransactionCompleted({ transaction });
+
+
+        expect(userService.handleRefundCompleted).toHaveBeenCalled();
+        await capturedPromises.eventHandlerPromise;
+
+        let user = await dbUtils.getCollection<DbUser>().findOne({ _id: 'donor1' });
+        expect(user.numRefunds).toBe(1);
+
+        transaction._id = 'tx2';
+        eventBus.emitTransactionCompleted({ transaction });
+        await capturedPromises.eventHandlerPromise;
+
+        user = await dbUtils.getCollection<DbUser>().findOne({ _id: 'donor1' });
+        expect(user.numRefunds).toBe(2);
+      });
+
+      test('should clear transactions block if transactions were blocked by refund', async () => {
+        const capturedPromises = captureEventHandlerPromise();
+
+        const res = await dbUtils.getCollection<DbUser>().findOneAndUpdate({
+          _id: 'donor1'
+        }, { 
+          $set: {transactionsBlockedReason: 'refundPending' }
+        }, { 
+          returnOriginal: false 
+        });
+
+        expect(res.value.transactionsBlockedReason).toBe('refundPending');
+
+        eventBus.emitTransactionCompleted({ transaction });
+        await capturedPromises.eventHandlerPromise;
+
+        const updatedUser = await dbUtils.getCollection<DbUser>().findOne({ _id: 'donor1' });
+        expect(updatedUser.transactionsBlockedReason).toBeUndefined();
+      });
+
+      test('should permanently block transactions if max refunds reached', async () => {
+        const capturedPromises = captureEventHandlerPromise();
+
+        // update user to have only one refund remaining before block
+        await dbUtils.getCollection<DbUser>().updateOne({ _id: 'donor1' }, { $set: { numRefunds: MAX_ALLOWED_REFUNDS - 1 } });
+
+        eventBus.emitTransactionCompleted({ transaction });
+
+        await capturedPromises.eventHandlerPromise;
+
+        const updatedUser = await dbUtils.getCollection<DbUser>().findOne({ _id: 'donor1' });
+        expect(updatedUser.transactionsBlockedReason).toBe<UserTransactionsBlockedReason>('maxRefundsExceeded');
+
+      });
     });
   });
 
