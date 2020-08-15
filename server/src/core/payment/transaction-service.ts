@@ -356,4 +356,14 @@ export class Transactions implements TransactionService {
     return this.providers.getPreferredForSending();
   }
 
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    try {
+      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+      return results;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
 }

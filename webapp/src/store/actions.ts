@@ -1,10 +1,14 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations, Refunds, Invitations } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations, Statistics } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
 
 const actions = wrapActions({
+  async getStats({commit}) {
+    const stats = await Statistics.getStats();
+    commit('setStats', stats);
+  },
   async getBeneficiaries({ commit }) {
     const beneficiaries = await Users.getBeneficiaries();
     commit('setBeneficiaries', beneficiaries);
@@ -138,6 +142,7 @@ const actions = wrapActions({
       'unsetCurrentInvitation',
       'unsetLastPaymentRequest',
       'unsetMessage',
+      'unsetStats'
     ].forEach((mutation) => commit(mutation));
   }
 });

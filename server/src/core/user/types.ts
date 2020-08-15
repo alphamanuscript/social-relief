@@ -213,4 +213,9 @@ export interface UserService {
    * @param user the donor to refund
    */
   initiateRefund(user: string): Promise<Transaction>;
+  /**
+   * 
+   * @param pipeline
+   */
+  aggregate(pipeline: any[]): Promise<any[]>;
 };

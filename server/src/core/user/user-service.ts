@@ -638,4 +638,15 @@ export class Users implements UserService {
       console.error('Error occurred when handling event', event, e);
     }
   }
+
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    try {
+      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+      return results;
+    }
+    catch(e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
 }
