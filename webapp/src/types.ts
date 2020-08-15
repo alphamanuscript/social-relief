@@ -2,7 +2,7 @@ export type UserRole = 'donor' | 'beneficiary' | 'middleman';
 export type NominationRole = 'beneficiary' | 'middleman';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'failed' | 'success';
 export type InvitationStatus = 'pending' | 'accepted' | 'rejected';
-export type TransactionType = 'donation' | 'distribution';
+export type TransactionType = 'donation' | 'distribution' | 'refund';
 
 export interface Token {
   _id: string;

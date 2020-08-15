@@ -12,7 +12,7 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">{{ formatWithCommaSeparator(totalAmountDonated - totalAmountDistributed) }}</div>
+                  <div class="h4">{{ formatWithCommaSeparator(accountBalance) }}</div>
                 </div>
               </div>
               <RefundButton />
@@ -99,6 +99,7 @@ export default {
   computed: {
     ...mapState(['user', 'beneficiaries', 'middlemen', 'message']),
     ...mapGetters([
+      'accountBalance',
       'totalAmountDonated',
       'totalAmountDistributed',
     ]),
