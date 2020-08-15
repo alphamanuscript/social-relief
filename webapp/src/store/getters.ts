@@ -18,7 +18,7 @@ const getters: GetterTree<AppState, AppState> = {
       .reduce((a, b) => a + b, 0);
   },
   accountBalance: (state, getters) => {
-    return getters.totalAmountDonated - (getters.totalAmountDistributed - getters.totalAmountRefunded);
+    return getters.totalAmountDonated - (getters.totalAmountDistributed + getters.totalAmountRefunded);
   },
   peopleDonatedTo: ({ transactions, user }) => {
     const recipients = transactions.filter(t => t.type === 'distribution' && t.status === 'success' && (user && t.to !== user._id))
