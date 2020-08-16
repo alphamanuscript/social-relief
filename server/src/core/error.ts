@@ -63,7 +63,13 @@ export type ErrorCode =
   | 'batchQueueError'
   | 'systemLockLocked'
   | 'systemLockInvalidState'
-  | 'messageDeliveryFailed';
+  | 'messageDeliveryFailed'
+  /**
+   * This error should only be thrown when a transaction fails
+   * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+   */
+  | 'transactionRejected'
+  | 'insufficientFunds';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -139,4 +145,17 @@ export function createDbConnectionFailedError (message: string = messages.ERROR_
 
 export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
+}
+
+/**
+ * This error should only be thrown when a transaction fails
+ * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+ * @param message 
+ */
+export function createTransactionRejectedError(message: string = messages.ERROR_TRANSACTION_REJECTED) {
+  return createAppError(message, 'transactionRejected');
+}
+
+export function createInsufficientFundsError(message: string) {
+  return createAppError(message, 'insufficientFunds');
 }

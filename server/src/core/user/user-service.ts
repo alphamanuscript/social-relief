@@ -10,15 +10,17 @@ import {
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
   createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
-  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
-import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError, isAppError } from '../error';
+import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs, TransactionCompletedEventData } from '../payment';
 import * as validators from './validator'
 import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
-import { EventBus } from '../event';
+import { EventBus, Event } from '../event';
+import { SystemLockService } from '../system-lock';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
+export const MAX_ALLOWED_REFUNDS = 3;
 
 const SAFE_USER_PROJECTION = { 
   _id: 1,
@@ -29,9 +31,11 @@ const SAFE_USER_PROJECTION = {
   donors: 1,
   middlemanFor: 1,
   roles: 1,
+  transactionsBlockedReason: 1,
   createdAt: 1,
   updatedAt: 1
 };
+
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1, createdAt: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1, addedBy: 1, createdAt: 1};
 
@@ -68,6 +72,7 @@ function isDonor(user: User): boolean {
 export interface UsersArgs {
   transactions: TransactionService,
   invitations: InvitationService,
+  systemLocks: SystemLockService,
   eventBus: EventBus;
 };
 
@@ -79,6 +84,7 @@ export class Users implements UserService {
   private transactions: TransactionService;
   private invitations: InvitationService;
   private eventBus: EventBus;
+  private systemLocks: SystemLockService;
 
   constructor(db: Db, args: UsersArgs) {
     this.db = db;
@@ -88,6 +94,9 @@ export class Users implements UserService {
     this.transactions = args.transactions;
     this.invitations = args.invitations;
     this.eventBus = args.eventBus;
+    this.systemLocks = args.systemLocks;
+
+    this.registerEventHandlers();
   }
 
   async createIndexes(): Promise<void> {
@@ -496,6 +505,9 @@ export class Users implements UserService {
     validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {
       const user = await this.getById(userId);
+      
+      if (user.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const trx = await this.transactions.initiateDonation(user, args);
       return trx;
     }
@@ -510,12 +522,120 @@ export class Users implements UserService {
       const users = await this.collection.find({ _id: { $in: [from, to] } }, { projection: SAFE_USER_PROJECTION } ).toArray();
       const donor = users.find(u => u._id === from);
       const beneficiary = users.find(u => u._id === to);
+
+      if (donor.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const result = await this.transactions.sendDonation(donor, beneficiary, args);
       return result;
     }
     catch (e) {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async initiateRefund(userId: string): Promise<Transaction> {
+    validateId(userId);
+    
+    const lock = this.systemLocks.distribution();
+    try {
+      await lock.ensureUnlocked();
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: { $exists: false }
+      }, {
+        $set: {
+          // block future transactions while refund is pending
+          transactionsBlockedReason: 'refundPending'
+        }
+      }, {
+        returnOriginal: false
+      });
+
+      if (!result.value) throw createTransactionRejectedError(messages.ERROR_REFUND_REQUEST_REJECTED);
+
+      const transaction = await this.transactions.initiateRefund(result.value);
+      return transaction;
+    }
+    catch (e) {
+      if (isAppError(e) && e.code !== 'transactionRejected') {
+        // if error occurs other than due to transaction block
+        // then remove transaction block otherwise user will not be able to make transactions
+        await this.removeTransactionBlockFromRefund(userId);
+      }
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async removeTransactionBlockFromRefund(userId: string) {
+    try {
+      await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: 'refundPending'
+      }, {
+        $unset: { transactionsBlockedReason: '' }
+      });
+
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async incrementRefundCount(userId: string) {
+    try {
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+      }, {
+        $inc: { numRefunds: 1 }
+      }, {
+        returnOriginal: false
+      });
+
+      if (!result.value) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+
+      if (result.value.numRefunds >= MAX_ALLOWED_REFUNDS) {
+        await this.collection.updateOne({
+          _id: userId
+        }, {
+          $set: { transactionsBlockedReason: 'maxRefundsExceeded' }
+        });
+      }
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private registerEventHandlers() {
+    this.eventBus.onTransactionCompleted(event => this.handleRefundCompleted(event));
+  }
+
+  async handleRefundCompleted(event: Event<TransactionCompletedEventData>) {
+    const { data: { transaction } } = event;
+
+    if (!(transaction.status === 'success' && transaction.type === 'refund')) return;
+
+    try {
+      await this.removeTransactionBlockFromRefund(transaction.from);
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
+    }
+
+    // user separate try-catch blocks because we want to try both
+    // independently of errors thrown in one
+
+    try {
+      await this.incrementRefundCount(transaction.from);
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
     }
   }
 

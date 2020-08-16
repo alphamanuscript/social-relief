@@ -12,10 +12,7 @@
     content-class="rounded"
    >
     <template v-slot:modal-header>
-      <div class="d-flex flex-column m-auto">
-        <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
-        <h4 class="text-secondary text-center">Donate</h4>
-      </div>
+      <ModalHeader title="Donate" />
     </template>
     <b-form>
       <b-form-group>
@@ -46,8 +43,11 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import { validateObj } from '../views/util';
+import ModalHeader from '../ui-components/modal-header';
+
 export default {
   name: 'login-modal',
+  components: { ModalHeader },
   data() {
     return {
       donationInputs: {
@@ -66,10 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'message']),
-    imageUrl () {
-      return require(`@/assets/Social Relief Logo_1.svg`);
-    }
+    ...mapState(['user', 'message'])
   },
   methods: {
     ...mapActions(['donate']),

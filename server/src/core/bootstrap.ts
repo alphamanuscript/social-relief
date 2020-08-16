@@ -46,7 +46,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   const users = new Users(db, {
     transactions,
     invitations,
-    eventBus
+    eventBus,
+    systemLocks
   });
   
   const donationDistributions = new DonationDistributions(db, {

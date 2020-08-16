@@ -125,7 +125,8 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
 export async function computeDonorsBalances(db: Db, donors: string[]): Promise<DonorBalance[]> {
   const result = db.collection(USERS_COLL).aggregate<DonorBalance>([
     {
-      $match: { _id: { $in: donors }, roles: 'donor' }
+      // fetch donors who are not blocked from making transactions
+      $match: { _id: { $in: donors }, roles: 'donor', transactionsBlockedReason: { $exists: false } }
     },
     {
       $lookup: {

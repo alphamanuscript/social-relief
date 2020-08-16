@@ -12,10 +12,12 @@
                 <div class="bg-secondary text-white rounded pl-3 pt-2">
                   <div class="font-weight-light">Current balance</div>
                   <div class="">KSH</div>
-                  <div class="h4">{{ formatWithCommaSeparator(totalAmountDonated - totalAmountDistributed) }}</div>
+                  <div class="h4">{{ formatWithCommaSeparator(accountBalance) }}</div>
                 </div>
               </div>
+              <RefundButton />
             </b-nav-text>
+
             <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
             <b-nav-item to="/middlemen" exact exact-active-class="active">Middlemen</b-nav-item>
             <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
@@ -46,7 +48,11 @@
                   <b-nav-item to="/account" exact exact-active-class="active">My Account</b-nav-item>
                   <b-nav-item href="#" @click="signOut()"> <span class="text-secondary">Sign Out</span></b-nav-item>
                 </div>
-                <b-button v-if="user && user.roles.includes('donor')" variant="primary" class="custom-submit-button m-auto m-md-0" @click="handleDonateBtn">Donate</b-button>
+                <b-button
+                  v-if="isEligibleDonor"
+                  variant="primary" class="custom-submit-button m-auto m-md-0"
+                  @click="handleDonateBtn"
+                  >Donate</b-button>
               </b-nav>
               <b-nav class="ml-auto d-none d-md-block">
                 <b-nav-item-dropdown dropleft no-caret>
@@ -69,6 +75,12 @@
               </b-nav>
             </b-collapse>
           </b-navbar>
+          <div
+            v-if="areTransactionsPermanentlyBlocked"
+            class="alert alert-warning"
+          >
+            This account is blocked from making donations. Reason: {{ user.transactionsBlockedReason }}
+          </div>
           <router-view />
         </b-col>
       </b-row>
@@ -79,18 +91,26 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import HomeFooter from '../components/home-footer';
+import RefundButton from '../components/refund-button';
 import { formatWithCommaSeparator } from '../views/util';
 export default {
   name: 'logged-in-structure',
-  components: { HomeFooter },
+  components: { HomeFooter, RefundButton },
   computed: {
     ...mapState(['user', 'beneficiaries', 'middlemen', 'message']),
     ...mapGetters([
+      'accountBalance',
       'totalAmountDonated',
       'totalAmountDistributed',
     ]),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
+    },
+    isEligibleDonor() {
+      return this.user && this.user.roles.includes('donor') && !this.areTransactionsPermanentlyBlocked;
+    },
+    areTransactionsPermanentlyBlocked() {
+      return this.user && this.user.transactionsBlockedReason === 'maxRefundsExceeded';
     }
   },
   methods: {

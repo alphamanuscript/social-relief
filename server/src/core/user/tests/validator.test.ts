@@ -166,7 +166,7 @@ describe('validatesInitiateDonation', () => {
   });
   it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesInitiateDonation, [
-      { userId: 'fhdgjqjqmqcqmlcq', amount: 100 },
+      { userId: true, amount: 100 },
       { userId: '', amount: 100 },
       { userId: 34256, amount: 2000 },
       { userId: {}, amount: 530 },
