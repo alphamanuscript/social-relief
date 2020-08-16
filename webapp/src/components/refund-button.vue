@@ -32,7 +32,7 @@
       the balance that has not been distributed to beneficiaries.
       </p>
       <p>
-        <small>If you exceed 2 refunds, you will not longer be allowed to make donations
+        <small>If you exceed 2 refunds, you will no longer be allowed to make donations
         on the platform.</small>
       </p>
 

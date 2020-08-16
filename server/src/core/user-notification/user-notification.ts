@@ -51,12 +51,10 @@ export class UserNotifications {
         // notify donor and beneficiary of a successful distribution
         await this.sendSuccessfulDistributionMessages(transaction);
       }
-
-      if (transaction.type === 'refund' && transaction.status === 'success') {
+      else if (transaction.type === 'refund' && transaction.status === 'success') {
         // notify user of successful refund
         await this.sendSuccessfulRefundMessage(transaction);
       }
-
     }
     catch (error) {
       console.error('Error occurred when handling event', event, error);

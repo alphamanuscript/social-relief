@@ -52,14 +52,14 @@ describe('TransactionService tests', () => {
   describe('getUserBalance', () => {
     test('returns 0 if user has no transactions', async () => {
       const user = 'userWithNoTransactions';
-      var service = createService();
+      const service = createService();
       const res = await service.getUserBalance(user);
       expect(res).toBe(0);
     });
 
     test('returns total successful inbound transactions minus non-failed outbound transactions', async () => {
       const user = 'u1';
-      var service = createService();
+      const service = createService();
       const res = await service.getUserBalance(user);
       expect(res).toBe(1800);
     });
