@@ -52,12 +52,14 @@
         <div class="text-center">
           <h1 class="text-primary mb-5">About Us</h1>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            Social Relief is the baby product of Alpha Manuscript Limited, <br>
+            an up-and-coming small company based in Nairobi, Kenya, with a diverse team <br>
+            comprising of driven employees
+            from around the globe, including Kenya, Germany, France, and South Africa.
           </p>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            Our mission is to build software that solves everyday problems <br>
+            and improves the wellness and well-being of the people.
           </p>
         </div>
         
@@ -87,7 +89,6 @@
         <div class="text-center">
             <h1 class="text-primary mb-5">Contact Us</h1>
             <b-card
-              img-src="https://picsum.photos/600/300/?image=25"
             >
               <b-card-text>
                 Contact us at <a href="mailto:socialrelief@manuscript.live">socialrelief@manuscript.live</a> 
