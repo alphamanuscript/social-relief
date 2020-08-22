@@ -1,21 +1,26 @@
 import { Db, Collection } from 'mongodb';
 import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
 import { 
-  User, DbUser, UserCreateArgs, UserService, 
+  User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
+  UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs
 } from './types';
 import * as messages from '../messages';
 import { 
   AppError, createDbOpFailedError, createLoginError,
   createInvalidAccessTokenError, createResourceNotFoundError,
-  createUniquenessFailedError, createBeneficiaryNominationFailedError,
-  createMiddlemanNominationFailedError, isMongoDuplicateKeyError, rethrowIfAppError } from '../error';
-import { TransactionService, TransactionCreateArgs, Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+  createUniquenessFailedError, createBeneficiaryNominationFailedError, createBeneficiaryActivationFailedError,
+  createMiddlemanActivationFailedError, isMongoDuplicateKeyError, rethrowIfAppError, createTransactionRejectedError, isAppError } from '../error';
+import { TransactionService, Transaction, InitiateDonationArgs, SendDonationArgs, TransactionCompletedEventData } from '../payment';
 import * as validators from './validator'
+import { Invitation, InvitationService, InvitationCreateArgs } from '../invitation/types';
+import { EventBus, Event } from '../event';
+import { SystemLockService } from '../system-lock';
 
 const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
+export const MAX_ALLOWED_REFUNDS = 3;
 
 const SAFE_USER_PROJECTION = { 
   _id: 1,
@@ -26,9 +31,11 @@ const SAFE_USER_PROJECTION = {
   donors: 1,
   middlemanFor: 1,
   roles: 1,
+  transactionsBlockedReason: 1,
   createdAt: 1,
   updatedAt: 1
 };
+
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1, createdAt: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1, addedBy: 1, createdAt: 1};
 
@@ -64,6 +71,9 @@ function isDonor(user: User): boolean {
 
 export interface UsersArgs {
   transactions: TransactionService,
+  invitations: InvitationService,
+  systemLocks: SystemLockService,
+  eventBus: EventBus;
 };
 
 export class Users implements UserService {
@@ -72,6 +82,9 @@ export class Users implements UserService {
   private tokenCollection: Collection<AccessToken>;
   private indexesCreated: boolean;
   private transactions: TransactionService;
+  private invitations: InvitationService;
+  private eventBus: EventBus;
+  private systemLocks: SystemLockService;
 
   constructor(db: Db, args: UsersArgs) {
     this.db = db;
@@ -79,6 +92,11 @@ export class Users implements UserService {
     this.tokenCollection = this.db.collection(TOKEN_COLLECTION);
     this.indexesCreated = false;
     this.transactions = args.transactions;
+    this.invitations = args.invitations;
+    this.eventBus = args.eventBus;
+    this.systemLocks = args.systemLocks;
+
+    this.registerEventHandlers();
   }
 
   async createIndexes(): Promise<void> {
@@ -150,25 +168,86 @@ export class Users implements UserService {
     }
   }
 
-  async nominateBeneficiary(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator, name } = args;
+  async nominate(args: UserNominateArgs): Promise<Invitation> {
     validators.validatesNominate(args);
-
+    const { phone, email, nominatorId, nominatorName, name, role } = args;
+    
     try {
-      const nominatorUser = await this.collection.findOne({ _id: nominator });
-      if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId });
+      if (nominatorUser && nominatorUser.roles.includes('beneficiary')) 
+        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
+      else if (!nominatorUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      const inviteeUser = await this.collection.findOne({ phone });
+      const invitationArgs: InvitationCreateArgs = {
+        invitorId: nominatorId,
+        invitorName: nominatorName,
+        inviteeName: name,
+        inviteePhone: phone,
+        inviteeEmail: email,
+        inviteeRole: role,
+        hasAccount: inviteeUser ? true : false
+      }
+      const invitation = await this.invitations.create(invitationArgs);
+      this.eventBus.emitUserInvitationCreated({
+        recipientName: invitation.inviteeName,
+        recipientPhone: invitation.inviteePhone,
+        senderName: invitation.invitorName,
+        role: invitation.inviteeRole,
+        invitationId: invitation._id
+      });
+      return invitation;
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async activate(args: UserActivateArgs): Promise<User> {
+    validators.validatesActivate(args);
+    const { invitationId } = args;
+    try {
+      const invitation = await this.invitations.get(invitationId);
+      if (invitation.status !== 'accepted') 
+        throw createResourceNotFoundError(messages.ERROR_INVITATION_NOT_FOUND);
+      
+      const args = {
+        phone: invitation.inviteePhone,
+        name: invitation.inviteeName,
+        email: invitation.inviteeEmail,
+        nominatorId: invitation.invitorId,
+      }
+      if (invitation.inviteeRole === 'beneficiary') { 
+        return this.activateBeneficiary(args); 
+      }
+      return this.activateMiddleman(args);
+    }
+    catch(e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  /**
+   * activates an existing user as a beneficiary
+   * only if they're not a donor. If user does not
+   * exist, however, a user account is created 
+   * with the role 'beneficiary'
+   * @param args 
+   */
+  private async activateBeneficiary(args: UserActivateBeneficiaryArgs): Promise<User> {
+    const { phone, email, nominatorId, name } = args;
+    try {
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId });
 
       let donors: string[] = [];
       if (isDonor(nominatorUser)) {
-        donors.push(nominator);
+        donors.push(nominatorId);
       }
 
       if (isMiddleman(nominatorUser) && Array.isArray(nominatorUser.middlemanFor)) {
         donors = donors.concat(nominatorUser.middlemanFor);
-      }
-
-      if (!donors.length) {
-        throw createBeneficiaryNominationFailedError(messages.ERROR_USER_CANNOT_ADD_BENEFICIARY);
       }
 
       /*
@@ -184,7 +263,7 @@ export class Users implements UserService {
         password: '', 
         phone,
         name,
-        addedBy: nominator, 
+        addedBy: nominatorId, 
         createdAt: new Date(),
       }
       if (email) insert.email = email;
@@ -202,33 +281,39 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (isMongoDuplicateKeyError(e, args.phone)) {
-        throw createBeneficiaryNominationFailedError();
+        throw createBeneficiaryActivationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }
   }
 
-  async nominateMiddleman(args: UserNominateArgs): Promise<User> {
-    const { phone, email, nominator, name } = args;
-    validators.validatesNominate(args);
+  /**
+   * activates a user as a middleman to the nominating donor.
+   * A user account is created for the middleman if does not already exist
+   * @param args
+   * @params args.nominatorId ID donor nominating the middleman
+   * @params args.phone phone of the nominated middleman
+   * @params args.email email of the nominated middleman
+   */
+  private async activateMiddleman(args: UserActivateMiddlemanArgs): Promise<User> {
+    const { phone, email, nominatorId, name } = args;
     
     try {
-      const nominatorUser = await this.collection.findOne({ _id: nominator, roles: 'donor' });
-      if (!nominatorUser) throw createMiddlemanNominationFailedError();
+      const nominatorUser = await this.collection.findOne({ _id: nominatorId, roles: 'donor' });
 
       const insert: any = {
         _id: generateId(),
         password: '',
         phone,
         name,
-        addedBy: nominator,
+        addedBy: nominatorId,
         createdAt: new Date()
       }
       if (email) insert.email = email;
       const result = await this.collection.findOneAndUpdate(
         { phone },
         {
-          $addToSet: { roles: 'middleman', middlemanFor: nominator },
+          $addToSet: { roles: 'middleman', middlemanFor: nominatorId },
           $currentDate: { updatedAt: true },
           $setOnInsert: insert
         },
@@ -239,7 +324,7 @@ export class Users implements UserService {
     catch (e) {
       if (e instanceof AppError) throw e;
       if (isMongoDuplicateKeyError(e, args.phone)) {
-        throw createMiddlemanNominationFailedError();
+        throw createMiddlemanActivationFailedError();
       }
       throw createDbOpFailedError(e.message);
     }
@@ -366,7 +451,7 @@ export class Users implements UserService {
     }
   }
 
-  private async getById(id: string): Promise<User> {
+  public async getById(id: string): Promise<User> {
     try {
       const user = await this.collection.findOne({ _id: id }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
@@ -379,10 +464,50 @@ export class Users implements UserService {
     }
   }
 
+  async getNew(userId: string): Promise<User> {
+    validators.validatesGetNew(userId);
+    try {
+      const user = await this.collection.findOne({ _id: userId, password: '' }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return getSafeUser(user);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async put(userId: string, args: UserPutArgs): Promise<User> {
+    validators.validatesPut({ userId, args });
+    args.password = await hashPassword(args.password);
+    const { name, email, password } = args;
+    try {
+      const updatedUser = await this.collection.findOneAndUpdate(
+        { _id: userId },
+        { 
+          $set: { name, email, password },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if (!updatedUser) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      return getSafeUser(updatedUser.value);
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async initiateDonation(userId: string, args: InitiateDonationArgs): Promise<Transaction> {
     validators.validatesInitiateDonation({ userId, amount: args.amount });
     try {
       const user = await this.getById(userId);
+      
+      if (user.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const trx = await this.transactions.initiateDonation(user, args);
       return trx;
     }
@@ -397,11 +522,130 @@ export class Users implements UserService {
       const users = await this.collection.find({ _id: { $in: [from, to] } }, { projection: SAFE_USER_PROJECTION } ).toArray();
       const donor = users.find(u => u._id === from);
       const beneficiary = users.find(u => u._id === to);
+
+      if (donor.transactionsBlockedReason) throw createTransactionRejectedError();
+
       const result = await this.transactions.sendDonation(donor, beneficiary, args);
       return result;
     }
     catch (e) {
       rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async initiateRefund(userId: string): Promise<Transaction> {
+    validateId(userId);
+    
+    const lock = this.systemLocks.distribution();
+    try {
+      await lock.ensureUnlocked();
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: { $exists: false }
+      }, {
+        $set: {
+          // block future transactions while refund is pending
+          transactionsBlockedReason: 'refundPending'
+        }
+      }, {
+        returnOriginal: false
+      });
+
+      if (!result.value) throw createTransactionRejectedError(messages.ERROR_REFUND_REQUEST_REJECTED);
+
+      const transaction = await this.transactions.initiateRefund(result.value);
+      return transaction;
+    }
+    catch (e) {
+      if (isAppError(e) && e.code !== 'transactionRejected') {
+        // if error occurs other than due to transaction block
+        // then remove transaction block otherwise user will not be able to make transactions
+        await this.removeTransactionBlockFromRefund(userId);
+      }
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async removeTransactionBlockFromRefund(userId: string) {
+    try {
+      await this.collection.findOneAndUpdate({
+        _id: userId,
+        transactionsBlockedReason: 'refundPending'
+      }, {
+        $unset: { transactionsBlockedReason: '' }
+      });
+
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async incrementRefundCount(userId: string) {
+    try {
+      const result = await this.collection.findOneAndUpdate({
+        _id: userId,
+      }, {
+        $inc: { numRefunds: 1 }
+      }, {
+        returnOriginal: false
+      });
+
+      if (!result.value) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+
+      if (result.value.numRefunds >= MAX_ALLOWED_REFUNDS) {
+        await this.collection.updateOne({
+          _id: userId
+        }, {
+          $set: { transactionsBlockedReason: 'maxRefundsExceeded' }
+        });
+      }
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private registerEventHandlers() {
+    this.eventBus.onTransactionCompleted(event => this.handleRefundCompleted(event));
+  }
+
+  async handleRefundCompleted(event: Event<TransactionCompletedEventData>) {
+    const { data: { transaction } } = event;
+
+    if (!(transaction.status === 'success' && transaction.type === 'refund')) return;
+
+    try {
+      await this.removeTransactionBlockFromRefund(transaction.from);
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
+    }
+
+    // user separate try-catch blocks because we want to try both
+    // independently of errors thrown in one
+
+    try {
+      await this.incrementRefundCount(transaction.from);
+    }
+    catch (e) {
+      console.error('Error occurred when handling event', event, e);
+    }
+  }
+
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    try {
+      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
+      return results;
+    }
+    catch(e) {
+      if (e instanceof AppError) throw e;
       throw createDbOpFailedError(e.message);
     }
   }

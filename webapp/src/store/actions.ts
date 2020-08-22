@@ -1,9 +1,15 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations, Statistics } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { NominationRole } from '@/types';
+import { formatWithCommaSeparator } from '@/views/util';
 
 const actions = wrapActions({
+  async getStats({commit}) {
+    const stats = await Statistics.getStats();
+    commit('setStats', stats);
+  },
   async getBeneficiaries({ commit }) {
     const beneficiaries = await Users.getBeneficiaries();
     commit('setBeneficiaries', beneficiaries);
@@ -16,9 +22,50 @@ const actions = wrapActions({
     const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
+  async getInvitations({ commit}) {
+    const invitations = await Invitations.getInvitations();
+    commit('setInvitations', invitations);
+  },
+  async acceptInvitation({ commit}, id: string) {
+    const invitation = await Invitations.acceptInvitation(id);
+    commit('updateInvitation', invitation);
+  },
+  async rejectInvitation({ commit}, id: string) {
+    const invitation = await Invitations.rejectInvitation(id);
+    commit('updateInvitation', invitation);
+  },
+  async assumeNewRole({ commit }, invitationId: string) {
+    const updatedUser = await Users.createNewUserOrAssumeNewRole(invitationId);
+    commit('setUser', updatedUser);
+  },
+  async createNewUser({ commit }, invitationId: string) {
+    const newUser = await Users.createNewUserOrAssumeNewRole(invitationId);
+    commit('setNewUser', newUser);
+  },
+  async getNewUser({ commit }, userId: string) {
+    const newUser = await Users.getUser(userId);
+    commit('setNewUser', newUser);
+  },
+  async updateNewUser({ commit, state }, { name, email, password, googleIdToken }: { userId: string; name: string; email: string; password: string; googleIdToken: string}) {
+    if (state.newUser) {
+      const updatedUser = await Users.updateUser(state.newUser._id, { name, email, password });
+      const { phone } = state.newUser;
+      await Users.login({ phone, password, googleIdToken });
+      commit('setUser', updatedUser);
+      
+      if (updatedUser) {
+        router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+      }
+    }
+  },
   async getTransaction({ commit }, id: string) {
     const transaction = await Transactions.getTransaction(id);
     commit('updateTransaction', transaction);
+  },
+  async getCurrentInvitation({ commit }, id: string) {
+    const invitation = await Invitations.getInvitation(id);
+    commit('updateInvitation', invitation);
+    commit('setCurrentInvitation', invitation);
   },
   async donate({ commit, state }, { amount }: { amount: number }) {
     if (state.user) {
@@ -27,14 +74,20 @@ const actions = wrapActions({
       commit('setPaymentRequest', trx);
     }   
   },
-  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: string }) {
-    if (state.user && role === 'Beneficiary') {
-      const beneficiary = await Users.nominateBeneficiary({ phone: nominee, name, email, nominator: state.user._id });
-      commit('addBeneficiary', beneficiary);
+  async initiateRefund({ commit, state }) {
+    if (state.user) {
+      const trx = await Refunds.initiateRefund();
+      commit('addTransaction', trx);
+      commit('setMessage', {
+        type: 'success',
+        message: `A refund of Ksh ${formatWithCommaSeparator(trx.expectedAmount)} has been successfully initiated.`
+      });
     }
-    else if (state.user && role === 'Middleman') {
-      const middleman = await Users.nominateMiddleman({ phone: nominee, name, email, nominator: state.user._id });
-      commit('addMiddleman', middleman);
+  },
+  async nominate({ commit, state}, { nominee, name, email, role }: { nominee: string; name: string; email: string; role: NominationRole }) {
+    if (state.user) {
+      const invitation = await Users.nominate({ phone: nominee, name, email, role, nominatorId: state.user._id, nominatorName: state.user.name });
+      commit('addInvitation', invitation);
     }
   },
   /**
@@ -77,7 +130,8 @@ const actions = wrapActions({
     [
       'getBeneficiaries',
       'getMiddlemen',
-      'getTransactions'
+      'getTransactions',
+      'getInvitations'
     ].forEach((action) => dispatch(action));
   },
   async resetMessage({ commit }) {
@@ -89,8 +143,11 @@ const actions = wrapActions({
       'unsetBeneficiaries',
       'unsetMiddlemen',
       'unsetTransactions',
+      'unsetInvitations',
+      'unsetCurrentInvitation',
       'unsetLastPaymentRequest',
       'unsetMessage',
+      'unsetStats'
     ].forEach((mutation) => commit(mutation));
   }
 });

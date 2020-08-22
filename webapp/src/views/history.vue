@@ -20,7 +20,7 @@
       <b-row v-if="!transactionItems.length" class="text-center ">
         <b-col>
           <p class="h2 font-weight-light">No transaction history as of yet...</p>
-          <p> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
+          <p v-if="user && user.roles.includes('donor')"> To get started, make a donation <b-link class="text-primary" @click="handleDonateBtn">here</b-link> </p>
         </b-col>
       </b-row>
       <b-table v-else :items="transactionItems" :fields="transactionFields" striped hover stacked="lg" class="mt-3 shadow bg-white rounded">
@@ -28,11 +28,11 @@
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
+          <span v-if="data.item.isOutgoing" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
           <span v-else class="font-weight-bold text-primary">+{{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
         </template>
         <template v-slot:cell(type)="data">
-          <span v-if="data.item.type === 'Distribution'" class="font-weight-bold text-secondary"> {{ data.item.type }}</span>
+          <span v-if="data.item.isOutgoing" class="font-weight-bold text-secondary"> {{ data.item.type }}</span>
           <span v-else class="font-weight-bold text-primary"> {{ data.item.type }}</span>
         </template>
         <template v-slot:cell(status)="data">
@@ -68,11 +68,11 @@
         <span>{{ currentTransaction.updatedAt }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Type:</span> 
-        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary"> {{ currentTransaction.type }}</span>
-          <span v-else class="font-weight-bold text-primary"> {{ currentTransaction.type }}</span>
+        <span v-if="currentTransaction.isOutgoing" class="font-weight-bold text-secondary"> {{ currentTransaction.type }}</span>
+        <span v-else class="font-weight-bold text-primary"> {{ currentTransaction.type }}</span>
         <br/>
         <span class="font-weight-bold pr-2">Amount (Ksh):</span> 
-        <span v-if="currentTransaction.type === 'Distribution'" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? formatWithCommaSeparator(currentTransaction.amount) : formatWithCommaSeparator(currentTransaction.expectedAmount) }}</span>
+        <span v-if="currentTransaction.isOutgoing" class="font-weight-bold text-secondary">-{{  currentTransaction.status === 'Success' ? formatWithCommaSeparator(currentTransaction.amount) : formatWithCommaSeparator(currentTransaction.expectedAmount) }}</span>
         <span v-else class="font-weight-bold text-primary">+{{  currentTransaction.status === 'Success' ? formatWithCommaSeparator(currentTransaction.amount) : formatWithCommaSeparator(currentTransaction.expectedAmount) }}</span>
         <br/>
         <span v-if="currentTransaction.type === 'Distribution'">
@@ -168,7 +168,9 @@ export default {
           from: this.getDonor(t.from, t.type),
           to: this.getRecipient(t.to, t.type),
           type: this.formatType(t.type),
-          failureReason: t.failureReason
+          failureReason: t.failureReason,
+          isIncoming: t.to === this.user._id,
+          isOutgoing: t.from === this.user._id
         }
       });
     }

@@ -58,11 +58,18 @@ export type ErrorCode =
   | 'flutterwaveApiError'
   | 'serverError'
   | 'nominationFailed'
+  | 'activationFailed'
   | 'validationError'
   | 'batchQueueError'
   | 'systemLockLocked'
   | 'systemLockInvalidState'
-  | 'messageDeliveryFailed';
+  | 'messageDeliveryFailed'
+  /**
+   * This error should only be thrown when a transaction fails
+   * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+   */
+  | 'transactionRejected'
+  | 'insufficientFunds';
 
 export function createAppError(message: string, code: ErrorCode): AppError {
   return new AppError(message, code);
@@ -108,12 +115,16 @@ export function createFlutterwaveApiError(message: string) {
   return createAppError(message, 'flutterwaveApiError');
 }
 
-export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_BENEFICIARY_NOMINATION_FAILED) {
+export function createBeneficiaryNominationFailedError(message: string = messages.ERROR_USER_CANNOT_ADD_BENEFICIARY) {
   return createAppError(message, 'nominationFailed');
 }
 
-export function createMiddlemanNominationFailedError(message: string = messages.ERROR_MIDDLEMAN_NOMINATION_FAILED) {
-  return createAppError(message, 'nominationFailed');
+export function createBeneficiaryActivationFailedError(message: string = messages.ERROR_BENEFICIARY_ACTIVATION_FAILED) {
+  return createAppError(message, 'activationFailed');
+}
+
+export function createMiddlemanActivationFailedError(message: string = messages.ERROR_MIDDLEMAN_ACTIVATION_FAILED) {
+  return createAppError(message, 'activationFailed');
 }
 
 export function createSystemLockBusyError(message: string = messages.ERROR_CONFLICTING_OPERATION_IN_PROGRESS) {
@@ -134,4 +145,17 @@ export function createDbConnectionFailedError (message: string = messages.ERROR_
 
 export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
+}
+
+/**
+ * This error should only be thrown when a transaction fails
+ * because the user's transactions are blocked (based on the transactionsBlockedReason field)
+ * @param message 
+ */
+export function createTransactionRejectedError(message: string = messages.ERROR_TRANSACTION_REJECTED) {
+  return createAppError(message, 'transactionRejected');
+}
+
+export function createInsufficientFundsError(message: string) {
+  return createAppError(message, 'insufficientFunds');
 }

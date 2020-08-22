@@ -1,13 +1,15 @@
 import { UserService } from './user';
 import { TransactionService } from './payment';
+import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
-import { SMSProvider } from './sms';
+import { StatsService } from './stat';
 
 export interface App {
   users: UserService;
   transactions: TransactionService;
+  invitations: InvitationService;
   donationDistributions: DonationDistributionService;
-  smsProvider: SMSProvider
+  stats: StatsService;
 };
 
 export interface AppConfig {
@@ -43,6 +45,11 @@ export interface AppConfig {
    * Africa's Talking Payment Product Channel (i.e. Pay Bill number)
    */
   atPaymentsProviderChannel: string;
+  /**
+   * The short code or alphanumeric Sender ID from which
+   * SMS via Africa's Talking API are sent
+   */
+  atSmsSender: string;
   /**
    * Root path of Africa's Talking callback URLS
    * this should be a random and secret string for security
@@ -92,6 +99,11 @@ export interface AppConfig {
    */
   distributionInterval: number;
   /**
+   * Interval delay in minutes between two
+   * processes of computing statistics
+   */
+  statsComputationInterval: number;
+  /**
    * Google API Client ID
    */
   googleClientId: string;
@@ -110,6 +122,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     atPaymentsProductName: env.AT_PAYMENTS_PRODUCT_NAME || 'TestCrowdRelief',
     atPaymentsProviderChannel: env.AT_PAYMENTS_PROVIDER_CHANNEL || '50000',
     atWebhooksRoot: env.AT_WEBHOOKS || '/webhooks/at',
+    atSmsSender: env.AT_SMS_SENDER || '',
     manualPayWebhooksRoot: env.MANUAL_PAY_WEBHOOKS || '/webhooks/manualpay',
     manualPayBaseUrl: env.MANUAL_PAY_BASE_URL || 'http://localhost:5000',
     flutterwaveLogoUrl: `${webappBaseUrl}/img/logo.svg`,
@@ -119,6 +132,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
+    statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID
   };
 }

@@ -26,7 +26,7 @@
 </template>
 <script>
 import HomeFooter from '../components/home-footer'
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
@@ -39,12 +39,16 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['resetMessage']),
     handleLoginAndSignUpBtnClick() {
       this.$bvModal.show('login');
     }
   },
   async created() {
-    if (Auth.isAuthenticated()) {
+    if (Auth.isAuthenticated() && this.$route.name === 'accept-invitation') {
+      this.$router.push({ name: 'invitations' });
+    }
+    else if (Auth.isAuthenticated()) {
       this.$router.push({ name: DEFAULT_SIGNED_IN_PAGE });
     }
   },
@@ -59,6 +63,7 @@ export default {
             variant: 'danger',
             solid: true
           });
+          this.resetMessage();
           break;
         default:
           this.$bvToast.toast(this.message.message, {
@@ -66,6 +71,7 @@ export default {
             variant: 'info',
             solid: true
           });
+          this.resetMessage();
       }
     }
   }

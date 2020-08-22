@@ -1,6 +1,11 @@
 import { Transaction, InitiateDonationArgs, SendDonationArgs } from '../payment';
+import { Invitation } from '../invitation';
 
 export type UserRole = 'donor' | 'beneficiary' | 'middleman';
+
+export type NominationRole = 'beneficiary' | 'middleman';
+
+export type UserTransactionsBlockedReason = 'refundPending' | 'maxRefundsExceeded';
 
 export interface User {
   _id: string,
@@ -17,9 +22,29 @@ export interface User {
    */
   middlemanFor?: string[],
   roles: UserRole[],
+  /**
+   * indicates whether the user is blocked from making transactions
+   * and why. If it's set and not null, then the user is blocked
+   * from making transactions, otherwise the user is not blocked.
+   * The transactions that should be blocked include donations, distributions
+   * and refunds.
+   * This is meant to protect from double-spending (e.g. getting
+   * a refund while a distribution of the same fund is in progress)
+   */
+  transactionsBlockedReason?: UserTransactionsBlockedReason;
+  /**
+   * number of completed refunds
+   */
+  numRefunds?: number;
   createdAt: Date,
   updatedAt: Date
 };
+
+export interface UserPutArgs {
+  name: string,
+  email: string,
+  password: string,
+}
 
 export interface DbUser extends User {
   password?: string
@@ -55,8 +80,23 @@ export interface UserNominateArgs {
   phone: string,
   name: string,
   email?: string,
-  nominator: string,
+  nominatorId: string,
+  nominatorName: string,
+  role?: NominationRole,
 };
+
+export interface UserActivateArgs {
+  invitationId: string
+}
+
+export interface UserActivateBeneficiaryArgs {
+  phone: string,
+  name: string,
+  email?: string,
+  nominatorId: string
+}
+
+export interface UserActivateMiddlemanArgs extends UserActivateBeneficiaryArgs {}
 
 export interface UserLoginArgs {
   phone: string,
@@ -69,35 +109,38 @@ export interface UserLoginResult {
   token: AccessToken
 };
 
+export interface UserInvitationEventData {
+  senderName: string,
+  recipientName: string,
+  recipientPhone: string,
+  role: string,
+  invitationId: string
+}
+
+export interface ReplyToInvitationArgs {
+  id: string,
+  reply: boolean,
+}
+
 export interface UserService {
-  /**
-   * ensures that all required database indexes
-   * for this service are created.
-   * This method is idempotent
-   */
-  createIndexes(): Promise<void>;
   /**
    * creates a user
    * @param args 
    */
   create(args: UserCreateArgs): Promise<User>;
   /**
-   * nominates an existing user as a beneficiary
-   * only if they're not a donor. If user does not
-   * exist, however, a user account is created 
-   * with the role 'beneficiary'
+   * Creates and returns an invitation 
+   * to the nominated person/user
    * @param args 
    */
-  nominateBeneficiary(args: UserNominateArgs): Promise<User>;
+  nominate(args: UserNominateArgs): Promise<Invitation>;
   /**
-   * nominates a user as a middleman to the nominating donor.
-   * A user account is created for the middleman if does not already exist
-   * @param args
-   * @params args.nominator ID donor nominating the middleman
-   * @params args.phone phone of the middleman being nominated
-   * @params args.email email of the middleman being nominated
+   * Activates an account for the invited user referenced by args.invitationId 
+   * if they don't already have one. Otherwise, the existing user assumes a new role
+   * specified by the corresponding invitation
+   * @param args 
    */
-  nominateMiddleman(args: UserNominateArgs): Promise<User>;
+  activate(args: UserActivateArgs): Promise<User>;
   /**
    * retrieves all the users 
    * nominated by the specified user
@@ -116,11 +159,29 @@ export interface UserService {
    */
   login(args: UserLoginArgs): Promise<UserLoginResult>;
   /**
+   * retrieves user by id
+   * @param id
+   */
+  getById(id: string): Promise<User>;
+  /**
    * retrieves the user who owns the token, provided
    * the token is valid
    * @param token 
    */
   getByToken(token: string): Promise<User>;
+  /**
+   * updates name, email, password of user account 
+   * corresponding to userId
+   * @param userId 
+   * @param args 
+   */
+  put(userId: string, args: UserPutArgs): Promise<User>;
+  /**
+   * retrieves the newly created whose id is userId
+   * and whose password has yet to be set
+   * @param userId 
+   */
+  getNew(userId: string): Promise<User>;
   /**
    * invalidates the specified access token
    * @param token 
@@ -144,4 +205,17 @@ export interface UserService {
    * @param to 
    */
   sendDonation(from: string, to: string, args: SendDonationArgs): Promise<Transaction>;
+  /**
+   * initiates a refund for the specified user,
+   * this will fail if a distribution is in progress
+   * the donor will be blocked from participating in distributions
+   * until the refund has been fulfilled
+   * @param user the donor to refund
+   */
+  initiateRefund(user: string): Promise<Transaction>;
+  /**
+   * 
+   * @param pipeline
+   */
+  aggregate(pipeline: any[]): Promise<any[]>;
 };

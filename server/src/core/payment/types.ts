@@ -1,7 +1,7 @@
 
 import { User } from '../user/types';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'paymentQueued' |'failed' | 'success';
-export type TransactionType = 'donation' | 'distribution';
+export type TransactionType = 'donation' | 'distribution' | 'refund';
 
 export interface Transaction {
   _id: string,
@@ -20,6 +20,10 @@ export interface Transaction {
   providerTransactionId?: string,
   metadata: any
 };
+
+export interface TransactionCompletedEventData {
+  transaction: Transaction;
+}
 
 export interface TransactionCreateArgs {
   expectedAmount: number,
@@ -46,11 +50,54 @@ export interface SendDonationArgs {
 
 export interface TransactionService {
   createIndexes(): Promise<void>;
+  /**
+   * initiates a transaction to collect donation from the user
+   * into the user's account on the platform
+   * @param user 
+   * @param args 
+   */
   initiateDonation(user: User, args: InitiateDonationArgs): Promise<Transaction>;
+  /**
+   * creates transaction to send donation from donor to beneficiary
+   * @param from 
+   * @param to 
+   * @param args 
+   */
   sendDonation(from: User, to: User, args: SendDonationArgs): Promise<Transaction>;
+  /**
+   * Initiates a transaction to transfer the user's current account balance on the platform
+   * back to the user
+   * @param user 
+   */
+  initiateRefund(user: User): Promise<Transaction>;
+  /**
+   * handle payment notification coming from the the specified payment
+   * provider's callback
+   * @param providerName 
+   * @param payload 
+   */
   handleProviderNotification(providerName: string, payload: any): Promise<Transaction>;
+  /**
+   * get all transactions by the user, sorted in descending chronological order
+   * @param userId 
+   */
   getAllByUser(userId: string): Promise<Transaction[]>;
+  /**
+   * fetch the latest status of the transaction from the payment provider
+   * and update the transaction accordingly
+   * @param userId 
+   * @param transactionId 
+   */
   checkUserTransactionStatus(userId: string, transactionId: string): Promise<Transaction>;
+  /**
+   * computes the user's confirmed balance. The balance should be the total
+   * of all confirmed (successful) transactions into the user's account (e.g. donations)
+   * minus all transactions out of the user's account that have not failed.
+   * This means that pending (outgoing) transactions contribute to the computed balance.
+   * @param userId 
+   */
+  getUserBalance(userId: string): Promise<number>;
+  aggregate(pipeline: any[]): Promise<any[]>
 }
 
 export interface PaymentRequestResult {

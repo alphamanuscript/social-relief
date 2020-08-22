@@ -11,6 +11,11 @@ const routes = [
     component: Home
   },
   {
+    path: '/signup/new/:id',
+    name: 'signup-new-user',
+    component: Home
+  },
+  {
     path: '/beneficiaries',
     name: 'beneficiaries',
     component: () => import(/* webpackChunkName: "beneficiaries" */ '../views/beneficiaries.vue')
@@ -37,6 +42,11 @@ const routes = [
     path: '/invitations',
     name: 'invitations',
     component: () => import(/* webpackChunkName: "invitations" */ '../views/invitations.vue')
+  },
+  {
+    path: '/invitations/:id',
+    name: 'accept-invitation',
+    component: () => import(/* webpackChunkName: "invitations" */ '../views/accept-invitation.vue')
   },
   {
     path: '/account',

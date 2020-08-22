@@ -335,8 +335,23 @@ declare module 'africastalking-types' {
   }
 
   export interface SendArgs {
+    /**
+     * Recipients phone number. REQUIRED
+     */
     to: string[];
+    /**
+     * Shortcode or alphanumeric ID that is registered with Africa's Talking account
+     */
+    from?: string;
+    /**
+     * SMS content. REQUIRED
+     */
     message: string;
+    /**
+     * Set to true if you would like to deliver as many messages to the API
+     * without waiting for an acknowledgement from telcos.
+     */
+    enqueue?: boolean;
   }
 
   export interface SendResult {

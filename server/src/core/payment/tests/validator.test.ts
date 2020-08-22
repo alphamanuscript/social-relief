@@ -29,7 +29,7 @@ describe('validatesInitiateDonation', () => {
   });
   it('should throw error if inputs are not valid', () => {
     testValidationFails(validators.validatesInitiateDonation, [
-      { userId: 'fhdgjqjqmqcqmlcq', amount: 100 },
+      { userId: {}, amount: 100 },
       { userId: '', amount: 100 },
       { userId: 34256, amount: 2000 },
       { userId: {}, amount: 530 },
@@ -53,8 +53,8 @@ describe('validatesSendDonation', () => {
   });
   it('should throw an error if the argument includes unexpected fields or input is not valid', () => {
     testValidationFails(validators.validatesSendDonation, [
-      { from: 'fhdgjqjqmqcqmlcq', amountArg: { amount: 100 } },
-      { from: 'fhdgjqjqmqcqmlcq', to: 'shcbsdnlcced', amountArg: { amount: 850 } },
+      { from: {}, amountArg: { amount: 100 } },
+      { from: true, to: false, amountArg: { amount: 850 } },
       { from: '', amountArg: { amount: 1000 } },
       { from: '', to: '', amountArg: { amount: 425 } },
       { from: 34256, amountArg: { amount: 2000 } },

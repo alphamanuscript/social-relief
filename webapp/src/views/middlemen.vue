@@ -3,9 +3,10 @@
     <div class="ml-lg-5">
       <h3 class="text-primary pb-3">My Middlemen</h3>
       <div v-if="!middlemanItems.length" class="text-center">
-        <p class="h2 font-weight-light">You don't have any middlemen yet...</p>
-        <p class="">You can nominate a middleman to add beneficiaries on your behalf.</p>
-        <p> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
+        <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" class="h2 font-weight-light">You don't have any middlemen yet...</p>
+        <p v-else class="h2 font-weight-light">You do not qualify to have or nominate middlemen</p>
+        <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" class="">You can nominate a middleman to add beneficiaries on your behalf.</p>
+        <p v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')"> <b-link to="nominate" class="text-primary">Click here to get started.</b-link> </p>
       </div>
       <b-table v-else :items="middlemanItems" :fields="middlemanFields" striped hover stacked="sm" class="bg-white rounded shadow">
         <template v-slot:cell(index)="data">

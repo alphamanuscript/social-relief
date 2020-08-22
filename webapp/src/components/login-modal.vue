@@ -37,7 +37,7 @@
           </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
-          Start with 7, for example 712345678
+          For example 712345678
         </b-form-text>
       </b-form-group>
       <b-form-group>
@@ -87,11 +87,11 @@ export default {
         password: ''
       },
       signInValidationMessages: [
-        'Invalid phone number. Must start with 7 and be 9 digits long',
+        'Invalid phone number. Must be 9 digits long and cannot start with 0',
         'Password required'
       ],
       signInValidationRules: [
-        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+        { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
         { test: (creds) => creds.password.length > 0, }
       ],
       signInValidationResults: [null, null],
@@ -137,7 +137,7 @@ export default {
     },
     async signIn() {
       this.signInValidationMessages = [
-        'Invalid phone number. Must start with 7 and be 9 digits long',
+        'Invalid phone number. Must be 9 digits long and cannot start with 0',
         'Password required'
       ];
       this.helper = {

@@ -12,6 +12,14 @@ const getters: GetterTree<AppState, AppState> = {
       .map(t => t.amount)
       .reduce((a, b) => a + b, 0);
   },
+  totalAmountRefunded: ({ transactions }) => {
+    return transactions.filter(t => t.type === 'refund' && t.status === 'success' && t.amount > 0)
+      .map(t => t.amount)
+      .reduce((a, b) => a + b, 0);
+  },
+  accountBalance: (state, getters) => {
+    return getters.totalAmountDonated - (getters.totalAmountDistributed + getters.totalAmountRefunded);
+  },
   peopleDonatedTo: ({ transactions, user }) => {
     const recipients = transactions.filter(t => t.type === 'distribution' && t.status === 'success' && (user && t.to !== user._id))
       .map(t => t.to);
@@ -23,6 +31,12 @@ const getters: GetterTree<AppState, AppState> = {
   },
   distributions: ({ transactions }) => {
     return transactions.filter(t => t.type == 'distribution').reverse();
+  },
+  invitationsSent: ({ invitations, user }) => {
+    return invitations.filter(invt => user && invt.invitorId === user._id);
+  },
+  invitationsReceived: ({ invitations, user}) => {
+    return invitations.filter(invt => user && invt.inviteePhone === user.phone);
   }
 }
 
