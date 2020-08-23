@@ -118,8 +118,7 @@
       <div class="border-bottom mt-3"></div>
       <div class="text-center mt-3 ">
         <span class="text-secondary font-weight-light pr-3">or:</span>
-        <i class="fab fa-google text-primary"></i>
-        <GoogleLogin :params="params" :onSuccess="onGoogleLoginSuccess" class="bg-white border-0 text-secondary">Sign up with Google</GoogleLogin>
+        <GoogleButton text="Sign up with Google" @success:google-login="onGoogleLoginSuccess" @failure:google-login="onGoogleLoginFailure"/>
       </div>
     </b-form>
     <p class="text-center small mt-3 text-secondary">
@@ -131,9 +130,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { GoogleLogin } from 'vue-google-login';
 import { validateNamedRules } from '../views/util';
-import { GOOGLE_CLIENT_ID } from '../api-urls';
+import GoogleButton from './google-button';
 export default {
   name: 'sign-up-modal',
   data() {
@@ -162,9 +160,6 @@ export default {
         email: { test: (creds) => /\S+@\S+\.\S+/.test(String(creds.email))}
       },
       signUpValidationResults: { name: null, phone: null, password: null, confirmedPassword: null, email: null },
-      params: {
-        clientId: GOOGLE_CLIENT_ID
-      },
       helper: {
         phone: false,
         password: false
@@ -172,7 +167,7 @@ export default {
     }
   },
   components: {
-    GoogleLogin
+    GoogleButton
   },
   computed: {
     ...mapState(['user', 'newUser']),
@@ -187,7 +182,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['createUser', 'updateNewUser']),
+    ...mapActions(['createUser', 'signUserIn', 'updateNewUser']),
     showLoginDialog() {
       this.$bvModal.show('login');
     },
@@ -243,24 +238,16 @@ export default {
       }
     },
     async onGoogleLoginSuccess(googleUser) {
-      if (googleUser) {
         await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token });
         if (!this.user) {
           this.$emit('login:google', googleUser);
         }
-        else {
-          this.$bvToast.toast('Please try again later.', {
-            title: 'Problem connecting to Google',
-            variant: 'warning',
-            solid: true
-          });
-        }
-      }
+        this.$bvModal.hide('sign-up');
     },
-    onFailure() {
-      this.$bvToast.toast('Please try again later.', {
-        title: 'Problem connecting to Google',
-        variant: 'warning',
+    onGoogleLoginFailure(error) {
+      this.$bvToast.toast(error, {
+        title: 'Google Login Error',
+        variant: 'danger',
         solid: true
       });
     }

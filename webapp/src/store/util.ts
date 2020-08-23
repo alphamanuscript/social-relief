@@ -63,9 +63,23 @@ export function wrapActions (actions: ActionTree<AppState, AppState>): ActionTre
   }, {});
 }
 
+export async function googleSignIn() {
+  // @ts-ignore
+  return Vue.GoogleAuth.then( (auth2) => {
+    if (auth2.isSignedIn.get()) {
+      return auth2.currentUser.get();
+    }
+    else {
+      return auth2.signIn()
+    }
+  })
+}
+
 export async function googleSignOut() {
   // @ts-ignore
   return Vue.GoogleAuth.then( (auth2) => {
-    auth2.signOut();
-    });
+    auth2.signOut().then( () => {
+      console.log('signed out of Google');
+    })
+  });
 }

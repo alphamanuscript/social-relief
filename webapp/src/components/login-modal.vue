@@ -64,8 +64,7 @@
       <div class="border-bottom mt-3"></div>
       <div class="text-center mt-3 ">
         <span class="text-secondary font-weight-light pr-3">or:</span>  
-        <i class="fab fa-google text-primary"></i>
-        <GoogleLogin :params="params" :onSuccess="onSuccess" :onFailure="onFailure" class="bg-white border-0 text-secondary">Sign in with Google</GoogleLogin>
+        <GoogleButton text="Sign in with Google" @success:google-login="onGoogleLoginSuccess" @failure:google-login="onGoogleLoginFailure"/>
       </div>
     </b-form>
     <p class="text-center small mt-3 text-secondary">
@@ -77,9 +76,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { GoogleLogin } from 'vue-google-login';
 import { validateObj } from '../views/util';
-import { GOOGLE_CLIENT_ID } from '../api-urls';
+import GoogleButton from './google-button';
 export default {
   name: 'login-modal',
   data() {
@@ -97,9 +95,6 @@ export default {
         { test: (creds) => creds.password.length > 0, }
       ],
       signInValidationResults: [null, null],
-      params: {
-        clientId: GOOGLE_CLIENT_ID
-      },
       helper: {
         phone: false,
         password: false
@@ -107,7 +102,7 @@ export default {
     }
   },
   components: {
-    GoogleLogin
+    GoogleButton
   },
   computed: {
     ...mapState(['user']),
@@ -129,7 +124,7 @@ export default {
     showSignUpDialog() {
       this.$bvModal.show('sign-up');
     },
-    hideDialog() {
+    async hideDialog() {
       this.signInCreds = {
         phone: '',
         password: ''
@@ -138,7 +133,7 @@ export default {
       this.helper = {
         phone: false,
         password: false
-      };
+      };    
     },
     async signIn() {
       this.signInValidationMessages = [
@@ -162,25 +157,17 @@ export default {
         } 
       }
     },
-    async onSuccess(googleUser) {
-      if (googleUser) {
-        await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token }); 
-        if (!this.user) {
-          this.$emit('login:google', googleUser);
-        }
+    async onGoogleLoginSuccess(googleUser) {
+      await this.signUserIn({ googleIdToken: googleUser.getAuthResponse().id_token }); 
+      if (!this.user) {
+        this.$emit('login:google', googleUser);
       }
-      else {
-        this.$bvToast.toast('Please try again later.', {
-          title: 'Problem connecting to Google',
-          variant: 'warning',
-          solid: true
-        });
-      }
+      this.$bvModal.hide('login');
     },
-    onFailure() {
-      this.$bvToast.toast('Please try again later.', {
-        title: 'Problem connecting to Google',
-        variant: 'warning',
+    onGoogleLoginFailure(error) {
+      this.$bvToast.toast(error, {
+        title: 'Google Login Error',
+        variant: 'danger',
         solid: true
       });
     }
