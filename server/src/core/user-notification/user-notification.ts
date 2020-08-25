@@ -1,10 +1,12 @@
 import { SmsProvider } from '../sms';
+import { EmailProvider } from '../email';
 import { EventBus, Event} from '../event';
 import { UserService, UserInvitationEventData } from '../user';
 import { TransactionCompletedEventData, Transaction } from '../payment';
 
 export interface UserNotificationsArgs {
   smsProvider: SmsProvider;
+  emailProvider: EmailProvider;
   eventBus: EventBus;
   users: UserService;
   webappBaseUrl: string;
@@ -12,12 +14,14 @@ export interface UserNotificationsArgs {
 
 export class UserNotifications {
   smsProvider: SmsProvider;
+  emailProvider: EmailProvider;
   eventBus: EventBus;
   users: UserService;
   webappBaseUrl: string;
 
   constructor(args: UserNotificationsArgs) {
       this.smsProvider = args.smsProvider;
+      this.emailProvider = args.emailProvider;
       this.eventBus = args.eventBus;
       this.users = args.users;
       this.webappBaseUrl = args.webappBaseUrl;
@@ -37,6 +41,9 @@ export class UserNotifications {
     
     try {
       await this.smsProvider.sendSms(data.recipientPhone, message);
+      if (data.recipientEmail) {
+        await this.emailProvider.sendEmail(data.recipientEmail, message);
+      }
     }
     catch (error) {
       console.error('Error occurred handling event', event, error);
@@ -72,11 +79,22 @@ export class UserNotifications {
       this.smsProvider.sendSms(donor.phone, donorMessage),
       this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
     ]);
+
+    if (donor.email) {
+      await this.emailProvider.sendEmail(donor.email, donorMessage);
+    }
+
+    if (beneficiary.email) {
+      await this.emailProvider.sendEmail(beneficiary.email, beneficiaryMessage);
+    }
   }
 
   async sendSuccessfulRefundMessage(transaction: Transaction) {
     const user = await this.users.getById(transaction.to);
     const message = `Hello ${user.name}, your refund of Ksh ${transaction.amount} from SocialRelief has been issued.`;
     await this.smsProvider.sendSms(user.phone, message);
+    if (user.email) {
+      await this.emailProvider.sendEmail(user.email, message);
+    }
   }
 }

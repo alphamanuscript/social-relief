@@ -113,6 +113,7 @@ export interface UserInvitationEventData {
   senderName: string,
   recipientName: string,
   recipientPhone: string,
+  recipientEmail: string,
   role: string,
   invitationId: string
 }
