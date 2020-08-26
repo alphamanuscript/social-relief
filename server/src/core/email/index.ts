@@ -1,2 +1,2 @@
 export * from './types';
-export { EmailService } from './email-service';
+export { sgEmailProvider } from './sg-email-provider';

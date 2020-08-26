@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@sendgrid/mail": "^7.2.4",
     "africastalking": "^0.4.5",
     "argon2": "^0.26.2",
     "axios": "^0.19.2",

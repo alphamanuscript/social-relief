@@ -64,6 +64,7 @@ export type ErrorCode =
   | 'systemLockLocked'
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
+  | 'emailDeliveryFailed'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -145,6 +146,10 @@ export function createDbConnectionFailedError (message: string = messages.ERROR_
 
 export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
+}
+
+export function createEmailDeliveryFailedError(message: string) {
+  return createAppError(message, 'emailDeliveryFailed');
 }
 
 /**
