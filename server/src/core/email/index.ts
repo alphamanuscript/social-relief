@@ -1,2 +1,2 @@
 export * from './types';
-export { sgEmailProvider } from './sg-email-provider';
+export { sendgridEmailProvider } from './sendgrid-email-provider';

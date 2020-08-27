@@ -54,6 +54,7 @@ export type ErrorCode =
   | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
+  | 'sendgridApiError'
   | 'manualPayApiError'
   | 'flutterwaveApiError'
   | 'serverError'
@@ -106,6 +107,10 @@ export function createFundsToUserFailedError(message: string) {
 
 export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) {
   return createAppError(message, 'atApiError');
+}
+
+export function createSendGridApiError(message: string) {
+  return createAppError(message, 'sendgridApiError');
 }
 
 export function createManualPayApiError(message: string) {
