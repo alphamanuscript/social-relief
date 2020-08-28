@@ -2,24 +2,24 @@ import { EmailProvider } from './types';
 import { rethrowIfAppError, createEmailDeliveryFailedError, createSendGridApiError } from '../error';
 import sgMail = require('@sendgrid/mail');
 
-export interface sendgridEmailProviderArgs {
+export interface SendGridEmailProviderArgs {
   apiKey: string,
-  socialReliefEmail: string
+  emailSender: string
 };
 
-export class sendgridEmailProvider implements EmailProvider{
-  private socialReliefEmail: string;
+export class SendGridEmailProvider implements EmailProvider{
+  private emailSender: string;
 
-  constructor(args: sendgridEmailProviderArgs) {
+  constructor(args: SendGridEmailProviderArgs) {
     sgMail.setApiKey(args.apiKey);
-    this.socialReliefEmail = args.socialReliefEmail;
+    this.emailSender = args.emailSender;
   }
 
   async sendEmail(to: string, message: string): Promise<void> {
     try {
       const res = await sgMail.send({
         to,
-        from: this.socialReliefEmail,
+        from: this.emailSender,
         subject: 'Social Relief Notification',
         text: message,
       });

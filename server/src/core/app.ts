@@ -108,7 +108,7 @@ export interface AppConfig {
    */
   googleClientId: string;
   sendgridApiKey: string;
-  socialReliefEmail: string;
+  emailSender: string;
 };
 
 export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig {
@@ -137,6 +137,6 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
     sendgridApiKey: env.SENDGRID_API_KEY || '',
-    socialReliefEmail: env.SOCIAL_RELIEF_EMAIL || 'socialrelief@manuscript.live'
+    emailSender: env.EMAIL_SENDER || 's'
   };
 }
