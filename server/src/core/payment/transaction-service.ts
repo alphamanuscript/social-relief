@@ -114,7 +114,7 @@ export class Transactions implements TransactionService {
     };
 
     try {
-      const transaction = await this.sendFundsToUser(from, trxArgs);
+      const transaction = await this.sendFundsToUser(to, trxArgs);
       return transaction;
     }
     catch (e) {
