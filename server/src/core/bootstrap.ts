@@ -6,6 +6,7 @@ import { createDbConnectionFailedError } from './error';
 import { DonationDistributions } from './distribution';
 import { SystemLocks } from './system-lock';
 import { AtSmsProvider } from './sms';
+import { SendGridEmailProvider } from './email';
 import { Invitations } from './invitation';
 import { EventBus } from './event';
 import { UserNotifications } from './user-notification';
@@ -61,10 +62,15 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     apiKey: config.atApiKey,
     sender: config.atSmsSender
   });
+  const emailProvider = new SendGridEmailProvider({
+    apiKey: config.sendgridApiKey,
+    emailSender: config.emailSender
+  });
 
   // starts listening to events when instantiated
   new UserNotifications({
     smsProvider,
+    emailProvider,
     eventBus,
     users,
     webappBaseUrl: config.webappBaseUrl

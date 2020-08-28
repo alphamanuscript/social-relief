@@ -54,6 +54,7 @@ export type ErrorCode =
   | 'b2cRequestFailed'
   | 'serverError'
   | 'atApiError'
+  | 'sendgridApiError'
   | 'manualPayApiError'
   | 'flutterwaveApiError'
   | 'serverError'
@@ -64,6 +65,7 @@ export type ErrorCode =
   | 'systemLockLocked'
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
+  | 'emailDeliveryFailed'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -107,6 +109,10 @@ export function createAtApiError(message: string = messages.ERROR_AT_API_ERROR) 
   return createAppError(message, 'atApiError');
 }
 
+export function createSendGridApiError(message: string) {
+  return createAppError(message, 'sendgridApiError');
+}
+
 export function createManualPayApiError(message: string) {
   return createAppError(message, 'manualPayApiError');
 }
@@ -145,6 +151,10 @@ export function createDbConnectionFailedError (message: string = messages.ERROR_
 
 export function createMessageDeliveryFailedError(message: string) {
   return createAppError(message, 'messageDeliveryFailed');
+}
+
+export function createEmailDeliveryFailedError(message: string) {
+  return createAppError(message, 'emailDeliveryFailed');
 }
 
 /**

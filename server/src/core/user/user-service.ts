@@ -192,6 +192,7 @@ export class Users implements UserService {
       this.eventBus.emitUserInvitationCreated({
         recipientName: invitation.inviteeName,
         recipientPhone: invitation.inviteePhone,
+        recipientEmail: invitation.inviteeEmail,
         senderName: invitation.invitorName,
         role: invitation.inviteeRole,
         invitationId: invitation._id

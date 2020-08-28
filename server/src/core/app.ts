@@ -107,6 +107,8 @@ export interface AppConfig {
    * Google API Client ID
    */
   googleClientId: string;
+  sendgridApiKey: string;
+  emailSender: string;
 };
 
 export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig {
@@ -133,6 +135,8 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
-    googleClientId: env.GOOGLE_CLIENT_ID
+    googleClientId: env.GOOGLE_CLIENT_ID,
+    sendgridApiKey: env.SENDGRID_API_KEY || '',
+    emailSender: env.EMAIL_SENDER || 's'
   };
 }
