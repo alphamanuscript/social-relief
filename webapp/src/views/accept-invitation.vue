@@ -92,11 +92,15 @@ export default {
     },
     async handleInvitationAcceptance() {
       await this.acceptInvitation(this.currentInvitation._id);
-      await this.createNewUser(this.currentInvitation._id);
       if (this.message.type !== 'error') {
-        await this.getCurrentInvitation(this.currentInvitation._id);
-        this.$bvModal.hide('confirm-invitation-acceptance');
-        this.$bvModal.show('accept-invitation-success');
+        await this.createNewUser(this.currentInvitation._id);
+        if (this.message.type !== 'error') {
+          await this.getCurrentInvitation(this.currentInvitation._id);
+          if (this.message.type !== 'error') { 
+            this.$bvModal.hide('confirm-invitation-acceptance');
+            this.$bvModal.show('accept-invitation-success');
+          }
+        }
       }
     }
   },
