@@ -52,14 +52,14 @@ export default {
     return {
       donationInputs: {
         phone: '',
-        amount: 1000
+        amount: 100
       },
       validationMessages: [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid Phone number. Must be 9 digits long and cannot start with 0',
         'Insufficient amount. Donations must be at least of the amount 100',
       ],
       validationRules: [
-        { test: (donationInputs) => donationInputs.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
+        { test: (donationInputs) => donationInputs.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
         { test: (donationInputs) => donationInputs.amount >= 100 },
       ],
       validationResults: [null, null],
@@ -93,7 +93,7 @@ export default {
     },
     async submitDonation() {
       this.validationMessages = [
-        'Invalid phone number. Must start with 7 and be 9 digit long',
+        'Invalid Phone number. Must be 9 digits long and cannot start with 0',
         'Insufficient amount. Donations must be at least of the amount 100',
       ];
       this.donationInputs.amount = Number(this.donationInputs.amount);

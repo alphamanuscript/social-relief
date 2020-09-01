@@ -1,0 +1,181 @@
+<template>
+  <b-modal
+    id="donate-anonymously"
+    size="sm" 
+    centered
+    hide-header-close
+    header-class="border-bottom-0"
+    hide-footer
+    no-stacking
+    @hidden="hideDialog()"
+    content-class="rounded"
+    >
+    <template v-slot:modal-header>
+    <div class="d-flex flex-column m-auto">
+        <img :src="imageUrl" width="70" alt="Social Relief Logo" class="m-4">
+        <h4 class="text-secondary text-center">Donate</h4>
+    </div>
+    </template>
+    <b-form>
+      <b-form-group>
+        <label for="amount">Amount to donate</label>
+        <b-form-input 
+          v-model="donationInputs.amount" 
+          type="number" 
+          :state="validationResults.amount"
+          class="custom-dialog-form-input"
+          placeholder="Enter amount (Kshs)"
+          id="amount"
+          :value="donationInputs.amount"
+        />
+        <b-form-invalid-feedback class="text-center">
+          {{ validationMessages.amount }}
+        </b-form-invalid-feedback>
+        <div class="text-center">
+          <span class="small">A transaction fee may be charged by the provider</span>
+        </div>
+      </b-form-group>
+      <b-form-group>
+        <label for="name" class="sr-only">Name (Required by payment provider)</label>
+        <b-form-input
+          v-model="donationInputs.name"
+          type="text"
+          :state="validationResults.name"
+          class="custom-dialog-input"
+          placeholder="Enter name"
+          id="name"
+        />
+        <b-form-invalid-feedback class="text-center">
+          {{ validationMessages.name }}
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <b-form-group>
+        <b-input-group>
+          <b-input-group-prepend>
+            <b-button disabled class="custom-dialog-input-phone-prepend">+254</b-button>
+          </b-input-group-prepend>
+          <label for="phone" class="sr-only">Phone Number (Required by payment provider)</label>
+          <b-form-input
+            v-model="donationInputs.phone" 
+            type="text" 
+            :state="validationResults.phone"
+            class="custom-dialog-input-phone"
+            placeholder="Enter phone number"
+            id="phone"
+            @update="helper.phone = true"
+          />
+          <b-form-invalid-feedback class="text-center">
+            {{ validationMessages.phone }}
+          </b-form-invalid-feedback>
+        </b-input-group>
+        <b-form-text v-show="showPhoneHelper" class="text-center">
+          For example 712345678.
+        </b-form-text>
+      </b-form-group>
+      <b-form-group>
+        <label for="email" class="sr-only">Email</label>
+        <b-form-input
+          v-model="donationInputs.email"
+          type="text"
+          :state="validationResults.email"
+          class="custom-dialog-input"
+          placeholder="Enter email"
+          id="email"
+        />
+        <b-form-invalid-feedback class="text-center">
+          {{ validationMessages.email }}
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <div class="text-center">
+        <b-button type="submit" size="sm" variant="primary" class="custom-submit-button" @click.prevent="donate">Submit</b-button>
+      </div>
+    </b-form>
+  </b-modal>
+</template>
+<script>
+import { validateNamedRules } from '../views/util';
+import { mapActions, mapState } from 'vuex';
+export default {
+  name: 'donate-anonymously',
+  data() {
+    return {
+      donationInputs: {
+        amount: 100,
+        name: '',
+        phone: '',
+        email: '',
+        role: 'donor'
+      },
+      validationMessages: {
+        amount: 'Insufficient amount. Donations must be at least of the amount 100',
+        name: 'Name is required',
+        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
+        email: 'Invalid email'
+      },
+      validationRules: {
+        amount: { test: (donationInputs) => donationInputs.amount >= 100 },
+        name: { test: (donationInputs) => !!donationInputs.name.trim().length },
+        phone: { test: (donationInputs) => donationInputs.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
+        email: { test: (donationInputs) => /\S+@\S+\.\S+/.test(String(donationInputs.email))}
+      },
+      validationResults: { amount: null, name: null, phone: null, email: null },
+      helper: {
+        phone: false
+      }
+    }
+  },
+  methods: {
+    ...mapActions(['donateAnonymously']),
+    hideDialog() {
+      this.donationInputs = {
+        amount: 100,
+        name: '',
+        phone: '',
+        email: '',
+        role: 'donor'
+      },
+      this.validationResults = { amount: null, name: null, phone: null, email: null },
+      this.helper = {
+        phone: false,
+      };
+    },
+    async donate() {
+      this.validationMessages = {
+        amount: 'Insufficient amount. Donations must be at least of the amount 100',
+        name: 'Name is required',
+        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
+        email: 'Invalid email'
+      };
+      this.donationInputs.amount = Number(this.donationInputs.amount);
+      this.validationResults = validateNamedRules(this.donationInputs, this.validationRules);
+
+      if (!Object.values(this.validationResults).includes(false)) {
+        this.$bvModal.hide('donate-anonymously');
+        this.$bvModal.show('confirm-donation');
+        // await this.donateAnonymously(this.donationInputs);
+        // await this.donate({ amount: this.donationInputs.amount });
+        // if (this.message.type !== 'error') {
+        //   this.donationInputs = {
+        //     phone: '',
+        //     amount: 1000
+        //   },
+        //   this.validationResults = [null, null];
+        //   this.$bvModal.hide('donate');
+        //   this.$bvModal.show('confirm-donation');
+        // }
+      }
+    }
+  },
+  computed: {
+    imageUrl () {
+      return require(`@/assets/Social Relief Logo_1.svg`);
+    },
+    showPhoneHelper () {
+      return this.validationResults.phone == null && this.helper.phone;
+    },
+  },
+}
+</script>
+<style lang="scss" scoped>
+
+</style>

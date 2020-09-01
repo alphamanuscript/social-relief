@@ -110,7 +110,7 @@ export default {
     ...mapActions(['getNewUser', 'getStats']),
     formatWithCommaSeparator,
     handleDonateBtn() {
-      this.$bvModal.show('login');
+      this.$bvModal.show('donate-anonymously');
     }
   },
   async mounted(){

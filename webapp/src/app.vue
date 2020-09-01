@@ -7,12 +7,14 @@
     <GoogleSignUpModal :googleUser="googleUser"/>
     <PaymentListener/>
     <DonateModal/>
+    <DonateAnonymouslyModal/>
   </div>
 </template>
 <script>
 import LoginModal from './components/login-modal.vue';
 import SignUpModal from './components/sign-up-modal.vue';
 import DonateModal from './components/donate-modal.vue';
+import DonateAnonymouslyModal from './components/donate-anonymously-modal.vue';
 import GoogleSignUpModal from './components/google-sign-up-modal.vue';
 import { PaymentListener } from './components/payment';
 import LoggedOutStructure from './views/logged-out-structure.vue';
@@ -24,6 +26,7 @@ export default {
     LoginModal,
     SignUpModal,
     DonateModal,
+    DonateAnonymouslyModal,
     GoogleSignUpModal,
     LoggedInStructure,
     LoggedOutStructure,
