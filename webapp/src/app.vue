@@ -7,6 +7,8 @@
     <GoogleSignUpModal :googleUser="googleUser"/>
     <PaymentListener/>
     <DonateModal/>
+    <PrivacyPolicyModal/>
+    <TermsOfUseModal/>
   </div>
 </template>
 <script>
@@ -14,6 +16,8 @@ import LoginModal from './components/login-modal.vue';
 import SignUpModal from './components/sign-up-modal.vue';
 import DonateModal from './components/donate-modal.vue';
 import GoogleSignUpModal from './components/google-sign-up-modal.vue';
+import PrivacyPolicyModal from './components/privacy-policy-modal.vue';
+import TermsOfUseModal from './components/terms-of-use-modal.vue';
 import { PaymentListener } from './components/payment';
 import LoggedOutStructure from './views/logged-out-structure.vue';
 import LoggedInStructure from './views/logged-in-structure.vue';
@@ -27,7 +31,9 @@ export default {
     GoogleSignUpModal,
     LoggedInStructure,
     LoggedOutStructure,
-    PaymentListener
+    PaymentListener,
+    PrivacyPolicyModal,
+    TermsOfUseModal
   },
   data() {
     return {

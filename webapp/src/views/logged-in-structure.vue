@@ -23,8 +23,8 @@
             <b-nav-item to="/invitations" exact exact-active-class="active">Invitations</b-nav-item>
             <b-nav-item to="/history" exact exact-active-class="active">Transaction history</b-nav-item>
             <div class="small text-secondary mt-auto">
-            <p>privacy policy</p>
-            <p>terms of use</p>
+            <p><b-link href="#" class="text-secondary" @click="handlePrivacyPolicy()">privacy policy</b-link></p>
+            <p><b-link href="#" class="text-secondary" @click="handleTermsOfUse()">terms of use</b-link></p>
             <p>&copy; {{ new Date().getFullYear() }}</p>
           </div>
           </b-nav>
@@ -121,6 +121,12 @@ export default {
     },
     handleDonateBtn() {
       this.$bvModal.show('donate');
+    },
+    handlePrivacyPolicy() {
+      this.$bvModal.show('privacy-policy')
+    },
+    handleTermsOfUse() {
+      this.$bvModal.show('terms-of-use')
     }
   },
   watch: {
