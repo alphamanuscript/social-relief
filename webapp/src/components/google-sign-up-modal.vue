@@ -57,7 +57,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { validateObj } from '../views/util';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 export default {
   name: 'google-sign-up-modal',
   props: {
@@ -75,13 +75,13 @@ export default {
         role: 'donor'
       },
       
-      signUpValidationMessages: [
-        'Invalid Phone number. Must start with 7 and be 9 digits long'
-      ],
-      signUpValidationRules: [
-        { test: (creds) => creds.phone[0] === '7' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) }
-      ],
-      signUpValidationResults: [null],
+      signUpValidationMessages: {
+        phone: validationMessages.phone
+      },
+      signUpValidationRules: {
+        phone: validationRules.phone,
+      },
+      signUpValidationResults: { phone: null },
       helper: {
         phone: false,
       }
@@ -93,12 +93,12 @@ export default {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
     showPhoneHelper () {
-      return this.signUpValidationResults[0] == null && this.helper.phone;
+      return this.signUpValidationResults.phone == null && this.helper.phone;
     }
   },
   methods: {
     ...mapActions(['createUser']),
-    validateObj,
+    validateNamedRules,
     showLoginDialog() {
       this.$bvModal.show('login');
     },
@@ -107,37 +107,37 @@ export default {
         phone: '',
         role: 'donor'
       },
-      this.signUpValidationResults = [null];
+      this.signUpValidationResults = { phone: null };
        this.helper = {
         phone: false
       };
     },
     async signUp() {
-      this.signUpValidationMessages = [
-        'Invalid Phone number. Must start with 7 and be 9 digits long'
-      ];
+      this.signUpValidationMessages = {
+        phone: validationMessages.phone,
+      }
       this.helper = {
         phone: false,
         password: false
       };
-      this.signUpValidationResults = this.validateObj(this.signUpCreds, this.signUpValidationRules);
-      if (this.googleUser && this.signUpValidationResults[0]) {
+      this.signUpValidationResults = this.validateNamedRules(this.signUpCreds, this.signUpValidationRules);
+      if (this.googleUser && !Object.values(this.signUpValidationResults).includes(false)) {
         await this.createUser({ 
           phone: `254${this.signUpCreds.phone}`,
           googleIdToken: this.googleUser.getAuthResponse().id_token 
         });
         if (!this.user) {
-          this.signUpValidationMessages = [
-            'Sign-up failed. Phone number already assigned to existing account'
-          ];
-          this.signUpValidationResults = [false];
+          this.signUpValidationMessages = {
+            phone: validationMessages.phone
+          }
+          this.signUpValidationResults = { phone: false };
         }
         else {
           this.signUpCreds = {
             phone: '',
             role: 'donor'
           },
-          this.signUpValidationResults = [true];
+          this.signUpValidationResults = { phone: true };
           this.$bvModal.hide('google-sign-up');
         }
       }
