@@ -40,8 +40,8 @@ describe('validatesLogin', () => {
       { phone: '254729291091', password: 'dsks12jnDM4' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
-      { phone: '2548292910916', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254829291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254129291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
       { googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
