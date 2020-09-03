@@ -354,6 +354,7 @@ export class Users implements UserService {
   }
 
   async login(args: UserLoginArgs): Promise<UserLoginResult> {
+    console.log('args in login: ', args);
     validators.validatesLogin(args);
     try {
       let user;
