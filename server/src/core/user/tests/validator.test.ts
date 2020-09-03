@@ -18,16 +18,11 @@ describe('validatesCreate', () => {
     testValidationFails(validators.validatesCreate, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '25472929109', password: 'dsksjjn,', name: ''},
-      { phone: '+254729291091', password: 'dsks12jnDM4' },
-      { phone: '2548292910919', password: 'dsks12jnDM4SEZLZSS' },
-      { phone: '254738103012', password: 'f' },
       { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
       { phone: '', password: 'wiedna102Ldnffrfldm' },
-      { phone: '254738103012', password: '' },
       { password: 'wiedna102Ldnffrfldm' },
       { phone: '254738103012' },
       { phone: '254738103012', password: 1 },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
       { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
@@ -41,9 +36,13 @@ describe('validatesLogin', () => {
   it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesLogin, [
       { phone: '254729291091', password: 'dsksjjn,' },
+      { phone: '254738103012', password: 'f' },
       { phone: '254729291091', password: 'dsks12jnDM4' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254829291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254129291091', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
       { googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
@@ -51,10 +50,6 @@ describe('validatesLogin', () => {
     testValidationFails(validators.validatesLogin, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '+254729291091', password: 'dsks12jnDM4' },
-      { phone: '2548292910916', password: 'dsks12jnDM4SEZLZSS' },
-      { phone: '254738103012', password: 'f' },
-      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
       { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },

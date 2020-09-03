@@ -34,3 +34,19 @@ export const validateNamedRules = (obj: any, rules: { [name: string]: Rule }): N
 export const formatWithCommaSeparator = (num: Number): String => {
   return num.toLocaleString();
 }
+
+export const validationMessages = {
+  name: 'Name is required',
+  phone: 'Invalid phone number. Must be 9 digits long and cannot start with 0',
+  password: 'Password required',
+  confirmedPassword: 'Confirmed password does not match with password',
+  email: 'Invalid email'
+}
+
+export const validationRules = {
+  name: { test: (creds: any) => !!creds.name.trim().length },
+  phone: { test: (creds: any) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+  password: { test: (creds: any) => creds.password.length > 0 },
+  confirmedPassword: { test: (creds: any) => creds.confirmedPassword === creds.password },
+  email: { test: (creds: any) => /\S+@\S+\.\S+/.test(String(creds.email))},
+}

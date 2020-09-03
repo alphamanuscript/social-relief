@@ -130,7 +130,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { validateNamedRules } from '../views/util';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 import GoogleButton from './google-button';
 export default {
   name: 'sign-up-modal',
@@ -146,18 +146,18 @@ export default {
       },
       
       signUpValidationMessages: {
-        name: 'Name is required',
-        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
-        password: 'Invalid password. Must range between 8 and 18 characters',
-        confirmedPassword: 'Confirmed password does not match with password',
-        email: 'Invalid email'
+        name: validationMessages.name,
+        phone: validationMessages.phone,
+        password: validationMessages.password,
+        confirmedPassword: validationMessages.confirmedPassword,
+        email: validationMessages.email
       },
       signUpValidationRules: {
-        name: { test: (creds) => !!creds.name.trim().length },
-        phone: { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        password: { test: (creds) => /^.{8,18}$/.test(creds.password) },
-        confirmedPassword: { test: (creds) => creds.confirmedPassword === creds.password },
-        email: { test: (creds) => /\S+@\S+\.\S+/.test(String(creds.email))}
+        name: validationRules.name,
+        phone: validationRules.phone,
+        password: validationRules.password,
+        confirmedPassword: validationRules.confirmedPassword,
+        email: validationRules.email,
       },
       signUpValidationResults: { name: null, phone: null, password: null, confirmedPassword: null, email: null },
       helper: {
@@ -183,6 +183,7 @@ export default {
   },
   methods: {
     ...mapActions(['createUser', 'signUserIn', 'updateNewUser']),
+    validateNamedRules,
     showLoginDialog() {
       this.$bvModal.show('login');
     },
@@ -203,17 +204,17 @@ export default {
     },
     async signUp() {
       this.signUpValidationMessages = {
-        phone: 'Invalid phone number. Must be 9 digits long and cannot start with 0',
-        password: 'Invalid password. Must range between 8 and 18 characters',
-        confirmedPassword: 'Confirmed password does not match with password',
-        name: 'Name is required',
-        email: 'Invalid email'
+        phone: validationMessages.phone,
+        password: validationMessages.password,
+        confirmedPassword: validationMessages.confirmedPassword,
+        name: validationMessages.name,
+        email: validationMessages.email
       };
       this.helper = {
         phone: false,
         password: false
       };
-      this.signUpValidationResults = validateNamedRules(this.signUpCreds, this.signUpValidationRules);
+      this.signUpValidationResults = this.validateNamedRules(this.signUpCreds, this.signUpValidationRules);
 
       if (!Object.values(this.signUpValidationResults).includes(false)) {
         const data = {
