@@ -11,6 +11,7 @@ import { Invitations } from './invitation';
 import { EventBus } from './event';
 import { UserNotifications } from './user-notification';
 import { Statistics } from './stat';
+import { AnonymousUsers } from './user';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -50,6 +51,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     eventBus,
     systemLocks
   });
+
+  const anonymousUsers = new AnonymousUsers({ users });
   
   const donationDistributions = new DonationDistributions(db, {
     users,
@@ -87,7 +90,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     transactions,
     invitations,
     donationDistributions,
-    stats
+    stats,
+    anonymousUsers
   };
 }
 

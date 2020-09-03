@@ -3,6 +3,7 @@ import { TransactionService } from './payment';
 import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
 import { StatsService } from './stat';
+import { AnonymousService } from './user';
 
 export interface App {
   users: UserService;
@@ -10,6 +11,7 @@ export interface App {
   invitations: InvitationService;
   donationDistributions: DonationDistributionService;
   stats: StatsService;
+  anonymousUsers: AnonymousService;
 };
 
 export interface AppConfig {

@@ -139,6 +139,10 @@ export class Users implements UserService {
       updatedAt: now
     };
 
+    if(args.isAnonymous) {
+      user.isAnonymous = true;
+    }
+
     try {
       if (args.password) {
         user.password = await hashPassword(args.password);
