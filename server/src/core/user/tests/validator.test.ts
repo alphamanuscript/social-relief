@@ -5,11 +5,9 @@ import { generateId, generateToken } from '../../util'
 describe('validatesCreate', () => {
   it('should not throw error if inputs are valid', () => {
     testValidationSucceeds(validators.validatesCreate, [
-      { phone: '254738103012', password: 'f' },
       { phone: '254729291091', password: 'dsksjjn,', name: 'John' },
       { phone: '254729291091', password: 'dsks12jnDM4', name: 'John' },
       { phone: '254032929109', password: 'dsks12jnDM4', name: 'John' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', name: 'John' },
       { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254029291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
@@ -42,6 +40,9 @@ describe('validatesLogin', () => {
       { phone: '254729291091', password: 'dsks12jnDM4' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
+      { phone: '2548292910916', password: 'dsks12jnDM4SEZLZSS' },
+      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
       { googleIdToken: 'dsks12jnDM4SEZLZSS' }
     ]);
   });
@@ -49,9 +50,6 @@ describe('validatesLogin', () => {
     testValidationFails(validators.validatesLogin, [
       { phone: '25472929109', password: 'dsksjjn,' },
       { phone: '+254729291091', password: 'dsks12jnDM4' },
-      { phone: '2548292910916', password: 'dsks12jnDM4SEZLZSS' },
-      { phone: '254738103012', password: 'wiedna102Ldnffrfldm' },
-      { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '', password: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
       { phone: '254729291091', password: 'dsks12jnDM4SEZLZSS', googleIdToken: '' },
       { phone: '', googleIdToken: 'dsks12jnDM4SEZLZSS' },
