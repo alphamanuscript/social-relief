@@ -469,9 +469,9 @@ export class Users implements UserService {
     }
   }
 
-  public async getByPhone(phone: string): Promise<User> {
+  public async getByPhone(phone: string, email: string): Promise<User> {
     try {
-      const user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
+      const user = await this.collection.findOne({ $or: [ { phone }, { email } ] }, { projection: SAFE_USER_PROJECTION });
       if (user) {
         return getSafeUser(user);
       }

@@ -23,7 +23,7 @@ export class AnonymousUsers implements AnonymousService {
   async create(args: AnonymousCreateArgs): Promise<User> {
     const { name, phone, email } = args;
     try {
-      let user = await this.users.getByPhone(phone);
+      let user = await this.users.getByPhoneOrEmail(phone, email);
       if (!user) {
         user = await this.users.create({ name, phone, email, password: '.', isAnonymous: true });
       }
