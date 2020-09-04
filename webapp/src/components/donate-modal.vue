@@ -20,14 +20,14 @@
         <b-form-input 
           v-model="donationInputs.amount" 
           type="number" 
-          :state="validationResults[1]"
+          :state="validationResults.amount"
           class="custom-dialog-form-input"
           placeholder="Enter amount (Kshs)"
           id="amount"
           :value="donationInputs.amount"
         />
         <b-form-invalid-feedback class="text-center">
-          {{ validationMessages[1] }}
+          {{ validationMessages.amount }}
         </b-form-invalid-feedback>
         <div class="text-center">
           <span class="small">A transaction fee may be charged by the provider</span>
@@ -42,8 +42,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { validateObj } from '../views/util';
 import ModalHeader from '../ui-components/modal-header';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 
 export default {
   name: 'login-modal',
@@ -54,15 +54,15 @@ export default {
         phone: '',
         amount: 100
       },
-      validationMessages: [
-        'Invalid Phone number. Must be 9 digits long and cannot start with 0',
-        'Insufficient amount. Donations must be at least of the amount 100',
-      ],
-      validationRules: [
-        { test: (donationInputs) => donationInputs.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
-        { test: (donationInputs) => donationInputs.amount >= 100 },
-      ],
-      validationResults: [null, null],
+      validationMessages: {
+        phone: validationMessages.phone,
+        amount: validationMessages.amount
+      },
+      validationRules: {
+        phone: validationRules.phone,
+        amount: validationRules.amount
+      },
+      validationResults: { phone: null, amount: null }
     }
   },
   computed: {
@@ -70,13 +70,13 @@ export default {
   },
   methods: {
     ...mapActions(['donate']),
-    validateObj,
+    validateNamedRules,
     showDonateDialog() {
       this.donationInputs = {
         phone: '',
         amount: 1000
       },
-      this.validationResults = [null, null];
+      this.validationResults = { phone: null, amount: null };
       this.$bvModal.show('sign-up');
     },
     hideDialog() {
@@ -84,7 +84,7 @@ export default {
         phone: '',
         amount: 1000
       },
-      this.validationResults = [null, null];
+      this.validationResults = { phone: null, amount: null };
     },
     setModalData() {
       if (this.user) {
@@ -92,21 +92,21 @@ export default {
       }
     },
     async submitDonation() {
-      this.validationMessages = [
-        'Invalid Phone number. Must be 9 digits long and cannot start with 0',
-        'Insufficient amount. Donations must be at least of the amount 100',
-      ];
+      this.validationMessages = {
+        phone: validationMessages.phone,
+        amount: validationMessages.amount
+      }
       this.donationInputs.amount = Number(this.donationInputs.amount);
-      this.validationResults = this.validateObj(this.donationInputs, this.validationRules);
+      this.validationResults = this.validateNamedRules(this.donationInputs, this.validationRules);
 
-      if (!this.validationResults.includes(false)) {
+      if (!Object.values(this.validationResults).includes(false)) {
         await this.donate({ amount: this.donationInputs.amount });
         if (this.message.type !== 'error') {
           this.donationInputs = {
             phone: '',
             amount: 1000
           },
-          this.validationResults = [null, null];
+          this.validationResults = { phone: null, amount: null };
           this.$bvModal.hide('donate');
           this.$bvModal.show('confirm-donation');
         }

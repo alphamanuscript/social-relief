@@ -40,7 +40,8 @@ export const validationMessages = {
   phone: 'Invalid phone number. Must be 9 digits long and cannot start with 0',
   password: 'Password required',
   confirmedPassword: 'Confirmed password does not match with password',
-  email: 'Invalid email'
+  email: 'Invalid email',
+  amount: 'Insufficient amount. Donations must be at least of the amount 100'
 }
 
 export const validationRules = {
@@ -49,4 +50,5 @@ export const validationRules = {
   password: { test: (creds: any) => creds.password.length > 0 },
   confirmedPassword: { test: (creds: any) => creds.confirmedPassword === creds.password },
   email: { test: (creds: any) => /\S+@\S+\.\S+/.test(String(creds.email))},
+  amount: { test: (creds: any) => creds.amount >= 100 }
 }
