@@ -26,14 +26,14 @@
           <b-form-input 
             v-model="signInCreds.phone" 
             type="text"
-            :state="signInValidationResults[0]"
+            :state="signInValidationResults.phone"
             class="custom-dialog-input-phone"
             placeholder="Enter phone number"
             id="phone"
             @update="helper.phone = true"
           />
           <b-form-invalid-feedback class="text-center">
-            {{ signInValidationMessages[0] }}
+            {{ signInValidationMessages.phone }}
           </b-form-invalid-feedback>
         </b-input-group>
         <b-form-text v-show="showPhoneHelper" class="text-center">
@@ -45,17 +45,17 @@
         <b-form-input 
           v-model="signInCreds.password" 
           type="password" 
-          :state="signInValidationResults[1]"
+          :state="signInValidationResults.password"
           class="custom-dialog-input"
           placeholder="Enter password"
           id="password"
           @update="helper.password = true"
         />
         <b-form-text v-show="showPasswordHelper" class="text-center">
-          Between 8 and 18 characters including uppercase, numeric and special characters
+          Enter your password
         </b-form-text>
         <b-form-invalid-feedback class="text-center">
-          {{ signInValidationMessages[1] }}
+          {{ signInValidationMessages.password }}
         </b-form-invalid-feedback>
       </b-form-group>
       <div class="text-center">
@@ -76,7 +76,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { validateObj } from '../views/util';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 import GoogleButton from './google-button';
 export default {
   name: 'login-modal',
@@ -86,15 +86,15 @@ export default {
         phone: '',
         password: ''
       },
-      signInValidationMessages: [
-        'Invalid phone number. Must be 9 digits long and cannot start with 0',
-        'Password required'
-      ],
-      signInValidationRules: [
-        { test: (creds) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
-        { test: (creds) => creds.password.length > 0, }
-      ],
-      signInValidationResults: [null, null],
+      signInValidationMessages: {
+        phone: validationMessages.phone,
+        password: validationMessages.password
+      },
+      signInValidationRules: {
+        phone: validationRules.phone,
+        password: validationRules.password
+      },
+      signInValidationResults: { phone: null, password: null },
       helper: {
         phone: false,
         password: false
@@ -110,17 +110,17 @@ export default {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
     showPhoneHelper () {
-          return this.signInValidationResults[0] == null && this.helper.phone;
+      return this.signInValidationResults.phone == null && this.helper.phone;
     },
     showPasswordHelper () {
-          return this.signInValidationResults[1] == null && this.helper.password;
+      return this.signInValidationResults.password == null && this.helper.password;
     }
   },
   methods: {
     ...mapActions([
       'signUserIn'
     ]),
-    validateObj,
+    validateNamedRules,
     showSignUpDialog() {
       this.$bvModal.show('sign-up');
     },
@@ -129,30 +129,30 @@ export default {
         phone: '',
         password: ''
       },
-      this.signInValidationResults = [null, null];
+      this.signInValidationResults = { phone: null, password: null };
       this.helper = {
         phone: false,
         password: false
       };    
     },
     async signIn() {
-      this.signInValidationMessages = [
-        'Invalid phone number. Must be 9 digits long and cannot start with 0',
-        'Password required'
-      ];
+      this.signInValidationMessages = {
+        phone: validationMessages.phone,
+        password: validationMessages.password,
+      };
       this.helper = {
         phone: false,
         password: false
       };
-      this.signInValidationResults = this.validateObj(this.signInCreds, this.signInValidationRules);
-      if (!this.signInValidationResults.includes(false)) {
+      this.signInValidationResults = await this.validateNamedRules(this.signInCreds, this.signInValidationRules);
+      if (!Object.values(this.signInValidationResults).includes(false)) {
         await this.signUserIn({ phone: `254${this.signInCreds.phone}`, password: this.signInCreds.password });
         if (this.user) {
           this.signInCreds = {
             phone: '',
             password: ''
           },
-          this.signInValidationResults = [true, true];
+          this.signInValidationResults = { phone: true, password: true };
           this.$bvModal.hide('login');
         } 
       }
