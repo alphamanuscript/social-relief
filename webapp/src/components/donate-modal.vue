@@ -56,7 +56,7 @@ export default {
       },
       validationMessages: {
         phone: validationMessages.phone,
-        amount: validation.amount
+        amount: validationMessages.amount
       },
       validationRules: {
         phone: validationRules.phone,
@@ -94,7 +94,7 @@ export default {
     async submitDonation() {
       this.validationMessages = {
         phone: validationMessages.phone,
-        amount: validation.amount
+        amount: validationMessages.amount
       }
       this.donationInputs.amount = Number(this.donationInputs.amount);
       this.validationResults = this.validateNamedRules(this.donationInputs, this.validationRules);
