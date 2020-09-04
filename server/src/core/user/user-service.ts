@@ -469,7 +469,7 @@ export class Users implements UserService {
     }
   }
 
-  public async getByPhone(phone: string, email: string): Promise<User> {
+  public async getByPhoneOrEmail(phone: string, email: string): Promise<User> {
     try {
       const user = await this.collection.findOne({ $or: [ { phone }, { email } ] }, { projection: SAFE_USER_PROJECTION });
       if (user) {
