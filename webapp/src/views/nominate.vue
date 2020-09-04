@@ -125,12 +125,12 @@ export default {
       validationMessages: {
         name: validationMessages.name,
         phone: validationMessages.phone,
-        email:validationMessages.email,
+        email: validationMessages.email,
       },
       validationRules: {
         name: validationRules.name,
         phone: validationRules.phone,
-        email: validationRules.email,
+        email: { test: (creds) => !creds.email.length || /\S+@\S+\.\S+/.test(String(creds.email))},
       },
       validationResults: { name: null, phone: null, email: null },
     }

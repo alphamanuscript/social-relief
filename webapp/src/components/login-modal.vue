@@ -52,7 +52,7 @@
           @update="helper.password = true"
         />
         <b-form-text v-show="showPasswordHelper" class="text-center">
-          Can be any non-zero number of characters including uppercase, numeric and special characters
+          Enter your password
         </b-form-text>
         <b-form-invalid-feedback class="text-center">
           {{ signInValidationMessages.password }}
