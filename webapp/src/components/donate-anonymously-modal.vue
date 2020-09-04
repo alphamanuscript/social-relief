@@ -93,30 +93,30 @@
   </b-modal>
 </template>
 <script>
-import { validateNamedRules } from '../views/util';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 import { mapActions } from 'vuex';
 export default {
   name: 'donate-anonymously',
   data() {
     return {
       donationInputs: {
-        amount: 100,
+        amount: 1000,
         name: '',
         phone: '',
         email: '',
         role: 'donor'
       },
       validationMessages: {
-        amount: 'Insufficient amount. Donations must be at least of the amount 100',
-        name: 'Name is required',
-        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
-        email: 'Invalid email'
+        amount: validationMessages.amount,
+        name: validationMessages.name,
+        phone: validationMessages.phone,
+        email: validationMessages.email
       },
       validationRules: {
-        amount: { test: (donationInputs) => donationInputs.amount >= 100 },
-        name: { test: (donationInputs) => !!donationInputs.name.trim().length },
-        phone: { test: (donationInputs) => donationInputs.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(donationInputs.phone) },
-        email: { test: (donationInputs) => /\S+@\S+\.\S+/.test(String(donationInputs.email))}
+        amount: validationRules.amount,
+        name: validationRules.name,
+        phone: validationRules.phone,
+        email: validationRules.email,
       },
       validationResults: { amount: null, name: null, phone: null, email: null },
       helper: {
@@ -128,7 +128,7 @@ export default {
     ...mapActions(['donateAnonymously']),
     hideDialog() {
       this.donationInputs = {
-        amount: 100,
+        amount: 1000,
         name: '',
         phone: '',
         email: '',
@@ -141,28 +141,31 @@ export default {
     },
     async donate() {
       this.validationMessages = {
-        amount: 'Insufficient amount. Donations must be at least of the amount 100',
-        name: 'Name is required',
-        phone: 'Invalid Phone number. Must be 9 digits long and cannot start with 0',
-        email: 'Invalid email'
+        amount: validationMessages.amount,
+        name: validationMessages.name,
+        phone: validationMessages.phone,
+        email: validationMessages.email
       };
       this.donationInputs.amount = Number(this.donationInputs.amount);
       this.validationResults = validateNamedRules(this.donationInputs, this.validationRules);
 
       if (!Object.values(this.validationResults).includes(false)) {
-        this.$bvModal.hide('donate-anonymously');
-        this.$bvModal.show('confirm-donation');
-        // await this.donateAnonymously(this.donationInputs);
-        // await this.donate({ amount: this.donationInputs.amount });
-        // if (this.message.type !== 'error') {
-        //   this.donationInputs = {
-        //     phone: '',
-        //     amount: 1000
-        //   },
-        //   this.validationResults = [null, null];
-        //   this.$bvModal.hide('donate');
-        //   this.$bvModal.show('confirm-donation');
-        // }
+        await this.donateAnonymously({
+          ...this.donationInputs,
+          phone: `254${this.donationInputs.phone}`,
+        });
+        if (this.message.type !== 'error') {
+          this.donationInputs = {
+            amount: 1000,
+            name: '',
+            phone: '',
+            email: '',
+            role: 'donor'
+          },
+          this.validationResults = this.validationResults = { amount: null, name: null, phone: null, email: null };
+          this.$bvModal.hide('donate');
+          this.$bvModal.show('confirm-donation');
+        }
       }
     }
   },
