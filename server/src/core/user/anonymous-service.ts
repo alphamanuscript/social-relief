@@ -22,7 +22,7 @@ export class AnonymousUsers implements AnonymousService {
   async create(args: AnonymousCreateArgs): Promise<User> {
     const { name, phone, email } = args;
     try {
-      const user = await this.users.create({ name, phone, email, password: '.', googleIdToken: undefined });
+      const user = await this.users.create({ name, phone, email, password: '.', isAnonymous: true, googleIdToken: undefined });
       return user;
     }
     catch (e) {

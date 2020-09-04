@@ -1,5 +1,6 @@
 import * as joi from '@hapi/joi';
 import { createValidationError } from '../error';
+import { messages } from '..';
 
 export function makeValidatorFromJoiSchema<TArgs = any>(schema: joi.Schema) {
   return (args: TArgs) => {
@@ -56,5 +57,10 @@ export const emailValidationSchema = joi.string()
     'string.empty': 'Please enter e-mail',
     'string.email.base': 'Invalid e-mail'
   });
+
+export const isAnonymousSchema = joi.boolean()
+  .messages({
+    'boolean.base': 'Invalid type, isAnonymous must be a boolean',
+  })
 
 export const validateEmail = makeValidatorFromJoiSchema(emailValidationSchema);
