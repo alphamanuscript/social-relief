@@ -75,7 +75,7 @@ export interface UserCreateArgs {
   email: string,
   password: string,
   isAnonymous?: boolean,
-  googleIdToken: string
+  googleIdToken?: string
 };
 
 export interface UserNominateArgs {

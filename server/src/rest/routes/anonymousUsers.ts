@@ -8,6 +8,6 @@ anonymousUsers.post('/create', wrapResponse(
   req => req.core.anonymousUsers.create(req.body),
   statusCodes.STATUS_CREATED));
 
-anonymousUsers.post('/initiate', wrapResponse(
+anonymousUsers.post('/donate', wrapResponse(
   req => req.core.anonymousUsers.donate(req.body)));
 
