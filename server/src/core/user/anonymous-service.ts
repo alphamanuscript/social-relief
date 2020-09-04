@@ -7,6 +7,7 @@ import {
 } from './types';
 import { Transaction } from '../payment';
 import { rethrowIfAppError } from '../error';
+import { string } from '@hapi/joi';
 
 export interface AnonymousUsersArgs {
   users: UserService
@@ -22,7 +23,11 @@ export class AnonymousUsers implements AnonymousService {
   async create(args: AnonymousCreateArgs): Promise<User> {
     const { name, phone, email } = args;
     try {
-      const user = await this.users.create({ name, phone, email, password: '.', isAnonymous: true });
+      let user = await this.users.getByPhone(phone);
+      if (!user) {
+        user = await this.users.create({ name, phone, email, password: '.', isAnonymous: true });
+      }
+      
       return user;
     }
     catch (e) {

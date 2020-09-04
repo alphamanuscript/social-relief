@@ -167,6 +167,11 @@ export interface UserService {
    */
   getById(id: string): Promise<User>;
   /**
+   * retrieves user by phone
+   * @param phone
+   */
+  getByPhone(phone: string): Promise<User>;
+  /**
    * retrieves the user who owns the token, provided
    * the token is valid
    * @param token 

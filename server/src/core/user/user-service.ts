@@ -469,6 +469,20 @@ export class Users implements UserService {
     }
   }
 
+  public async getByPhone(phone: string): Promise<User> {
+    try {
+      const user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
+      if (user) {
+        return getSafeUser(user);
+      }
+      return user;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async getNew(userId: string): Promise<User> {
     validators.validatesGetNew(userId);
     try {
