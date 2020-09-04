@@ -94,7 +94,7 @@
 </template>
 <script>
 import { validateNamedRules } from '../views/util';
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 export default {
   name: 'donate-anonymously',
   data() {
