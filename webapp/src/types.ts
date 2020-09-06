@@ -65,15 +65,11 @@ export interface InitiateDonationArgs {
   amount: Number
 }
 
-export interface AnonymousCreateArgs {
+export interface AnonymousDonateArgs {
+  amount: number;
   name: string,
   phone: string,
   email: string
-}
-
-export interface AnonymousDonateArgs {
-  amount: number;
-  user: User;
 }
 
 export interface Transaction {

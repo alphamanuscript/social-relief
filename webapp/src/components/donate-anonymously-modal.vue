@@ -152,7 +152,7 @@ export default {
       if (!Object.values(this.validationResults).includes(false)) {
         await this.donateAnonymously({
           ...this.donationInputs,
-          phone: `254${this.donationInputs.phone}`,
+          phone: `254${this.donationInputs.phone}`
         });
         if (this.message.type !== 'error') {
           this.donationInputs = {
