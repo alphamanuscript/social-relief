@@ -167,11 +167,6 @@ export interface UserService {
    */
   getById(id: string): Promise<User>;
   /**
-   * retrieves user by phone or email
-   * @param phone
-   */
-  getByPhoneOrEmail(phone: string, email: string): Promise<User>;
-  /**
    * retrieves the user who owns the token, provided
    * the token is valid
    * @param token 
@@ -226,29 +221,35 @@ export interface UserService {
    * @param pipeline
    */
   aggregate(pipeline: any[]): Promise<any[]>;
+  /**
+   * initiates a donation 
+   * from anonymous user args.phone
+   * @param args 
+   */
+  donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction>;
 };
 
-export interface AnonymousCreateArgs {
+export interface UserCreateAnonymousArgs {
   name: string,
   phone: string,
   email: string
 }
 
-export interface AnonymousDonateArgs {
-  amount: number;
-  user: User;
+
+export interface UserDonateAnonymouslyArgs extends UserCreateAnonymousArgs {
+  amount: number
 }
 
-export interface AnonymousService {
-  /**
-   * creates an anonymous user
-   * @param args 
-   */
-  create(args: AnonymousCreateArgs): Promise<User>;
-  /**
-   * initiates a donation 
-   * from an anonymous user args.user
-   * @param args 
-   */
-  donate(args: AnonymousDonateArgs): Promise<Transaction>;
-}
+// export interface AnonymousService {
+//   /**
+//    * creates an anonymous user
+//    * @param args 
+//    */
+//   create(args: AnonymousCreateArgs): Promise<User>;
+//   /**
+//    * initiates a donation 
+//    * from an anonymous user args.user
+//    * @param args 
+//    */
+//   donate(args: AnonymousDonateArgs): Promise<Transaction>;
+// }

@@ -30,7 +30,16 @@ const userIdSchema = joi.object().keys({
       'string.empty': `Please enter userId`,
       'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 32 characters long`
     }),
-})
+});
+
+const amountSchema = joi.number()
+  .required()
+  .min(100)
+  .messages({
+    'any.required': `amount is required`,
+    'number.base': 'Invalid type, amount must be a number',
+    'number.min': `amount must be 100 or more`,
+  })
 
 export const createInputSchema = joi.alternatives().try(
   joi.object().keys({
@@ -41,7 +50,14 @@ export const createInputSchema = joi.alternatives().try(
     isAnonymous: isAnonymousSchema,
   }),
   joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
-);; 
+);
+
+export const donateAnonymouslyInputSchema = joi.object().keys({
+  amount: amountSchema,
+  name: joi.string().required(),
+  phone: phoneValidationSchema,
+  email: emailSchema,
+});
 
 export const loginInputSchema = joi.alternatives().try(
   joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
@@ -111,14 +127,7 @@ export const logoutAllInputSchema = userIdSchema;
 
 export const initiateDonationInputSchema = joi.object().keys({
   userId: idValidationSchema,
-  amount: joi.number()
-    .required()
-    .min(100)
-    .messages({
-      'any.required': `amount is required`,
-      'number.base': 'Invalid type, amount must be a number',
-      'number.min': `amount must be 100 or more`,
-    })
+  amount: amountSchema
 });
 
 export const putInputSchema = joi.object().keys({
