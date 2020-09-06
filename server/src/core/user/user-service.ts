@@ -675,7 +675,6 @@ export class Users implements UserService {
       let user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
       if (!user) {
         const password = generatePassword();
-        console.log('password: ', password);
         user = await this.create({ name, phone, email, password, isAnonymous: true });
       }
       
