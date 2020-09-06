@@ -470,20 +470,6 @@ export class Users implements UserService {
     }
   }
 
-  // public async getByPhoneOrEmail(phone: string, email: string): Promise<User> {
-  //   try {
-  //     const user = await this.collection.findOne({ $or: [ { phone }, { email } ] }, { projection: SAFE_USER_PROJECTION });
-  //     if (user) {
-  //       return getSafeUser(user);
-  //     }
-  //     return user;
-  //   }
-  //   catch (e) {
-  //     rethrowIfAppError(e);
-  //     throw createDbOpFailedError(e.message);
-  //   }
-  // }
-
   async getNew(userId: string): Promise<User> {
     validators.validatesGetNew(userId);
     try {
@@ -670,7 +656,7 @@ export class Users implements UserService {
     }
   }
 
-  async donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction> {
+  public async donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction> {
     validators.validateDonateAnonymously(args);
     const { amount, name, phone, email } = args;
     try {
