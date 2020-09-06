@@ -239,17 +239,3 @@ export interface UserCreateAnonymousArgs {
 export interface UserDonateAnonymouslyArgs extends UserCreateAnonymousArgs {
   amount: number
 }
-
-// export interface AnonymousService {
-//   /**
-//    * creates an anonymous user
-//    * @param args 
-//    */
-//   create(args: AnonymousCreateArgs): Promise<User>;
-//   /**
-//    * initiates a donation 
-//    * from an anonymous user args.user
-//    * @param args 
-//    */
-//   donate(args: AnonymousDonateArgs): Promise<Transaction>;
-// }
