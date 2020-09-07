@@ -94,7 +94,7 @@
 </template>
 <script>
 import { validateNamedRules, validationRules, validationMessages } from '../views/util';
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'donate-anonymously',
   data() {
@@ -123,6 +123,15 @@ export default {
         phone: false
       }
     }
+  },
+  computed: {
+    ...mapState(['user', 'message']),
+    imageUrl () {
+      return require(`@/assets/Social Relief Logo_1.svg`);
+    },
+    showPhoneHelper () {
+      return this.validationResults.phone == null && this.helper.phone;
+    },
   },
   methods: {
     ...mapActions(['donateAnonymously']),
@@ -168,14 +177,6 @@ export default {
         }
       }
     }
-  },
-  computed: {
-    imageUrl () {
-      return require(`@/assets/Social Relief Logo_1.svg`);
-    },
-    showPhoneHelper () {
-      return this.validationResults.phone == null && this.helper.phone;
-    },
   },
 }
 </script>

@@ -1,5 +1,5 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations, Refunds, Invitations, Statistics, Anonymous } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations, Statistics } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
@@ -76,7 +76,7 @@ const actions = wrapActions({
   },
   async donateAnonymously({state}, { amount, name, phone, email}: {amount: number; name: string; phone: string; email: string }) {
     if (!state.user) {
-      await Anonymous.donate({ amount, name, phone, email });
+      await Donations.initiateAnonymousDonation({ amount, name, phone, email });
     }
   },
   async initiateRefund({ commit, state }) {
