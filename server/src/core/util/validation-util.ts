@@ -22,7 +22,7 @@ export const validateId = makeValidatorFromJoiSchema(idValidationSchema);
 
 export const phoneValidationSchema = joi.string()
   .required()
-  .pattern(/^254\d{9}$/) // Starts with 254 and ends with 8 digits
+  .pattern(/^254\d{9}$/) // Starts with 254 and ends with 9 digits
   .messages({
     'any.required': 'Phone is required',
     'string.base': 'Invalid type, phone must be a string',
@@ -32,7 +32,6 @@ export const phoneValidationSchema = joi.string()
 
 export const passwordValidationSchema = joi.string()
   .required()
-  .pattern(/^.{8,18}$/)
   .messages({
     'any.required': 'Password is required',
     'string.base': 'Invalid type, password must be a string',

@@ -18,12 +18,12 @@
               <b-form-input 
                 v-model="nomineeCreds.name"
                 type="text"
-                :state="validationResults[2]" 
+                :state="validationResults.name" 
                 class="custom-input" 
                 id="name"
               />
               <b-form-invalid-feedback>
-                {{ validationMessages[2] }}
+                {{ validationMessages.name }}
               </b-form-invalid-feedback>
             </b-col>
           </b-form-row>
@@ -39,13 +39,13 @@
                 <b-form-input 
                   v-model="nomineeCreds.phone"
                   type="text" 
-                  :state="validationResults[0]"
+                  :state="validationResults.phone"
                   class="custom-input"  
                   placeholder="xxxxxxxxx"
                   id="phone-number"
                 />
                 <b-form-invalid-feedback>
-                  {{ validationMessages[0] }}
+                  {{ validationMessages.phone }}
                 </b-form-invalid-feedback>
               </b-input-group>
             </b-col>
@@ -58,12 +58,12 @@
               <b-form-input 
                 v-model="nomineeCreds.email"
                 type="email"
-                :state="validationResults[1]" 
+                :state="validationResults.email" 
                 class="custom-input" 
                 id="email"
               />
               <b-form-invalid-feedback>
-                {{ validationMessages[1] }}
+                {{ validationMessages.email }}
               </b-form-invalid-feedback>
             </b-col>
           </b-form-row>
@@ -109,9 +109,9 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { validateObj } from '../views/util';
 import { Auth } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
+import { validateNamedRules, validationRules, validationMessages } from '../views/util';
 export default {
   name: 'nominate',
   data() {
@@ -122,17 +122,17 @@ export default {
         name: '',
         role: 'Beneficiary'
       },
-      validationMessages: [
-        'Invalid phone number. Must be 9 digits long and cannot start with 0',
-        'Invalid email',
-        'Name is required'
-      ],
-      validationRules: [
-        { test: (nomineeCreds) => nomineeCreds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(nomineeCreds.phone) },
-        { test: (nomineeCreds) => !nomineeCreds.email.length || /\S+@\S+\.\S+/.test(String(nomineeCreds.email))},
-        { test: (nomineeCreds) => !!nomineeCreds.name.trim().length }
-      ],
-      validationResults: [null, null]
+      validationMessages: {
+        name: validationMessages.name,
+        phone: validationMessages.phone,
+        email: validationMessages.email,
+      },
+      validationRules: {
+        name: validationRules.name,
+        phone: validationRules.phone,
+        email: { test: (creds) => !creds.email.length || /\S+@\S+\.\S+/.test(String(creds.email))},
+      },
+      validationResults: { name: null, phone: null, email: null },
     }
   },
   components: { },
@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     ...mapActions(['nominate', 'getCurrentUser','refreshData']),
-    validateObj,
+    validateNamedRules,
     hideDialog() {
       this.nomineeCreds = {
         phone: '',
@@ -149,16 +149,17 @@ export default {
         name: '',
         role: 'Beneficiary'
       },
+      this.validationResults = { name: null, phone: null, email: null },
       this.$bvModal.hide('nominate-success');
     },
     async submitNomination() {
-      this.validationMessages = [
-        'Invalid phone number. Must be 9 digits long and cannot start with 0',
-        'Invalid email',
-        'Name is required'
-      ];
-      this.validationResults = this.validateObj(this.nomineeCreds, this.validationRules);
-      if (!this.validationResults.includes(false)) {
+      this.validationMessages = {
+        name: validationMessages.name,
+        phone: validationMessages.phone,
+        email: validationMessages.email
+      };
+      this.validationResults = this.validateNamedRules(this.nomineeCreds, this.validationRules);
+      if (!Object.values(this.validationResults).includes(false)) {
         const data = {
           nominee: `254${this.nomineeCreds.phone}`,
           name: this.nomineeCreds.name.trim(),
@@ -172,7 +173,7 @@ export default {
         await this.nominate(data);
 
         if (this.message.type !== 'error') {
-          this.validationResults = [null, null];
+          this.validationResults = { name: true, phone: true, email: true };
           this.$bvModal.show('nominate-success');
         }
       }
