@@ -36,9 +36,9 @@ const amountSchema = joi.number()
   .required()
   .min(100)
   .messages({
-    'any.required': `amount is required`,
+    'any.required': `Amount is required`,
     'number.base': 'Invalid type, amount must be a number',
-    'number.min': `amount must be 100 or more`,
+    'number.min': `Amount must be 100 or more`,
   })
 
 export const createInputSchema = joi.alternatives().try(
@@ -143,8 +143,8 @@ export const putInputSchema = joi.object().keys({
   name: joi.string()
     .required()
     .messages({
-      'any.required': 'name is required',
-      'string.empty': 'name is required'
+      'any.required': 'Name is required',
+      'string.empty': 'Name is required'
     }),
   email: emailValidationSchema,
   password: passwordValidationSchema
