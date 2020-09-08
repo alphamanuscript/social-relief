@@ -47,7 +47,7 @@ export default {
 
       await this.getTransactions();
     } else if (this.anonymousUser) {
-      
+      // TODO
     }
     else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });

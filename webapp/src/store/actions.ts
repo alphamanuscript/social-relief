@@ -18,15 +18,8 @@ const actions = wrapActions({
     const middlemen = await Users.getMiddlemen();
     commit('setMiddlemen', middlemen);
   },
-  async getTransactions({ commit, state}) {
-    let transactions;
-    if (state.user) {
-      transactions = await Transactions.getTransactions();
-    }
-    else if(state.anonymousUser) {
-      transactions = await Transactions.getTransactionsForAnonymous();
-    }
-    
+  async getTransactions({ commit, state }) {
+    const transactions = await Transactions.getTransactions();
     commit('setTransactions', transactions);
   },
   async getInvitations({ commit}) {
@@ -83,7 +76,6 @@ const actions = wrapActions({
   },
   async donateAnonymously({ commit }, { amount, name, phone, email}: {amount: number; name: string; phone: string; email: string }) {
     const trx = await Donations.initiateAnonymousDonation({ amount, name, phone, email });
-    commit('addTransaction', trx);
     commit('setPaymentRequest', trx);
   },
   async initiateRefund({ commit, state }) {
