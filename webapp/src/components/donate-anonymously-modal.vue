@@ -173,7 +173,6 @@ export default {
           },
           this.validationResults = this.validationResults = { amount: null, name: null, phone: null, email: null };
           this.$bvModal.hide('donate-anonymously');
-          this.$bvModal.show('confirm-payment');
         }
       }
     }

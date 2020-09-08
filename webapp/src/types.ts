@@ -153,6 +153,7 @@ export interface Stats {
 
 export interface AppState {
   user?: User;
+  anonymousUser?: User;
   newUser?: User;
   beneficiaries: User[];
   middlemen: User[];

@@ -18,8 +18,15 @@ const actions = wrapActions({
     const middlemen = await Users.getMiddlemen();
     commit('setMiddlemen', middlemen);
   },
-  async getTransactions({ commit}) {
-    const transactions = await Transactions.getTransactions();
+  async getTransactions({ commit, state}) {
+    let transactions;
+    if (state.user) {
+      transactions = await Transactions.getTransactions();
+    }
+    else if(state.anonymousUser) {
+      transactions = await Transactions.getTransactionsForAnonymous();
+    }
+    
     commit('setTransactions', transactions);
   },
   async getInvitations({ commit}) {
