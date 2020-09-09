@@ -23,7 +23,7 @@
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { Auth } from '../services';
+import { Auth, Anonymous } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
@@ -46,15 +46,19 @@ export default {
       }
 
       await this.getTransactions();
-    } else if (this.anonymousUser) {
-      // TODO
+    } else if (Anonymous.isSet()) {
+      if (!this.anonymousUser) {
+        await this.getCurrentAnonymousUser();
+      }
+
+      await this.getTransactions();
     }
     else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   },
   methods: {
-    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions']),
+    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions', 'getCurrentAnonymousUser']),
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
