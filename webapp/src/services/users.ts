@@ -41,7 +41,7 @@ export const Users = {
     return res.data;
   },
   async getAnonymousUser(userId: string) {
-    const res = await axios.get<User>(`/users/anonymous${userId}`);
+    const res = await axios.get<User>(`/users/anonymous/${userId}`);
     Anonymous.setUserData(JSON.stringify(res.data));
     return res.data;
   },
