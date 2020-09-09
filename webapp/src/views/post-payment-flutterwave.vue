@@ -113,6 +113,10 @@ export default {
     finishVerification() {
       this.verifying = false;
       this.working = false;
+
+      if (Anonymous.isSet()) {
+        Anonymous.deleteUserData();
+      }
     }
   },
   watch: {
