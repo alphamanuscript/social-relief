@@ -37,5 +37,8 @@ users.post('/activate-invitee', wrapResponse(
 users.get('/:id', wrapResponse(
   req => req.core.users.getNew(req.params.id)));
 
+users.get('/anonymous/id', wrapResponse(
+  req => req.core.users.getAnonymous(req.params.id)));
+
 users.put('/:id', wrapResponse(
   req => req.core.users.put(req.params.id, { ... req.body })));

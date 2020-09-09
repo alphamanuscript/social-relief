@@ -476,7 +476,21 @@ export class Users implements UserService {
       const user = await this.collection.findOne({ _id: userId, password: '' }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
-      return getSafeUser(user);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async getAnonymous(userId: string): Promise<User> {
+    validators.validatesGetAnonymous(userId);
+    try {
+      const user = await this.collection.findOne({ _id: userId, isAnonymous: true }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return user;
     }
     catch(e) {
       rethrowIfAppError(e);
