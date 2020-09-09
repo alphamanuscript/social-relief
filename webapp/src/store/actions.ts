@@ -65,8 +65,14 @@ const actions = wrapActions({
       }
     }
   },
-  async getTransaction({ commit }, id: string) {
-    const transaction = await Transactions.getTransaction(id);
+  async getTransaction({ commit, state }, id: string) {
+    let transaction;
+    if (state.user) {
+      transaction = await Transactions.getTransaction(id);
+    }
+    else if (state.anonymousUser) {
+      transaction = await Transactions.getTransactionForAnonymous(id, state.anonymousUser);
+    }
     commit('updateTransaction', transaction);
   },
   async getCurrentInvitation({ commit }, id: string) {
