@@ -186,6 +186,12 @@ export interface UserService {
    */
   getNew(userId: string): Promise<User>;
   /**
+   * retrieves the anonymous user 
+   * corresponding to the specified userId
+   * @param userId 
+   */
+  getAnonymous(userId: string): Promise<User>;
+  /**
    * invalidates the specified access token
    * @param token 
    */
