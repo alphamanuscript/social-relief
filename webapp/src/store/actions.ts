@@ -90,7 +90,12 @@ const actions = wrapActions({
   },
   async donateAnonymously({ commit }, { amount, name, phone, email}: {amount: number; name: string; phone: string; email: string }) {
     const trx = await Donations.initiateAnonymousDonation({ amount, name, phone, email });
-    commit('setPaymentRequest', trx);
+    if (trx) {
+      const anonymousUser = await Users.getAnonymousUser(trx.from);
+      commit('setAnonymousUser', anonymousUser);
+      commit('setPaymentRequest', trx);
+    }
+    
   },
   async initiateRefund({ commit, state }) {
     if (state.user) {
