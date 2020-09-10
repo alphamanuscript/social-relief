@@ -104,7 +104,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message', 'stats']),
+    ...mapState(['newUser', 'message', 'stats'])
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
