@@ -12,7 +12,7 @@ export default {
   computed: { 
     styleObject() {
       if (this.$route.name === 'post-payment-flutterwave' && Anonymous.isSet()) {
-        return { "margin-top": "17rem" }
+        return { "margin-top": "16rem" }
       }
       return {};
     }
