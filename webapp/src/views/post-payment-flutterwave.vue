@@ -19,6 +19,9 @@
     <b-card v-else>
       <span class="text-danger">Transaction not found</span>
     </b-card>
+    <div v-if="displayButton" class="py-3 text-center">
+      <b-button pill variant="primary" class="px-5" @click="handleBtnClick()">Return Home</b-button>
+    </div>
   </b-container>
 </template>
 <script>
@@ -37,7 +40,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['transactions'])
+    ...mapState(['transactions']),
+    displayButton() {
+      return Anonymous.isSet();
+    }
   },
   async created() {
     if (Auth.isAuthenticated()) {
@@ -117,6 +123,10 @@ export default {
       if (Anonymous.isSet()) {
         Anonymous.deleteUserData();
       }
+    },
+
+    handleBtnClick() {
+      this.$router.push({ name: 'home' });
     }
   },
   watch: {
