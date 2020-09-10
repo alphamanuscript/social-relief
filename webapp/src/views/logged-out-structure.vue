@@ -39,7 +39,7 @@ export default {
     },
     styleObject() {
       if (this.$route.name === 'post-payment-flutterwave' && Anonymous.isSet()) {
-        return { "padding-bottom": "13.5rem" }
+        return { "padding-bottom": "11rem" }
       }
       return {};
     }
