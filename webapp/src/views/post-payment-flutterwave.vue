@@ -1,5 +1,5 @@
 <template>
-  <b-container class="custom-container" :style="styleObject">
+  <b-container class="custom-container">
     <b-card v-if="verifying">Your transaction is being verified...</b-card>
     <b-card v-else-if="transaction">
       <span v-if="transaction.status === 'success'" class="text-success">
@@ -38,12 +38,6 @@ export default {
   },
   computed: {
     ...mapState(['transactions']),
-    styleObject() {
-      if (Anonymous.isSet()) {
-        return { "margin-bottom": "17rem" }
-      }
-      return {};
-    }
   },
   async created() {
     if (Auth.isAuthenticated()) {
