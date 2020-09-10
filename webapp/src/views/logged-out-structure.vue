@@ -27,7 +27,7 @@
 <script>
 import HomeFooter from '../components/home-footer'
 import { mapState, mapActions } from 'vuex';
-import { Auth } from '../services';
+import { Auth, Anonymous } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
   name: 'logged-out-structure',
