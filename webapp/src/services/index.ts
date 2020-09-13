@@ -5,4 +5,4 @@ export { Users } from './users';
 export { Transactions } from './transactions';
 export { Invitations } from './invitations';
 export { Statistics } from './stats';
-export { Anonymous } from './anonymous';
+export { AnonymousUser } from './anonymousUser';

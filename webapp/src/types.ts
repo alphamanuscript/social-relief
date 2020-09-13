@@ -87,7 +87,7 @@ export interface Transaction {
   toExternal: boolean,
   provider: string,
   providerTransactionId?: string,
-  metadata: any
+  metadata?: any
 }
 
 export interface Invitation {

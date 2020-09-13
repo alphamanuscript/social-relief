@@ -14,8 +14,8 @@ export const Transactions = {
     const res = await axios.get<Transaction>(`/transactions/${transactionId}`);
     return res.data;
   },
-  async getTransactionForAnonymous(transactionId: string, anonymousUser: User) {
-    const res = await axios.get<Transaction>(`/transactions/${transactionId}/anonymous/${anonymousUser._id}`);
+  async getTransactionForAnonymous(transactionId: string, userId: string) {
+    const res = await axios.get<Transaction>(`/transactions/${transactionId}/anonymous/${userId}`);
     return res.data;
   }
 }

@@ -19,14 +19,14 @@
     <b-card v-else>
       <span class="text-danger">Transaction not found</span>
     </b-card>
-    <div v-if="displayButton" class="py-3 text-center">
+    <div v-if="displayReturnHomeButton" class="py-3 text-center">
       <b-button pill variant="primary" class="px-5" @click="handleBtnClick()">Return Home</b-button>
     </div>
   </b-container>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { Auth, Anonymous } from '../services';
+import { Auth, AnonymousUser } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
@@ -41,8 +41,8 @@ export default {
   },
   computed: {
     ...mapState(['transactions']),
-    displayButton() {
-      return Anonymous.isSet();
+    displayReturnHomeButton() {
+      return AnonymousUser.isSet();
     }
   },
   async created() {
@@ -52,7 +52,7 @@ export default {
       }
 
       await this.getTransactions();
-    } else if (Anonymous.isSet()) {
+    } else if (AnonymousUser.isSet()) {
       if (!this.anonymousUser) {
         await this.getCurrentAnonymousUser();
       }
@@ -120,8 +120,8 @@ export default {
       this.verifying = false;
       this.working = false;
 
-      if (Anonymous.isSet()) {
-        Anonymous.deleteUserData();
+      if (AnonymousUser.isSet()) {
+        AnonymousUser.deleteUserData();
       }
     },
 

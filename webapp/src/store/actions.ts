@@ -4,7 +4,7 @@ import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
 import { formatWithCommaSeparator } from '@/views/util';
-import { Anonymous } from '@/services';
+import { AnonymousUser } from '@/services';
 
 const actions = wrapActions({
   async getStats({commit}) {
@@ -72,7 +72,7 @@ const actions = wrapActions({
       transaction = await Transactions.getTransaction(id);
     }
     else if (state.anonymousUser) {
-      transaction = await Transactions.getTransactionForAnonymous(id, state.anonymousUser);
+      transaction = await Transactions.getTransactionForAnonymous(id, state.anonymousUser._id);
     }
     commit('updateTransaction', transaction);
   },
@@ -149,10 +149,10 @@ const actions = wrapActions({
     const user = await Users.getCurrentUser();
     if (user) commit('setUser', user);
   },
-  async getCurrentAnonymousUser({ commit, state }) {
-    const userData = Anonymous.getUserData();
+  async getCurrentAnonymousUser({ commit }) {
+    const userData = AnonymousUser.getUserData();
     if (userData) {
-      commit('setAnonymousUser', JSON.parse(userData));
+      commit('setAnonymousUser', userData);
     } 
   },
   async refreshData({ dispatch }) {
