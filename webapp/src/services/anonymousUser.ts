@@ -9,13 +9,13 @@ export const AnonymousUser = {
     try {
       const userData = localStorage.getItem(TOKEN_KEY);
       return userData ? JSON.parse(userData) : null;
-    } catch(e) {}
+    } catch(e) { console.error(e.message); } // eslint-disable-line
   },
   setUserData(userData: { _id: string }) {
     try {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(userData));
     }
-    catch(e) {}
+    catch(e) { console.error(e.message); } // eslint-disable-line
   },
   deleteUserData() {
     localStorage.removeItem(TOKEN_KEY);
