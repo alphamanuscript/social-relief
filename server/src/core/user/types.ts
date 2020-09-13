@@ -12,6 +12,7 @@ export interface User {
   phone: string,
   email?: string,
   name: string,
+  isAnonymous?: boolean,
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -73,7 +74,8 @@ export interface UserCreateArgs {
   name: string,
   email: string,
   password: string,
-  googleIdToken: string
+  isAnonymous?: boolean,
+  googleIdToken?: string
 };
 
 export interface UserNominateArgs {
@@ -184,6 +186,12 @@ export interface UserService {
    */
   getNew(userId: string): Promise<User>;
   /**
+   * retrieves the anonymous user 
+   * corresponding to the specified userId
+   * @param userId 
+   */
+  getAnonymous(userId: string): Promise<User>;
+  /**
    * invalidates the specified access token
    * @param token 
    */
@@ -219,4 +227,21 @@ export interface UserService {
    * @param pipeline
    */
   aggregate(pipeline: any[]): Promise<any[]>;
+  /**
+   * initiates a donation 
+   * from anonymous user args.phone
+   * @param args 
+   */
+  donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction>;
 };
+
+export interface UserCreateAnonymousArgs {
+  name: string,
+  phone: string,
+  email: string
+}
+
+
+export interface UserDonateAnonymouslyArgs extends UserCreateAnonymousArgs {
+  amount: number
+}

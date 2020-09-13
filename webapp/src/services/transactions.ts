@@ -1,4 +1,4 @@
-import { Transaction } from '../types';
+import { Transaction, User } from '../types';
 import axios from 'axios';
 
 export const Transactions = {
@@ -6,8 +6,16 @@ export const Transactions = {
     const res = await axios.get<Transaction[]>('/transactions');
     return res.data;
   },
+  async getTransactionsForAnonymous(anonymousUser: User) {
+    const res = await axios.get<Transaction[]>(`/transactions/anonymous/${anonymousUser._id}`);
+    return res.data;
+  },
   async getTransaction(transactionId: string) {
     const res = await axios.get<Transaction>(`/transactions/${transactionId}`);
+    return res.data;
+  },
+  async getTransactionForAnonymous(transactionId: string, userId: string) {
+    const res = await axios.get<Transaction>(`/transactions/${transactionId}/anonymous/${userId}`);
     return res.data;
   }
 }

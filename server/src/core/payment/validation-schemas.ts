@@ -37,9 +37,9 @@ export const sendDonationInputSchema = joi.object().keys({
     .required()
     .max(2000)
     .messages({
-      'any.required': `amount is required`,
+      'any.required': `Amount is required`,
       'number.base': 'Invalid type, amount must be a number',
-      'number.max': 'amount cannot be more than 2000'
+      'number.max': 'Amount cannot be more than 2000'
     })
 });
 

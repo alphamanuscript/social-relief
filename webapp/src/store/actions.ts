@@ -4,6 +4,7 @@ import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
 import { formatWithCommaSeparator } from '@/views/util';
+import { AnonymousUser } from '@/services';
 
 const actions = wrapActions({
   async getStats({commit}) {
@@ -18,8 +19,15 @@ const actions = wrapActions({
     const middlemen = await Users.getMiddlemen();
     commit('setMiddlemen', middlemen);
   },
-  async getTransactions({ commit}) {
-    const transactions = await Transactions.getTransactions();
+  async getTransactions({ commit, state }) {
+    let transactions;
+    if (state.user) {
+      transactions = await Transactions.getTransactions();
+    }
+    else if (state.anonymousUser) {
+      transactions = await Transactions.getTransactionsForAnonymous(state.anonymousUser);
+    }
+    
     commit('setTransactions', transactions);
   },
   async getInvitations({ commit}) {
@@ -58,8 +66,14 @@ const actions = wrapActions({
       }
     }
   },
-  async getTransaction({ commit }, id: string) {
-    const transaction = await Transactions.getTransaction(id);
+  async getTransaction({ commit, state }, id: string) {
+    let transaction;
+    if (state.user) {
+      transaction = await Transactions.getTransaction(id);
+    }
+    else if (state.anonymousUser) {
+      transaction = await Transactions.getTransactionForAnonymous(id, state.anonymousUser._id);
+    }
     commit('updateTransaction', transaction);
   },
   async getCurrentInvitation({ commit }, id: string) {
@@ -73,6 +87,15 @@ const actions = wrapActions({
       commit('addTransaction', trx);
       commit('setPaymentRequest', trx);
     }   
+  },
+  async donateAnonymously({ commit }, { amount, name, phone, email}: {amount: number; name: string; phone: string; email: string }) {
+    const trx = await Donations.initiateAnonymousDonation({ amount, name, phone, email });
+    if (trx) {
+      const anonymousUser = await Users.getAnonymousUser(trx.to);
+      commit('setAnonymousUser', anonymousUser);
+      commit('setPaymentRequest', trx);
+    }
+    
   },
   async initiateRefund({ commit, state }) {
     if (state.user) {
@@ -125,6 +148,12 @@ const actions = wrapActions({
   async getCurrentUser({ commit }) {
     const user = await Users.getCurrentUser();
     if (user) commit('setUser', user);
+  },
+  async getCurrentAnonymousUser({ commit }) {
+    const userData = AnonymousUser.getUserData();
+    if (userData) {
+      commit('setAnonymousUser', userData);
+    } 
   },
   async refreshData({ dispatch }) {
     [

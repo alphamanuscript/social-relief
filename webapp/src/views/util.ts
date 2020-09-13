@@ -41,7 +41,7 @@ export const validationMessages = {
   password: 'Password required',
   confirmedPassword: 'Confirmed password does not match with password',
   email: 'Invalid email',
-  amount: 'Insufficient amount. Donations must be at least of the amount 100'
+  amount: 'Insufficient amount. Donations must be 100 or higher'
 }
 
 export const validationRules = {

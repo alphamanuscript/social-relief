@@ -8,7 +8,7 @@ import {
   Invitation,
   UserPutArgs
 } from '../types';
-import { Auth } from './auth';
+import { Auth, AnonymousUser } from '@/services';
 
 export const Users = {
   async createUser (args: UserCreateArgs) {
@@ -39,6 +39,11 @@ export const Users = {
   async getUser(userId: string) {
     const res = await axios.get<User>(`/users/${userId}`);
     return res.data;
+  },
+  async getAnonymousUser(userId: string) {
+    const user = { _id: userId };
+    AnonymousUser.setUserData(user);
+    return user;
   },
   async createNewUserOrAssumeNewRole (invitationId: string) {
     const res = await axios.post<User>('/users/activate-invitee', { invitationId });
