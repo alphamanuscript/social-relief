@@ -9,17 +9,13 @@ export const AnonymousUser = {
     try {
       const userData = localStorage.getItem(TOKEN_KEY);
       return userData ? JSON.parse(userData) : null;
-    } catch(e) {
-      console.log(e.message);
-    }
+    } catch(e) {}
   },
   setUserData(userData: { _id: string }) {
     try {
       localStorage.setItem(TOKEN_KEY, JSON.stringify(userData));
     }
-    catch(e) {
-      console.error(e.message);
-    }
+    catch(e) {}
   },
   deleteUserData() {
     localStorage.removeItem(TOKEN_KEY);
