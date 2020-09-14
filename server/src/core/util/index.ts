@@ -29,6 +29,10 @@ export function generateToken(): string {
   return randomBytes(64).toString('hex');
 }
 
+export function generatePassword(): string {
+  return randomBytes(8).toString('hex');
+}
+
 
 export function hasOnlyAllowedKeys (arg: any, allowedKeys: string[]): boolean {
   return arg ? !Object.keys(arg).some(key => !allowedKeys.includes(key)) : false;

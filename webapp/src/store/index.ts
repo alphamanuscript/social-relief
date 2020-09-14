@@ -9,6 +9,7 @@ Vue.use(Vuex)
 
 const state: AppState = {
   user: undefined,
+  anonymousUser: undefined,
   newUser: undefined,
   beneficiaries: [],
   middlemen: [],

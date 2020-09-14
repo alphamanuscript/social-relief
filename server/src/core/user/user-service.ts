@@ -1,9 +1,10 @@
 import { Db, Collection } from 'mongodb';
-import { generateId, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
+import { generateId, generatePassword, hashPassword, verifyPassword, verifyGoogleIdToken, generateToken, validateId } from '../util';
 import { 
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
-  UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs
+  UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -138,6 +139,10 @@ export class Users implements UserService {
       createdAt: now,
       updatedAt: now
     };
+
+    if(args.isAnonymous) {
+      user.isAnonymous = true;
+    }
 
     try {
       if (args.password) {
@@ -471,7 +476,21 @@ export class Users implements UserService {
       const user = await this.collection.findOne({ _id: userId, password: '' }, { projection: SAFE_USER_PROJECTION });
       if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
 
-      return getSafeUser(user);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async getAnonymous(userId: string): Promise<User> {
+    validators.validatesGetAnonymous(userId);
+    try {
+      const user = await this.collection.findOne({ _id: userId, isAnonymous: true }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return user;
     }
     catch(e) {
       rethrowIfAppError(e);
@@ -648,6 +667,35 @@ export class Users implements UserService {
     catch(e) {
       if (e instanceof AppError) throw e;
       throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction> {
+    validators.validateDonateAnonymously(args);
+    const { amount, name, phone, email } = args;
+    try {
+      const user = await this.createAnonymous({ name, phone, email });
+      const transaction = await this.initiateDonation(user._id, { amount });
+      return transaction;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+    }
+  }
+
+  async createAnonymous(args: UserCreateAnonymousArgs): Promise<User> {
+    const { name, phone, email } = args;
+    try {
+      let user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
+      if (!user) {
+        const password = generatePassword();
+        user = await this.create({ name, phone, email, password, isAnonymous: true });
+      }
+      
+      return user;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
     }
   }
 }

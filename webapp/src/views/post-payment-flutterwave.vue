@@ -19,11 +19,14 @@
     <b-card v-else>
       <span class="text-danger">Transaction not found</span>
     </b-card>
+    <div v-if="displayReturnHomeButton" class="py-3 text-center">
+      <b-button pill variant="primary" class="px-5" @click="handleBtnClick()">Return Home</b-button>
+    </div>
   </b-container>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
-import { Auth } from '../services';
+import { Auth, AnonymousUser } from '../services';
 import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 
 export default {
@@ -37,7 +40,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['transactions'])
+    ...mapState(['transactions']),
+    displayReturnHomeButton() {
+      return AnonymousUser.isSet();
+    }
   },
   async created() {
     if (Auth.isAuthenticated()) {
@@ -46,12 +52,19 @@ export default {
       }
 
       await this.getTransactions();
-    } else {
+    } else if (AnonymousUser.isSet()) {
+      if (!this.anonymousUser) {
+        await this.getCurrentAnonymousUser();
+      }
+
+      await this.getTransactions();
+    }
+    else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
   },
   methods: {
-    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions']),
+    ...mapActions(['getTransaction', 'getCurrentUser', 'getTransactions', 'getCurrentAnonymousUser']),
     async verifyTransaction() {
       this.verifying = true;
       this.working = true;
@@ -106,6 +119,14 @@ export default {
     finishVerification() {
       this.verifying = false;
       this.working = false;
+
+      if (AnonymousUser.isSet()) {
+        AnonymousUser.deleteUserData();
+      }
+    },
+
+    handleBtnClick() {
+      this.$router.push({ name: 'home' });
     }
   },
   watch: {

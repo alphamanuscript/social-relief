@@ -17,6 +17,7 @@ export interface User {
   name: string,
   phone: string,
   email: string,
+  isAnonymous?: boolean,
   addedBy: string,
   donors: string[],
   roles: UserRole[],
@@ -64,6 +65,13 @@ export interface InitiateDonationArgs {
   amount: Number
 }
 
+export interface AnonymousDonateArgs {
+  amount: number;
+  name: string,
+  phone: string,
+  email: string
+}
+
 export interface Transaction {
   _id: string,
   createdAt: Date,
@@ -79,7 +87,7 @@ export interface Transaction {
   toExternal: boolean,
   provider: string,
   providerTransactionId?: string,
-  metadata: any
+  metadata?: any
 }
 
 export interface Invitation {
@@ -145,6 +153,7 @@ export interface Stats {
 
 export interface AppState {
   user?: User;
+  anonymousUser?: User;
   newUser?: User;
   beneficiaries: User[];
   middlemen: User[];

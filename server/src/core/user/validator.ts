@@ -1,10 +1,16 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
 
 export const validatesCreate = (args: UserCreateArgs) => {
   const { error } = schemas.createInputSchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
+}
+
+export const validateDonateAnonymously = (args: UserDonateAnonymouslyArgs) => {
+  const { error } = schemas.donateAnonymouslyInputSchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
@@ -55,6 +61,8 @@ export const validatesInitiateDonation = ({ userId, amount } : { userId: string;
 }
 
 export const validatesGetNew = validatesLogoutAll;
+
+export const validatesGetAnonymous = validatesGetNew;
 
 export const validatesPut = ({ userId, args } : { userId: string, args: UserPutArgs}) => {
   const { name, email, password } = args;

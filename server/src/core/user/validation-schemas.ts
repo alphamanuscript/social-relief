@@ -1,5 +1,5 @@
 import * as joi from '@hapi/joi';
-import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema, idValidationSchema } from '../util/validation-util';
+import { phoneValidationSchema, passwordValidationSchema, googleIdTokenValidationSchema, emailValidationSchema, idValidationSchema, isAnonymousSchema } from '../util/validation-util';
 
 const emailSchema = joi.string()
   .pattern(/\S+@\S+\.\S+/) // Simplest pattern (anything@anything.anything) of email validation. Should be updated with a more rigorous, thorough pattern
@@ -30,17 +30,34 @@ const userIdSchema = joi.object().keys({
       'string.empty': `Please enter userId`,
       'string.pattern.base': `Invalid userId. Must contain hexadecimals only and be 32 characters long`
     }),
-})
+});
+
+const amountSchema = joi.number()
+  .required()
+  .min(100)
+  .messages({
+    'any.required': `Amount is required`,
+    'number.base': 'Invalid type, amount must be a number',
+    'number.min': `Amount must be 100 or more`,
+  })
 
 export const createInputSchema = joi.alternatives().try(
   joi.object().keys({
     phone: phoneValidationSchema,
     password: passwordValidationSchema,
     name: joi.string().required(),
-    email: emailSchema
+    email: emailSchema,
+    isAnonymous: isAnonymousSchema,
   }),
   joi.object().keys({ phone: phoneValidationSchema, googleIdToken: googleIdTokenValidationSchema }),
-);; 
+);
+
+export const donateAnonymouslyInputSchema = joi.object().keys({
+  amount: amountSchema,
+  name: joi.string().required(),
+  phone: phoneValidationSchema,
+  email: emailSchema,
+});
 
 export const loginInputSchema = joi.alternatives().try(
   joi.object().keys({ phone: phoneValidationSchema, password: passwordValidationSchema }),
@@ -110,14 +127,7 @@ export const logoutAllInputSchema = userIdSchema;
 
 export const initiateDonationInputSchema = joi.object().keys({
   userId: idValidationSchema,
-  amount: joi.number()
-    .required()
-    .min(100)
-    .messages({
-      'any.required': `amount is required`,
-      'number.base': 'Invalid type, amount must be a number',
-      'number.min': `amount must be 100 or more`,
-    })
+  amount: amountSchema
 });
 
 export const putInputSchema = joi.object().keys({
@@ -133,8 +143,8 @@ export const putInputSchema = joi.object().keys({
   name: joi.string()
     .required()
     .messages({
-      'any.required': 'name is required',
-      'string.empty': 'name is required'
+      'any.required': 'Name is required',
+      'string.empty': 'Name is required'
     }),
   email: emailValidationSchema,
   password: passwordValidationSchema

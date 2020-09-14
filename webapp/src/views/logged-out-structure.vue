@@ -1,6 +1,6 @@
 <template>
   <div >
-    <b-container fluid="md" class="w-lg-75 pt-5">
+    <b-container fluid="md" class="w-lg-75 pt-5" :style="styleObject">
       <b-navbar toggleable="sm" variant="light" sticky>
         <b-navbar-brand to="#">
           <img :src="imageUrl" width="150" alt="Social Relief Logo">
@@ -27,7 +27,7 @@
 <script>
 import HomeFooter from '../components/home-footer'
 import { mapState, mapActions } from 'vuex';
-import { Auth } from '../services';
+import { Auth, AnonymousUser } from '../services';
 import { DEFAULT_SIGNED_IN_PAGE } from '../router/defaults';
 export default {
   name: 'logged-out-structure',
@@ -37,6 +37,12 @@ export default {
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
+    styleObject() {
+      if (this.$route.name === 'post-payment-flutterwave' && AnonymousUser.isSet()) {
+        return { "padding-bottom": "11rem" }
+      }
+      return {};
+    }
   },
   methods: {
     ...mapActions(['resetMessage']),

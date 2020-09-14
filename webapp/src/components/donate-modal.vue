@@ -52,7 +52,7 @@ export default {
     return {
       donationInputs: {
         phone: '',
-        amount: 1000
+        amount: 100
       },
       validationMessages: {
         phone: validationMessages.phone,
