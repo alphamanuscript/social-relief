@@ -70,6 +70,8 @@ export const validatesGetNew = validatesLogoutAll;
 
 export const validatesGetAnonymous = validatesGetNew;
 
+export const validatesVerifyBeneficiary = validatesGetAnonymous;
+
 export const validatesPut = ({ userId, args } : { userId: string, args: UserPutArgs}) => {
   const { name, email, password } = args;
   const { error } = schemas.putInputSchema.validate({ userId, name, email, password });

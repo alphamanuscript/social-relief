@@ -109,7 +109,9 @@ export interface UserAddBeneficiaryArgs {
   email?: string
 }
 
-
+export interface UserVerifyBeneficiary {
+  _id: string,
+}
 
 export interface UserActivateMiddlemanArgs extends UserActivateBeneficiaryArgs {}
 
@@ -246,6 +248,20 @@ export interface UserService {
    * @param args 
    */
   donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction>;
+  /**
+   * Adds a new beneficiary user
+   * that does not have a donor
+   * to nominate them 
+   * @param args 
+   */
+  addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User>;
+  /**
+   * Verifies the corresponding
+   * beneficiary user by setting 
+   * isVetted to true
+   * @param userId 
+   */
+  verifyBeneficiary(userId: string): Promise<User>
 };
 
 export interface UserCreateAnonymousArgs {

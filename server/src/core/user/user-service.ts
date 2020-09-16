@@ -724,8 +724,27 @@ export class Users implements UserService {
     }
   }
 
-  public async verifyBeneficiary(args: UserVerifyBeneficiary): Promise<User> {
+  public async verifyBeneficiary(beneficiaryId: string): Promise<User> {
+    validators.validatesVerifyBeneficiary(beneficiaryId);
+    try {
+      const verifiedBeneficiary = await this.collection.findOneAndUpdate(
+        { _id: beneficiaryId, roles: { $in: ['beneficiary'] }, isVetted: false }, 
+        { 
+          $set: { isVetted: true },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
 
+      if(!verifiedBeneficiary) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+      return getSafeUser(verifiedBeneficiary.value);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
   }
 
   async createAnonymous(args: UserCreateAnonymousArgs): Promise<User> {
