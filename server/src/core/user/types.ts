@@ -13,6 +13,11 @@ export interface User {
   email?: string,
   name: string,
   isAnonymous?: boolean,
+  /**
+   * indicates whether the added beneficiary user 
+   * has been verified or not.
+   */
+  isVetted?: boolean
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -97,6 +102,14 @@ export interface UserActivateBeneficiaryArgs {
   email?: string,
   nominatorId: string
 }
+
+export interface UserAddBeneficiaryArgs {
+  phone: string,
+  name: string,
+  email?: string
+}
+
+
 
 export interface UserActivateMiddlemanArgs extends UserActivateBeneficiaryArgs {}
 

@@ -4,7 +4,7 @@ import {
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
-  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddBeneficiaryArgs
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -681,6 +681,51 @@ export class Users implements UserService {
     catch (e) {
       rethrowIfAppError(e);
     }
+  }
+
+  public async addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User> {
+    validators.validatesAddBeneficiary(args);
+    const { phone, name, email } = args;
+    try {
+      const now = new Date();
+      const password = await hashPassword(generatePassword());
+      const user: DbUser = {
+        _id: generateId(),
+        phone,
+        name,
+        password,
+        addedBy: '',
+        isVetted: false,
+        donors: [],
+        roles: ['beneficiary'],
+        createdAt: now,
+        updatedAt: now
+      };
+
+      if (email) {
+        user.email = email;
+      }
+
+      const res = await this.collection.insertOne(user);
+      return getSafeUser(res.ops[0]);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+
+      if (isMongoDuplicateKeyError(e, args.phone)) {
+        throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+      }
+
+      if (isMongoDuplicateKeyError(e, args.email)) {
+        throw createUniquenessFailedError(messages.ERROR_EMAIL_ALREADY_IN_USE);
+      }
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async verifyBeneficiary(args: UserVerifyBeneficiary): Promise<User> {
+
   }
 
   async createAnonymous(args: UserCreateAnonymousArgs): Promise<User> {

@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs, UserAddBeneficiaryArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -26,6 +26,12 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (args.role && ['beneficiary', 'middleman'].includes(args.role) === false) 
     throw createValidationError("Role must be either 'beneficiary' or 'middleman'");
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
+}
+
+export const validatesAddBeneficiary = (args: UserAddBeneficiaryArgs) => {
+  const { error } = schemas.addBeneficiarySchema.validate(args);
+  if (error) throw createValidationError(error.details[0].message);
+  if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0');
 }
 
 export const validatesActivate = (args: UserActivateArgs) => {
