@@ -5,7 +5,7 @@ export async function startCLI() {
   try {
     const config = loadAppConfigFromEnv(process.env);
     const app = await bootstrap(config);
-    runBeneficiaryManagementCLI(app);
+    // runBeneficiaryManagementCLI(app);
   }
   catch(e) {
     console.error(e);
