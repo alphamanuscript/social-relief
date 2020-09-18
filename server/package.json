@@ -2,14 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-  "bin": {
-    "cli-app": "./dist/cli/commands.js"
-  },
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "start": "node -r dotenv/config dist/start-server",
     "worker": "node -r dotenv/config dist/start-worker",
+    "admin-cli": "node -r dotenv/config dist/start-cli",
     "test": "jest"
   },
   "devDependencies": {

@@ -1,0 +1,1 @@
+export { runAdminCLI } from "./admin-cli";

@@ -1,11 +1,11 @@
-import { loadAppConfigFromEnv, bootstrap } from './core';
-import { runBeneficiaryManagementCLI } from './cli';
+import { loadAppConfigFromEnv, bootstrap, App } from './core';
+import { runAdminCLI } from './admin-cli/admin-cli';
 
-export async function startCLI() {
+async function startCLI() {
   try {
     const config = loadAppConfigFromEnv(process.env);
     const app = await bootstrap(config);
-    // runBeneficiaryManagementCLI(app);
+    runAdminCLI(app);
   }
   catch(e) {
     console.error(e);

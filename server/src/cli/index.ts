@@ -1,1 +1,0 @@
-export { runBeneficiaryManagementCLI } from "./beneficiary-management-cli";

@@ -23,5 +23,27 @@ export const prompts = {
       name: 'email',
       message: 'Email:'
     }
+  ],
+  upgradeBeneficiary: [
+    {
+      type: 'list',
+      message: 'Specify beneficiary by:',
+      name: 'upgradeBy',
+      choices: ["Name", "Phone"]
+    }
+  ],
+  specifiyBeneficiaryName: [
+    { 
+      type: 'input',
+      name: 'name',
+      message: 'Name:'
+    },
+  ],
+  specifiyBeneficiaryPhone: [
+    { 
+      type: 'input',
+      name: 'phone',
+      message: 'Phone:'
+    }
   ]
 }
