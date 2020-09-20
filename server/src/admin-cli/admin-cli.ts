@@ -1,10 +1,7 @@
-#!/usr/bin/env node
-
 import { App } from '../core';
-import { prompt, ui } from 'inquirer';
+import { prompt } from 'inquirer';
 import { prompts } from './prompts';
-// import { program } from 'commander';
-import { addNewBeneficiaryCmd, upgradeBeneficiaryCmd } from './commands';
+import { addBeneficiaryCmd, upgradeBeneficiaryCmd } from './commands';
 
 export async function runAdminCLI(app: App) {
   async function cliLoop() {
@@ -19,13 +16,6 @@ export async function runAdminCLI(app: App) {
         case 'Upgrade existing beneficiary':
           await upgradeBeneficiaryCmd(app);
           break;
-        case 'Quit': 
-          console.log('Goodbye');
-          break;
-      }
-
-      if (command === 'Quit') {
-        break;
       }
     }
   }

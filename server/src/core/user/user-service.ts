@@ -28,6 +28,7 @@ const SAFE_USER_PROJECTION = {
   phone: 1,
   email: 1,
   name: 1,
+  isVetted: 1,
   addedBy: 1,
   donors: 1,
   middlemanFor: 1,
@@ -684,6 +685,7 @@ export class Users implements UserService {
   }
 
   public async addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User> {
+    
     validators.validatesAddBeneficiary(args);
     const { phone, name, email } = args;
     try {
@@ -777,7 +779,6 @@ export class Users implements UserService {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
-
   }
 
   async createAnonymous(args: UserCreateAnonymousArgs): Promise<User> {

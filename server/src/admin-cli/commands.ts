@@ -1,13 +1,16 @@
-#!/usr/bin/env node
-
 import { App } from '../core';
 import { prompts } from './prompts';
 import { prompt } from 'inquirer';
+import { UserAddBeneficiaryArgs } from '../core/user/types';
 
-export async function addNewBeneficiaryCmd(app: App) {
+export async function addBeneficiaryCmd(app: App) {
   try {
     const { name, phone, email } = await prompt(prompts.addBeneficiary);
-    const res = await app.users.addBeneficiary({name, phone, email });
+    let args: UserAddBeneficiaryArgs = { name, phone };
+    if (email) {
+      args.email = email;
+    }
+    const res = await app.users.addBeneficiary(args);
     console.log(res);
   }
   catch(e) {
@@ -20,10 +23,12 @@ export async function upgradeBeneficiaryCmd(app: App) {
     const { upgradeBy } = await prompt(prompts.upgradeBeneficiary);
     switch(upgradeBy) {
       case 'Name': 
-        const { name } = await prompt(prompts.specifiyBeneficiaryName);
+        const { name } = await prompt(prompts.specifyBeneficiaryName);
+        await verifyBeneficiaryByProperty('name', name, app);
         break;
       case 'Phone':
-        const { phone } = await prompt(prompts.specifiyBeneficiaryPhone); 
+        const { phone } = await prompt(prompts.specifyBeneficiaryPhone); 
+        await verifyBeneficiaryByProperty('phone', phone, app);
         break;
     }
   }
@@ -32,4 +37,18 @@ export async function upgradeBeneficiaryCmd(app: App) {
   }
 }
 
-async function 
+async function verifyBeneficiaryByProperty(property: string, value: string, app: App) {
+  let verifiedBeneficiary;
+  try {
+    if (property === 'name') {
+      verifiedBeneficiary = await app.users.verifyBeneficiaryByName(value);
+    }
+    else if(property === 'phone') {
+      verifiedBeneficiary = await app.users.verifyBeneficiaryByPhone(value);
+    }
+    console.log(verifiedBeneficiary);
+  }
+  catch(e) {
+    console.log(e.message);
+  }
+}

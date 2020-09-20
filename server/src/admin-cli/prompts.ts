@@ -4,7 +4,7 @@ export const prompts = {
       type: 'list',
       message: 'Select a command to continue:',
       name: 'command',
-      choices: ["Add new beneficiary", "Upgrade existing beneficiary", "Quit"]
+      choices: ["Add new beneficiary", "Upgrade existing beneficiary"]
     }
   ],
   addBeneficiary: [
@@ -21,7 +21,12 @@ export const prompts = {
     { 
       type: 'input',
       name: 'email',
-      message: 'Email:'
+      message: 'Email:',
+      validate: (email: string) => {
+        if (email || !email) {
+          return true;
+        }
+      }
     }
   ],
   upgradeBeneficiary: [
@@ -32,14 +37,14 @@ export const prompts = {
       choices: ["Name", "Phone"]
     }
   ],
-  specifiyBeneficiaryName: [
+  specifyBeneficiaryName: [
     { 
       type: 'input',
       name: 'name',
       message: 'Name:'
     },
   ],
-  specifiyBeneficiaryPhone: [
+  specifyBeneficiaryPhone: [
     { 
       type: 'input',
       name: 'phone',
