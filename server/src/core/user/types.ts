@@ -256,12 +256,19 @@ export interface UserService {
    */
   addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User>;
   /**
-   * Verifies the corresponding
-   * beneficiary user by setting 
+   * Verifies the beneficiary user
+   * whose name is specified by setting 
    * isVetted to true
-   * @param userId 
+   * @param name 
    */
-  verifyBeneficiary(userId: string): Promise<User>
+  verifyBeneficiaryByName(name: string): Promise<User>;
+  /**
+   * Verifies the beneficiary user
+   * whose phone is specified by setting 
+   * isVetted to true
+   * @param phone 
+   */
+  verifyBeneficiaryByPhone(name: string): Promise<User>
 };
 
 export interface UserCreateAnonymousArgs {

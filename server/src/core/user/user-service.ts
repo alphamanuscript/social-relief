@@ -724,11 +724,43 @@ export class Users implements UserService {
     }
   }
 
-  public async verifyBeneficiary(beneficiaryId: string): Promise<User> {
-    validators.validatesVerifyBeneficiary(beneficiaryId);
+  public async verifyBeneficiaryByName(name: string): Promise<User> {
+    validators.verifyBeneficiaryByName(name);
+    try {
+      const user = await this.verifyBeneficiaryByProperty('name', name);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async verifyBeneficiaryByPhone(phone: string): Promise<User> {
+    validators.verifyBeneficiaryByPhone(phone);
+    try {
+      const user = await this.verifyBeneficiaryByProperty('phone', phone);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async verifyBeneficiaryByProperty(property: String, value: String): Promise<User> {
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: false };
+
+    if (property === "name") {
+      query = { name: value, ...query };
+    }
+    else if (property === 'phone') {
+      query = { phone: value, ...query };
+    }
+
     try {
       const verifiedBeneficiary = await this.collection.findOneAndUpdate(
-        { _id: beneficiaryId, roles: { $in: ['beneficiary'] }, isVetted: false }, 
+        query, 
         { 
           $set: { isVetted: true },
           $currentDate: { updatedAt: true },
@@ -745,6 +777,7 @@ export class Users implements UserService {
       rethrowIfAppError(e);
       throw createDbOpFailedError(e.message);
     }
+
   }
 
   async createAnonymous(args: UserCreateAnonymousArgs): Promise<User> {

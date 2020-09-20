@@ -1,5 +1,7 @@
+#!/usr/bin/env node
+
 import { App } from '../core';
-import { prompt } from 'inquirer';
+import { prompt, ui } from 'inquirer';
 import { prompts } from './prompts';
 // import { program } from 'commander';
 import { addNewBeneficiaryCmd, upgradeBeneficiaryCmd } from './commands';
@@ -12,17 +14,21 @@ export async function runAdminCLI(app: App) {
       const { command } = await prompt(selectCommand);
       switch(command) {
         case 'Add new beneficiary':
-          const { name, phone, email } = await prompt(prompts.addBeneficiary);
-          const res = await app.users.addBeneficiary({name, phone, email });
-          console.log(res);
+          await addBeneficiaryCmd(app);
           break;
-        case 'Upgrade existing beneficiary': 
-          upgradeBeneficiaryCmd(app);
+        case 'Upgrade existing beneficiary':
+          await upgradeBeneficiaryCmd(app);
           break;
+        case 'Quit': 
+          console.log('Goodbye');
+          break;
+      }
+
+      if (command === 'Quit') {
+        break;
       }
     }
   }
 
   cliLoop();
-  // program.parse(process.argv);
 }

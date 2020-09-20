@@ -49,6 +49,16 @@ export const validatesGetByToken = (tokenId: string) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
+export const verifyBeneficiaryByPhone = (phone: string) => {
+  const { error } = schemas.verifyBeneficiaryByPhoneInputSchema.validate({ phone });
+  if (error) throw createValidationError(error.details[0].message);
+}
+
+export const verifyBeneficiaryByName = (name: string) => {
+  const { error } = schemas.verifyBeneficiaryByNameInputSchema.validate({ name });
+  if (error) throw createValidationError(error.details[0].message);
+}
+
 export const validatesLogout = (tokenId: string) => {
   const { error } = schemas.logoutInputSchema.validate({ tokenId });
   if (error) throw createValidationError(error.details[0].message);

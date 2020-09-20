@@ -3,41 +3,6 @@
 import { App } from '../core';
 import { prompts } from './prompts';
 import { prompt } from 'inquirer';
-// import * as program from 'commander';
-
-
-
-// let app: App;
-
-// program
-//   .version('1.0.0')
-//   .description('Admin CLI')
-
-// program
-//   .command('add')
-//   .alias('a')
-//   .description('Add new beneficiary')
-//   .action(async () => {
-//     try {
-//       const { addBeneficiary } = prompts;
-//       const { name, phone, email } = await prompt(addBeneficiary);
-//       if (!app) {
-//         app = await startApp();
-//       }
-//       const res = await app.users.addBeneficiary({
-//         name,
-//         phone,
-//         email
-//       });
-//       console.log(res);
-//     }
-//     catch(e) {
-//       console.error(e.message);
-//       // process.exit(1);
-//     }
-//   });
-
-// program.parse(process.argv);
 
 export async function addNewBeneficiaryCmd(app: App) {
   try {
@@ -66,3 +31,5 @@ export async function upgradeBeneficiaryCmd(app: App) {
     console.log(e.message);
   }
 }
+
+async function 

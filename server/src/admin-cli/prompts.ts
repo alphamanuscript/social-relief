@@ -4,7 +4,7 @@ export const prompts = {
       type: 'list',
       message: 'Select a command to continue:',
       name: 'command',
-      choices: ["Add new beneficiary", "Upgrade existing beneficiary"]
+      choices: ["Add new beneficiary", "Upgrade existing beneficiary", "Quit"]
     }
   ],
   addBeneficiary: [
