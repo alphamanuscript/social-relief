@@ -1,7 +1,8 @@
 import { App } from '../core';
 import { prompt } from 'inquirer';
 import { prompts } from './prompts';
-import { addBeneficiaryCmd, upgradeBeneficiaryCmd } from './commands';
+import { addVettedBeneficiaryCmd, upgradeVettedBeneficiaryCmd } from './commands';
+import { ADD_VETTED_BENEFICIARY, UPGRADE_VETTED_BENEFICIARY } from './command-names';
 
 export async function runAdminCLI(app: App) {
   async function cliLoop() {
@@ -10,11 +11,11 @@ export async function runAdminCLI(app: App) {
       // Prompt user for a command
       const { command } = await prompt(selectCommand);
       switch(command) {
-        case 'Add new beneficiary':
-          await addBeneficiaryCmd(app);
+        case ADD_VETTED_BENEFICIARY:
+          await addVettedBeneficiaryCmd(app);
           break;
-        case 'Upgrade existing beneficiary':
-          await upgradeBeneficiaryCmd(app);
+        case UPGRADE_VETTED_BENEFICIARY:
+          await upgradeVettedBeneficiaryCmd(app);
           break;
       }
     }

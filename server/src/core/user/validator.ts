@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs, UserAddBeneficiaryArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -28,8 +28,8 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
 
-export const validatesAddBeneficiary = (args: UserAddBeneficiaryArgs) => {
-  const { error } = schemas.addBeneficiarySchema.validate(args);
+export const validatesAddVettedBeneficiary = (args: UserAddVettedBeneficiaryArgs) => {
+  const { error } = schemas.addVettedBeneficiarySchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0');
 }
@@ -49,13 +49,13 @@ export const validatesGetByToken = (tokenId: string) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const verifyBeneficiaryByPhone = (phone: string) => {
-  const { error } = schemas.verifyBeneficiaryByPhoneInputSchema.validate({ phone });
+export const verifyVettedBeneficiaryByPhone = (phone: string) => {
+  const { error } = schemas.verifyVettedBeneficiaryByPhoneInputSchema.validate({ phone });
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const verifyBeneficiaryByName = (name: string) => {
-  const { error } = schemas.verifyBeneficiaryByNameInputSchema.validate({ name });
+export const verifyVettedBeneficiaryById = (_id: string) => {
+  const { error } = schemas.verifyVettedBeneficiaryByIdInputSchema.validate({ userId: _id });
   if (error) throw createValidationError(error.details[0].message);
 }
 

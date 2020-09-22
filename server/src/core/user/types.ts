@@ -7,6 +7,8 @@ export type NominationRole = 'beneficiary' | 'middleman';
 
 export type UserTransactionsBlockedReason = 'refundPending' | 'maxRefundsExceeded';
 
+export type BeneficiaryStatus = 'pending' | 'verified';
+
 export interface User {
   _id: string,
   phone: string,
@@ -14,10 +16,15 @@ export interface User {
   name: string,
   isAnonymous?: boolean,
   /**
-   * indicates whether the added beneficiary user 
-   * has been verified or not.
+   * indicates whether or not the added beneficiary user 
+   * has been approved to receive funds from any donor.
    */
-  isVetted?: boolean
+  isVetted?: boolean,
+  /**
+   * indicates whether or not the added beneficiary's claim 
+   * has been verified.
+   */
+  beneficiaryStatus?: BeneficiaryStatus
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -103,7 +110,7 @@ export interface UserActivateBeneficiaryArgs {
   nominatorId: string
 }
 
-export interface UserAddBeneficiaryArgs {
+export interface UserAddVettedBeneficiaryArgs {
   phone: string,
   name: string,
   email?: string
@@ -254,21 +261,21 @@ export interface UserService {
    * to nominate them 
    * @param args 
    */
-  addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User>;
+  addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User>;
   /**
-   * Verifies the beneficiary user
-   * whose name is specified by setting 
-   * isVetted to true
+   * Verifies the vetted beneficiary user
+   * whose _id is specified by setting 
+   * beneficiaryStatus to 'verified'
    * @param name 
    */
-  verifyBeneficiaryByName(name: string): Promise<User>;
+  verifyVettedBeneficiaryById(_id: string): Promise<User>;
   /**
-   * Verifies the beneficiary user
+   * Verifies the vetted beneficiary user
    * whose phone is specified by setting 
-   * isVetted to true
+   * beneficiaryStatus to 'verified'
    * @param phone 
    */
-  verifyBeneficiaryByPhone(name: string): Promise<User>
+  verifyVettedBeneficiaryByPhone(phone: string): Promise<User>
 };
 
 export interface UserCreateAnonymousArgs {

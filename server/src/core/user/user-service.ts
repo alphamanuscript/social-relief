@@ -4,7 +4,8 @@ import {
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
-  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddBeneficiaryArgs
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs, 
+
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -29,6 +30,7 @@ const SAFE_USER_PROJECTION = {
   email: 1,
   name: 1,
   isVetted: 1,
+  beneficiaryStatus: 1,
   addedBy: 1,
   donors: 1,
   middlemanFor: 1,
@@ -684,9 +686,8 @@ export class Users implements UserService {
     }
   }
 
-  public async addBeneficiary(args: UserAddBeneficiaryArgs): Promise<User> {
-    
-    validators.validatesAddBeneficiary(args);
+  public async addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User> {
+    validators.validatesAddVettedBeneficiary(args);
     const { phone, name, email } = args;
     try {
       const now = new Date();
@@ -698,6 +699,7 @@ export class Users implements UserService {
         password,
         addedBy: '',
         isVetted: false,
+        beneficiaryStatus: 'pending',
         donors: [],
         roles: ['beneficiary'],
         createdAt: now,
@@ -726,10 +728,10 @@ export class Users implements UserService {
     }
   }
 
-  public async verifyBeneficiaryByName(name: string): Promise<User> {
-    validators.verifyBeneficiaryByName(name);
+  public async verifyVettedBeneficiaryById(_id: string): Promise<User> {
+    validators.verifyVettedBeneficiaryById(_id);
     try {
-      const user = await this.verifyBeneficiaryByProperty('name', name);
+      const user = await this.verifyVettedBeneficiaryByProperty('_id', _id);
       return user;
     }
     catch(e) {
@@ -738,10 +740,10 @@ export class Users implements UserService {
     }
   }
 
-  public async verifyBeneficiaryByPhone(phone: string): Promise<User> {
-    validators.verifyBeneficiaryByPhone(phone);
+  public async verifyVettedBeneficiaryByPhone(phone: string): Promise<User> {
+    validators.verifyVettedBeneficiaryByPhone(phone);
     try {
-      const user = await this.verifyBeneficiaryByProperty('phone', phone);
+      const user = await this.verifyVettedBeneficiaryByProperty('phone', phone);
       return user;
     }
     catch(e) {
@@ -750,11 +752,11 @@ export class Users implements UserService {
     }
   }
 
-  async verifyBeneficiaryByProperty(property: String, value: String): Promise<User> {
-    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: false };
+  async verifyVettedBeneficiaryByProperty(property: String, value: String): Promise<User> {
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: true, beneficiaryStatus: 'pending' };
 
-    if (property === "name") {
-      query = { name: value, ...query };
+    if (property === "_id") {
+      query = { _id: value, ...query };
     }
     else if (property === 'phone') {
       query = { phone: value, ...query };
@@ -764,7 +766,7 @@ export class Users implements UserService {
       const verifiedBeneficiary = await this.collection.findOneAndUpdate(
         query, 
         { 
-          $set: { isVetted: true },
+          $set: { beneficiaryStatus: 'verified' },
           $currentDate: { updatedAt: true },
         },
         { upsert: true, returnOriginal: false }

@@ -40,7 +40,6 @@
     "helmet": "^3.22.0",
     "inquirer": "^7.3.3",
     "mongodb": "^3.5.5",
-    "ts-node": "^9.0.0",
     "winston": "^3.2.1"
   },
   "engines": {

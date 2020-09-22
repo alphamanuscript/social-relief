@@ -1,54 +1,55 @@
 import { App } from '../core';
 import { prompts } from './prompts';
 import { prompt } from 'inquirer';
-import { UserAddBeneficiaryArgs } from '../core/user/types';
+import { UserAddVettedBeneficiaryArgs } from '../core/user/types';
+import { SPECIFY_VETTED_BENEFICIARY_BY_ID, SPECIFY_VETTED_BENEFICIARY_BY_PHONE } from './command-names';
 
-export async function addBeneficiaryCmd(app: App) {
+export async function addVettedBeneficiaryCmd(app: App) {
   try {
-    const { name, phone, email } = await prompt(prompts.addBeneficiary);
-    let args: UserAddBeneficiaryArgs = { name, phone };
+    const { name, phone, email } = await prompt(prompts.addVettedBeneficiary);
+    let args: UserAddVettedBeneficiaryArgs = { name, phone };
     if (email) {
       args.email = email;
     }
-    const res = await app.users.addBeneficiary(args);
+    const res = await app.users.addVettedBeneficiary(args);
     console.log(res);
   }
   catch(e) {
-    console.log(e.message);
+    console.error(e.message);
   }
 }
 
-export async function upgradeBeneficiaryCmd(app: App) {
+export async function upgradeVettedBeneficiaryCmd(app: App) {
   try {
-    const { upgradeBy } = await prompt(prompts.upgradeBeneficiary);
+    const { upgradeBy } = await prompt(prompts.upgradeVettedBeneficiary);
     switch(upgradeBy) {
-      case 'Name': 
-        const { name } = await prompt(prompts.specifyBeneficiaryName);
-        await verifyBeneficiaryByProperty('name', name, app);
+      case SPECIFY_VETTED_BENEFICIARY_BY_ID: 
+        const { name } = await prompt(prompts.specifyVettedBeneficiaryID);
+        await verifyVettedBeneficiaryByProperty(SPECIFY_VETTED_BENEFICIARY_BY_ID.toLowerCase(), name, app);
         break;
-      case 'Phone':
-        const { phone } = await prompt(prompts.specifyBeneficiaryPhone); 
-        await verifyBeneficiaryByProperty('phone', phone, app);
+      case SPECIFY_VETTED_BENEFICIARY_BY_PHONE:
+        const { phone } = await prompt(prompts.specifyVettedBeneficiaryPhone); 
+        await verifyVettedBeneficiaryByProperty(SPECIFY_VETTED_BENEFICIARY_BY_PHONE.toLowerCase(), phone, app);
         break;
     }
   }
   catch(e) {
-    console.log(e.message);
+    console.error(e.message);
   }
 }
 
-async function verifyBeneficiaryByProperty(property: string, value: string, app: App) {
-  let verifiedBeneficiary;
+async function verifyVettedBeneficiaryByProperty(property: string, value: string, app: App) {
+  let verifiedVettedBeneficiary;
   try {
-    if (property === 'name') {
-      verifiedBeneficiary = await app.users.verifyBeneficiaryByName(value);
+    if (property === SPECIFY_VETTED_BENEFICIARY_BY_ID.toLowerCase()) {
+      verifiedVettedBeneficiary = await app.users.verifyVettedBeneficiaryById(`_${value}`);
     }
-    else if(property === 'phone') {
-      verifiedBeneficiary = await app.users.verifyBeneficiaryByPhone(value);
+    else if(property === SPECIFY_VETTED_BENEFICIARY_BY_PHONE.toLowerCase()) {
+      verifiedVettedBeneficiary = await app.users.verifyVettedBeneficiaryByPhone(value);
     }
-    console.log(verifiedBeneficiary);
+    console.log(verifiedVettedBeneficiary);
   }
   catch(e) {
-    console.log(e.message);
+    console.error(e.message);
   }
 }

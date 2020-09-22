@@ -1,13 +1,18 @@
+import {
+  ADD_VETTED_BENEFICIARY, UPGRADE_VETTED_BENEFICIARY, 
+  SPECIFY_VETTED_BENEFICIARY_BY_ID, SPECIFY_VETTED_BENEFICIARY_BY_PHONE
+} from './command-names';
+
 export const prompts = {
   selectCommand: [
     {
       type: 'list',
       message: 'Select a command to continue:',
       name: 'command',
-      choices: ["Add new beneficiary", "Upgrade existing beneficiary"]
+      choices: [ADD_VETTED_BENEFICIARY, UPGRADE_VETTED_BENEFICIARY]
     }
   ],
-  addBeneficiary: [
+  addVettedBeneficiary: [
     { 
       type: 'input',
       name: 'name',
@@ -21,30 +26,25 @@ export const prompts = {
     { 
       type: 'input',
       name: 'email',
-      message: 'Email:',
-      validate: (email: string) => {
-        if (email || !email) {
-          return true;
-        }
-      }
+      message: 'Email:'
     }
   ],
-  upgradeBeneficiary: [
+  upgradeVettedBeneficiary: [
     {
       type: 'list',
-      message: 'Specify beneficiary by:',
+      message: 'Specify vetted beneficiary by:',
       name: 'upgradeBy',
-      choices: ["Name", "Phone"],
+      choices: [SPECIFY_VETTED_BENEFICIARY_BY_ID, SPECIFY_VETTED_BENEFICIARY_BY_PHONE],
     }
   ],
-  specifyBeneficiaryName: [
+  specifyVettedBeneficiaryID: [
     { 
       type: 'input',
       name: 'name',
-      message: 'Name:'
+      message: 'ID:'
     },
   ],
-  specifyBeneficiaryPhone: [
+  specifyVettedBeneficiaryPhone: [
     { 
       type: 'input',
       name: 'phone',

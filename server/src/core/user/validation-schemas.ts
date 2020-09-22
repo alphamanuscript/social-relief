@@ -59,15 +59,13 @@ export const donateAnonymouslyInputSchema = joi.object().keys({
   email: emailSchema,
 });
 
-export const verifyBeneficiaryByPhoneInputSchema = joi.object().keys({
+export const verifyVettedBeneficiaryByPhoneInputSchema = joi.object().keys({
   phone: phoneValidationSchema
 });
 
-export const verifyBeneficiaryByNameInputSchema = joi.object().keys({
-  name: joi.string().required()
-});
+export const verifyVettedBeneficiaryByIdInputSchema = userIdSchema;
 
-export const addBeneficiarySchema = joi.object().keys({
+export const addVettedBeneficiarySchema = joi.object().keys({
   name: joi.string().required(),
   phone: phoneValidationSchema,
   email: emailSchema, 
