@@ -34,7 +34,7 @@ export const prompts = {
       type: 'list',
       message: 'Specify beneficiary by:',
       name: 'upgradeBy',
-      choices: ["Name", "Phone"]
+      choices: ["Name", "Phone"],
     }
   ],
   specifyBeneficiaryName: [
