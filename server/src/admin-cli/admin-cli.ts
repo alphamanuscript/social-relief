@@ -1,8 +1,8 @@
 import { App } from '../core';
 import { prompt } from 'inquirer';
 import { prompts } from './prompts';
-import { addVettedBeneficiaryCmd, upgradeVettedBeneficiaryCmd } from './commands';
-import { ADD_VETTED_BENEFICIARY, UPGRADE_VETTED_BENEFICIARY } from './command-names';
+import { addUnvettedBeneficiaryCmd, upgradeUnvettedBeneficiaryCmd, verifyVettedBeneficiaryCmd } from './commands';
+import { ADD_UNVETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY } from './command-names';
 
 export async function runAdminCLI(app: App) {
   async function cliLoop() {
@@ -11,11 +11,14 @@ export async function runAdminCLI(app: App) {
       // Prompt user for a command
       const { command } = await prompt(selectCommand);
       switch(command) {
-        case ADD_VETTED_BENEFICIARY:
-          await addVettedBeneficiaryCmd(app);
+        case ADD_UNVETTED_BENEFICIARY:
+          await addUnvettedBeneficiaryCmd(app);
           break;
-        case UPGRADE_VETTED_BENEFICIARY:
-          await upgradeVettedBeneficiaryCmd(app);
+        case UPGRADE_UNVETTED_BENEFICIARY: 
+          await upgradeUnvettedBeneficiaryCmd(app);
+          break;
+        case VERIFY_VETTED_BENEFICIARY:
+          await verifyVettedBeneficiaryCmd(app);
           break;
       }
     }

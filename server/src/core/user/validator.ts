@@ -1,4 +1,4 @@
-import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs } from './types'
+import { UserCreateArgs, UserNominateArgs, UserLoginArgs, UserActivateArgs, UserPutArgs, UserDonateAnonymouslyArgs, UserAddUnvettedBeneficiaryArgs } from './types'
 import { createValidationError } from '../error';
 import * as schemas from './validation-schemas';
 import { makeValidatorFromJoiSchema } from '../util';
@@ -28,8 +28,8 @@ export const validatesNominate = (args: UserNominateArgs) => {
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0'); 
 }
 
-export const validatesAddVettedBeneficiary = (args: UserAddVettedBeneficiaryArgs) => {
-  const { error } = schemas.addVettedBeneficiarySchema.validate(args);
+export const validatesAddUnvettedBeneficiary = (args: UserAddUnvettedBeneficiaryArgs) => {
+  const { error } = schemas.addUnvettedBeneficiarySchema.validate(args);
   if (error) throw createValidationError(error.details[0].message);
   if (args.phone[0] === '0') createValidationError('Phone number cannot start with 0');
 }
@@ -49,15 +49,14 @@ export const validatesGetByToken = (tokenId: string) => {
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const verifyVettedBeneficiaryByPhone = (phone: string) => {
+export const validatesVerifyVettedBeneficiaryByPhone = (phone: string) => {
   const { error } = schemas.verifyVettedBeneficiaryByPhoneInputSchema.validate({ phone });
   if (error) throw createValidationError(error.details[0].message);
 }
 
-export const verifyVettedBeneficiaryById = (_id: string) => {
-  const { error } = schemas.verifyVettedBeneficiaryByIdInputSchema.validate({ userId: _id });
-  if (error) throw createValidationError(error.details[0].message);
-}
+export const validatesGetByPhone = validatesVerifyVettedBeneficiaryByPhone;
+
+export const validatesUpgradeUnvettedBeneficiaryByPhone = validatesGetByPhone;
 
 export const validatesLogout = (tokenId: string) => {
   const { error } = schemas.logoutInputSchema.validate({ tokenId });
@@ -77,6 +76,10 @@ export const validatesInitiateDonation = ({ userId, amount } : { userId: string;
 }
 
 export const validatesGetNew = validatesLogoutAll;
+
+export const validatesUpgradeUnvettedBeneficiaryById = validatesGetNew;
+
+export const validatesVerifyVettedBeneficiaryById = validatesGetNew;
 
 export const validatesGetAnonymous = validatesGetNew;
 

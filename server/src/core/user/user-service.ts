@@ -4,7 +4,7 @@ import {
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
-  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs, 
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddUnvettedBeneficiaryArgs, 
 
 } from './types';
 import * as messages from '../messages';
@@ -473,6 +473,21 @@ export class Users implements UserService {
     }
   }
 
+  public async getByPhone(phone: string) {
+    validators.validatesGetByPhone(phone);
+
+    try {
+      const user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return getSafeUser(user);
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async getNew(userId: string): Promise<User> {
     validators.validatesGetNew(userId);
     try {
@@ -686,8 +701,8 @@ export class Users implements UserService {
     }
   }
 
-  public async addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User> {
-    validators.validatesAddVettedBeneficiary(args);
+  public async addUnvettedBeneficiary(args: UserAddUnvettedBeneficiaryArgs): Promise<User> {
+    validators.validatesAddUnvettedBeneficiary(args);
     const { phone, name, email } = args;
     try {
       const now = new Date();
@@ -728,10 +743,65 @@ export class Users implements UserService {
     }
   }
 
-  public async verifyVettedBeneficiaryById(_id: string): Promise<User> {
-    validators.verifyVettedBeneficiaryById(_id);
+  public async upgradeUnvettedBeneficiaryById(id: string): Promise<User> {
+    validators.validatesUpgradeUnvettedBeneficiaryById(id);
     try {
-      const user = await this.verifyVettedBeneficiaryByProperty('_id', _id);
+      const user = await this.upgradeUnvettedBeneficiaryByProperty('_id', id);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async upgradeUnvettedBeneficiaryByPhone(phone: string): Promise<User> {
+    validators.validatesUpgradeUnvettedBeneficiaryByPhone(phone);
+    try {
+      const user = await this.upgradeUnvettedBeneficiaryByProperty('phone', phone);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async upgradeUnvettedBeneficiaryByProperty(property: string, value: string) {
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: false, beneficiaryStatus: 'pending' };
+
+    if (property === "_id") {
+      query = { _id: value, ...query };
+    }
+    else if (property === 'phone') {
+      query = { phone: value, ...query };
+    }
+
+    try {
+      const upgradedBeneficiary = await this.collection.findOneAndUpdate(
+        query, 
+        { 
+          $set: { isVetted: true },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if(!upgradedBeneficiary) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+      return getSafeUser(upgradedBeneficiary.value);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    } 
+  }
+
+  public async verifyVettedBeneficiaryById(id: string): Promise<User> {
+    validators.validatesVerifyVettedBeneficiaryById(id);
+    try {
+      const user = await this.verifyVettedBeneficiaryByProperty('_id', id);
       return user;
     }
     catch(e) {
@@ -741,7 +811,7 @@ export class Users implements UserService {
   }
 
   public async verifyVettedBeneficiaryByPhone(phone: string): Promise<User> {
-    validators.verifyVettedBeneficiaryByPhone(phone);
+    validators.validatesVerifyVettedBeneficiaryByPhone(phone);
     try {
       const user = await this.verifyVettedBeneficiaryByProperty('phone', phone);
       return user;
