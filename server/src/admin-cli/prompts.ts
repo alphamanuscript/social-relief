@@ -1,5 +1,5 @@
 import {
-  ADD_UNVETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY, 
+  ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY, 
   SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE
 } from './command-names';
 
@@ -9,10 +9,10 @@ export const prompts = {
       type: 'list',
       message: 'Select a command to continue:',
       name: 'command',
-      choices: [ADD_UNVETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY]
+      choices: [ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY]
     }
   ],
-  addUnvettedBeneficiary: [
+  addVettedBeneficiary: [
     { 
       type: 'input',
       name: 'name',
@@ -45,14 +45,14 @@ export const prompts = {
       choices: [SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE],
     }
   ],
-  specifyVettedBeneficiaryID: [
+  specifyBeneficiaryID: [
     { 
       type: 'input',
       name: 'id',
       message: 'ID:'
     },
   ],
-  specifyVettedBeneficiaryPhone: [
+  specifyBeneficiaryPhone: [
     { 
       type: 'input',
       name: 'phone',
