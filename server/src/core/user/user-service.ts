@@ -713,7 +713,7 @@ export class Users implements UserService {
         name,
         password,
         addedBy: '',
-        isVetted: false,
+        isVetted: true,
         beneficiaryStatus: 'pending',
         donors: [],
         roles: ['beneficiary'],
