@@ -84,71 +84,10 @@ async function askForConfirmationForVerifyCmd(property: string, user: User, app:
   }
 }
 
-// async function askForConfirmation(command: string, property: string, args: any = null, user: User, app: App) {
-//   if (command === 'add') {
-//     console.log(args);
-//     prompts.confirmCommand[0].message = `Are you sure you want to add this beneficiary?`;
-//     const { confirmation } = await prompt(prompts.confirmCommand);
-//     if (confirmation) {
-//       const user = await app.users.addVettedBeneficiary(args);
-//       console.log(user);
-//     }
-//     else {
-//       console.log('Command aborted!');
-//     }
-//   }
-//   else if (command === 'upgrade' && property === 'id') {
-//     prompts.confirmCommand[0].message = `Are you sure you want to upgrade ${user.name}?`;
-//     const { confirmation } = await prompt(prompts.confirmCommand);
-//     if (confirmation) {
-//       await upgradeUnvettedBeneficiaryByProperty('id', user._id, app);
-//     }
-//     else {
-//       console.log('Command aborted!');
-//     }
-//   }
-//   else if (command === 'upgrade' && property === 'phone') {
-//     prompts.confirmCommand[0].message = `Are you sure you want to upgrade ${user.name}?`;
-//     const { confirmation } = await prompt(prompts.confirmCommand);
-//     if (confirmation) {
-//       await upgradeUnvettedBeneficiaryByProperty('phone', user.phone, app);
-//     }
-//     else {
-//       console.log('Command aborted!');
-//     }
-//   }
-//   else if (command === 'verify' && property === 'id') {
-//     prompts.confirmCommand[0].message = `Are you sure you want to verify ${user.name}?`;
-//     const { confirmation } = await prompt(prompts.confirmCommand);
-//     if (confirmation) {
-//       await verifyVettedBeneficiaryByProperty('id', user._id, app);
-//     }
-//     else {
-//       console.log('Command aborted!');
-//     }
-//   }
-//   else if (command === 'verify' && property === 'phone') {
-//     prompts.confirmCommand[0].message = `Are you sure you want to verify ${user.name}?`;
-//     const { confirmation } = await prompt(prompts.confirmCommand);
-//     if (confirmation) {
-//       await verifyVettedBeneficiaryByProperty('phone', user.phone, app);
-//     }
-//     else {
-//       console.log('Command aborted!');
-//     }
-//   }
-// }
-
 async function upgradeUnvettedBeneficiaryByProperty(property: string, value: string, app: App) {
   let upgradedBeneficiary;
   try {
     upgradedBeneficiary = property === SPECIFY_BENEFICIARY_BY_ID.toLowerCase() ? await app.users.upgradeUnvettedBeneficiaryById(value) : upgradedBeneficiary = await app.users.upgradeUnvettedBeneficiaryByPhone(value);
-    // if (property === SPECIFY_BENEFICIARY_BY_ID.toLowerCase()) {
-    //   upgradedBeneficiary = await app.users.upgradeUnvettedBeneficiaryById(value);
-    // }
-    // else if(property === SPECIFY_BENEFICIARY_BY_PHONE.toLowerCase()) {
-    //   upgradedBeneficiary = await app.users.upgradeUnvettedBeneficiaryByPhone(value);
-    // }
     console.log(upgradedBeneficiary);
   }
   catch(e) {
@@ -188,12 +127,6 @@ async function verifyVettedBeneficiaryByProperty(property: string, value: string
   let verifiedVettedBeneficiary;
   try {
     verifiedVettedBeneficiary = property === SPECIFY_BENEFICIARY_BY_ID.toLowerCase() ? await app.users.verifyVettedBeneficiaryById(value) : await app.users.verifyVettedBeneficiaryByPhone(value);
-    // if (property === SPECIFY_BENEFICIARY_BY_ID.toLowerCase()) {
-    //   verifiedVettedBeneficiary = await app.users.verifyVettedBeneficiaryById(value);
-    // }
-    // else if(property === SPECIFY_BENEFICIARY_BY_PHONE.toLowerCase()) {
-    //   verifiedVettedBeneficiary = await app.users.verifyVettedBeneficiaryByPhone(value);
-    // }
     console.log(verifiedVettedBeneficiary);
   }
   catch(e) {
