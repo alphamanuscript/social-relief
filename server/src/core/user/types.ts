@@ -110,7 +110,7 @@ export interface UserActivateBeneficiaryArgs {
   nominatorId: string
 }
 
-export interface UserAddUnvettedBeneficiaryArgs {
+export interface UserAddVettedBeneficiaryArgs {
   phone: string,
   name: string,
   email?: string
@@ -261,18 +261,22 @@ export interface UserService {
    * to nominate them 
    * @param args 
    */
-  addUnvettedBeneficiary(args: UserAddUnvettedBeneficiaryArgs): Promise<User>;
+  addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User>;
   /**
    * Upgrades the unvetted beneficiary user
    * whose _id is specified by setting 
-   * isVetted to true
+   * isVetted to true and beneficiaryStatus
+   * to 'pending' for users without the latter
+   * field
    * @param _id 
    */
   upgradeUnvettedBeneficiaryById(_id: string): Promise<User>;
   /**
    * Upgrades the unvetted beneficiary user
    * whose phone is specified by setting 
-   * isVetted to true
+   * isVetted to true and beneficiaryStatus
+   * to 'pending' for users without the latter
+   * field
    * @param _id 
    */
   upgradeUnvettedBeneficiaryByPhone(phone: string): Promise<User>;

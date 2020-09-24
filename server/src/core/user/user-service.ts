@@ -4,7 +4,7 @@ import {
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
-  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddUnvettedBeneficiaryArgs, 
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs, 
 
 } from './types';
 import * as messages from '../messages';
@@ -701,8 +701,8 @@ export class Users implements UserService {
     }
   }
 
-  public async addUnvettedBeneficiary(args: UserAddUnvettedBeneficiaryArgs): Promise<User> {
-    validators.validatesAddUnvettedBeneficiary(args);
+  public async addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User> {
+    validators.validatesAddVettedBeneficiary(args);
     const { phone, name, email } = args;
     try {
       const now = new Date();
@@ -768,7 +768,7 @@ export class Users implements UserService {
   }
 
   public async upgradeUnvettedBeneficiaryByProperty(property: string, value: string) {
-    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: false, beneficiaryStatus: 'pending' };
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: {$ne: true} };
 
     if (property === "_id") {
       query = { _id: value, ...query };
@@ -781,7 +781,7 @@ export class Users implements UserService {
       const upgradedBeneficiary = await this.collection.findOneAndUpdate(
         query, 
         { 
-          $set: { isVetted: true },
+          $set: { isVetted: true, beneficiaryStatus: 'pending' },
           $currentDate: { updatedAt: true },
         },
         { upsert: true, returnOriginal: false }

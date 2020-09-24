@@ -65,7 +65,7 @@ export const verifyVettedBeneficiaryByPhoneInputSchema = joi.object().keys({
 
 export const verifyVettedBeneficiaryByIdInputSchema = userIdSchema;
 
-export const addUnvettedBeneficiarySchema = joi.object().keys({
+export const addVettedBeneficiarySchema = joi.object().keys({
   name: joi.string().required(),
   phone: phoneValidationSchema,
   email: emailSchema, 
