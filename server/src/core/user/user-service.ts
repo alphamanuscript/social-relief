@@ -4,7 +4,8 @@ import {
   User, DbUser, UserCreateArgs, UserService, UserPutArgs,
   AccessToken, UserLoginArgs, UserLoginResult, UserNominateArgs, UserRole,
   UserActivateArgs, UserActivateBeneficiaryArgs, UserActivateMiddlemanArgs, 
-  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs
+  UserCreateAnonymousArgs, UserDonateAnonymouslyArgs, UserAddVettedBeneficiaryArgs, 
+
 } from './types';
 import * as messages from '../messages';
 import { 
@@ -28,6 +29,8 @@ const SAFE_USER_PROJECTION = {
   phone: 1,
   email: 1,
   name: 1,
+  isVetted: 1,
+  beneficiaryStatus: 1,
   addedBy: 1,
   donors: 1,
   middlemanFor: 1,
@@ -470,6 +473,21 @@ export class Users implements UserService {
     }
   }
 
+  public async getByPhone(phone: string) {
+    validators.validatesGetByPhone(phone);
+
+    try {
+      const user = await this.collection.findOne({ phone }, { projection: SAFE_USER_PROJECTION });
+      if (!user) throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+
+      return getSafeUser(user);
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   async getNew(userId: string): Promise<User> {
     validators.validatesGetNew(userId);
     try {
@@ -680,6 +698,158 @@ export class Users implements UserService {
     }
     catch (e) {
       rethrowIfAppError(e);
+    }
+  }
+
+  public async addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User> {
+    validators.validatesAddVettedBeneficiary(args);
+    const { phone, name, email } = args;
+    try {
+      const now = new Date();
+      const password = await hashPassword(generatePassword());
+      const user: DbUser = {
+        _id: generateId(),
+        phone,
+        name,
+        password,
+        addedBy: '',
+        isVetted: true,
+        beneficiaryStatus: 'pending',
+        donors: [],
+        roles: ['beneficiary'],
+        createdAt: now,
+        updatedAt: now
+      };
+
+      if (email) {
+        user.email = email;
+      }
+
+      const res = await this.collection.insertOne(user);
+      return getSafeUser(res.ops[0]);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+
+      if (isMongoDuplicateKeyError(e, args.phone)) {
+        throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+      }
+
+      if (isMongoDuplicateKeyError(e, args.email)) {
+        throw createUniquenessFailedError(messages.ERROR_EMAIL_ALREADY_IN_USE);
+      }
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async upgradeUnvettedBeneficiaryById(id: string): Promise<User> {
+    validators.validatesUpgradeUnvettedBeneficiaryById(id);
+    try {
+      const user = await this.upgradeUnvettedBeneficiaryByProperty('_id', id);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async upgradeUnvettedBeneficiaryByPhone(phone: string): Promise<User> {
+    validators.validatesUpgradeUnvettedBeneficiaryByPhone(phone);
+    try {
+      const user = await this.upgradeUnvettedBeneficiaryByProperty('phone', phone);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async upgradeUnvettedBeneficiaryByProperty(property: string, value: string) {
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: {$ne: true} };
+
+    if (property === "_id") {
+      query = { _id: value, ...query };
+    }
+    else if (property === 'phone') {
+      query = { phone: value, ...query };
+    }
+
+    try {
+      const upgradedBeneficiary = await this.collection.findOneAndUpdate(
+        query, 
+        { 
+          $set: { isVetted: true, beneficiaryStatus: 'pending' },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if(!upgradedBeneficiary) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+      return getSafeUser(upgradedBeneficiary.value);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    } 
+  }
+
+  public async verifyVettedBeneficiaryById(id: string): Promise<User> {
+    validators.validatesVerifyVettedBeneficiaryById(id);
+    try {
+      const user = await this.verifyVettedBeneficiaryByProperty('_id', id);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async verifyVettedBeneficiaryByPhone(phone: string): Promise<User> {
+    validators.validatesVerifyVettedBeneficiaryByPhone(phone);
+    try {
+      const user = await this.verifyVettedBeneficiaryByProperty('phone', phone);
+      return user;
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async verifyVettedBeneficiaryByProperty(property: String, value: String): Promise<User> {
+    let query: any = { roles: { $in: ['beneficiary'] }, isVetted: true, beneficiaryStatus: 'pending' };
+
+    if (property === "_id") {
+      query = { _id: value, ...query };
+    }
+    else if (property === 'phone') {
+      query = { phone: value, ...query };
+    }
+
+    try {
+      const verifiedBeneficiary = await this.collection.findOneAndUpdate(
+        query, 
+        { 
+          $set: { beneficiaryStatus: 'verified' },
+          $currentDate: { updatedAt: true },
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if(!verifiedBeneficiary) {
+        throw createResourceNotFoundError(messages.ERROR_USER_NOT_FOUND);
+      }
+      return getSafeUser(verifiedBeneficiary.value);
+    }
+    catch(e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
     }
   }
 

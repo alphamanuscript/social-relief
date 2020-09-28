@@ -7,12 +7,24 @@ export type NominationRole = 'beneficiary' | 'middleman';
 
 export type UserTransactionsBlockedReason = 'refundPending' | 'maxRefundsExceeded';
 
+export type BeneficiaryStatus = 'pending' | 'verified';
+
 export interface User {
   _id: string,
   phone: string,
   email?: string,
   name: string,
   isAnonymous?: boolean,
+  /**
+   * indicates whether or not the added beneficiary user 
+   * has been approved to receive funds from any donor.
+   */
+  isVetted?: boolean,
+  /**
+   * indicates whether or not the added beneficiary's claim 
+   * has been verified.
+   */
+  beneficiaryStatus?: BeneficiaryStatus
   addedBy: string,
   /**
    * the donors from whom this beneficiary can receive funds
@@ -96,6 +108,16 @@ export interface UserActivateBeneficiaryArgs {
   name: string,
   email?: string,
   nominatorId: string
+}
+
+export interface UserAddVettedBeneficiaryArgs {
+  phone: string,
+  name: string,
+  email?: string
+}
+
+export interface UserVerifyBeneficiary {
+  _id: string,
 }
 
 export interface UserActivateMiddlemanArgs extends UserActivateBeneficiaryArgs {}
@@ -233,6 +255,50 @@ export interface UserService {
    * @param args 
    */
   donateAnonymously(args: UserDonateAnonymouslyArgs): Promise<Transaction>;
+  /**
+   * Adds a new beneficiary user
+   * that does not have a donor
+   * to nominate them 
+   * @param args 
+   */
+  addVettedBeneficiary(args: UserAddVettedBeneficiaryArgs): Promise<User>;
+  /**
+   * Upgrades the unvetted beneficiary user
+   * whose _id is specified by setting 
+   * isVetted to true and beneficiaryStatus
+   * to 'pending' for users without the latter
+   * field
+   * @param _id 
+   */
+  upgradeUnvettedBeneficiaryById(_id: string): Promise<User>;
+  /**
+   * Upgrades the unvetted beneficiary user
+   * whose phone is specified by setting 
+   * isVetted to true and beneficiaryStatus
+   * to 'pending' for users without the latter
+   * field
+   * @param _id 
+   */
+  upgradeUnvettedBeneficiaryByPhone(phone: string): Promise<User>;
+  /**
+   * Verifies the vetted beneficiary user
+   * whose _id is specified by setting 
+   * beneficiaryStatus to 'verified'
+   * @param _id 
+   */
+  verifyVettedBeneficiaryById(_id: string): Promise<User>;
+  /**
+   * Verifies the vetted beneficiary user
+   * whose phone is specified by setting 
+   * beneficiaryStatus to 'verified'
+   * @param phone 
+   */
+  verifyVettedBeneficiaryByPhone(phone: string): Promise<User>;
+  /**
+   * Returns user with the specified phone number
+   * @param phone 
+   */
+  getByPhone(phone: string): Promise<User>
 };
 
 export interface UserCreateAnonymousArgs {
