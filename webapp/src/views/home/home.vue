@@ -16,54 +16,65 @@
         <div class="my-3 font-weight-bold">
           <h4 class="text-primary">Some stats</h4>
           <b-row class="text-center shadow bg-white rounded px-4 pt-4 pb-3">
-            <b-col sm="12" md="4">
+            <b-col sm="12" md="3">
               <p class="text-secondary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numContributors) : 0}}</p>
               <p>Contributors so far</p>
             </b-col>
-            <b-col sm="12" md="4">
+            <b-col sm="12" md="3">
               <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed) + '+') : 0}}</p>
-              <p>Money shared so far</p>
+              <p>Total amount contributed</p>
             </b-col>
-            <b-col sm="12" md="4">
+            <b-col sm="12" md="3">
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalDistributed) + '+') : 0}}</p>
+              <p>Total amount distributed</p>
+            </b-col>
+            <b-col sm="12" md="3">
               <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</p>
-              <p>Beneficiaries so far</p>
+              <p>Recipients so far</p>
             </b-col>
           </b-row>
         </div>
       </section>
 
-      <section class="my-5 pt-5 text-center" id="beneficiaries">
-        <h1 class="text-primary mb-5">The Beneficiaries</h1>
+      <section class="my-5 pt-5 text-center" id="how-it-works">
         <p>
-          All beneficiaries get <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
-          to get basic supplies during this trying period. <br/>
-          Here are some of the people whom your contribution will go along to help.
+          Social Relief aims to send <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
+          per month to each beneficiary on the platform between September and November 2020.<br/>
+          This amount will help those in need address their basic needs and get back on their feet following
+          the negative impact of the Covid-19 pandemic.
         </p>
         <p>Your contribution will go a long to touch the lives of</p>
         <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries) + '+') : 0 }}</p>
         <p>people who are currently enlisted as beneficiaries in this system.</p>
+      </section>
+
+      <section class="my-5 pt-5 text-center" id="testimonials">
+        <h1 class="text-primary mb-5">Testimonials</h1>
         <p>
           We at Social Relief want to say a big <span class="text-secondary font-weight-bold">thank you</span> 
           for your kindness and support!
         </p>
+        <p>
+          Here is what some of the recipients of the donations have to say:
+        </p>
+      </section>
+
+      <section class="my-5 pt-5 text-center" id="faq">
+        <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
       </section>
 
       <section class="my-5 pt-5" id="about-us">
         <div class="text-center">
           <h1 class="text-primary mb-5">About Us</h1>
           <p>
-            Social Relief is the baby product of Alpha Manuscript Limited, <br>
-            an up-and-coming small company based in Nairobi, Kenya, with a diverse team <br>
-            comprising of driven employees
-            from around the globe, including Kenya, Germany, France, and South Africa.
-          </p>
-          <p>
-            Our mission is to build software that solves everyday problems <br>
-            and improves the wellness and well-being of the people.
+            Social Relief was conceived by <a href="https://manuscript.live" target="_blank">Alpha Manuscript Limited</a>, 
+            a tech startup based in Nairobi, in the wake of the lockdown and other restrictons imposed in the country to slow the spread of the Covid-19.
+            The platform was developed with the aim of distributing funds from donors to beneficiaries transparently, credibly and directly,
+            ensuring that each shilling contributed by donors reaches the beneficiaries.
           </p>
         </div>
         
-        <div class="my-5">
+        <!-- <div class="my-5">
           <h4 class="text-secondary">Our Partners</h4>
           <div class="d-flex flex-row flex-wrap justify-content-between text-center shadow bg-white rounded px-4 pt-4 pb-3">
             <div>
@@ -82,7 +93,7 @@
               <b-avatar></b-avatar>
             </div>
           </div>
-        </div>
+        </div> -->
       </section>
 
       <section class="my-5 pt-5" id="contact-us">
