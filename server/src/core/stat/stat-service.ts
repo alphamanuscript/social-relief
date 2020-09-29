@@ -51,8 +51,23 @@ export class Statistics implements StatsService {
               { $count: 'numBeneficiaries' }
             ],
             totalContributedPipeline: [
-              { $match: { type: 'donation', status: 'success' } },
-              { $group: { _id: null, totalContributed: { $sum: "$amount" } } },
+              { 
+                $match: {
+                  $or: [
+                    { type: 'donation', status: 'success' },
+                    { type: 'refund', status: 'success' }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: { $cond: { if: { $eq: ['$type', 'donation'] }, then: 1, else: -1 } },
+                  total: { $sum: "$amount" }
+                }
+              },
+              {
+                $group: { _id: null, totalContributed: { $sum: { $multiply: ['$_id', '$total'] } } }
+              },
               { $project: { _id: 0, totalContributed: 1 } }
             ],
             totalDistributedPipeline: [
