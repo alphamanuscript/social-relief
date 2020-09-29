@@ -3,6 +3,7 @@ import { EmailProvider } from '../email';
 import { EventBus, Event} from '../event';
 import { UserService, UserInvitationEventData } from '../user';
 import { TransactionCompletedEventData, Transaction } from '../payment';
+import { extractFirstName } from '../util';
 
 export interface UserNotificationsArgs {
   smsProvider: SmsProvider;
@@ -72,7 +73,8 @@ export class UserNotifications {
     const donor = await this.users.getById(transaction.from);
     const beneficiary = await this.users.getById(transaction.to);
 
-    const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${beneficiary.name}.`;
+    // Do not reveal beneficiary's full name to the donor
+    const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${extractFirstName(beneficiary.name)}.`;
     const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
 
     await Promise.all([
