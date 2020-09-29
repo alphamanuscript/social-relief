@@ -21,6 +21,6 @@ export const testimonials: Testimonial[] = [
   {
     name: 'Shalvine',
     message: 'The donation that I received impacted me in that I was able to pay my house rent.',
-    date: new Date(2020, 24, 20)
+    date: new Date(2020, 8, 24)
   }
 ];

@@ -57,6 +57,29 @@
         <p>
           Here is what some of the recipients of the donations have to say:
         </p>
+
+        <div style="min-height:200px">
+          <b-carousel
+            id="testimonial-carousel"
+            fade
+            controls
+            img-height="200"
+            background="#cdcdcd"
+            style="border-radius:10px;height:100px;color:black"
+            :interval="4000"
+          >
+            <b-carousel-slide
+              v-for="(testimonial, index) in testimonials" :key="index"
+              img-height="200"
+              :caption="testimonial.name"
+              :text="testimonial.message"
+            >
+              <!-- this empty p element serves as the background of the slide, without it, the text does not get displayed -->
+              <p slot="img" style="height:200px;border-radius:10px"></p>
+              <p><em>{{ testimonial.date.toDateString() }}</em></p>
+            </b-carousel-slide>
+          </b-carousel>
+        </div>
       </section>
 
       <section class="my-5 pt-5 text-center" id="faq">
@@ -73,27 +96,6 @@
             ensuring that each shilling contributed by donors reaches the beneficiaries.
           </p>
         </div>
-        
-        <!-- <div class="my-5">
-          <h4 class="text-secondary">Our Partners</h4>
-          <div class="d-flex flex-row flex-wrap justify-content-between text-center shadow bg-white rounded px-4 pt-4 pb-3">
-            <div>
-              <b-avatar></b-avatar>
-            </div>
-            <div>
-              <b-avatar></b-avatar>
-            </div>
-            <div>
-              <b-avatar></b-avatar>
-            </div>
-            <div>
-              <b-avatar></b-avatar>
-            </div>
-            <div>
-              <b-avatar></b-avatar>
-            </div>
-          </div>
-        </div> -->
       </section>
 
       <section class="my-5 pt-5" id="contact-us">
@@ -115,7 +117,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message', 'stats'])
+    ...mapState(['newUser', 'message', 'stats', 'testimonials'])
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
