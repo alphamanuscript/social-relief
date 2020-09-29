@@ -2,13 +2,14 @@ import { Db } from 'mongodb';
 import { DonationDistributionEvent, DonationDistributionArgs  } from './types';
 import { UserService } from '../user';
 import { BatchJobQueue } from '../batch-job-queue';
+import { configurePipelineForEligibleBeneficiary } from './util';
 
 const USERS_COLL = 'users';
 const TRANSACTIONS_COLL = 'transactions';
 
 interface EligibleBeneficiary {
   _id: string;
-  donors: string[];
+  donors?: string[];
   totalReceived: number;
   remaining: number;
 };
@@ -64,60 +65,15 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
  * @param periodLimit maximum amount of donations per period
  * @param periodLength duration of a period in days
  */
-export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number): Promise<EligibleBeneficiary[]> {
+export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, beneficiaryConstraint: string = 'unvetted'): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
-  const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
-    { 
-      $match: { roles: 'beneficiary' }
-    },
-    { 
-      $lookup: {
-        from: TRANSACTIONS_COLL,
-        let: { user: '$_id' },
-        pipeline: [
-          { // filter transactions to this user within the last period
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$to', '$$user']},
-                  // we take a conservative approach and assume that any distribution
-                  // that has not failed will potentially succeed
-                  // if it's a pending transaction that eventually fails, then this
-                  // means that the beneficiary will be entitled to less funds than they're supposed to
-                  // in that case, then hopefully the status will updated by the time the next distribution runs
-                  // it's better than giving the beneficiary more money (in case the transaction succeeds)
-                  // because that's practically irreversible
-                  { $ne: ['$status', 'failed']},
-                  { $lt: [{ $subtract: [new Date(), '$updatedAt'] }, periodMilliseconds]}
-                ]
-              }
-            },
-          },
-          { 
-            $group: { 
-              _id: null,
-              totalReceived: {
-                // for pending transactions, amount might be 0, so use expectedAmount
-                $sum: { $cond: [{ $eq: ['$status', 'success'] }, '$amount', '$expectedAmount'] }
-              } 
-            } 
-          },
-          { $project: { _id: 0 } }
-        ],
-        as: 'transactions'
-      }
-    },
-    {
-      $replaceRoot: { newRoot: { $mergeObjects: [ { totalReceived: 0 }, { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
-    },
-    // only take beneficiaries who have not exceeded their period limit
-    {
-      $match: { totalReceived: { $lt: periodLimit } }
-    },
-    {
-      $project: { _id: 1, donors: 1, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
-    }
-  ]);
+  let result;
+  if (beneficiaryConstraint === 'Donor-added beneficiaries') {
+    result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>(configurePipelineForEligibleBeneficiary(periodLimit, periodMilliseconds, TRANSACTIONS_COLL));
+  }
+  else if (beneficiaryConstraint === 'Vetted and verified beneficiaries') {
+    result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>(configurePipelineForEligibleBeneficiary(periodLimit, periodMilliseconds, TRANSACTIONS_COLL, 'Vetted and verified beneficiaries'));
+  }
 
   return result.toArray();
 }
