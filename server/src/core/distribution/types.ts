@@ -14,6 +14,11 @@ export interface DonationDistributionArgs {
   systemLocks: SystemLockService;
 }
 
+export interface BeneficiaryFilter {
+  isVetted: Object | boolean;
+  beneficiaryStatus: Object | boolean;
+}
+
 export interface DonationDistributionEvent {
   donor: string;
   beneficiary: string;

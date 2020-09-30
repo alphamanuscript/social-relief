@@ -1,10 +1,14 @@
 import { Db, Collection } from 'mongodb';
-import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs } from './types';
+import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs, BeneficiaryFilter } from './types';
 import { runDonationDistribution } from './run-distribution';
 import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
 
 const COLLECTION = 'donation_distributions';
+const arbitraryFilter: BeneficiaryFilter = { 
+  isVetted: { $exists: false }, 
+  beneficiaryStatus: { $exists: false }
+};
 
 export class DonationDistributions implements DonationDistributionService {
   private db: Db;
@@ -17,12 +21,12 @@ export class DonationDistributions implements DonationDistributionService {
     this.args = args;
   }
 
-  async distributeDonations(): Promise<DonationDistributionResults> {
+  async distributeDonations(filter: BeneficiaryFilter = arbitraryFilter): Promise<DonationDistributionResults> {
     const lock = this.args.systemLocks.distribution();
     try {
       await lock.lock();
       const startedAt = new Date();
-      const distributions = await runDonationDistribution(this.db, this.args);
+      const distributions = await runDonationDistribution(this.db, this.args, filter);
       const finishedAt = new Date();
 
       const results: DonationDistributionResults = {
