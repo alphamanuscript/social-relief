@@ -1,5 +1,6 @@
 import { UserService } from '../user';
 import { SystemLockService } from '../system-lock';
+import { BeneficiaryFilter } from '.';
 
 export interface DonationDistributionArgs {
   /**
@@ -43,5 +44,5 @@ export interface DonationDistributor {
 }
 
 export interface DonationDistributionService {
-  distributeDonations(): Promise<DonationDistributionResults>;
+  distributeDonations(constraint?: BeneficiaryFilter): Promise<DonationDistributionResults>;
 }
