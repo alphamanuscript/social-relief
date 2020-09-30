@@ -1,6 +1,5 @@
 import { UserService } from '../user';
 import { SystemLockService } from '../system-lock';
-import { BeneficiaryFilter } from '.';
 
 export interface DonationDistributionArgs {
   /**
