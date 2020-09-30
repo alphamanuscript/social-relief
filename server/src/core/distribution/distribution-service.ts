@@ -5,7 +5,7 @@ import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
 
 const COLLECTION = 'donation_distributions';
-const arbitraryFilter: BeneficiaryFilter = { 
+export const arbitraryFilter: BeneficiaryFilter = { 
   isVetted: { $exists: false }, 
   beneficiaryStatus: { $exists: false }
 };

@@ -2,6 +2,7 @@ import { Db } from 'mongodb';
 import { DonationDistributionEvent, DonationDistributionArgs, BeneficiaryFilter  } from './types';
 import { UserService, User } from '../user';
 import { BatchJobQueue } from '../batch-job-queue';
+import { arbitraryFilter } from './distribution-service';
 
 const USERS_COLL = 'users';
 const TRANSACTIONS_COLL = 'transactions';
@@ -73,7 +74,7 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
  * @param periodLength duration of a period in days
  * @param beneficiaryConstraint query filter for beneficiaries (i.e., donor-added beneficiaries vs vetted and verified beneficiaries)
  */
-export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, filter: BeneficiaryFilter): Promise<EligibleBeneficiary[]> {
+export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, filter: BeneficiaryFilter = arbitraryFilter): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
   const projectDonors = typeof filter.isVetted === 'object' ? 1 : 0;
   const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
