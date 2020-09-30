@@ -84,6 +84,12 @@
 
       <section class="my-5 pt-5 text-center" id="faq">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
+        <div v-for="(faq, index) in faqs" :key="index">
+          <p v-b-toggle="`faq-${index}`" class="h5"><u>{{ faq.question }}</u></p>
+          <b-collapse :id="`faq-${index}`">
+            <p>{{ faq.answer }}</p>
+          </b-collapse>
+        </div>
       </section>
 
       <section class="my-5 pt-5" id="about-us">
@@ -117,7 +123,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message', 'stats', 'testimonials'])
+    ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs'])
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
