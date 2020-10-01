@@ -8,7 +8,7 @@ export async function startWorker() {
     const config = loadAppConfigFromEnv(process.env);
     const app = await bootstrap(config);
     runDistributionWorker(app, config.distributionInterval * MILLISECONDS_PER_MINUTE);
-    runVettedBeneficiaryDistributionWorker(app, config.distributionInterval * MILLISECONDS_PER_MINUTE);
+    runVettedBeneficiaryDistributionWorker(app, config.vettedDistributionInterval * MILLISECONDS_PER_MINUTE);
     runStatsComputationWorker(app, config.statsComputationInterval * MILLISECONDS_PER_MINUTE);
   }
   catch (e) {
