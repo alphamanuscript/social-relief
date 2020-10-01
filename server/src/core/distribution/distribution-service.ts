@@ -17,12 +17,12 @@ export class DonationDistributions implements DonationDistributionService {
     this.args = args;
   }
 
-  async distributeDonations(filter: any | BeneficiaryFilter = {}): Promise<DonationDistributionResults> {
+  async distributeDonations(onlyVettedBeneficiaries: boolean = false): Promise<DonationDistributionResults> {
     const lock = this.args.systemLocks.distribution();
     try {
       await lock.lock();
       const startedAt = new Date();
-      const distributions = await runDonationDistribution(this.db, this.args, filter);
+      const distributions = await runDonationDistribution(this.db, this.args, onlyVettedBeneficiaries);
       const finishedAt = new Date();
 
       const results: DonationDistributionResults = {

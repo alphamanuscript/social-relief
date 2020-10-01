@@ -16,7 +16,6 @@ export interface DonationDistributionArgs {
 
 export interface BeneficiaryFilter {
   isVetted: boolean;
-  beneficiaryStatus: string;
 }
 
 export interface DonationDistributionEvent {
@@ -43,5 +42,5 @@ export interface DonationDistributor {
 }
 
 export interface DonationDistributionService {
-  distributeDonations(constraint?: BeneficiaryFilter): Promise<DonationDistributionResults>;
+  distributeDonations(onlyVettedBeneficiaries?: boolean): Promise<DonationDistributionResults>;
 }
