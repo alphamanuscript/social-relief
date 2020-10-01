@@ -31,13 +31,13 @@ describe('Donation distribution steps', () => {
       const result = await findEligibleBeneficiaries(dbUtils.getDb(), 2000, 30);
       expect(result).toEqual([
         // 500 + 1000
-        { _id: 'beneficiary1', donors: ['donor1', 'donor5'], totalReceived: 500, remaining: 1500 },
+        { _id: 'beneficiary1', beneficiaryStatus: 'verified', donors: ['donor1', 'donor5'], totalReceived: 500, remaining: 1500 },
         // 1200 + 170
-        { _id: 'beneficiary3', donors: ['donor1', 'donor2'], totalReceived: 1370, remaining: 630 },
+        { _id: 'beneficiary3', beneficiaryStatus: 'verified', donors: ['donor1', 'donor2'], totalReceived: 1370, remaining: 630 },
         // has no transactions, therefore totalReceived == 0
-        { _id: 'beneficiary4', donors: ['donor3'], totalReceived: 0, remaining: 2000 },
+        { _id: 'beneficiary4', beneficiaryStatus: 'verified', donors: ['donor3'], totalReceived: 0, remaining: 2000 },
         // has no transactions
-        { _id: 'beneficiary5', donors: [], totalReceived: 0, remaining: 2000 }
+        { _id: 'beneficiary5', beneficiaryStatus: 'verified', donors: [], totalReceived: 0, remaining: 2000 }
       ]);
     });
   });
