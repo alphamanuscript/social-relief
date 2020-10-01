@@ -15,8 +15,8 @@ export interface DonationDistributionArgs {
 }
 
 export interface BeneficiaryFilter {
-  isVetted: Object | boolean;
-  beneficiaryStatus: Object | boolean;
+  isVetted: boolean;
+  beneficiaryStatus: boolean;
 }
 
 export interface DonationDistributionEvent {
