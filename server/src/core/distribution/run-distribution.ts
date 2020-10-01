@@ -220,9 +220,10 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
   }), {} as DistributionPlanDonorsSummaries);
 
   beneficiaries.forEach((beneficiary) => {
-    beneficiary.donors.forEach((donor) => {
+    const beneficiaryDonors = beneficiary.donors ? beneficiary.donors : donors;
+    beneficiaryDonors.forEach((donor: string | DonorBalance) => {
       const beneficiarySummary = beneficiariesSummaries[beneficiary._id];
-      const donorSummary = donorsSummaries[donor];
+      const donorSummary = typeof donor === "object" ? donorsSummaries[donor._id] : donorsSummaries[donor];
 
       const amount = Math.min(beneficiarySummary.remainingEligible, donorSummary.remainingBalance);
       if (amount === 0) return;
@@ -234,7 +235,7 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
 
       transfers.push({
         beneficiary: beneficiary._id,
-        donor,
+        donor: typeof donor === "object" ? donor._id : donor,
         amount
       });
     });
