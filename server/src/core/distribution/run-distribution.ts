@@ -77,7 +77,7 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
  */
 export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, filter: any | BeneficiaryFilter = {}): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
-  // const projectDonors: number = !filter.isVetted ? 1 : 0;
+  const projectDonors: number = !filter.isVetted ? 1 : 0;
   const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
     {
       $match: { ...filter, beneficiaryStatus: 'verified', roles: 'beneficiary' },
@@ -126,7 +126,7 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
       $match: { totalReceived: { $lt: periodLimit } }
     },
     {
-      $project: { _id: 1, donors: 1, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
+      $project: { _id: 1, donors: projectDonors, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
     }
   ]);
 
