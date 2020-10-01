@@ -56,7 +56,7 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
     donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...b.donors], []);
   }
   else {
-    const donors: User[] = await db.collection(USERS_COLL).find({ roles: { $in: ['donor'] } }).toArray();
+    const donors: User[] = await db.collection(USERS_COLL).find({ roles: { $in: ['donor'] } }, { projection: { _id: 1 } }).toArray();
     donorIds = donors.reduce<string[]>((acc, d) => [...acc, ...d._id], []);
   }
   
