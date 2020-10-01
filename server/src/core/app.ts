@@ -99,6 +99,11 @@ export interface AppConfig {
    */
   distributionInterval: number;
   /**
+   * Interval delay in minutes between two distribution 
+   * processes for vetted beneficiaires
+   */
+  vettedDistributionInterval: number;
+  /**
    * Interval delay in minutes between two
    * processes of computing statistics
    */
@@ -134,6 +139,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 1,
+    vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL && Number(env.VETTED_DISTRIBUTION_INTERVAL)) || 2,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
     sendgridApiKey: env.SENDGRID_API_KEY || '',

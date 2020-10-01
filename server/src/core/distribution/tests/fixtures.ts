@@ -28,28 +28,32 @@ export const users = [
   },
   {
     _id: 'beneficiary1',
+    beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: ['donor1', 'donor5']
   },
   {
     _id: 'beneficiary2',
+    beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: ['donor2', 'donor3', 'donor5']
   },
   {
     _id: 'beneficiary3',
+    beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
-    donors: ['donor1', 'donor2']
   },
   // this beneficiary has no associated transactions
   {
     _id: 'beneficiary4',
+    beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: ['donor3']
   },
   // this beneficiary has neither donors nor transactions
   {
     _id: 'beneficiary5',
+    beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: []
   }
