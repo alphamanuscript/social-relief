@@ -5,10 +5,6 @@ import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
 
 const COLLECTION = 'donation_distributions';
-export const arbitraryFilter: BeneficiaryFilter = { 
-  isVetted: { $exists: false }, 
-  beneficiaryStatus: { $exists: false }
-};
 
 export class DonationDistributions implements DonationDistributionService {
   private db: Db;
@@ -21,7 +17,7 @@ export class DonationDistributions implements DonationDistributionService {
     this.args = args;
   }
 
-  async distributeDonations(filter: BeneficiaryFilter = arbitraryFilter): Promise<DonationDistributionResults> {
+  async distributeDonations(filter: any | BeneficiaryFilter = {}): Promise<DonationDistributionResults> {
     const lock = this.args.systemLocks.distribution();
     try {
       await lock.lock();
