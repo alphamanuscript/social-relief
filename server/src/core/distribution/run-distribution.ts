@@ -49,7 +49,7 @@ interface CreateDistributionPlanResult {
 export async function runDonationDistribution(db: Db, args: DonationDistributionArgs, onlyVettedBeneficiaries: boolean = false): Promise<DonationDistributionEvent[]> {
   const { periodLength, periodLimit, users } = args;
 
-  const beneficiariesFilter = onlyVettedBeneficiaries ? { isVetted: true } : {};
+  const beneficiariesFilter = onlyVettedBeneficiaries ? { isVetted: true, beneficiaryStatus: 'verified' } : {};
   const beneficiaries = await findEligibleBeneficiaries(db, periodLimit, periodLength, beneficiariesFilter);
 
   let donors: DonorBalance[];
@@ -80,7 +80,7 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
   const projectDonors: number = !filter.isVetted ? 1 : 0;
   const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
     {
-      $match: { ...filter, beneficiaryStatus: 'verified', roles: 'beneficiary' },
+      $match: { ...filter, roles: 'beneficiary' },
     },
     {
       $lookup: {
