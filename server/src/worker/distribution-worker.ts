@@ -12,6 +12,7 @@ export function runDistributionWorker(app: App, intervalMilliseconds: number) {
     }
     catch(e) {
       console.error(e);
+      setTimeout(workLoop, intervalMilliseconds);
     }
   }
 

@@ -12,6 +12,7 @@ export function runVettedBeneficiaryDistributionWorker(app: App, intervalMillise
     }
     catch(e) {
       console.error(e);
+      setTimeout(workLoop, intervalMilliseconds);
     }
   }
 
