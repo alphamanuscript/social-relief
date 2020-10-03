@@ -50,6 +50,16 @@ export const faqs: FAQ[] = [
       ' There is an option to request a refund.'
   },
   {
+    question: 'Can I get my money back if I change my mind about the donation?',
+    answer: 'In order to make the platform more credible and trustworthy, we have an added an option for donors to request refunds.' +
+      ' In order to access this feature, you must first sign-up for an account and login to the account.' +
+      ' In your account dashboard, you will see a "Request Refund" button on the left sidebar (or under the main menu drop-down if on a phone).' +
+      ' Clicking this button will initiate the refund request. The refund amount is automatically calculated by the platform.' +
+      ' It corresponds to the total amount that you have donated that has not yet been allocated to a beneficiary.' +
+      ' The calculated amount will be sent via Mobile-Money to your registered phone number.' +
+      ' If you request a refund more than 3 times, you account will be blocked and we will no longer accept donations from you.'
+  },
+  {
     question: 'How are testimonials collected?',
     answer: 'After beneficiaries have received funds, we conduct follow-ups to assess the impact of the funds received.' +
       ' During this process, the beneficiaries provide information about their current situation and how they used the funds.' +
