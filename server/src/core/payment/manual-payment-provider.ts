@@ -90,7 +90,7 @@ export class ManualPaymentProvider implements PaymentProvider {
   async sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
     const args: ManualPayCreateTransactionArgs = {
       amount: amount,
-      recipientName: user.email || '',
+      recipientName: user.name || user.email || '',
       recipientPhone: user.phone,
       metadata,
     };
