@@ -66,8 +66,8 @@
             fade
             controls
             img-height="200"
-            background="#cdcdcd"
-            style="border-radius:10px;height:100px;color:black"
+            background="#e7e7e7"
+            style="text-shadow: 1px 1px 2px #333;"
             :interval="4000"
           >
             <b-carousel-slide
