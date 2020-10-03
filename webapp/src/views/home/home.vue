@@ -3,7 +3,9 @@
       <section class="my-5">
         <div>
           <h3 class="text-secondary">
-              All donations are geared towards helping those most affected by the covid-19 pandemic.
+              The SocialRelief campaign aims to transfer 2,000Ksh per month to people
+              financially affected by Covid-19
+              between October and December 2020.<br>
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
@@ -40,7 +42,7 @@
         <p>
           Social Relief aims to send <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
           per month to each beneficiary on the platform between September and November 2020.<br/>
-          This amount will help those in need address their basic needs and get back on their feet following
+          This amount will help those in need to address their basic needs and get back on their feet following
           the negative impact of the Covid-19 pandemic.
         </p>
         <p>Your contribution will go a long to touch the lives of</p>
