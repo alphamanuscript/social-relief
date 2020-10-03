@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
-import { DonationDistributionEvent, DonationDistributionArgs  } from './types';
-import { UserService } from '../user';
+import { DonationDistributionEvent, DonationDistributionArgs, BeneficiaryFilter  } from './types';
+import { UserService, User } from '../user';
 import { BatchJobQueue } from '../batch-job-queue';
 
 const USERS_COLL = 'users';
@@ -8,7 +8,7 @@ const TRANSACTIONS_COLL = 'transactions';
 
 interface EligibleBeneficiary {
   _id: string;
-  donors: string[];
+  donors?: string[];
   totalReceived: number;
   remaining: number;
 };
@@ -46,12 +46,22 @@ interface CreateDistributionPlanResult {
   beneficiariesSummaries:DistributionPlanBeneficiariesSummaries;
 }
 
-export async function runDonationDistribution(db: Db, args: DonationDistributionArgs): Promise<DonationDistributionEvent[]> {
+export async function runDonationDistribution(db: Db, args: DonationDistributionArgs, onlyVettedBeneficiaries: boolean = false): Promise<DonationDistributionEvent[]> {
   const { periodLength, periodLimit, users } = args;
 
-  const beneficiaries = await findEligibleBeneficiaries(db, periodLimit, periodLength);
-  const donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...b.donors], []);
-  const donors = await computeDonorsBalances(db, Array.from(new Set(donorIds)));
+  const beneficiariesFilter = onlyVettedBeneficiaries ? { isVetted: true } : {};
+  const beneficiaries = await findEligibleBeneficiaries(db, periodLimit, periodLength, beneficiariesFilter);
+
+  let donors: DonorBalance[];
+  if (onlyVettedBeneficiaries) {
+    // vetted and verified beneficiaries receive donations from any donor
+    donors = await computeDonorsBalances(db);
+  }
+  else {
+    const donorIds = beneficiaries.reduce<string[]>((acc, b) => [...acc, ...(b.donors || [])], []);
+    donors = await computeDonorsBalances(db, Array.from(new Set(donorIds)));
+  }
+
   const plan = createDistributionPlan(beneficiaries, donors);
   const result = await executeDistributionPlan(users, plan.transfers);
   return result;
@@ -63,14 +73,16 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
  * within the period is less than the limit
  * @param periodLimit maximum amount of donations per period
  * @param periodLength duration of a period in days
+ * @param beneficiaryConstraint query filter for beneficiaries (i.e., all beneficiaries vs only vetted and verified beneficiaries)
  */
-export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number): Promise<EligibleBeneficiary[]> {
+export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, filter: any | BeneficiaryFilter = {}): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
+  const projectDonors: number = !filter.isVetted ? 1 : 0;
   const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
-    { 
-      $match: { roles: 'beneficiary' }
+    {
+      $match: { ...filter, beneficiaryStatus: 'verified', roles: 'beneficiary' },
     },
-    { 
+    {
       $lookup: {
         from: TRANSACTIONS_COLL,
         let: { user: '$_id' },
@@ -110,23 +122,23 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
     {
       $replaceRoot: { newRoot: { $mergeObjects: [ { totalReceived: 0 }, { $arrayElemAt: ['$transactions', 0] }, '$$ROOT' ] } }
     },
-    // only take beneficiaries who have not exceeded their period limit
     {
       $match: { totalReceived: { $lt: periodLimit } }
     },
     {
-      $project: { _id: 1, donors: 1, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
+      $project: { _id: 1, donors: projectDonors, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
     }
   ]);
 
   return result.toArray();
 }
 
-export async function computeDonorsBalances(db: Db, donors: string[]): Promise<DonorBalance[]> {
+export async function computeDonorsBalances(db: Db, donors?: string[]): Promise<DonorBalance[]> {
+  const additionalFilter = donors ? { _id: { $in: donors } } : {};
   const result = db.collection(USERS_COLL).aggregate<DonorBalance>([
     {
       // fetch donors who are not blocked from making transactions
-      $match: { _id: { $in: donors }, roles: 'donor', transactionsBlockedReason: { $exists: false } }
+      $match: { ...additionalFilter, roles: 'donor', transactionsBlockedReason: { $exists: false } }
     },
     {
       $lookup: {
@@ -208,9 +220,10 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
   }), {} as DistributionPlanDonorsSummaries);
 
   beneficiaries.forEach((beneficiary) => {
-    beneficiary.donors.forEach((donor) => {
+    const beneficiaryDonors = beneficiary.donors ? beneficiary.donors : donors;
+    beneficiaryDonors.forEach((donor: string | DonorBalance) => {
       const beneficiarySummary = beneficiariesSummaries[beneficiary._id];
-      const donorSummary = donorsSummaries[donor];
+      const donorSummary = typeof donor === "object" ? donorsSummaries[donor._id] : donorsSummaries[donor];
 
       const amount = Math.min(beneficiarySummary.remainingEligible, donorSummary.remainingBalance);
       if (amount === 0) return;
@@ -222,7 +235,7 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
 
       transfers.push({
         beneficiary: beneficiary._id,
-        donor,
+        donor: typeof donor === "object" ? donor._id : donor,
         amount
       });
     });

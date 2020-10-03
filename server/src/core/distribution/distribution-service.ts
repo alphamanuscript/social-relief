@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs } from './types';
+import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs, BeneficiaryFilter } from './types';
 import { runDonationDistribution } from './run-distribution';
 import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
@@ -17,12 +17,12 @@ export class DonationDistributions implements DonationDistributionService {
     this.args = args;
   }
 
-  async distributeDonations(): Promise<DonationDistributionResults> {
+  async distributeDonations(onlyVettedBeneficiaries: boolean = false): Promise<DonationDistributionResults> {
     const lock = this.args.systemLocks.distribution();
     try {
       await lock.lock();
       const startedAt = new Date();
-      const distributions = await runDonationDistribution(this.db, this.args);
+      const distributions = await runDonationDistribution(this.db, this.args, onlyVettedBeneficiaries);
       const finishedAt = new Date();
 
       const results: DonationDistributionResults = {

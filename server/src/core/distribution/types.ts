@@ -14,6 +14,10 @@ export interface DonationDistributionArgs {
   systemLocks: SystemLockService;
 }
 
+export interface BeneficiaryFilter {
+  isVetted: boolean;
+}
+
 export interface DonationDistributionEvent {
   donor: string;
   beneficiary: string;
@@ -38,5 +42,5 @@ export interface DonationDistributor {
 }
 
 export interface DonationDistributionService {
-  distributeDonations(): Promise<DonationDistributionResults>;
+  distributeDonations(onlyVettedBeneficiaries?: boolean): Promise<DonationDistributionResults>;
 }

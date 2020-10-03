@@ -65,3 +65,11 @@ export async function verifyGoogleIdToken(token: string): Promise<GoogleUserData
     throw createLoginError(ERROR_GOOGLE_LOGIN_FAILED)
   }
 }
+
+/**
+ * extracts the first name from the specified full name
+ * @param fullName 
+ */
+export function extractFirstName(fullName: string) {
+  return fullName && fullName.split(' ')[0];
+}

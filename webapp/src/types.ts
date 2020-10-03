@@ -151,6 +151,17 @@ export interface Stats {
   updatedAt: Date
 }
 
+export interface Testimonial {
+  name: string;
+  message: string;
+  date: Date;
+}
+
+export interface FAQ {
+  question: string;
+  answer: string;
+};
+
 export interface AppState {
   user?: User;
   anonymousUser?: User;
@@ -164,4 +175,6 @@ export interface AppState {
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;
   stats?: Stats;
+  testimonials: Testimonial[];
+  faqs: FAQ[]
 }
