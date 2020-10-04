@@ -62,7 +62,7 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
     donors = await computeDonorsBalances(db, Array.from(new Set(donorIds)));
   }
 
-  const plan = createDistributionPlan(beneficiaries, donors);
+  const plan = createDistributionPlan(beneficiaries, donors, onlyVettedBeneficiaries);
   const result = await executeDistributionPlan(users, plan.transfers);
   return result;
 }
@@ -77,7 +77,6 @@ export async function runDonationDistribution(db: Db, args: DonationDistribution
  */
 export async function findEligibleBeneficiaries(db: Db, periodLimit: number, periodLength: number, filter: any | BeneficiaryFilter = {}): Promise<EligibleBeneficiary[]> {
   const periodMilliseconds = periodLength * 24 * 3600 * 1000;
-  const projectDonors: number = !filter.isVetted ? 1 : 0;
   const result = db.collection(USERS_COLL).aggregate<EligibleBeneficiary>([
     {
       $match: { ...filter, beneficiaryStatus: 'verified', roles: 'beneficiary' },
@@ -126,7 +125,7 @@ export async function findEligibleBeneficiaries(db: Db, periodLimit: number, per
       $match: { totalReceived: { $lt: periodLimit } }
     },
     {
-      $project: { _id: 1, donors: projectDonors, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
+      $project: { _id: 1, donors: 1, totalReceived: 1, remaining: { $subtract: [periodLimit, '$totalReceived']} }
     }
   ]);
 
@@ -206,7 +205,7 @@ export async function computeDonorsBalances(db: Db, donors?: string[]): Promise<
   return result.toArray();
 }
 
-export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], donors: DonorBalance[]): CreateDistributionPlanResult {
+export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], donors: DonorBalance[], onlyVettedBeneficiaries: boolean = false): CreateDistributionPlanResult {
   const transfers: DistributionPlanTransfer[] = [];
 
   const beneficiariesSummaries = beneficiaries.reduce((acc, b) => ({
@@ -220,7 +219,7 @@ export function createDistributionPlan(beneficiaries: EligibleBeneficiary[], don
   }), {} as DistributionPlanDonorsSummaries);
 
   beneficiaries.forEach((beneficiary) => {
-    const beneficiaryDonors = beneficiary.donors ? beneficiary.donors : donors;
+    const beneficiaryDonors = onlyVettedBeneficiaries ? donors : beneficiary.donors;
     beneficiaryDonors.forEach((donor: string | DonorBalance) => {
       const beneficiarySummary = beneficiariesSummaries[beneficiary._id];
       const donorSummary = typeof donor === "object" ? donorsSummaries[donor._id] : donorsSummaries[donor];

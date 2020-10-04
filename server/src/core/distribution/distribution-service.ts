@@ -27,6 +27,7 @@ export class DonationDistributions implements DonationDistributionService {
 
       const results: DonationDistributionResults = {
         _id: generateId(),
+        onlyVettedBeneficiaries,
         startedAt,
         finishedAt,
         distributions
