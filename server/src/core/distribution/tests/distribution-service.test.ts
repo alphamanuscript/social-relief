@@ -102,6 +102,25 @@ describe('DonationDistributionService tests', () => {
       await lock.ensureUnlocked();
     });
 
+    describe('Vetted distribution', () => {
+      test('should distribute only to vetted beneficiaries, from any donor', async () => {
+        const distributionService = createDistributionService();
+        const res = await distributionService.distributeDonations(true);
+
+        const savedData: DonationDistributionResults = await dbUtils.getCollection(COLL).findOne({ _id: res._id });
+        const { distributions } = savedData;
+        // beneficiary3 should receive 630
+        expect(distributions.filter(d => d.beneficiary === 'beneficiary3').reduce((a, b) => a + b.amount, 0)).toEqual(630);
+        // beneficiary4 should receive 2000
+        expect(distributions.filter(d => d.beneficiary === 'beneficiary4').reduce((a, b) => a + b.amount, 0)).toEqual(2000);
+        // beneficiary5 should receive 2000
+        expect(distributions.filter(d => d.beneficiary === 'beneficiary5').reduce((a, b) => a + b.amount, 0)).toEqual(2000);
+
+        // confirm the total is 4630 to ensure no other beneficiary was included in the distribution
+        expect(distributions.reduce((a, b) => a + b.amount, 0)).toEqual(4630);
+      });
+    });
+
     test('should not run if distribution lock is locked', async () => {
       const lock = systemLockService.distribution();
       const lock2 = systemLockService.distribution();
