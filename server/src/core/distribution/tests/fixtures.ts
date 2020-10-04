@@ -40,6 +40,7 @@ export const users = [
   },
   {
     _id: 'beneficiary3',
+    isVetted: true,
     beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: ['donor1', 'donor2']
@@ -47,6 +48,7 @@ export const users = [
   // this beneficiary has no associated transactions
   {
     _id: 'beneficiary4',
+    isVetted: true,
     beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
     donors: ['donor3']
@@ -54,9 +56,10 @@ export const users = [
   // this beneficiary has neither donors nor transactions
   {
     _id: 'beneficiary5',
+    isVetted: true,
     beneficiaryStatus: 'verified',
     roles: ['beneficiary'],
-    donors: []
+    donors: <string[]>[]
   }
 ];
 
