@@ -118,6 +118,8 @@ describe('DonationDistributionService tests', () => {
 
         // confirm the total is 4630 to ensure no other beneficiary was included in the distribution
         expect(distributions.reduce((a, b) => a + b.amount, 0)).toEqual(4630);
+
+        expect(savedData.onlyVettedBeneficiaries).toBe(true);
       });
     });
 

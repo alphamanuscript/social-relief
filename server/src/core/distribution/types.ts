@@ -32,6 +32,7 @@ export interface DonationDistributionEvent {
 
 export interface DonationDistributionResults {
   _id: string;
+  onlyVettedBeneficiaries?: boolean;
   startedAt: Date;
   finishedAt: Date;
   distributions: DonationDistributionEvent[];
