@@ -4,7 +4,7 @@
       <div class="">
         <h3 class="text-primary">My Beneficiaries</h3>
         <p>
-          All beneficiaries get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">13,600+</span> people who
+          All beneficiaries get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}+</span> people who
           are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>
@@ -123,7 +123,7 @@ export default {
    }
   }, 
   computed: {
-    ...mapState(['beneficiaries', 'user', 'middlemen']),
+    ...mapState(['beneficiaries', 'user', 'middlemen', 'stats']),
     ...mapGetters(['distributions']),
     beneficiaryItems() {
       return this.beneficiaries.map(b => {
@@ -156,7 +156,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentUser','refreshData']),
+    ...mapActions(['getCurrentUser','refreshData', 'getStats']),
     formatWithCommaSeparator,
     handleExpand(beneficiary) {
       this.currentBeneficiary = beneficiary;
@@ -228,6 +228,7 @@ export default {
       if (!this.user)
         await this.getCurrentUser();
       await this.refreshData();
+      await this.getStats();
     }
     else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
