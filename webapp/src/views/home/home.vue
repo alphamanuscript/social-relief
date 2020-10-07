@@ -38,6 +38,18 @@
         </div>
       </section>
 
+      <b-container fluid class="text-center shadow bg-white rounded px-4 pt-4 pb-3">
+        <b-row class="mb-3">
+          <b-col 
+            v-for="(imageUrl, index) in beneficiaryImages"
+            :key="index"
+            md="4" 
+            class="ml-auto p-3">
+            <img :src="imageUrl" width="75%" alt="Beneficiary Image" style="border-radius: 100%; border: 5px solid #9D1A69">
+          </b-col>
+        </b-row>
+      </b-container>
+
       <section class="my-5 pt-5 text-center" id="how-it-works">
         <p>
           Social Relief aims to send <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
@@ -85,22 +97,6 @@
       </section>
 
       <section class="my-5 pt-5 text-center" id="faq">
-        <b-row>
-          <b-col sm="12" md="6" align-self="center" class="text-center">
-            <h1 class="text-primary display-5 font-weight-normal">Frequently Asked Questions</h1>
-          </b-col>
-          <b-col sm="12" md="6">
-            <div v-for="(faq, index) in faqs" :key="index">
-              <p v-b-toggle="`faq-${index}`" class="h5"><u>{{ faq.question }}</u></p>
-              <b-collapse :id="`faq-${index}`">
-                <p style="line-height: 2.5">{{ faq.answer }}</p>
-              </b-collapse>
-            </div>
-          </b-col>
-        </b-row>
-      </section>
-
-      <!-- <section class="my-5 pt-5 text-center" id="faq">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
         <div v-for="(faq, index) in faqs" :key="index">
           <p v-b-toggle="`faq-${index}`" class="h5"><u>{{ faq.question }}</u></p>
@@ -108,25 +104,9 @@
             <p>{{ faq.answer }}</p>
           </b-collapse>
         </div>
-      </section> -->
-
+      </section>
 
       <section class="my-5 pt-5" id="about-us">
-        <b-row>
-          <b-col sm="12" md="6" align-self="center" class="text-center">
-            <h1 class="text-primary display-5 font-weight-normal">About Us</h1>
-          </b-col>
-          <b-col sm="12" md="6">
-            <p style="line-height: 2.5">
-              Social Relief was conceived by <a href="https://manuscript.live" target="_blank">Alpha Manuscript Limited</a>, 
-              a tech startup based in Nairobi, in the wake of the lockdown and other restrictons imposed in the country to slow the spread of the Covid-19.
-              The platform was developed with the aim of distributing funds from donors to beneficiaries transparently, credibly and directly,
-              ensuring that each shilling contributed by donors reaches the beneficiaries.
-            </p>
-          </b-col>
-        </b-row>
-      </section>
-      <!-- <section class="my-5 pt-5" id="about-us">
         <div class="text-center" align-h="start">
           <h1 class="text-primary mb-5">About Us</h1>
           <p>
@@ -136,12 +116,9 @@
             ensuring that each shilling contributed by donors reaches the beneficiaries.
           </p>
         </div>
-        <div align-h="end">
-          Another div container this text
-        </div>
-      </section> -->
+      </section>
 
-      <!-- <section class="my-5 pt-5" id="contact-us">
+      <section class="my-5 pt-5" id="contact-us">
         <div class="text-center">
             <h1 class="text-primary mb-5">Contact Us</h1>
             <b-card>
@@ -150,21 +127,6 @@
               </b-card-text>
             </b-card>
           </div> 
-      </section> -->
-
-      <section class="my-5 pt-5" id="contact-us">
-        <b-row>
-          <b-col sm="12" md="6" class="text-center">
-            <h1 class="text-primary display-5 font-weight-normal">Contact Us</h1>
-          </b-col>
-          <b-col sm="12" md="6">
-            <b-card>
-              <b-card-text>
-                Contact us at <a href="mailto:socialrelief@manuscript.live">socialrelief@manuscript.live</a> 
-              </b-card-text>
-            </b-card>
-          </b-col>
-        </b-row>
       </section>
     </b-container>
 </template>
@@ -174,7 +136,14 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs'])
+    ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
+    beneficiaryImages() {
+      return [
+        require(`@/assets/Beneficiary 1 (Cropped).jpeg`),
+        require(`@/assets/Beneficiary 2 (Cropped).jpeg`),
+        require(`@/assets/Beneficiary 3 (Cropped).jpeg`)
+      ];
+    }
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
@@ -192,33 +161,3 @@ export default {
   } 
 }
 </script>
-<style scoped lang="scss">
-  #testimonials {
-    /* border: 1px solid #000; */
-    /* background: white; */
-  }
-
-  #experimental-section {
-    // border: 1px solid pink;
-    // .row {
-    //   .column {
-    //     border: 1px solid #000;
-    //   }
-    // }
-  }
-
-  #faq {
-    /* border: 1px solid #000; */
-    /* background: white; */
-  }
-
-  #about-us {
-    // border: 1px solid #000;
-    /* background: white; */
-  }
-
-  #contact-us {
-    /* border: 1px solid #000; */
-    /* background: white; */
-  }
-</style>
