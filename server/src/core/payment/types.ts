@@ -97,7 +97,6 @@ export interface TransactionService {
    * @param userId 
    */
   getUserBalance(userId: string): Promise<number>;
-  aggregate(pipeline: any[]): Promise<any[]>
 }
 
 export interface PaymentRequestResult {

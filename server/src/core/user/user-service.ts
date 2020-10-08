@@ -19,7 +19,7 @@ import { Invitation, InvitationService, InvitationCreateArgs } from '../invitati
 import { EventBus, Event } from '../event';
 import { SystemLockService } from '../system-lock';
 
-const COLLECTION = 'users';
+export const COLLECTION = 'users';
 const TOKEN_COLLECTION = 'access_tokens';
 const TOKEN_VALIDITY_MILLIS = 2 * 24 * 3600 * 1000; // 2 days
 export const MAX_ALLOWED_REFUNDS = 3;
@@ -674,17 +674,6 @@ export class Users implements UserService {
     }
     catch (e) {
       console.error('Error occurred when handling event', event, e);
-    }
-  }
-
-  async aggregate(pipeline: any[]): Promise<any[]> {
-    try {
-      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
-      return results;
-    }
-    catch(e) {
-      if (e instanceof AppError) throw e;
-      throw createDbOpFailedError(e.message);
     }
   }
 

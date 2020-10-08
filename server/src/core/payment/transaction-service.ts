@@ -7,7 +7,7 @@ import * as messages from '../messages';
 import * as validators from './validator';
 import { EventBus } from '../event';
 
-const COLLECTION = 'transactions';
+export const COLLECTION = 'transactions';
 
 export interface TransactionsArgs {
   paymentProviders: PaymentProviderRegistry;
@@ -354,16 +354,5 @@ export class Transactions implements TransactionService {
 
   private sendingProvider(): PaymentProvider {
     return this.providers.getPreferredForSending();
-  }
-
-  async aggregate(pipeline: any[]): Promise<any[]> {
-    try {
-      const results = await this.collection.aggregate(pipeline, { allowDiskUse: true }).toArray();
-      return results;
-    }
-    catch(e) {
-      rethrowIfAppError(e);
-      throw createDbOpFailedError(e.message);
-    }
   }
 }

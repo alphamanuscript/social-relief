@@ -245,11 +245,6 @@ export interface UserService {
    */
   initiateRefund(user: string): Promise<Transaction>;
   /**
-   * 
-   * @param pipeline
-   */
-  aggregate(pipeline: any[]): Promise<any[]>;
-  /**
    * initiates a donation 
    * from anonymous user args.phone
    * @param args 
