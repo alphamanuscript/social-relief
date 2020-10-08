@@ -31,7 +31,7 @@
               <p>Total amount distributed</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numRecipients) : 0}}</p>
               <p>Recipients so far</p>
             </b-col>
           </b-row>
