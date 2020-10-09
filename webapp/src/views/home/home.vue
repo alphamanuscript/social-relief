@@ -38,16 +38,9 @@
         </div>
       </section>
 
-      <b-container fluid class="text-center shadow bg-white rounded px-4 pt-4 pb-3">
-        <b-row class="mb-3">
-          <b-col 
-            v-for="(imageUrl, index) in beneficiaryImages"
-            :key="index"
-            md="4" 
-            class="ml-auto p-3">
-            <img :src="imageUrl" width="75%" alt="Beneficiary Image" style="border-radius: 100%; border: 5px solid #9D1A69">
-          </b-col>
-        </b-row>
+
+      <b-container fluid class="shadow bg-white rounded px-4 pt-4 pb-3 gallery">
+        <img v-for="(imageUrl, index) in beneficiaryImages" :key="index" :src="imageUrl" width="100%" alt="Beneficiary Image">
       </b-container>
 
       <section class="my-5 pt-5 text-center" id="how-it-works">
@@ -143,7 +136,7 @@ export default {
         require(`@/assets/Beneficiary 2 (Cropped).jpeg`),
         require(`@/assets/Beneficiary 3 (Cropped).jpeg`)
       ];
-    }
+    },
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
@@ -161,3 +154,9 @@ export default {
   } 
 }
 </script>
+<style lang="scss" scoped>
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+</style>
