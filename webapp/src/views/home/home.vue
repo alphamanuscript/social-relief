@@ -39,7 +39,7 @@
       </section>
 
 
-      <b-container fluid class="shadow bg-white rounded px-4 pt-4 pb-3 gallery">
+      <b-container fluid class="px-4 pt-4 pb-3 gallery">
         <img v-for="(imageUrl, index) in beneficiaryImages" :key="index" :src="imageUrl" width="100%" alt="Beneficiary Image">
       </b-container>
 
@@ -89,14 +89,18 @@
         </div>
       </section>
 
-      <section class="my-5 pt-5 text-center" id="faq">
+      <section class="accordion text-center my-5 pt-5 mx-auto" role="tablist" id="faq" style="width: 55%">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
-        <div v-for="(faq, index) in faqs" :key="index">
-          <p v-b-toggle="`faq-${index}`" class="h5"><u>{{ faq.question }}</u></p>
-          <b-collapse :id="`faq-${index}`">
-            <p>{{ faq.answer }}</p>
+        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button no-shadow block v-b-toggle="`faq-${index}`" style="color: black; outline: none; box-shadow: none; background: transparent; border: 1px solid transparent; font-weight: bold; text-decoration: underline">{{ faq.question }}</b-button>
+          </b-card-header>
+          <b-collapse :id="`faq-${index}`" visible accordion="my-accordion" role="tabpanel">
+            <b-card-body>
+              <b-card-text>{{ faq.answer }}</b-card-text>
+            </b-card-body>
           </b-collapse>
-        </div>
+        </b-card>
       </section>
 
       <section class="my-5 pt-5" id="about-us">
