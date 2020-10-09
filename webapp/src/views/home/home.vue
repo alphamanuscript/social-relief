@@ -23,15 +23,15 @@
               <p>Contributors so far</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed) + '+') : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed)) : 0}}</p>
               <p>Total amount contributed</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalDistributed) + '+') : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalDistributed)) : 0}}</p>
               <p>Total amount distributed</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numRecipients) : 0}}</p>
               <p>Recipients so far</p>
             </b-col>
           </b-row>
@@ -46,7 +46,7 @@
           the negative impact of the Covid-19 pandemic.
         </p>
         <p>Your contribution will go a long to touch the lives of</p>
-        <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries) + '+') : 0 }}</p>
+        <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries)) : 0 }}</p>
         <p>people who are currently enlisted as beneficiaries in this system.</p>
       </section>
 

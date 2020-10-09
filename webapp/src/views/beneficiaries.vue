@@ -4,7 +4,7 @@
       <div class="">
         <h3 class="text-primary">My Beneficiaries</h3>
         <p>
-          All beneficiaries get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}+</span> people who
+          All beneficiaries get up to <span class="text-secondary font-weight-bold">Ksh 2,000</span> monthly to purchase basic supplies during this trying period. Your contribution will go a long way touch the lives of <span class="text-secondary font-weight-bold">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</span> people who
           are currently enlisted as beneficiaries of this system. We at Social Relief want to say a big <span class="text-secondary font-weight-bold">THANK YOU</span> for your kindness and support.
         </p>
       </div>

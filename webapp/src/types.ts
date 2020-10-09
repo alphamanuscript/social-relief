@@ -146,6 +146,7 @@ export interface Stats {
   _id: string,
   numContributors: number,
   totalContributed: number,
+  numRecipients: number,
   numBeneficiaries: number, 
   totalDistributed: number,
   updatedAt: Date
