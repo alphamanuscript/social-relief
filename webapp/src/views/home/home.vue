@@ -136,9 +136,9 @@ export default {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
       return [
-        require(`@/assets/Beneficiary 1 (Cropped).jpeg`),
-        require(`@/assets/Beneficiary 2 (Cropped).jpeg`),
-        require(`@/assets/Beneficiary 3 (Cropped).jpeg`)
+        require(`@/assets/beneficiary1.jpeg`),
+        require(`@/assets/beneficiary2.jpeg`),
+        require(`@/assets/beneficiary3.jpeg`)
       ];
     },
   },
