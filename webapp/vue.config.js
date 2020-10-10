@@ -13,7 +13,11 @@ module.exports = {
     },
     themeColor: '#EF5A24',
     msTileColor: '#EF5A24',
-    appleMobileWebAppStatusBarStyle: '#EF5A24'
+    appleMobileWebAppStatusBarStyle: '#EF5A24',
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: 'service-worker.js',
+    }
   },
   chainWebpack: config => {
     config

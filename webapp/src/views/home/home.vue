@@ -23,30 +23,35 @@
               <p>Contributors so far</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed) + '+') : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalContributed)) : 0}}</p>
               <p>Total amount contributed</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalDistributed) + '+') : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? (formatWithCommaSeparator(stats.totalDistributed)) : 0}}</p>
               <p>Total amount distributed</p>
             </b-col>
             <b-col sm="12" md="3">
-              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numBeneficiaries) : 0}}</p>
+              <p class="text-primary display-4 mb-0">{{stats ? formatWithCommaSeparator(stats.numRecipients) : 0}}</p>
               <p>Recipients so far</p>
             </b-col>
           </b-row>
         </div>
       </section>
 
+
+      <b-container fluid class="px-4 pt-4 pb-3 gallery">
+        <img v-for="(imageUrl, index) in beneficiaryImages" :key="index" :src="imageUrl" width="100%" alt="Beneficiary Image">
+      </b-container>
+
       <section class="my-5 pt-5 text-center" id="how-it-works">
         <p>
           Social Relief aims to send <span class="text-secondary font-weight-bold">Ksh 2,000</span> 
-          per month to each beneficiary on the platform between September and November 2020.<br/>
+          per month to each beneficiary on the platform between October and December 2020.<br/>
           This amount will help those in need to address their basic needs and get back on their feet following
           the negative impact of the Covid-19 pandemic.
         </p>
         <p>Your contribution will go a long to touch the lives of</p>
-        <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries) + '+') : 0 }}</p>
+        <p class="text-primary display-4">{{ stats ? (formatWithCommaSeparator(stats.numBeneficiaries)) : 0 }}</p>
         <p>people who are currently enlisted as beneficiaries in this system.</p>
       </section>
 
@@ -84,18 +89,22 @@
         </div>
       </section>
 
-      <section class="my-5 pt-5 text-center" id="faq">
+      <section class="accordion text-center my-5 pt-5 mx-auto" role="tablist" id="faq" style="width: 55%">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
-        <div v-for="(faq, index) in faqs" :key="index">
-          <p v-b-toggle="`faq-${index}`" class="h5"><u>{{ faq.question }}</u></p>
-          <b-collapse :id="`faq-${index}`">
-            <p>{{ faq.answer }}</p>
+        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button no-shadow block v-b-toggle="`faq-${index}`" style="color: black; outline: none; box-shadow: none; background: transparent; border: 1px solid transparent; font-weight: bold; text-decoration: underline">{{ faq.question }}</b-button>
+          </b-card-header>
+          <b-collapse :id="`faq-${index}`" visible accordion="my-accordion" role="tabpanel">
+            <b-card-body>
+              <b-card-text>{{ faq.answer }}</b-card-text>
+            </b-card-body>
           </b-collapse>
-        </div>
+        </b-card>
       </section>
 
       <section class="my-5 pt-5" id="about-us">
-        <div class="text-center">
+        <div class="text-center" align-h="start">
           <h1 class="text-primary mb-5">About Us</h1>
           <p>
             Social Relief was conceived by <a href="https://manuscript.live" target="_blank">Alpha Manuscript Limited</a>, 
@@ -109,8 +118,7 @@
       <section class="my-5 pt-5" id="contact-us">
         <div class="text-center">
             <h1 class="text-primary mb-5">Contact Us</h1>
-            <b-card
-            >
+            <b-card>
               <b-card-text>
                 Contact us at <a href="mailto:socialrelief@manuscript.live">socialrelief@manuscript.live</a> 
               </b-card-text>
@@ -125,7 +133,14 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
   computed: {
-    ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs'])
+    ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
+    beneficiaryImages() {
+      return [
+        require(`@/assets/beneficiary1.jpeg`),
+        require(`@/assets/beneficiary2.jpeg`),
+        require(`@/assets/beneficiary3.jpeg`)
+      ];
+    },
   },
   methods: {
     ...mapActions(['getNewUser', 'getStats']),
@@ -143,3 +158,9 @@ export default {
   } 
 }
 </script>
+<style lang="scss" scoped>
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+</style>

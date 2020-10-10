@@ -52,7 +52,7 @@ export default {
     return {
       donationInputs: {
         phone: '',
-        amount: 100
+        amount: 2000
       },
       validationMessages: {
         phone: validationMessages.phone,
@@ -74,7 +74,7 @@ export default {
     showDonateDialog() {
       this.donationInputs = {
         phone: '',
-        amount: 1000
+        amount: 2000
       },
       this.validationResults = { phone: null, amount: null };
       this.$bvModal.show('sign-up');
@@ -82,7 +82,7 @@ export default {
     hideDialog() {
       this.donationInputs = {
         phone: '',
-        amount: 1000
+        amount: 2000
       },
       this.validationResults = { phone: null, amount: null };
     },
@@ -104,7 +104,7 @@ export default {
         if (this.message.type !== 'error') {
           this.donationInputs = {
             phone: '',
-            amount: 1000
+            amount: 2000
           },
           this.validationResults = { phone: null, amount: null };
           this.$bvModal.hide('donate');

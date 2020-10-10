@@ -110,4 +110,39 @@ export const transactions = [
     toExternal: true,
     fromExternal: false
   }
-]
+];
+
+export const users = [
+  {
+    _id: 'id 1',
+    roles: ['donor']
+  },
+  {
+    _id: 'id 2',
+    roles: ['donor']
+  },
+  {
+    _id: 'id 3',
+    roles: ['beneficiary']
+  },
+  {
+    _id: 'id 4',
+    roles: ['beneficiary']
+  },
+  {
+    _id: 'id 5',
+    roles: ['beneficiary']
+  },
+  {
+    _id: 'id 6',
+    roles: ['beneficiary']
+  },
+  {
+    _id: 'id 7',
+    roles: ['beneficiary', 'middleman']
+  },
+  {
+    _id: '10',
+    roles: ['beneficiary']
+  }
+];

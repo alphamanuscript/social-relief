@@ -1,24 +1,20 @@
 import { Db, Collection } from 'mongodb';
 import { createDbOpFailedError, rethrowIfAppError, createAppError, ErrorCode } from '../error';
 import * as messages from '../messages';
-import { TransactionService } from '../payment';
+import { COLLECTION as TRX_COLLECTION } from '../payment';
+import { COLLECTION as USERS_COLLECTION } from '../user';
 import { StatsService, Stats } from './types';
 
 const COLLECTION = 'stats';
 
-export interface StatsArgs {
-  transactions: TransactionService
-}
 
 export class Statistics implements StatsService {
   private db: Db;
   private collection: Collection<Stats>;
-  private transactions: TransactionService;
 
-  constructor(db: Db, args: StatsArgs) {
+  constructor(db: Db) {
     this.db = db;
     this.collection = this.db.collection(COLLECTION);
-    this.transactions = args.transactions;
   }
 
   async get(): Promise<Stats> {
@@ -37,7 +33,7 @@ export class Statistics implements StatsService {
 
   async update(): Promise<Stats> {
     try {
-      const res = await this.transactions.aggregate([
+      const res = await this.db.collection(TRX_COLLECTION).aggregate([
         {
           $facet: {
             numContributorsPipeline: [
@@ -45,10 +41,10 @@ export class Statistics implements StatsService {
               { $group: { _id: "$to" } },
               { $count: 'numContributors' }
             ],
-            numBeneficiariesPipeline: [
+            numRecipientsPipeline: [
               { $match: { type: 'distribution', status: 'success'} },
               { $group: { _id: "$to" } },
-              { $count: 'numBeneficiaries' }
+              { $count: 'numRecipients' }
             ],
             totalContributedPipeline: [
               { 
@@ -77,24 +73,31 @@ export class Statistics implements StatsService {
             ],
           }
         }
-      ]);
+      ]).toArray();
 
       let numContributors = 0;
-      let numBeneficiaries = 0;
+      let numRecipients = 0;
       let totalContributed = 0;
       let totalDistributed = 0;
 
       if (res.length) {
         numContributors = res[0].numContributorsPipeline.length ? res[0].numContributorsPipeline[0].numContributors : 0;
-        numBeneficiaries = res[0].numBeneficiariesPipeline.length ? res[0].numBeneficiariesPipeline[0].numBeneficiaries : 0;
+        numRecipients = res[0].numRecipientsPipeline.length ? res[0].numRecipientsPipeline[0].numRecipients : 0;
         totalContributed = res[0].totalContributedPipeline.length ? res[0].totalContributedPipeline[0].totalContributed : 0;
         totalDistributed = res[0].totalDistributedPipeline.length ? res[0].totalDistributedPipeline[0].totalDistributed : 0;
       }
 
+      const beneficiariesRes = await this.db.collection(USERS_COLLECTION).aggregate([
+        { $match: { roles: 'beneficiary'} },
+        { $group: { _id: null, total: { $sum: 1 } } }
+      ]).toArray();
+
+      const numBeneficiaries = beneficiariesRes.length ? beneficiariesRes[0].total : 0;
+
       const updatedStats = await this.collection.findOneAndUpdate(
         { _id: 'stats' },
         { 
-          $set: { numContributors, totalContributed, numBeneficiaries, totalDistributed },
+          $set: { numContributors, totalContributed, numRecipients, totalDistributed, numBeneficiaries },
           $currentDate: { updatedAt: true },
         },
         { upsert: true, returnOriginal: false }
