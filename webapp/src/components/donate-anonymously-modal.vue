@@ -100,7 +100,7 @@ export default {
   data() {
     return {
       donationInputs: {
-        amount: 1000,
+        amount: 2000,
         name: '',
         phone: '',
         email: '',
@@ -137,7 +137,7 @@ export default {
     ...mapActions(['donateAnonymously']),
     hideDialog() {
       this.donationInputs = {
-        amount: 1000,
+        amount: 2000,
         name: '',
         phone: '',
         email: '',
