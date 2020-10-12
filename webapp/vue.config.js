@@ -19,6 +19,7 @@ module.exports = {
       swSrc: 'service-worker.js',
     }
   },
+  configureWebpack:  { output: { filename: '[name].[hash].bundle.js' } },
   chainWebpack: config => {
     config
       .plugin('html')
