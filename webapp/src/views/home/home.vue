@@ -65,19 +65,19 @@
           Here is what some of the recipients of the donations have to say:
         </p>
 
-        <div style="min-height:200px">
+        <div style="min-height:50px">
           <b-carousel
             id="testimonial-carousel"
             fade
             controls
-            img-height="200"
+            img-height="450"
             background="#e7e7e7"
             style="text-shadow: 1px 1px 2px #333;"
             :interval="4000"
           >
             <b-carousel-slide
               v-for="(testimonial, index) in testimonials" :key="index"
-              img-height="200"
+              img-height="450"
               :caption="testimonial.name"
               :text="testimonial.message"
             >
