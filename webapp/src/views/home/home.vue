@@ -89,9 +89,9 @@
         </div>
       </section>
 
-      <section class="accordion text-center my-5 pt-5 mx-auto" role="tablist" id="faq" style="width: 55%">
+      <section class="accordion text-center my-5 pt-5 mx-auto col-sm-12 col-md-9" role="tablist" id="faq">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
-        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1">
+        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1 mx-auto">
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-button no-shadow block v-b-toggle="`faq-${index}`" style="color: black; outline: none; box-shadow: none; background: transparent; border: 1px solid transparent; font-weight: bold; text-decoration: underline">{{ faq.question }}</b-button>
           </b-card-header>
