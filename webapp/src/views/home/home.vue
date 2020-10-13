@@ -7,6 +7,7 @@
               financially affected by Covid-19
               between October and December 2020.<br>
               Testing 1, 2, 3...
+              Coming right after you
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
