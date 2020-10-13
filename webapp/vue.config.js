@@ -16,8 +16,7 @@ module.exports = {
     appleMobileWebAppStatusBarStyle: '#EF5A24',
     workboxPluginMode: "InjectManifest",
     workboxOptions: {
-      swSrc: "src/service-worker.js" // CHECK CORRECT PATH!
+      swSrc: "src/service-worker.js"
     }
   },
-  configureWebpack:  { output: { filename: '[name].[hash].bundle.js' } },
 }
