@@ -28,6 +28,8 @@ if (process.env.NODE_ENV === 'production') {
         const worker = registration.waiting;
         if (worker) {
           worker.postMessage({ action: "SKIP_WAITING" });
+          location.href = location.href;
+          console.log('worker has a value assigned to it.')
         }
       }
     },
