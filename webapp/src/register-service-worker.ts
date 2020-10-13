@@ -25,9 +25,11 @@ if (process.env.NODE_ENV === 'production') {
       //   window.location.reload()
       // }, 1000)
       if (window.confirm("A new version is available, update now?")) {
-        const worker = registration.waiting || { postMessage: () => {} };
-        worker.postMessage({ action: "SKIP_WAITING" });
-        // refresh the page or trigger a refresh programatically!  
+        const worker = registration.waiting;
+        if (worker) {
+          console.log("We're in!!!");
+          worker.postMessage({ action: "SKIP_WAITING" });
+        } 
       }
     },
     offline () {
