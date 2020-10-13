@@ -12,6 +12,7 @@
               Come on now
               Let's go stupid
               More content, nigga
+              HAHAHAHAHAHAHAHAHAHAHA
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
