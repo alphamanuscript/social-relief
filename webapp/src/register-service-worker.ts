@@ -26,10 +26,11 @@ if (process.env.NODE_ENV === 'production') {
       // }, 1000)
       if (window.confirm("A new version is available, update now?")) {
         const worker = registration.waiting;
+        location.reload();
         if (worker) {
           worker.postMessage({ action: "SKIP_WAITING" });
           console.log('worker has a value assigned to it.')
-          location.reload();
+          
         }
       }
     },
