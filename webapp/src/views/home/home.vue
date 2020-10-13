@@ -8,7 +8,8 @@
               between October and December 2020.<br>
               Testing 1, 2, 3...
               Coming right after you,
-              Baby you're gonna get it now
+              Baby you're gonna get it now,
+              Come on now
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
