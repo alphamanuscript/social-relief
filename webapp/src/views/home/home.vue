@@ -8,6 +8,7 @@
               between October and December 2020.<br>
               SkyWorld by Thomas Bergesen and Two Steps from Hell
               For the Win by Thomas Bergesen
+              Clement, Amakuru yawe
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
