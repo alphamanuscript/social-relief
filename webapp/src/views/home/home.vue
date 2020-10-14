@@ -6,10 +6,6 @@
               The SocialRelief campaign aims to transfer 2,000Ksh per month to people
               financially affected by Covid-19
               between October and December 2020.<br>
-              SkyWorld by Thomas Bergesen and Two Steps from Hell
-              For the Win by Thomas Bergesen
-              Clement, Amakuru yawe
-              Amabya manini
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
