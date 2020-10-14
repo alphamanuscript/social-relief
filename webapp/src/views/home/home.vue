@@ -65,7 +65,31 @@
           Here is what some of the recipients of the donations have to say:
         </p>
 
-        <div style="min-height:50px">
+        <div>
+          <b-carousel
+            id="testimonial-carousel"
+            :interval="4000"
+            fade
+            controls
+            indicators
+            background="#ababab"
+            img-width="1024"
+            img-height="480"
+            style="text-shadow: 1px 1px 2px #333;"
+          >
+            <b-carousel-slide
+              v-for="(testimonial, index) in testimonials" :key="index"
+              img-height="450"
+              :caption="testimonial.name"
+              :text="testimonial.message"
+            >
+              <p slot="img" style="height:325px;border-radius:10px"></p>
+              <p><em>{{ testimonial.date.toDateString() }}</em></p>
+            </b-carousel-slide>
+          </b-carousel>
+        </div>
+
+        <!-- <div style="min-height:50px">
           <b-carousel
             id="testimonial-carousel"
             fade
@@ -81,12 +105,11 @@
               :caption="testimonial.name"
               :text="testimonial.message"
             >
-              <!-- this empty p element serves as the background of the slide, without it, the text does not get displayed -->
               <p slot="img" style="height:200px;border-radius:10px"></p>
               <p><em>{{ testimonial.date.toDateString() }}</em></p>
             </b-carousel-slide>
           </b-carousel>
-        </div>
+        </div> -->
       </section>
 
       <section class="accordion text-center my-5 pt-5 mx-auto col-sm-12 col-md-9" role="tablist" id="faq">
