@@ -6,6 +6,7 @@
               The SocialRelief campaign aims to transfer 2,000Ksh per month to people
               financially affected by Covid-19
               between October and December 2020.<br>
+              Testing 1, 2, 3...
           </h3>
           <div class="py-3">
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
@@ -88,28 +89,6 @@
             </b-carousel-slide>
           </b-carousel>
         </div>
-
-        <!-- <div style="min-height:50px">
-          <b-carousel
-            id="testimonial-carousel"
-            fade
-            controls
-            img-height="450"
-            background="#e7e7e7"
-            style="text-shadow: 1px 1px 2px #333;"
-            :interval="4000"
-          >
-            <b-carousel-slide
-              v-for="(testimonial, index) in testimonials" :key="index"
-              img-height="450"
-              :caption="testimonial.name"
-              :text="testimonial.message"
-            >
-              <p slot="img" style="height:200px;border-radius:10px"></p>
-              <p><em>{{ testimonial.date.toDateString() }}</em></p>
-            </b-carousel-slide>
-          </b-carousel>
-        </div> -->
       </section>
 
       <section class="accordion text-center my-5 pt-5 mx-auto col-sm-12 col-md-9" role="tablist" id="faq">
