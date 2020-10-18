@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import App from './app.vue'
-// TODO: we disabled the service worker because it was not fetching the latest version of the app
-// when we deployed a new version.
-// We should re-enable the service worker once we figure out how to solve that
-// import './register-service-worker'
+import './register-service-worker'
 import router from './router'
 import store from './store'
 import './configure-api'
