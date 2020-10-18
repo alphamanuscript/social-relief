@@ -22,13 +22,10 @@ if (process.env.NODE_ENV === 'production') {
     updated () {
       console.log('App update is available please refresh.')
       caches.keys().then(function(names) {
-        for (const name of names)
-        {
-          console.log('Deleting cache', name);
+        for (const name of names) {
           caches.delete(name);
         }
       });
-      setTimeout(() => window.location.reload(), 1000);
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
