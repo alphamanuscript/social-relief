@@ -141,7 +141,7 @@ export default {
       const numBeneficiaryImages = 10;
       const paths = [];
       for (let i = 1; i <= numBeneficiaryImages; i++) {
-        paths.push(`@/assets/beneficiary${i}.jpef`);
+        paths.push(`@/assets/beneficiary${i}.jpeg`);
       }
       return paths.map(path => require(path));
     },
