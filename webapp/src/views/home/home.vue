@@ -136,11 +136,13 @@ export default {
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
-      return [
-        require(`@/assets/beneficiary1.jpeg`),
-        require(`@/assets/beneficiary2.jpeg`),
-        require(`@/assets/beneficiary3.jpeg`)
-      ];
+      const numBeneficiaryImages = 10;
+      const paths = [];
+      for (let i = 1; i <= numBeneficiaryImages; i++) {
+        paths.push(`@/assets/beneficiary${i}.jpeg`);
+      }
+      
+      return paths;
     },
   },
   methods: {
