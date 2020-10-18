@@ -40,7 +40,15 @@
 
 
       <b-container fluid class="px-4 pt-4 pb-3 gallery">
-        <img v-for="(imageUrl, index) in beneficiaryImages" :key="index" :src="imageUrl" width="100%" alt="Beneficiary Image">
+        <!-- The height of the first image sets the height of the row. The rest of the images have height=100% and
+        get the same height as the first image -->
+        <img
+          v-for="(imageUrl, index) in beneficiaryImages"
+          :key="index" :src="imageUrl"
+          width="100%"
+          height="130px"
+          alt="Beneficiary Image"
+        >
       </b-container>
 
       <section class="my-5 pt-5 text-center" id="how-it-works">
@@ -65,33 +73,34 @@
           Here is what some of the recipients of the donations have to say:
         </p>
 
-        <div style="min-height:200px">
+        <div>
           <b-carousel
             id="testimonial-carousel"
+            :interval="4000"
             fade
             controls
-            img-height="200"
-            background="#e7e7e7"
+            indicators
+            background="#ababab"
+            img-width="1024"
+            img-height="480"
             style="text-shadow: 1px 1px 2px #333;"
-            :interval="4000"
           >
             <b-carousel-slide
               v-for="(testimonial, index) in testimonials" :key="index"
-              img-height="200"
+              img-height="450"
               :caption="testimonial.name"
               :text="testimonial.message"
             >
-              <!-- this empty p element serves as the background of the slide, without it, the text does not get displayed -->
-              <p slot="img" style="height:200px;border-radius:10px"></p>
+              <p slot="img" style="height:325px;border-radius:10px"></p>
               <p><em>{{ testimonial.date.toDateString() }}</em></p>
             </b-carousel-slide>
           </b-carousel>
         </div>
       </section>
 
-      <section class="accordion text-center my-5 pt-5 mx-auto" role="tablist" id="faq" style="width: 55%">
+      <section class="accordion text-center my-5 pt-5 mx-auto col-sm-12 col-md-9" role="tablist" id="faq">
         <h1 class="text-primary mb-5">Frequently Asked Questions</h1>
-        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1">
+        <b-card v-for="(faq, index) in faqs" :key="index" no-body class="mb-1 mx-auto">
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-button no-shadow block v-b-toggle="`faq-${index}`" style="color: black; outline: none; box-shadow: none; background: transparent; border: 1px solid transparent; font-weight: bold; text-decoration: underline">{{ faq.question }}</b-button>
           </b-card-header>
@@ -138,7 +147,14 @@ export default {
       return [
         require(`@/assets/beneficiary1.jpeg`),
         require(`@/assets/beneficiary2.jpeg`),
-        require(`@/assets/beneficiary3.jpeg`)
+        require(`@/assets/beneficiary3.jpeg`),
+        require(`@/assets/beneficiary4.jpeg`),
+        require(`@/assets/beneficiary5.jpeg`),
+        require(`@/assets/beneficiary6.jpeg`),
+        require(`@/assets/beneficiary7.jpeg`),
+        require(`@/assets/beneficiary8.jpeg`),
+        require(`@/assets/beneficiary9.jpeg`),
+        require(`@/assets/beneficiary10.jpeg`)
       ];
     },
   },
@@ -161,6 +177,7 @@ export default {
 <style lang="scss" scoped>
   .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-rows: repeat(auto-fill, 130px)
   }
 </style>

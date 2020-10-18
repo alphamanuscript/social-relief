@@ -16,15 +16,7 @@ module.exports = {
     appleMobileWebAppStatusBarStyle: '#EF5A24',
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      swSrc: 'service-worker.js',
-    }
+      swSrc: 'service-worker.js'
+    },
   },
-  chainWebpack: config => {
-    config
-      .plugin('html')
-      .tap(args => {
-        args[0].title = 'Social Relief';
-        return args;
-      });
-  }
 }
