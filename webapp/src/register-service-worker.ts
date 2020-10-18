@@ -20,10 +20,15 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated () {
-      console.log('New content is available; please refresh.')
+      console.log('App update is available please refresh.')
       caches.keys().then(function(names) {
-        for (let name of names) caches.delete(name);
+        for (let name of names)
+        {
+          console.log('Deleting cache', name);
+          caches.delete(name);
+        }
       });
+      setTimeout(() => window.location.reload(), 1000);
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
