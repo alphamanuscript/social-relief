@@ -136,14 +136,18 @@ export default {
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
-      // This number should be the total number of beneficiary images in the assets folder
-      // We assume beneficiary images are named beneficiary1.jpeg to beneficiaryN.jpeg
-      const numBeneficiaryImages = 10;
-      const paths = [];
-      for (let i = 1; i <= numBeneficiaryImages; i++) {
-        paths.push(`@/assets/beneficiary${i}.jpeg`);
-      }
-      return paths.map(path => require(path));
+      return [
+        require(`@/assets/beneficiary1.jpeg`),
+        require(`@/assets/beneficiary2.jpeg`),
+        require(`@/assets/beneficiary3.jpeg`),
+        require(`@/assets/beneficiary4.jpeg`),
+        require(`@/assets/beneficiary5.jpeg`),
+        require(`@/assets/beneficiary6.jpeg`),
+        require(`@/assets/beneficiary7.jpeg`),
+        require(`@/assets/beneficiary8.jpeg`),
+        require(`@/assets/beneficiary9.jpeg`),
+        require(`@/assets/beneficiary10.jpeg`)
+      ];
     },
   },
   methods: {
