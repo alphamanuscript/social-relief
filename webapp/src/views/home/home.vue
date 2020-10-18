@@ -40,7 +40,15 @@
 
 
       <b-container fluid class="px-4 pt-4 pb-3 gallery">
-        <img v-for="(imageUrl, index) in beneficiaryImages" :key="index" :src="imageUrl" width="100%" alt="Beneficiary Image">
+        <!-- The height of the first image sets the height of the row. The rest of the images have height=100% and
+        get the same height as the first image -->
+        <img
+          v-for="(imageUrl, index) in beneficiaryImages"
+          :key="index" :src="imageUrl"
+          width="100%"
+          height="130px"
+          alt="Beneficiary Image"
+        >
       </b-container>
 
       <section class="my-5 pt-5 text-center" id="how-it-works">
@@ -169,6 +177,7 @@ export default {
 <style lang="scss" scoped>
   .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-rows: repeat(auto-fill, 130px)
   }
 </style>

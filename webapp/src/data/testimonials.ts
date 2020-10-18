@@ -22,5 +22,11 @@ export const testimonials: Testimonial[] = [
     name: 'Shalvine',
     message: 'The donation that I received impacted me in that I was able to pay my house rent.',
     date: new Date(2020, 8, 24)
+  },
+  {
+    name: 'Maxwell Oduor Otieno',
+    message: 'I would like to thank the SocialRelief organisation for the stipend that I get from them.' +
+    ' I opened a small business, selling clothes. And it helped me a lot.',
+    date: new Date(2020, 9, 14)
   }
 ];
