@@ -136,13 +136,14 @@ export default {
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
+      // This number should be the total number of beneficiary images in the assets folder
+      // We assume beneficiary images are named beneficiary1.jpeg to beneficiaryN.jpeg
       const numBeneficiaryImages = 10;
       const paths = [];
       for (let i = 1; i <= numBeneficiaryImages; i++) {
-        paths.push(`@/assets/beneficiary${i}.jpeg`);
+        paths.push(`@/assets/beneficiary${i}.jpef`);
       }
-      
-      return paths;
+      return paths.map(path => require(path));
     },
   },
   methods: {
