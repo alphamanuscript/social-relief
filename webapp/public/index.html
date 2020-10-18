@@ -17,6 +17,24 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <!-- temporary service worker uninstall script -->
+    <script>
+      // TODO:
+      // users who've already visited the app won't see new changes or get the new
+      // service worker until they run a full hard reload.
+      // This temporary workaround uninstall all service workers so
+      // that they can get the latest version.
+      // We should delete this script eventually, when we're confident
+      // all users have migrated to a version with the new service worker (0.6.1+)
+      if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations()
+        .then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+    </script>
     <!--Start of Tawk.to Script-->
     <script type="text/javascript">
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
