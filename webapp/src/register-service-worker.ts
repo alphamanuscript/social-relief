@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production') {
     updated () {
       console.log('App update is available please refresh.')
       caches.keys().then(function(names) {
-        for (let name of names)
+        for (const name of names)
         {
           console.log('Deleting cache', name);
           caches.delete(name);
