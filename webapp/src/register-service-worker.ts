@@ -19,9 +19,8 @@ if (process.env.NODE_ENV === 'production') {
     updatefound () {
       console.log('New content is downloading.')
     },
-    async updated (registration) {
-      console.log('New app version available, updating...')
-      await registration.update();
+    async updated () {
+      console.log('New content available, please refresh.')
     },
     offline () {
       console.log('No internet connection found. App is running in offline mode.')
