@@ -138,7 +138,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     flutterwaveWebhooksRoot: env.FLUTTERWAVE_WEBHOOKS || '/webhooks/flutterwave',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
-    distributionInterval: (env.DISTRIBUTION_INTERVAL) || `0 */5 * * * *`,
+    distributionInterval: (env.DISTRIBUTION_INTERVAL) || `0 */2 * * * *`,
     vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL) || `0 */5 * * * *`,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
