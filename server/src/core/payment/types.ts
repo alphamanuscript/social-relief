@@ -179,10 +179,10 @@ export interface PaymentProviderRegistry {
    * gets preferred payment provider for
    * refunding donated money
    */
-  getPreferredForRefund(): PaymentProvider;
+  getPreferredForRefunds(): PaymentProvider;
   /**
    * sets preferred payment provider for refunding donated money
    * @param name
    */
-  setPreferredForRefund(name: string): void;
+  setPreferredForRefunds(name: string): void;
 }
