@@ -7,6 +7,7 @@ export class PaymentProviders implements PaymentProviderRegistry {
   } = {};
 
   private preferredSending: string;
+  private preferredRefund: string;
   private preferredReceiving: string;
 
   register(provider: PaymentProvider): void {
@@ -34,6 +35,14 @@ export class PaymentProviders implements PaymentProviderRegistry {
 
   setPreferredForSending(name: string): void {
     this.preferredSending = name;
+  }
+
+  getPreferredForRefund(): PaymentProvider {
+    return this.getProvider(this.preferredRefund);
+  }
+
+  setPreferredForRefund(name: string): void {
+    this.preferredRefund = name;
   }
 
 }
