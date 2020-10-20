@@ -138,7 +138,7 @@ export class Transactions implements TransactionService {
         fromExternal: false,
         from: user._id,
         type: 'refund',
-        provider: this.sendingProvider().name()
+        provider: this.refundsProvider().name()
       };
 
       const trx = await this.sendFundsToUser(user, args);
