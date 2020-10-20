@@ -94,15 +94,15 @@ export interface AppConfig {
    */
   distributionPeriodLength: number;
   /**
-   * Interval delay in minutes between two distribution
+   * Interval delay in CronTime syntax/format between two distribution
    * processes
    */
-  distributionInterval: number;
+  distributionInterval: string;
   /**
-   * Interval delay in minutes between two distribution 
+   * Interval delay in CronTime syntax/format between two distribution 
    * processes for vetted beneficiaires
    */
-  vettedDistributionInterval: number;
+  vettedDistributionInterval: string;
   /**
    * Interval delay in minutes between two
    * processes of computing statistics
@@ -138,8 +138,8 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     flutterwaveWebhooksRoot: env.FLUTTERWAVE_WEBHOOKS || '/webhooks/flutterwave',
     distributionPeriodLimit: (env.DISTRIBUTION_PERIOD_LIMIT && Number(env.DISTRIBUTION_PERIOD_LIMIT)) || 2000,
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
-    distributionInterval: (env.DISTRIBUTION_INTERVAL && Number(env.DISTRIBUTION_INTERVAL)) || 2,
-    vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL && Number(env.VETTED_DISTRIBUTION_INTERVAL)) || 5,
+    distributionInterval: (env.DISTRIBUTION_INTERVAL) || `0 */2 * * * *`,
+    vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL) || `0 */5 * * * *`,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
     sendgridApiKey: env.SENDGRID_API_KEY || '',
