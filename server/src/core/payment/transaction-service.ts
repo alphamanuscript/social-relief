@@ -352,8 +352,8 @@ export class Transactions implements TransactionService {
     return this.providers.getPreferredForReceiving();
   }
 
-  private refundProvider(): PaymentProvider {
-    return this.providers.getPreferredForRefund();
+  private refundsProvider(): PaymentProvider {
+    return this.providers.getPreferredForRefunds();
   }
 
   private sendingProvider(): PaymentProvider {
