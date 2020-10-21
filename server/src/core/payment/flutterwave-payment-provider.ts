@@ -1,4 +1,4 @@
-import * as axios from 'axios';
+import * as axios from 'axios'; 
 import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult, TransactionStatus, Transaction } from './types';
 import { User } from '../user';
 import { generateId } from '../util';
@@ -161,8 +161,30 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       throw createFlutterwaveApiError(e.response.data && e.response.data.message || e.message);
     }
   }
-  sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
-    throw new Error('Method not implemented.');
+  async sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
+    const transferArgs = { 
+      account_bank: 'MPS',
+      account_number: user.phone,
+      amount,
+      narration: 'New transfer',
+      currency: 'KES',
+      reference: generateId(),
+      beneficiary_name: user.name
+    }
+    try {
+      const url = getUrl(`/transfers`);
+      const res = await axios.default.post<FlutterwaveTransactionResponse>(url, transferArgs, { headers: { Authorization: `Bearer ${this.args.secretKey}`}});
+      
+      const { data, status } = res.data;
+
+      return {
+        providerTransactionId: data.id,
+        status: status as TransactionStatus,
+      }
+    }
+    catch(e) {
+      throw createFlutterwaveApiError(e.response.data && e.response.data.message || e.message);
+    }
   }
 
 }
