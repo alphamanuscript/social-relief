@@ -293,7 +293,7 @@ export class Transactions implements TransactionService {
 
   private async sendFundsToUser(user: User, args: TransactionCreateArgs): Promise<Transaction> {
     let trx: Transaction;
-    const provider = this.sendingProvider();
+    const provider = this.provider(args.provider);
     const modifiedArgs = { ...args };
     modifiedArgs.provider = provider.name();
     modifiedArgs.status = 'pending';
