@@ -164,13 +164,14 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
   async sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
     const transferArgs = { 
       account_bank: 'MPS',
-      account_number: user.phone,
+      account_number: `0${user.phone.substring(3)}`,
       amount,
-      narration: 'New transfer',
+      narration: 'Social Relief transfer',
       currency: 'KES',
       reference: generateId(),
       beneficiary_name: user.name
-    }
+    };
+    
     try {
       const url = getUrl(`/transfers`);
       const res = await axios.default.post<FlutterwaveTransactionResponse>(url, transferArgs, { headers: { Authorization: `Bearer ${this.args.secretKey}`}});
