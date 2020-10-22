@@ -166,13 +166,23 @@ export interface PaymentProviderRegistry {
    */
   setPreferredForReceiving(name: string): void;
   /**
-   * sets preferred payment provider for
+   * gets preferred payment provider for
    * sending money to users
    */
   getPreferredForSending(): PaymentProvider;
   /**
-   * gets preferred payment provider for sending money to users
+   * sets preferred payment provider for sending money to users
    * @param name
    */
   setPreferredForSending(name: string): void;
+  /**
+   * gets preferred payment provider for
+   * refunding donated money
+   */
+  getPreferredForRefunds(): PaymentProvider;
+  /**
+   * sets preferred payment provider for refunding donated money
+   * @param name
+   */
+  setPreferredForRefunds(name: string): void;
 }

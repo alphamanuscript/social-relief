@@ -11,7 +11,8 @@ const COLLECTION = 'transactions';
 describe('TransactionService tests', () => {
   const dbUtils = createDbUtils(DB, COLLECTION);
   let paymentProviders: PaymentProviderRegistry;
-  let testPaymentProvider: PaymentProvider;
+  let testPaymentProvider1: PaymentProvider;
+  let testPaymentProvider2: PaymentProvider;
 
   beforeAll(async () => {
     await dbUtils.setupDb();
@@ -27,17 +28,27 @@ describe('TransactionService tests', () => {
 
   beforeEach(() => {
     paymentProviders = new PaymentProviders();
-    testPaymentProvider = {
-      name: () => 'testPaymentProvider',
+    testPaymentProvider1 = {
+      name: () => 'testPaymentProvider1',
+      requestPaymentFromUser: jest.fn(),
+      handlePaymentNotification: jest.fn(),
+      getTransaction: jest.fn(),
+      sendFundsToUser: jest.fn()
+    };
+
+    testPaymentProvider2 = {
+      name: () => 'testPaymentProvider2',
       requestPaymentFromUser: jest.fn(),
       handlePaymentNotification: jest.fn(),
       getTransaction: jest.fn(),
       sendFundsToUser: jest.fn()
     };
     
-    paymentProviders.register(testPaymentProvider);
-    paymentProviders.setPreferredForSending(testPaymentProvider.name());
-    paymentProviders.setPreferredForReceiving(testPaymentProvider.name());
+    paymentProviders.register(testPaymentProvider1);
+    paymentProviders.register(testPaymentProvider2);
+    paymentProviders.setPreferredForSending(testPaymentProvider1.name());
+    paymentProviders.setPreferredForReceiving(testPaymentProvider2.name());
+    paymentProviders.setPreferredForRefunds(testPaymentProvider1.name());
   });
 
   function createService() {
@@ -68,7 +79,7 @@ describe('TransactionService tests', () => {
   describe('initiateRefund', () => {
     test('creates transaction and sends balance to user', async () => {
       const providerTransactionId = 'providerTx1'
-      testPaymentProvider.sendFundsToUser = jest.fn().mockResolvedValue({ providerTransactionId, status: 'pending' });
+      testPaymentProvider1.sendFundsToUser = jest.fn().mockResolvedValue({ providerTransactionId, status: 'pending' });
       
       const service = createService();
       const res = await service.initiateRefund({
@@ -90,7 +101,7 @@ describe('TransactionService tests', () => {
       expect(res.toExternal).toBe(true);
       expect(res.to).toBe('');
       expect(res.providerTransactionId).toBe(providerTransactionId);
-      expect(res.provider).toBe('testPaymentProvider');
+      expect(res.provider).toBe('testPaymentProvider1');
       expect(res.status).toBe('pending');
       expect(res.type).toBe('refund');
 
