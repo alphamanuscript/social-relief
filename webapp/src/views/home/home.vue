@@ -11,7 +11,7 @@
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
           </div>
           <div class="pb-3">
-            <b-button pill variant="primary" class="px-5" @click="handleDonateBtn()" :ref="'donateBtn'" :key="donateBtnKey">Donate</b-button>
+            <b-button pill variant="primary" class="px-5" @click="handleDonateBtn()">Donate</b-button>
           </div>
         </div>
       

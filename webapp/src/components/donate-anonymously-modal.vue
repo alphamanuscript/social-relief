@@ -186,7 +186,6 @@ export default {
   watch: {
     anonymousDonationDetails(donationDetails) {
       this.donationInputs = donationDetails;
-      console.log(this.donationInputs);
       this.$bvModal.show('donate-anonymously');
     }
   }
