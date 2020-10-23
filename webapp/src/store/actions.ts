@@ -97,6 +97,9 @@ const actions = wrapActions({
     }
     
   },
+  async setAnonymousDonationDetails({ commit }, { name, phone, email, amount }: {amount: number; name: string; phone: string; email: string }) {
+    commit('setAnonymousDonationDetails', { name, phone, email, amount });
+  },
   async initiateRefund({ commit, state }) {
     if (state.user) {
       const trx = await Refunds.initiateRefund();
@@ -176,7 +179,7 @@ const actions = wrapActions({
       'unsetCurrentInvitation',
       'unsetLastPaymentRequest',
       'unsetMessage',
-      'unsetStats'
+      'unsetStats',
     ].forEach((mutation) => commit(mutation));
   }
 });

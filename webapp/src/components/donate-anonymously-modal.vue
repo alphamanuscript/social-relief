@@ -8,6 +8,7 @@
     hide-footer
     no-stacking
     @hidden="hideDialog()"
+    @shown="showDialog()"
     content-class="rounded"
     >
     <template v-slot:modal-header>
@@ -125,7 +126,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'message']),
+    ...mapState(['user', 'message', 'anonymousDonationDetails']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -135,6 +136,11 @@ export default {
   },
   methods: {
     ...mapActions(['donateAnonymously']),
+    showDialog() {
+      if (this.anonymousDonationDetails) {
+        this.donationInputs = this.anonymousDonationDetails;
+      }
+    },
     hideDialog() {
       this.donationInputs = {
         amount: 2000,
@@ -177,6 +183,13 @@ export default {
       }
     }
   },
+  watch: {
+    anonymousDonationDetails(donationDetails) {
+      this.donationInputs = donationDetails;
+      console.log(this.donationInputs);
+      this.$bvModal.show('donate-anonymously');
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -11,7 +11,7 @@
             <h6 class="text-primary">Click the button below to make your contribution.</h6>
           </div>
           <div class="pb-3">
-            <b-button pill variant="primary" class="px-5" @click="handleDonateBtn()">Donate</b-button>
+            <b-button pill variant="primary" class="px-5" @click="handleDonateBtn()" :ref="'donateBtn'" :key="donateBtnKey">Donate</b-button>
           </div>
         </div>
       
@@ -141,6 +141,11 @@ import { formatWithCommaSeparator } from '../../views/util';
 import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
+  data() {
+    return {
+      donateBtnKey: 0
+    }
+  },
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
@@ -159,19 +164,23 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getNewUser', 'getStats']),
+    ...mapActions(['getNewUser', 'getStats', 'setAnonymousDonationDetails']),
     formatWithCommaSeparator,
     handleDonateBtn() {
       this.$bvModal.show('donate-anonymously');
-    }
+    },
   },
   async mounted(){
     if (this.$route.name === 'signup-new-user' && this.$route.params.id && this.$route.params.id.length) {
       await this.getNewUser(this.$route.params.id);
       if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
-    else await this.getStats();
-  } 
+    else if (this.$route.name === 'home' && this.$route.query.donate && this.$route.query.name && this.$route.query.email && this.$route.query.phone && this.$route.query.amount) {
+      const { name, email, phone, amount } = this.$route.query;
+      await this.setAnonymousDonationDetails({ name, email, phone, amount: Number(amount) });
+    }
+    await this.getStats();
+  },
 }
 </script>
 <style lang="scss" scoped>
