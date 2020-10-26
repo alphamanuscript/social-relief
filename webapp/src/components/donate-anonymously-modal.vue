@@ -190,8 +190,10 @@ export default {
     }
   },
   watch: {
-    anonymousDonationDetails(donationDetails) {
-      this.$bvModal.show('donate-anonymously');
+    anonymousDonationDetails() {
+      if (this.$route.name === 'home') {
+        this.$bvModal.show('donate-anonymously');
+      }
     }
   }
 }
