@@ -137,7 +137,7 @@ export default {
   methods: {
     ...mapActions(['donateAnonymously']),
     showDialog() {
-      if (this.anonymousDonationDetails) {
+      if (this.anonymousDonationDetails && this.anonymousDonationDetails.amount) {
         this.donationInputs = this.anonymousDonationDetails;
       }
     },
@@ -185,7 +185,9 @@ export default {
   },
   watch: {
     anonymousDonationDetails(donationDetails) {
-      this.donationInputs = donationDetails;
+      if (donationDetails.amount) {
+        this.donationInputs = donationDetails;
+      }
       this.$bvModal.show('donate-anonymously');
     }
   }

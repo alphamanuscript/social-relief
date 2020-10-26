@@ -97,7 +97,7 @@ const actions = wrapActions({
     }
     
   },
-  async setAnonymousDonationDetails({ commit }, { name, phone, email, amount }: {amount: number; name: string; phone: string; email: string }) {
+  async setAnonymousDonationDetails({ commit }, { name, phone, email, amount }: {amount: number; name?: string; phone?: string; email?: string }) {
     commit('setAnonymousDonationDetails', { name, phone, email, amount });
   },
   async initiateRefund({ commit, state }) {

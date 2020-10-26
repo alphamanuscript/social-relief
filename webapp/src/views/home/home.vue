@@ -175,9 +175,9 @@ export default {
       await this.getNewUser(this.$route.params.id);
       if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
-    else if (this.$route.name === 'home' && this.$route.query.donate && this.$route.query.name && this.$route.query.email && this.$route.query.phone && this.$route.query.amount) {
-      const { name, email, phone, amount } = this.$route.query;
-      await this.setAnonymousDonationDetails({ name, email, phone, amount: Number(amount) });
+    else if (this.$route.name === 'home' && this.$route.query.donate) {
+      const { n, e, p, a } = this.$route.query;
+      await this.setAnonymousDonationDetails({ name: n, email: e, phone: p, amount: a ? Number(a) : undefined });
     }
     await this.getStats();
   },
