@@ -1,5 +1,11 @@
 <template>
     <b-container fluid="sm" class="w-md-75">
+      <b-alert show variant="danger" class="mt-3">
+        <h4 class="alert-heading">Downtime with M-PESA!</h4>
+        <p>
+          We are experiencing downtime with M-PESA push payments. Consider using the Paybill option or paying via card.
+        </p>
+      </b-alert>
       <section class="my-5">
         <div>
           <h3 class="text-secondary">
