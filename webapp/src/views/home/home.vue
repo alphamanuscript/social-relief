@@ -1,5 +1,11 @@
 <template>
     <b-container fluid="sm" class="w-md-75">
+      <b-alert show variant="warning" class="mt-3">
+        <h4 class="alert-heading">Downtime with M-PESA push!</h4>
+        <p>
+          We are experiencing downtime with M-PESA push payments. Consider using the Paybill option or paying via card when you check out.
+        </p>
+      </b-alert>
       <section class="my-5">
         <div>
           <h3 class="text-secondary">
@@ -141,6 +147,11 @@ import { formatWithCommaSeparator } from '../../views/util';
 import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
+  data() {
+    return {
+      donateBtnKey: 0
+    }
+  },
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
@@ -159,19 +170,23 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getNewUser', 'getStats']),
+    ...mapActions(['getNewUser', 'getStats', 'setAnonymousDonationDetails']),
     formatWithCommaSeparator,
     handleDonateBtn() {
       this.$bvModal.show('donate-anonymously');
-    }
+    },
   },
   async mounted(){
     if (this.$route.name === 'signup-new-user' && this.$route.params.id && this.$route.params.id.length) {
       await this.getNewUser(this.$route.params.id);
       if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
-    else await this.getStats();
-  } 
+    else if (this.$route.name === 'home' && this.$route.query.donate) {
+      const { n, e, p, a } = this.$route.query;
+      await this.setAnonymousDonationDetails({ name: n, email: e, phone: p, amount: a ? Number(a) : undefined });
+    }
+    await this.getStats();
+  },
 }
 </script>
 <style lang="scss" scoped>
