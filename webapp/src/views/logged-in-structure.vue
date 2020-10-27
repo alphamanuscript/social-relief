@@ -81,16 +81,6 @@
           >
             This account is blocked from making donations. Reason: {{ user.transactionsBlockedReason }}
           </div>
-          <b-container class="custom-container">
-            <div class="ml-lg-5">
-              <b-alert show variant="warning" class="mt-3">
-                <h4 class="alert-heading">Downtime with M-PESA push!</h4>
-                <p>
-                  We are experiencing downtime with M-PESA push payments. Consider using the Paybill option or paying via card when you check out.
-                </p>
-              </b-alert>
-            </div>
-          </b-container>
           <router-view />
         </b-col>
       </b-row>
