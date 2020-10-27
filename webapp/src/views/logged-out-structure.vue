@@ -14,6 +14,7 @@
             <b-nav-item to="/#faq" >FAQ</b-nav-item>
             <b-nav-item to="/#about-us">About Us</b-nav-item>
             <b-nav-item to="/#contact-us">Contact Us</b-nav-item>
+            <b-nav-item href="https://twitter.com/SocialReliefKe" target="_blank"><i class="fab fa-twitter fa-lg" style="color: #9D1A69 !important"></i></b-nav-item>
             <b-nav-item to="#" @click="handleLoginAndSignUpBtnClick">
               <b-button size="sm" pill variant="primary">Login / Sign Up</b-button>
             </b-nav-item>
