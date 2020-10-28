@@ -1,9 +1,8 @@
-import * as axios from 'axios';
+import * as axios from 'axios'; 
 import { PaymentProvider, PaymentRequestResult, ProviderTransactionInfo, SendFundsResult, TransactionStatus, Transaction } from './types';
 import { User } from '../user';
 import { generateId } from '../util';
 import { createFlutterwaveApiError } from '../error';
-import { not } from '@hapi/joi';
 
 const API_BASE_URL = 'https://api.flutterwave.com/v3';
 
@@ -26,6 +25,32 @@ interface FlutterwaveInitiatePaymentResponse {
   data: {
     link: string;
   }
+}
+
+interface FlutterwaveTransferInfo {
+  id: number;
+  account_number: string;
+  bank_code: string;
+  full_name: string;
+  created_at: string;
+  currency: string;
+  debit_currency: string;
+  amount: number;
+  fee: number;
+  status: string;
+  reference: string;
+  meta: any;
+  narration: string;
+  complete_message: string;
+  requires_approval: number;
+  is_approved: number;
+  bank_name: string;
+};
+  
+interface FlutterwaveInitiateTransferResponse {
+  status: string;
+  message: string;
+  data: FlutterwaveTransferInfo
 }
 
 interface FlutterwaveTransactionInfo {
@@ -51,7 +76,7 @@ interface FlutterwaveTransactionInfo {
 interface FlutterwaveNotification {
   event: string;
   'event.type': string;
-  data: FlutterwaveTransactionInfo;
+  data: FlutterwaveTransactionInfo | FlutterwaveTransferInfo;
 }
 
 interface FlutterwaveTransactionResponse {
@@ -61,18 +86,48 @@ interface FlutterwaveTransactionResponse {
 }
 
 function extractTransactionInfo(data: FlutterwaveTransactionInfo): ProviderTransactionInfo {
-  const status: TransactionStatus = data.status === 'successful' ? 'success' :
-      data.status === 'failed' ? 'failed' : 'pending';
+  const flwStatus = data.status.toLowerCase();
+  const status: TransactionStatus = flwStatus === 'successful' ? 'success' :
+      flwStatus  === 'failed' ? 'failed' : 'pending';
+  
+  // phone number comes in in 07... format, strip the 0
+  const flwPhone = data.customer?.phone_number?.substring(1);
+  const phone = flwPhone ? `254${flwPhone}` : ''; // convert to internal 254 format
 
   return {
     userData: {
-      phone: `254${data.customer.phone_number.substring(1)}` // use internal instead of local format
+      phone,
     },
     status,
     amount: data.amount,
     providerTransactionId: data.tx_ref,
     metadata: data,
     failureReason: status === 'failed' ? data.processor_response: ''
+  };
+}
+
+function extractTransferInfo(data: FlutterwaveTransferInfo): ProviderTransactionInfo {
+  const flwStatus = data.status.toLowerCase();
+  const status: TransactionStatus = flwStatus === 'successful' ? 'success' :
+      flwStatus  === 'failed' ? 'failed' : 'pending';
+  
+  let phone = '';
+  // if it's an M-PESA transfer, then account_number is the phone number
+  if (data.bank_code === 'MPS') {
+    // phone number comes in in 07... format, strip the 0
+    const flwPhone = data.account_number.substring(1);
+    phone = flwPhone ? `254${flwPhone}` : ''; // convert to internal 254 format
+  }
+  
+  return {
+    userData: {
+      phone
+    },
+    status,
+    amount: data.amount,
+    providerTransactionId: data.reference,
+    metadata: data,
+    failureReason: status === 'failed' ? data.complete_message : ''
   };
 }
 
@@ -131,7 +186,12 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
   async handlePaymentNotification(payload: any): Promise<ProviderTransactionInfo> {
     const notification: FlutterwaveNotification = payload;
     const { data } = notification;
-    return extractTransactionInfo(data);
+
+    if (notification['event.type'] === 'Transfer') {
+      return extractTransferInfo(data as FlutterwaveTransferInfo);
+    }
+
+    return extractTransactionInfo(data as FlutterwaveTransactionInfo);
   }
 
   async getTransaction(localTransaction: Transaction): Promise<ProviderTransactionInfo> {
@@ -161,8 +221,32 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       throw createFlutterwaveApiError(e.response.data && e.response.data.message || e.message);
     }
   }
-  sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
-    throw new Error('Method not implemented.');
+  async sendFundsToUser(user: User, amount: number, metadata: any): Promise<SendFundsResult> {
+    const transferArgs = { 
+      account_bank: 'MPS',
+      account_number: `0${user.phone.substring(3)}`,
+      amount,
+      narration: 'Social Relief transfer',
+      currency: 'KES',
+      reference: generateId(),
+      beneficiary_name: user.name
+    };
+    
+    try {
+      const url = getUrl(`/transfers`);
+      const res = await axios.default.post<FlutterwaveInitiateTransferResponse>(url, transferArgs, { headers: { Authorization: `Bearer ${this.args.secretKey}`}});
+      
+      const { data, status } = res.data;
+
+      return {
+        providerTransactionId: data.reference,
+        // success from the API means that the transaction was queued successfully, not that it's completed
+        status: status === 'success' ? 'pending' : 'failed'
+      };
+    }
+    catch(e) {
+      throw createFlutterwaveApiError(e.response.data && e.response.data.message || e.message);
+    }
   }
 
 }

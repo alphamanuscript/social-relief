@@ -59,7 +59,13 @@ const mutations: MutationTree<AppState> = {
     state.anonymousUser = user;
   },
   unsetAnonymousUser(state) {
-    state.anonymousUser = undefined
+    state.anonymousUser = undefined;
+  },
+  setAnonymousDonationDetails(state, donationDetails) {
+    state.anonymousDonationDetails = donationDetails;
+  },
+  unsetAnonymousDonationDetails(state) {
+    state.anonymousDonationDetails = undefined;
   },
   setNewUser(state, newUser) {
     state.newUser = newUser;

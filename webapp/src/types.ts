@@ -166,6 +166,7 @@ export interface FAQ {
 export interface AppState {
   user?: User;
   anonymousUser?: User;
+  anonymousDonationDetails?: AnonymousDonateArgs;
   newUser?: User;
   beneficiaries: User[];
   middlemen: User[];

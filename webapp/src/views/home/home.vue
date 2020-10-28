@@ -141,6 +141,11 @@ import { formatWithCommaSeparator } from '../../views/util';
 import { mapState, mapActions } from 'vuex';
 export default {
   name: 'home',
+  data() {
+    return {
+      donateBtnKey: 0
+    }
+  },
   computed: {
     ...mapState(['newUser', 'message', 'stats', 'testimonials', 'faqs']),
     beneficiaryImages() {
@@ -159,19 +164,23 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['getNewUser', 'getStats']),
+    ...mapActions(['getNewUser', 'getStats', 'setAnonymousDonationDetails']),
     formatWithCommaSeparator,
     handleDonateBtn() {
       this.$bvModal.show('donate-anonymously');
-    }
+    },
   },
   async mounted(){
     if (this.$route.name === 'signup-new-user' && this.$route.params.id && this.$route.params.id.length) {
       await this.getNewUser(this.$route.params.id);
       if (this.message.type !== 'error') this.$bvModal.show('sign-up');
     }
-    else await this.getStats();
-  } 
+    else if (this.$route.name === 'home' && this.$route.query.donate) {
+      const { n, e, p, a } = this.$route.query;
+      await this.setAnonymousDonationDetails({ name: n, email: e, phone: p, amount: a ? Number(a) : undefined });
+    }
+    await this.getStats();
+  },
 }
 </script>
 <style lang="scss" scoped>

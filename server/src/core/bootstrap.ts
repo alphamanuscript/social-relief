@@ -39,7 +39,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   paymentProviders.register(flwPaymentProvider);
   paymentProviders.register(manualPayProvider);
   paymentProviders.setPreferredForReceiving(flwPaymentProvider.name());
-  paymentProviders.setPreferredForSending(manualPayProvider.name());
+  paymentProviders.setPreferredForSending(flwPaymentProvider.name());
+  paymentProviders.setPreferredForRefunds(manualPayProvider.name());
 
   const systemLocks = new SystemLocks(db);
   const transactions = new Transactions(db, { paymentProviders, eventBus });

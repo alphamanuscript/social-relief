@@ -66,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'message'])
+    ...mapState(['user', 'message', 'anonymousDonationDetails'])
   },
   methods: {
     ...mapActions(['donate']),
@@ -89,6 +89,9 @@ export default {
     setModalData() {
       if (this.user) {
         this.donationInputs.phone = this.user.phone.substring(3);
+      }
+      if (this.anonymousDonationDetails.amount) {
+        this.donationInputs.amount = this.anonymousDonationDetails.amount;
       }
     },
     async submitDonation() {

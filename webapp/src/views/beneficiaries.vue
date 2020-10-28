@@ -123,7 +123,7 @@ export default {
    }
   }, 
   computed: {
-    ...mapState(['beneficiaries', 'user', 'middlemen', 'stats']),
+    ...mapState(['beneficiaries', 'user', 'middlemen', 'stats', 'anonymousDonationDetails']),
     ...mapGetters(['distributions']),
     beneficiaryItems() {
       return this.beneficiaries.map(b => {
@@ -229,10 +229,15 @@ export default {
         await this.getCurrentUser();
       await this.refreshData();
       await this.getStats();
+
+      if (this.anonymousDonationDetails) {
+        this.$bvModal.hide('donate-anonymously');
+        this.$bvModal.show('donate');
+      }
     }
     else {
       this.$router.push({ name: DEFAULT_SIGNED_OUT_PAGE });
     }
-  }
+  },
 }
 </script>

@@ -138,7 +138,7 @@ export class Transactions implements TransactionService {
         fromExternal: false,
         from: user._id,
         type: 'refund',
-        provider: this.sendingProvider().name()
+        provider: this.refundsProvider().name()
       };
 
       const trx = await this.sendFundsToUser(user, args);
@@ -293,7 +293,7 @@ export class Transactions implements TransactionService {
 
   private async sendFundsToUser(user: User, args: TransactionCreateArgs): Promise<Transaction> {
     let trx: Transaction;
-    const provider = this.sendingProvider();
+    const provider = this.provider(args.provider);
     const modifiedArgs = { ...args };
     modifiedArgs.provider = provider.name();
     modifiedArgs.status = 'pending';
@@ -350,6 +350,10 @@ export class Transactions implements TransactionService {
 
   private receivingProvider(): PaymentProvider {
     return this.providers.getPreferredForReceiving();
+  }
+
+  private refundsProvider(): PaymentProvider {
+    return this.providers.getPreferredForRefunds();
   }
 
   private sendingProvider(): PaymentProvider {
