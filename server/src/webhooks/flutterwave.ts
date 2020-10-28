@@ -11,6 +11,7 @@ flutterwaveRoutes.post('/', (req: AppRequest, res) => {
     .then(_ => res.status(200).send())
     .catch(e => {
       console.error('Flutterwave notification error', e);
+      console.error('Notification payload', JSON.stringify(req.body, null, 2));
       res.status(400).send();
     });
 });
