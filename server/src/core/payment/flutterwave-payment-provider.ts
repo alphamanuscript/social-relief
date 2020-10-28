@@ -63,10 +63,13 @@ interface FlutterwaveTransactionResponse {
 function extractTransactionInfo(data: FlutterwaveTransactionInfo): ProviderTransactionInfo {
   const status: TransactionStatus = data.status === 'successful' ? 'success' :
       data.status === 'failed' ? 'failed' : 'pending';
+  
+  // phone number comes in in 07... format, strip the 0
+  const flwPhone = data.customer?.phone_number?.substring(1);
 
   return {
     userData: {
-      phone: `254${data.customer.phone_number.substring(1)}` // use internal instead of local format
+      phone: flwPhone ? `254${flwPhone}` : '' // convert to internal 254 format
     },
     status,
     amount: data.amount,
