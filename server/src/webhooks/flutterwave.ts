@@ -6,12 +6,11 @@ export const flutterwaveRoutes = express.Router();
 
 flutterwaveRoutes.post('/', (req: AppRequest, res) => {
   const notification = req.body;
-  console.log('Flutterwave payment notification');
+  console.log('Flutterwave payment notification', JSON.stringify(req.body, null, 2));
   req.core.transactions.handleProviderNotification(FLUTTERWAVE_PAYMENT_PROVIDER_NAME, notification)
     .then(_ => res.status(200).send())
     .catch(e => {
       console.error('Flutterwave notification error', e);
-      console.error('Notification payload', JSON.stringify(req.body, null, 2));
       res.status(400).send();
     });
 });
