@@ -237,7 +237,6 @@ export class FlutterwavePaymentProvider implements PaymentProvider {
       const res = await axios.default.post<FlutterwaveInitiateTransferResponse>(url, transferArgs, { headers: { Authorization: `Bearer ${this.args.secretKey}`}});
       
       const { data, status } = res.data;
-      console.log('Flutterwave transfer payload', JSON.stringify(res.data, null, 2));
 
       return {
         providerTransactionId: data.reference,
