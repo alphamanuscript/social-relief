@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { UserInvitationEventData } from '../user';
-import { TransactionCompletedEventData } from '../payment';
+import { TransactionCompletedEventData, DistributionReportsGeneratedEventData } from '../payment';
 import * as EventName from './event-name';
 
 export interface Event<T> {
@@ -36,8 +36,16 @@ export class EventBus extends EventEmitter {
     this.innerEmit(EventName.TRANSACTION_COMPLETED, eventData);
   }
 
+  emitDistributionReportsGenerated(eventData: DistributionReportsGeneratedEventData): void {
+    this.innerEmit(EventName.DISTRIBUTION_REPORTS_GENERATED, eventData);
+  }
+
   onTransactionCompleted(listener: Listener<TransactionCompletedEventData>): void {
     this.on(EventName.TRANSACTION_COMPLETED, listener);
+  }
+
+  onDistributionReportsGenerated(listener: Listener<DistributionReportsGeneratedEventData>): void {
+    this.on(EventName.DISTRIBUTION_REPORTS_GENERATED, listener);
   }
 
   private innerEmit<T>(eventName: string, data: T) {

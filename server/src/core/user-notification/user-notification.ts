@@ -1,8 +1,8 @@
 import { SmsProvider } from '../sms';
 import { EmailProvider } from '../email';
 import { EventBus, Event} from '../event';
-import { UserService, UserInvitationEventData } from '../user';
-import { TransactionCompletedEventData, Transaction } from '../payment';
+import { UserService, UserInvitationEventData, User } from '../user';
+import { TransactionCompletedEventData, Transaction, DistributionReportsGeneratedEventData, DistributionReport } from '../payment';
 import { extractFirstName } from '../util';
 
 export interface UserNotificationsArgs {
@@ -33,6 +33,7 @@ export class UserNotifications {
   registerHandlers() {
     this.eventBus.onUserInvitationCreated(event => this.handleUserInvitation(event));
     this.eventBus.onTransactionCompleted(event => this.handleTransactionCompleted(event));
+    this.eventBus.onDistributionReportsGenerated(event => this.handleDistributionReportsGenerated(event));
   }
 
   async handleUserInvitation(event: Event<UserInvitationEventData>) {
@@ -69,7 +70,38 @@ export class UserNotifications {
     }
   }
 
-  async sendSuccessfulDistributionMessages(transaction: Transaction) {
+  async handleDistributionReportsGenerated(event: Event<DistributionReportsGeneratedEventData>) {
+    const { data: { distributionReports } } = event;
+
+    try {
+      await this.sendDistributionReports(distributionReports);
+    }
+    catch(error) {
+      console.error('Error occurred when handling event', event, error);
+    }
+  }
+
+  private async sendDistributionReports(distributionReports: DistributionReport[]) {
+    distributionReports.forEach(async (report: DistributionReport) => {
+      const donor = await this.users.getById(report.donor);
+      const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
+
+      // Compose message
+    });
+  }
+
+  private async getBeneficiaries(beneficiaryIds: string[]): Promise<User[]> {
+    const beneficiaries: User[] = [];
+
+    for (const id of beneficiaryIds) {
+      const beneficiary: User = await this.users.getById(id);
+      beneficiaries.push(beneficiary);
+    }
+
+    return beneficiaries;
+  }
+
+  private async sendSuccessfulDistributionMessages(transaction: Transaction) {
     const donor = await this.users.getById(transaction.from);
     const beneficiary = await this.users.getById(transaction.to);
 
@@ -91,7 +123,7 @@ export class UserNotifications {
     }
   }
 
-  async sendSuccessfulRefundMessage(transaction: Transaction) {
+  private async sendSuccessfulRefundMessage(transaction: Transaction) {
     const user = await this.users.getById(transaction.to);
     const message = `Hello ${user.name}, your refund of Ksh ${transaction.amount} from SocialRelief has been issued.`;
     await this.smsProvider.sendSms(user.phone, message);
