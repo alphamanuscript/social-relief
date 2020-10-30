@@ -87,7 +87,37 @@ export class UserNotifications {
       const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
       // Compose message
+      const donorMessage = `Hello ${donor.name},
+                           \nIn the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred 
+                           \nfrom your SocialRelief donation to the following beneficiaries:
+                           ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount)}
+                           \nOn behalf of these beneficiaries, we at SocialRelief say thank you!
+                           \nIf you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}`;
+
+      await Promise.all([
+        this.smsProvider.sendSms(donor.phone, donorMessage),
+        this.emailProvider.sendEmail(donor.email, donorMessage),
+      ]);                 
     });
+  }
+
+  private generateDonateLink(user: User, totalDistributedAmount: number): string {
+    const amount: number = totalDistributedAmount > 2000 ? totalDistributedAmount : null;
+    let message = '';
+    if (user.isAnonymous) {
+      message = `<a href='socialrelief.co?donate=true&n=${user.name}&e=${user.email}&p=${user.phone}&a=${amount}'>here</a>`;
+    }
+    else {
+      return `<a href='socialrelief.co?donate=true&a=${amount}'>here</a>`
+    }
+  }
+
+  private beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[]): string {
+    let message: string = '';
+    beneficiaries.forEach((beneficiary: User, index: number) => {
+      message += `\n${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}`;
+    });
+    return message;
   }
 
   private async getBeneficiaries(beneficiaryIds: string[]): Promise<User[]> {
@@ -102,21 +132,11 @@ export class UserNotifications {
   }
 
   private async sendSuccessfulDistributionMessages(transaction: Transaction) {
-    const donor = await this.users.getById(transaction.from);
     const beneficiary = await this.users.getById(transaction.to);
 
-    // Do not reveal beneficiary's full name to the donor
-    const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${extractFirstName(beneficiary.name)}.`;
     const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
 
-    await Promise.all([
-      this.smsProvider.sendSms(donor.phone, donorMessage),
-      this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
-    ]);
-
-    if (donor.email) {
-      await this.emailProvider.sendEmail(donor.email, donorMessage);
-    }
+    await this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage);
 
     if (beneficiary.email) {
       await this.emailProvider.sendEmail(beneficiary.email, beneficiaryMessage);
