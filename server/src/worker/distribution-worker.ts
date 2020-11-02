@@ -3,6 +3,7 @@ import { CronJob } from 'cron';
 
 export function runDistributionWorker(app: App, interval: string) {
   const job = new CronJob(interval, async () => {
+    console.log(`Starting distribution process at ${new Date()}...`);
     const result = await app.donationDistributions.distributeDonations();
     console.log(`Completed distribution process at ${new Date()}`);
     console.log(result);

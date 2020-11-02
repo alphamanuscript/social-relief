@@ -4,7 +4,7 @@ import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
 import { extractFirstName } from '../util';
 
-const COLLECTION = 'distributions_reports';
+const COLLECTION = 'distribution_reports';
 
 export class DistributionReports implements DistributionReportService {
   private db: Db;

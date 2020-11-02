@@ -2,8 +2,7 @@ import { SmsProvider } from '../sms';
 import { EmailProvider } from '../email';
 import { EventBus, Event} from '../event';
 import { UserService, UserInvitationEventData, User } from '../user';
-import { TransactionCompletedEventData, Transaction, DistributionReportsGeneratedEventData, DistributionReport } from '../payment';
-import { extractFirstName } from '../util';
+import { TransactionCompletedEventData, Transaction } from '../payment';
 
 export interface UserNotificationsArgs {
   smsProvider: SmsProvider;
