@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry, DistributionReport } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
 import { generateId, validateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createInsufficientFundsError } from '../error';
 import { User } from '../user';
