@@ -25,17 +25,6 @@ export interface TransactionCompletedEventData {
   transaction: Transaction;
 }
 
-export interface DistributionReport {
-  donor: string,
-  beneficiaries: string[],
-  receivedAmount: number[],
-  totalDistributedAmount: number
-}
-
-export interface DistributionReportsGeneratedEventData {
-  distributionReports: DistributionReport[]
-}
-
 export interface TransactionCreateArgs {
   expectedAmount: number,
   from: string,
