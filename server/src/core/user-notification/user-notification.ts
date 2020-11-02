@@ -33,7 +33,6 @@ export class UserNotifications {
   registerHandlers() {
     this.eventBus.onUserInvitationCreated(event => this.handleUserInvitation(event));
     this.eventBus.onTransactionCompleted(event => this.handleTransactionCompleted(event));
-    this.eventBus.onDistributionReportsGenerated(event => this.handleDistributionReportsGenerated(event));
   }
 
   async handleUserInvitation(event: Event<UserInvitationEventData>) {
@@ -68,67 +67,6 @@ export class UserNotifications {
     catch (error) {
       console.error('Error occurred when handling event', event, error);
     }
-  }
-
-  async handleDistributionReportsGenerated(event: Event<DistributionReportsGeneratedEventData>) {
-    const { data: { distributionReports } } = event;
-
-    try {
-      await this.sendDistributionReports(distributionReports);
-    }
-    catch(error) {
-      console.error('Error occurred when handling event', event, error);
-    }
-  }
-
-  private async sendDistributionReports(distributionReports: DistributionReport[]) {
-    distributionReports.forEach(async (report: DistributionReport) => {
-      const donor = await this.users.getById(report.donor);
-      const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
-
-      // Compose message
-      const donorMessage = `Hello ${donor.name},
-                           \nIn the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred 
-                           \nfrom your SocialRelief donation to the following beneficiaries:
-                           ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount)}
-                           \nOn behalf of these beneficiaries, we at SocialRelief say thank you!
-                           \nIf you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}`;
-
-      await Promise.all([
-        this.smsProvider.sendSms(donor.phone, donorMessage),
-        this.emailProvider.sendEmail(donor.email, donorMessage),
-      ]);                 
-    });
-  }
-
-  private generateDonateLink(user: User, totalDistributedAmount: number): string {
-    const amount: number = totalDistributedAmount > 2000 ? totalDistributedAmount : null;
-    let message = '';
-    if (user.isAnonymous) {
-      message = `<a href='socialrelief.co?donate=true&n=${user.name}&e=${user.email}&p=${user.phone}&a=${amount}'>here</a>`;
-    }
-    else {
-      return `<a href='socialrelief.co?donate=true&a=${amount}'>here</a>`
-    }
-  }
-
-  private beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[]): string {
-    let message: string = '';
-    beneficiaries.forEach((beneficiary: User, index: number) => {
-      message += `\n${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}`;
-    });
-    return message;
-  }
-
-  private async getBeneficiaries(beneficiaryIds: string[]): Promise<User[]> {
-    const beneficiaries: User[] = [];
-
-    for (const id of beneficiaryIds) {
-      const beneficiary: User = await this.users.getById(id);
-      beneficiaries.push(beneficiary);
-    }
-
-    return beneficiaries;
   }
 
   private async sendSuccessfulDistributionMessages(transaction: Transaction) {
