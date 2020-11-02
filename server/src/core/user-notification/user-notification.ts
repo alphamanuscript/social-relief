@@ -37,11 +37,16 @@ export class UserNotifications {
   async handleUserInvitation(event: Event<UserInvitationEventData>) {
     const { data } = event;
     const inviteUrl = `${this.webappBaseUrl}/invitations/${data.invitationId}`;
-    const message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${inviteUrl}`;
+    let message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${inviteUrl}`;
     
     try {
       await this.smsProvider.sendSms(data.recipientPhone, message);
       if (data.recipientEmail) {
+        message = `<p>
+                      Hello ${data.recipientName},<br><br>
+                      ${data.senderName} has invited you to join SocialRelief as a ${data.role}.<br>
+                      Click <a href='${inviteUrl}' target="_blank">here</a> to accept
+                   </p>`;
         await this.emailProvider.sendEmail(data.recipientEmail, message);
       }
     }

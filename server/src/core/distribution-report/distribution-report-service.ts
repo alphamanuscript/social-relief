@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DistributionReportService, DistributionReport, DistributionReportArgs } from './types';
+import { DistributionReportService, DistributionReport, DistributionReportArgs, SmsAndEmailMessages } from './types';
 import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
 import { extractFirstName } from '../util';
@@ -88,24 +88,38 @@ export class DistributionReports implements DistributionReportService {
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
-  
-        // Compose message
-        const donorMessage = `Hello ${donor.name},
-                             \nIn the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred 
-                             \nfrom your SocialRelief donation to the following beneficiaries:
-                             ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount)}
-                             \nOn behalf of these beneficiaries, we at SocialRelief say thank you!
-                             \nIf you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}`;
+
+        const messages = this.getSmsAndEmailMessages(report, donor, beneficiaries);
   
         await Promise.all([
-          this.args.smsProvider.sendSms(donor.phone, donorMessage),
-          this.args.emailProvider.sendEmail(donor.email, donorMessage),
+          this.args.smsProvider.sendSms(donor.phone, messages.sms),
+          this.args.emailProvider.sendEmail(donor.email, messages.email),
         ]);                 
       });
     }
     catch(error) {
       console.error('Error occurred when handling event', error);
     }
+  }
+
+  private getSmsAndEmailMessages(report: DistributionReport, donor: User, beneficiaries: User[]): SmsAndEmailMessages {
+    const sms = `Hello ${donor.name},
+                \nIn the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred 
+                \nfrom your SocialRelief donation to the following beneficiaries:
+                ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount)}
+                \nOn behalf of these beneficiaries, we at SocialRelief say thank you!
+                \nIf you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}`;
+
+    const email = `<p>
+                  Hello ${donor.name},<br><br>
+                  In the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred<br>
+                  from your SocialRelief donation to the following beneficiaries:
+                  ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, false)}<br>
+                  On behalf of these beneficiaries, we at SocialRelief say thank you!<br>
+                  If you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}
+                  </p>`;
+
+    return { sms, email };
   }
 
   private generateDonateLink(user: User, totalDistributedAmount: number): string {
@@ -119,10 +133,10 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[]): string {
+  private beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[], isForSms: boolean = true): string {
     let message: string = '';
     beneficiaries.forEach((beneficiary: User, index: number) => {
-      message += `\n${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}`;
+      message += (isForSms ? '\n' : '<br>') + `${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}`;
     });
     return message;
   }

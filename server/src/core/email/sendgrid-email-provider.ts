@@ -21,7 +21,7 @@ export class SendGridEmailProvider implements EmailProvider{
         to,
         from: this.emailSender,
         subject: 'Social Relief Notification',
-        text: message,
+        html: message,
       });
 
       if (res[0].statusCode !== 202) {
