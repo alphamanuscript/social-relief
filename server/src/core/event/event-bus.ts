@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { UserInvitationEventData } from '../user';
-import { TransactionCompletedEventData, DistributionReportsGeneratedEventData } from '../payment';
+import { TransactionCompletedEventData } from '../payment';
 import * as EventName from './event-name';
 
 export interface Event<T> {
