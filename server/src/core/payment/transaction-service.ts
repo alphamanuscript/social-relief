@@ -266,54 +266,6 @@ export class Transactions implements TransactionService {
     }
   }
 
-  async generateDistributionReportPerDonor(): Promise<void> {
-    try {
-      const results: DistributionReport[] = await this.collection.aggregate<DistributionReport>([
-        { $match: { type: 'distribution', status: 'success', updatedAt: { $gt: new Date(new Date().getTime() - (1 * 24 * 3600 * 1000)) } } },
-        { 
-          $group: {
-            _id: {
-              from: "$from",
-              to: "$to"
-            },
-            receivedAmount: {
-              $sum: "$amount"
-            }
-          }
-        },
-        { 
-          $group: {
-            _id: "$_id.from",
-            beneficiaries: {
-              $push: "$_id.to"
-            },
-            receivedAmount: {
-              $push: "$receivedAmount"
-            },
-            totalDistributedAmount: {
-              $sum: "$receivedAmount"
-            }
-          }
-        },
-        { 
-          $project: {
-            _id: 0,
-            donor: "$_id",
-            beneficiaries: 1,
-            receivedAmount: 1,
-            totalDistributedAmount: 1
-          }
-        }
-      ]).toArray();
-
-      this.eventBus.emitDistributionReportsGenerated({ distributionReports: results });
-    }
-    catch (e) {
-      rethrowIfAppError(e);
-      throw createDbOpFailedError(e.message);
-    }
-  }
-
   private async create(args: TransactionCreateArgs): Promise<Transaction> {
     const now = new Date();
     const tx: Transaction = {
