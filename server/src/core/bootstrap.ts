@@ -84,6 +84,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     smsProvider,
     emailProvider,
     users,
+    transactions
   });
 
   await users.createIndexes();

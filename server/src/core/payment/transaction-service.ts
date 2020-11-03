@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry, DistributionReport } from './types';
 import { generateId, validateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createInsufficientFundsError } from '../error';
 import { User } from '../user';
@@ -358,5 +358,59 @@ export class Transactions implements TransactionService {
 
   private sendingProvider(): PaymentProvider {
     return this.providers.getPreferredForSending();
+  }
+
+  async generateDistributionReportDocs(): Promise<DistributionReport[]> {
+    try {
+      const results: DistributionReport[] = await this.collection.aggregate<DistributionReport>([
+        { 
+          $match: { 
+            type: 'distribution', 
+            status: 'success',
+            updatedAt: { $gt: new Date(new Date().getTime() - (1 * 24 * 3600 * 1000)) }
+          } 
+        },
+        { 
+          $group: {
+            _id: {
+              from: "$from",
+              to: "$to"
+            },
+            receivedAmount: {
+              $sum: "$amount"
+            }
+          }
+        },
+        { 
+          $group: {
+            _id: "$_id.from",
+            beneficiaries: {
+              $push: "$_id.to"
+            },
+            receivedAmount: {
+              $push: "$receivedAmount"
+            },
+            totalDistributedAmount: {
+              $sum: "$receivedAmount"
+            }
+          }
+        },
+        { 
+          $project: {
+            _id: 0,
+            donor: "$_id",
+            beneficiaries: 1,
+            receivedAmount: 1,
+            totalDistributedAmount: 1,
+            createdAt: new Date()
+          }
+        }
+      ]).toArray();
+
+      return results;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
   }
 }

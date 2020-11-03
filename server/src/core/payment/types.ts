@@ -40,6 +40,14 @@ export interface TransactionCreateArgs {
   }
 };
 
+export interface DistributionReport {
+  donor: string,
+  beneficiaries: string[],
+  receivedAmount: number[],
+  totalDistributedAmount: number,
+  createdAt: Date
+}
+
 export interface InitiateDonationArgs {
   amount: number
 };
@@ -97,6 +105,12 @@ export interface TransactionService {
    * @param userId 
    */
   getUserBalance(userId: string): Promise<number>;
+  /**
+   * Generates a 24-hour distribution report doc for every donor, 
+   * indicating who benefited from such distributions, 
+   * how much they received, and how much was distributed in total.
+   */
+  generateDistributionReportDocs(): Promise<DistributionReport[]>
 }
 
 export interface PaymentRequestResult {

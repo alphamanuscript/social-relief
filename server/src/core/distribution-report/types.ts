@@ -1,20 +1,13 @@
 import { SmsProvider } from '../sms';
 import { EmailProvider } from '../email';
 import { UserService } from '../user';
-
-
-export interface DistributionReport {
-  donor: string,
-  beneficiaries: string[],
-  receivedAmount: number[],
-  totalDistributedAmount: number,
-  createdAt: Date
-}
+import { TransactionService } from '../payment';
 
 export interface DistributionReportArgs {
   smsProvider: SmsProvider;
   emailProvider: EmailProvider;
   users: UserService;
+  transactions: TransactionService;
 }
 
 export interface SmsAndEmailMessages {
