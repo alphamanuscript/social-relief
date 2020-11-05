@@ -2,8 +2,8 @@ import { Db, Collection } from 'mongodb';
 import { DistributionReportService, DistributionReportArgs, SmsAndEmailMessages } from './types';
 import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
-import { extractFirstName } from '../util';
 import { DistributionReport } from '../payment';
+import { createDistributionReportSmsMessage, createDistributionReportEmailMessage } from '../message';
 
 const COLLECTION = 'distribution_reports';
 
@@ -39,50 +39,19 @@ export class DistributionReports implements DistributionReportService {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
-        const messages = this.getSmsAndEmailMessages(report, donor, beneficiaries);
+        const donateLink = this.args.links.getUserDonateLink(donor, report.totalDistributedAmount);
+        const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+        const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
 
         await Promise.all([
-          this.args.smsProvider.sendSms(donor.phone, messages.sms),
-          this.args.emailProvider.sendEmail(donor.email, messages.email),
+          this.args.smsProvider.sendSms(donor.phone, smsMessage),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage),
         ]);                 
       });
     }
     catch(error) {
       console.error('Error occurred when handling event', error);
     }
-  }
-
-  private getSmsAndEmailMessages(report: DistributionReport, donor: User, beneficiaries: User[]): SmsAndEmailMessages {
-    const sms = `Hello ${donor.name},
-                \nIn the last 24 hours, Ksh ${report.totalDistributedAmount} has been transferred 
-                from your SocialRelief donation to the following beneficiaries:
-                ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount)}
-                \nOn behalf of all beneficiaries, we at SocialRelief say thank you!
-                \nIf you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}`;
-
-    const email = `<p>
-                  Hello ${donor.name},<br><br>
-                  In the last 24 hours, <strong>Ksh ${report.totalDistributedAmount}</strong> has been transferred
-                  from your SocialRelief donation to the following beneficiaries:
-                  ${this.beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, false)}<br>
-                  On behalf of all beneficiaries, we at SocialRelief say thank you!<br>
-                  If you wish to donate more, click ${this.generateDonateLink(donor, report.totalDistributedAmount)}
-                  </p>`;
-
-    return { sms, email };
-  }
-
-  private generateDonateLink(user: User, totalDistributedAmount: number): string {
-    const amount: number = totalDistributedAmount > 2000 ? totalDistributedAmount : 2000;
-    return `<a href='socialrelief.co?donate=true&n=${user.name}&e=${user.email}&p=${user.phone}&a=${amount}'>here</a>`;
-  }
-
-  private beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[], isForSms: boolean = true): string {
-    let message: string = '';
-    beneficiaries.forEach((beneficiary: User, index: number) => {
-      message += (isForSms ? '\n' : '<br><strong>') + `${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}` + (isForSms ? '' : '</strong>');
-    });
-    return message;
   }
 
   private async getBeneficiaries(beneficiaryIds: string[]): Promise<User[]> {

@@ -2,12 +2,14 @@ import { SmsProvider } from '../sms';
 import { EmailProvider } from '../email';
 import { UserService } from '../user';
 import { TransactionService } from '../payment';
+import { Links } from '../link-generator';
 
 export interface DistributionReportArgs {
   smsProvider: SmsProvider;
   emailProvider: EmailProvider;
   users: UserService;
   transactions: TransactionService;
+  links: Links
 }
 
 export interface SmsAndEmailMessages {
