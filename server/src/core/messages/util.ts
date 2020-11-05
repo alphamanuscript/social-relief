@@ -1,9 +1,10 @@
 import { User } from '../user';
+import { extractFirstName } from '../util';
 
-export function beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmounts: number[]): string {
+export function beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[]): string {
   let message: string = '';
-    beneficiaries.forEach((beneficiary: User, index: number) => {
-      message += (isForSms ? '\n' : '<br><strong>') + `${extractFirstName(beneficiary.name)}: Ksh ${receivedAmount[index]}` + (isForSms ? '' : '</strong>');
-    });
-    return message;
+  beneficiaries.forEach((beneficiary: User, index: number) => {
+    message += `${extractFirstName(beneficiary.name)} (${receivedAmount[index]})` + ((index < beneficiaries.length - 1) ? ', ' : '');
+  });
+  return message;
 }
