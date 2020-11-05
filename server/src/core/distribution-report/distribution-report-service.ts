@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DistributionReportService, DistributionReportArgs, SmsAndEmailMessages } from './types';
+import { DistributionReportService, DistributionReportArgs } from './types';
 import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
 import { DistributionReport } from '../payment';
@@ -20,7 +20,9 @@ export class DistributionReports implements DistributionReportService {
 
   async sendDistributionReportsToDonors(): Promise<void> {
     try {
-      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs();
+      const lastReportDate = await this.getLastDistributionReportDate();
+      console.log("lastReport: ", lastReportDate);
+      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate);
       await this.sendDistributionReportMessages(reports);
       if (reports.length) {
         await this.collection.insertMany(reports);
@@ -63,5 +65,14 @@ export class DistributionReports implements DistributionReportService {
     }
 
     return beneficiaries;
+  }
+
+  private async getLastDistributionReportDate(): Promise<Date> {
+    const reports = await this.collection.aggregate([{ $sort: { createdAt : -1} }]).toArray();
+    if (reports.length) {
+      return reports[0].createdAt;
+    }
+
+    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
   }
 }

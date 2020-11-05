@@ -360,14 +360,14 @@ export class Transactions implements TransactionService {
     return this.providers.getPreferredForSending();
   }
 
-  async generateDistributionReportDocs(): Promise<DistributionReport[]> {
+  async generateDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]> {
     try {
       const results: DistributionReport[] = await this.collection.aggregate<DistributionReport>([
         { 
           $match: { 
             type: 'distribution', 
             status: 'success',
-            updatedAt: { $gt: new Date(new Date().getTime() - (1 * 24 * 3600 * 1000)) }
+            updatedAt: { $gt: lastReportDate }
           } 
         },
         { 

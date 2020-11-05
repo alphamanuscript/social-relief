@@ -12,11 +12,6 @@ export interface DistributionReportArgs {
   links: Links
 }
 
-export interface SmsAndEmailMessages {
-  sms: string;
-  email: string;
-}
-
 export interface DistributionReportService {
   /**
    * Generates a 24-hour distribution report doc for every donor, 
