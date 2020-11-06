@@ -21,7 +21,7 @@ export class DistributionReports implements DistributionReportService {
   async sendDistributionReportsToDonors(): Promise<void> {
     try {
       const lastReportDate = await this.getLastDistributionReportDate();
-      console.log("lastReport: ", lastReportDate);
+      console.log('last report date: ', lastReportDate);
       const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate);
       await this.sendDistributionReportMessages(reports);
       if (reports.length) {
@@ -47,7 +47,7 @@ export class DistributionReports implements DistributionReportService {
 
         await Promise.all([
           this.args.smsProvider.sendSms(donor.phone, smsMessage),
-          this.args.emailProvider.sendEmail(donor.email, emailMessage),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
         ]);                 
       });
     }
