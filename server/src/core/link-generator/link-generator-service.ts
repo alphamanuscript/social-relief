@@ -19,7 +19,7 @@ export class Links implements LinkGeneratorService {
   }
   getDonateLink(args: DonateLinkArgs): string {
     const { name, email, phone } = args;
-    let amount = args.amount > 2000 ? args.amount : 2000;
-    return `${this.args.baseUrl}?donate=true&${queryString.stringify({ n: args.name})}&e=${email}&p=${phone}&a=${amount}`;
+    const amount = args.amount < 2000 ? 2000 : args.amount;
+    return `${this.args.baseUrl}?donate=true&${queryString.stringify({ n: name})}&e=${email}&p=${phone}&a=${amount}`;
   }
 }
