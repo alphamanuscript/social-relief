@@ -1,9 +1,12 @@
 import { LinkGeneratorService, DonateLinkArgs } from "./types";
 import { User } from '../user';
 import * as queryString from 'querystring';
+import { Bitly } from "./bitly-service";
+import { rethrowIfAppError } from '../error';
 
 interface LinkArgs { 
   baseUrl: string;
+  bitly: Bitly
 }
 
 export class Links implements LinkGeneratorService {
@@ -13,9 +16,15 @@ export class Links implements LinkGeneratorService {
     this.args = args;
   }
 
-  getUserDonateLink(user: User, amount: number): string {
+  async getUserDonateLink(user: User, amount: number): Promise<string> {
     const { name, email, phone } = user;
-    return this.getDonateLink({ name, email, phone, amount });
+    try {
+      const shortenLink = await this.args.bitly.shortenLink(this.getDonateLink({ name, email, phone, amount }));
+      return shortenLink;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+    }
   }
   getDonateLink(args: DonateLinkArgs): string {
     const { name, email, phone } = args;

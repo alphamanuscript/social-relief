@@ -120,6 +120,8 @@ export interface AppConfig {
    */
   googleClientId: string;
   sendgridApiKey: string;
+  bitlyApiKey: string;
+  bitlyApiLink: string;
   emailSender: string;
 };
 
@@ -151,6 +153,8 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
     sendgridApiKey: env.SENDGRID_API_KEY || '',
+    bitlyApiKey: env.BITLY_API_KEY || '',
+    bitlyApiLink: env.BITLY_API_LINK || 'https://api-ssl.bitly.com/v4/shorten',
     emailSender: env.EMAIL_SENDER || 's'
   };
 }

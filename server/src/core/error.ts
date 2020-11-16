@@ -55,6 +55,7 @@ export type ErrorCode =
   | 'serverError'
   | 'atApiError'
   | 'sendgridApiError'
+  | 'bitlyApiError'
   | 'manualPayApiError'
   | 'flutterwaveApiError'
   | 'serverError'
@@ -66,6 +67,7 @@ export type ErrorCode =
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
   | 'emailDeliveryFailed'
+  | 'linkShorteningFailed'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -113,6 +115,10 @@ export function createSendGridApiError(message: string) {
   return createAppError(message, 'sendgridApiError');
 }
 
+export function createBitlyApiError(message: string) {
+  return createAppError(message, 'bitlyApiError');
+}
+
 export function createManualPayApiError(message: string) {
   return createAppError(message, 'manualPayApiError');
 }
@@ -155,6 +161,10 @@ export function createMessageDeliveryFailedError(message: string) {
 
 export function createEmailDeliveryFailedError(message: string) {
   return createAppError(message, 'emailDeliveryFailed');
+}
+
+export function createLinkShorteningFailedError(message: string) {
+  return createAppError(message, 'linkShorteningFailed');
 }
 
 /**
