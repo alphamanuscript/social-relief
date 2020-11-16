@@ -15,13 +15,13 @@ export class Bitly implements BitlyService {
   constructor(args: BitlyArgs) {
     this.apiKey = args.apiKey;
     this.apiLink = args.apiLink;
-    this.headers = { 'Content-Type': 'application/json', Authorization: `Bearer {${this.apiKey}}`};
+    this.headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}`};
   }
 
   async shortenLink(link: string): Promise<string> {
-    try { 
+    try {
       const res = await axios.post<ShortenLinkRes>(this.apiLink, { long_url: link }, { headers: this.headers });
-      console.log('res: ', res);
+      console.log('res.data.link: ', res.data.link);
       if (res.status === 200 || res.status === 201) {
         return res.data.link;
       }
