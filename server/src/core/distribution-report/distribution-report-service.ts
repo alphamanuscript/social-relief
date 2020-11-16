@@ -73,6 +73,6 @@ export class DistributionReports implements DistributionReportService {
       return reports[0].createdAt;
     }
 
-    return new Date(new Date().getTime() - (15 * 24 * 3600 * 1000));
+    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
   }
 }
