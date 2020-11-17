@@ -12,7 +12,7 @@ import { EventBus } from './event';
 import { UserNotifications } from './user-notification';
 import { Statistics } from './stat';
 import { DistributionReports } from './distribution-report';
-import { BitlyLinkShortener, Links } from './link-generator';
+import { Links, BitlyLinkShortener } from './link-generator';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -83,7 +83,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
 
   const bitly = new BitlyLinkShortener({ apiKey: config.bitlyApiKey, apiLink: config.bitlyApiLink });
 
-  const links = new Links({ baseUrl: config.webappBaseUrl, bitly });
+  const links = new Links({ baseUrl: config.webappBaseUrl, shortener: bitly });
 
   const distributionReports = new DistributionReports(db, {
     smsProvider,

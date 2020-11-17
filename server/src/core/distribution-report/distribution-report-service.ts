@@ -41,7 +41,8 @@ export class DistributionReports implements DistributionReportService {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
-        const donateLink = await this.args.links.getUserDonateLink(donor, report.totalDistributedAmount);
+        const amount = report.totalDistributedAmount < 2000 ? 2000 : report.totalDistributedAmount;
+        const donateLink = await this.args.links.getUserDonateLink(donor, amount);
         const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
         const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
 
