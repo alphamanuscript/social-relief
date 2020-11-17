@@ -42,14 +42,13 @@ export class DistributionReports implements DistributionReportService {
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
         const donateLink = await this.args.links.getUserDonateLink(donor, report.totalDistributedAmount);
-        console.log('donateLink: ', donateLink);
-        // const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
-        // const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
+        const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+        const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
 
-        // await Promise.all([
-        //   this.args.smsProvider.sendSms(donor.phone, smsMessage),
-        //   this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
-        // ]);                 
+        await Promise.all([
+          this.args.smsProvider.sendSms(donor.phone, smsMessage),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
+        ]);                 
       });
     }
     catch(error) {
@@ -69,11 +68,11 @@ export class DistributionReports implements DistributionReportService {
   }
 
   private async getLastDistributionReportDate(): Promise<Date> {
-    // const reports = await this.collection.aggregate([{ $sort: { createdAt : -1} }]).toArray();
-    // if (reports.length) {
-    //   return reports[0].createdAt;
-    // }
+    const reports = await this.collection.aggregate([{ $sort: { createdAt : -1} }]).toArray();
+    if (reports.length) {
+      return reports[0].createdAt;
+    }
 
-    return new Date(new Date().getTime() - (15 * 24 * 3600 * 1000));
+    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
   }
 }
