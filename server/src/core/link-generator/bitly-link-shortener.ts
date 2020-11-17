@@ -51,9 +51,7 @@ export class BitlyLinkShortener implements LinkShortener {
 
   async shortenLink(link: string): Promise<string> {
     try {
-      const link = 'https://yts.mx/';
       const res = await axios.post<ShortenLinkRes>(this.apiLink, { long_url: link }, { headers: this.headers });
-      console.log('res.data.link: ', res.data.link);
       if (res.status === 200 || res.status === 201) {
         return res.data.link;
       }
