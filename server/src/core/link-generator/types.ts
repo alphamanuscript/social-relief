@@ -8,6 +8,6 @@ export interface DonateLinkArgs {
 }
 
 export interface LinkGeneratorService {
-  getUserDonateLink(user: User, amount: number): string;
+  getUserDonateLink(user: User, amount: number): Promise<string>;
   getDonateLink(args: DonateLinkArgs): string;
 }
