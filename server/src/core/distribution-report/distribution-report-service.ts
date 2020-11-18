@@ -6,6 +6,8 @@ import { DistributionReport } from '../payment';
 import { createDistributionReportSmsMessage, createDistributionReportEmailMessage } from '../message';
 
 const COLLECTION = 'distribution_reports';
+export const REPORT_TYPE_DAILY = 'daily';
+export const REPORT_TYPE_MONTHLY = 'monthly';
 
 export class DistributionReports implements DistributionReportService {
   private db: Db;
@@ -18,7 +20,7 @@ export class DistributionReports implements DistributionReportService {
     this.args = args;
   }
 
-  async sendDistributionReportsToDonors(type: ReportType = 'daily'): Promise<void> {
+  async sendDistributionReportsToDonors(type: ReportType = REPORT_TYPE_DAILY): Promise<void> {
     try {
       const lastReportDate = await this.getLastDistributionReportDate(type);
       console.log('last report date: ', lastReportDate);
@@ -35,7 +37,7 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private async sendDistributionReportMessages(reportDocs: DistributionReport[], reportType: ReportType = 'daily'): Promise<void> {
+  private async sendDistributionReportMessages(reportDocs: DistributionReport[], reportType: ReportType = REPORT_TYPE_DAILY): Promise<void> {
     try {
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
@@ -68,7 +70,7 @@ export class DistributionReports implements DistributionReportService {
     return beneficiaries;
   }
 
-  private async getLastDistributionReportDate(reportType: ReportType = 'daily'): Promise<Date> {
+  private async getLastDistributionReportDate(reportType: ReportType = REPORT_TYPE_DAILY): Promise<Date> {
     const reports = await this.collection.aggregate([
       { $match: { reportType } },
       { $sort: { createdAt : -1} }

@@ -20,5 +20,5 @@ export interface DistributionReportService {
    * indicating who benefited from such distributions, 
    * how much they received, and how much was distributed in total.
    */
-  sendDistributionReportsToDonors(): Promise<void>;
+  sendDistributionReportsToDonors(reportType?: ReportType): Promise<void>;
 }

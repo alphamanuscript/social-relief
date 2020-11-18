@@ -112,7 +112,7 @@ export interface TransactionService {
    * how much they received, and how much was distributed in total
    * since the last report
    */
-  generateDistributionReportDocs(lastReportDate: Date, reportType: ReportType): Promise<DistributionReport[]>
+  generateDistributionReportDocs(lastReportDate: Date, reportType?: ReportType): Promise<DistributionReport[]>
 }
 
 export interface PaymentRequestResult {
