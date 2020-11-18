@@ -23,7 +23,7 @@ export class DistributionReports implements DistributionReportService {
       const lastReportDate = await this.getLastDistributionReportDate(type);
       console.log('last report date: ', lastReportDate);
       const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate, type);
-      await this.sendDistributionReportMessages(reports);
+      await this.sendDistributionReportMessages(reports, type);
       if (reports.length) {
         await this.collection.insertMany(reports);
       }
@@ -35,7 +35,7 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private async sendDistributionReportMessages(reportDocs: DistributionReport[]): Promise<void> {
+  private async sendDistributionReportMessages(reportDocs: DistributionReport[], reportType: ReportType = 'daily'): Promise<void> {
     try {
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
@@ -44,7 +44,7 @@ export class DistributionReports implements DistributionReportService {
         const amount = report.totalDistributedAmount < 2000 ? 2000 : report.totalDistributedAmount;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
         const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
-        const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
+        const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink, reportType);
 
         await Promise.all([
           this.args.smsProvider.sendSms(donor.phone, smsMessage),

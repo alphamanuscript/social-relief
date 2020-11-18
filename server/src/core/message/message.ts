@@ -1,6 +1,7 @@
 import { DistributionReport } from '../payment';
 import { User } from '../user';
 import { extractFirstName } from '../util';
+import { ReportType } from '../distribution-report';
 
 type MessageType = 'sms' | 'email';
 
@@ -8,8 +9,9 @@ export function createDistributionReportSmsMessage(report: DistributionReport, d
   return `Hello ${extractFirstName(donor.name)}, Ksh ${report.totalDistributedAmount} has been transferred from your SocialRelief donation to ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
-export function createDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
-  return `<p>
+export function createDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string, reportType: ReportType = 'daily'): string {
+  if (reportType === 'daily') {
+    return `<p>
               Hello ${extractFirstName(donor.name)}, <br><br>
               Ksh ${report.totalDistributedAmount} has been transferred from your SocialRelief donation to:<br>
               ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'email')}.<br>
@@ -17,7 +19,20 @@ export function createDistributionReportEmailMessage(report: DistributionReport,
               To donate again, click <a href='${donateLink}' target="_blank">here</a><br><br>
               Regards,<br>
               Social Relief Team
-          </p>`;
+            </p>`;
+  }
+  
+  if (reportType === 'monthly') {
+    return `<p>
+              Hello ${extractFirstName(donor.name)}, <br><br>
+              Ksh ${report.totalDistributedAmount} was transferred last month from your SocialRelief donation to:<br>
+              ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'email')}.<br>
+              Thank you for your contribution.<br>
+              To donate again, click <a href='${donateLink}' target="_blank">here</a><br><br>
+              Regards,<br>
+              Social Relief Team
+            </p>`;
+  }
 }
 
 function beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[], type: MessageType): string {

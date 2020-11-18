@@ -1,5 +1,6 @@
 
 import { User } from '../user/types';
+import { ReportType } from '../distribution-report';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'paymentQueued' |'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution' | 'refund';
 
@@ -111,7 +112,7 @@ export interface TransactionService {
    * how much they received, and how much was distributed in total
    * since the last report
    */
-  generateDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]>
+  generateDistributionReportDocs(lastReportDate: Date, reportType: ReportType): Promise<DistributionReport[]>
 }
 
 export interface PaymentRequestResult {
