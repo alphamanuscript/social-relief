@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DistributionReportService, DistributionReportArgs } from './types';
+import { DistributionReportService, DistributionReportArgs, ReportType } from './types';
 import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
 import { DistributionReport } from '../payment';
@@ -18,11 +18,11 @@ export class DistributionReports implements DistributionReportService {
     this.args = args;
   }
 
-  async sendDistributionReportsToDonors(): Promise<void> {
+  async sendDistributionReportsToDonors(type: ReportType = 'daily'): Promise<void> {
     try {
-      const lastReportDate = await this.getLastDistributionReportDate();
+      const lastReportDate = await this.getLastDistributionReportDate(type);
       console.log('last report date: ', lastReportDate);
-      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate);
+      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate, type);
       await this.sendDistributionReportMessages(reports);
       if (reports.length) {
         await this.collection.insertMany(reports);
@@ -68,12 +68,23 @@ export class DistributionReports implements DistributionReportService {
     return beneficiaries;
   }
 
-  private async getLastDistributionReportDate(): Promise<Date> {
-    const reports = await this.collection.aggregate([{ $sort: { createdAt : -1} }]).toArray();
+  private async getLastDistributionReportDate(reportType: ReportType = 'daily'): Promise<Date> {
+    const reports = await this.collection.aggregate([
+      { $match: { reportType } },
+      { $sort: { createdAt : -1} }
+    ]).toArray();
+
     if (reports.length) {
       return reports[0].createdAt;
     }
 
-    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
+    if (reportType === 'daily') {
+      return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
+    }
+
+    if (reportType === 'monthly') {
+      const currentDate: Date = new Date();
+      return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    }
   }
 }

@@ -4,6 +4,8 @@ import { UserService } from '../user';
 import { TransactionService } from '../payment';
 import { Links } from '../link-generator';
 
+export type ReportType = 'daily' | 'monthly';
+
 export interface DistributionReportArgs {
   smsProvider: SmsProvider;
   emailProvider: EmailProvider;
