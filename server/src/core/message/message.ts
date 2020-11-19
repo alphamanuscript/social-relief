@@ -1,18 +1,35 @@
+import { ReportType, REPORT_TYPE_DAILY, REPORT_TYPE_MONTHLY } from '../distribution-report';
 import { DistributionReport } from '../payment';
 import { User } from '../user';
 import { extractFirstName } from '../util';
 
 type MessageType = 'sms' | 'email';
 
-export function createDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
+export function createDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string, reportType: ReportType = REPORT_TYPE_DAILY): string {
+  if (reportType === REPORT_TYPE_DAILY) {
+    return createDailyDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+  }
+
+  return createMonthlyDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+}
+
+function createDailyDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
   return `Hello ${extractFirstName(donor.name)}, Ksh ${report.totalDistributedAmount} has been transferred from your SocialRelief donation to ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
-export function createMonthlyDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
+function createMonthlyDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
   return `Hello ${extractFirstName(donor.name)}, Ksh ${report.totalDistributedAmount} was transferred last month from your SocialRelief donation to ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
-export function createDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
+export function createDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string, reportType: ReportType = REPORT_TYPE_DAILY): string {
+  if (reportType === REPORT_TYPE_DAILY) {
+    return createDailyDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
+  }
+
+  return createMonthlyDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
+}
+
+function createDailyDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
   return `<p>
             Hello ${extractFirstName(donor.name)}, <br><br>
             Ksh ${report.totalDistributedAmount} has been transferred from your SocialRelief donation to:<br>
@@ -22,9 +39,9 @@ export function createDistributionReportEmailMessage(report: DistributionReport,
             Regards,<br>
             Social Relief Team
           </p>`;
-}
+} 
 
-export function createMonthlyDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
+function createMonthlyDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
   return `<p>
             Hello ${extractFirstName(donor.name)}, <br><br>
             Ksh ${report.totalDistributedAmount} was transferred last month from your SocialRelief donation to:<br>

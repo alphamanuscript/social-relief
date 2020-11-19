@@ -20,12 +20,30 @@ export class DistributionReports implements DistributionReportService {
     this.args = args;
   }
 
-  async sendDistributionReportsToDonors(type: ReportType = REPORT_TYPE_DAILY): Promise<void> {
+  async sendDailyDistributionReportsToDonors(): Promise<void> {
     try {
-      const lastReportDate = await this.getLastDistributionReportDate(type);
-      console.log('last report date: ', lastReportDate);
-      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastReportDate, type);
-      await this.sendDistributionReportMessages(reports, type);
+      const lastDailyReportDate = await this.getLastDailyDistributionReportDate();
+      console.log('last daily report date: ', lastDailyReportDate);
+      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastDailyReportDate);
+      await this.sendDistributionReportMessages(reports);
+      if (reports.length) {
+        await this.collection.insertMany(reports);
+      }
+    }
+    catch (e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async sendMonthlyDistributionReportsToDonors(): Promise<void> {
+    try {
+      const lastMonthlyReportDate = await this.getLastMonthlyDistributionReportDate();
+      console.log('last monthly report date: ', lastMonthlyReportDate);
+      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastMonthlyReportDate, REPORT_TYPE_MONTHLY);
+      console.log('reports: ', reports);
+      await this.sendDistributionReportMessages(reports, REPORT_TYPE_MONTHLY);
       if (reports.length) {
         await this.collection.insertMany(reports);
       }
@@ -47,7 +65,7 @@ export class DistributionReports implements DistributionReportService {
         const amount = report.totalDistributedAmount < 2000 ? 2000 : report.totalDistributedAmount;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
         console.log('donate: ', donateLink);
-        const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+        const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink, reportType);
         console.log('smsMessage: ', smsMessage);
         const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink, reportType);
         console.log('emailMessage: ', emailMessage);
@@ -74,9 +92,9 @@ export class DistributionReports implements DistributionReportService {
     return beneficiaries;
   }
 
-  private async getLastDistributionReportDate(reportType: ReportType = REPORT_TYPE_DAILY): Promise<Date> {
+  private async getLastMonthlyDistributionReportDate(): Promise<Date> {
     const reports = await this.collection.aggregate([
-      { $match: { reportType } },
+      { $match: { reportType: REPORT_TYPE_MONTHLY } },
       { $sort: { createdAt : -1} }
     ]).toArray();
 
@@ -84,13 +102,20 @@ export class DistributionReports implements DistributionReportService {
       return reports[0].createdAt;
     }
 
-    if (reportType === REPORT_TYPE_DAILY) {
-      return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
+    const currentDate: Date = new Date();
+    return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  }
+
+  private async getLastDailyDistributionReportDate(): Promise<Date> {
+    const reports = await this.collection.aggregate([
+      { $match: { reportType: REPORT_TYPE_DAILY }},
+      { $sort: { createdAt : -1} }
+    ]).toArray();
+
+    if (reports.length) {
+      return reports[0].createdAt;
     }
 
-    if (reportType === REPORT_TYPE_MONTHLY) {
-      const currentDate: Date = new Date();
-      return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    }
+    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
   }
 }

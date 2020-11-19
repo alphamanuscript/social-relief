@@ -20,5 +20,11 @@ export interface DistributionReportService {
    * indicating who benefited from such distributions, 
    * how much they received, and how much was distributed in total.
    */
-  sendDistributionReportsToDonors(reportType?: ReportType): Promise<void>;
+  sendDailyDistributionReportsToDonors(): Promise<void>;
+  /**
+   * Generates a monthly distribution report doc for every donor, 
+   * indicating who benefited from such distributions, 
+   * how much they received, and how much was distributed in total.
+   */
+  sendMonthlyDistributionReportsToDonors(): Promise<void>;
 }
