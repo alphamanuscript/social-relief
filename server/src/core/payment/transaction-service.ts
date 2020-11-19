@@ -6,7 +6,7 @@ import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
 import { EventBus } from '../event';
-import { ReportType } from '../distribution-report';
+import { ReportType, REPORT_TYPE_DAILY } from '../distribution-report';
 
 export const COLLECTION = 'transactions';
 
@@ -361,7 +361,7 @@ export class Transactions implements TransactionService {
     return this.providers.getPreferredForSending();
   }
 
-  async generateDistributionReportDocs(lastReportDate: Date, reportType: ReportType = 'daily'): Promise<DistributionReport[]> {
+  async generateDistributionReportDocs(lastReportDate: Date, reportType: ReportType = REPORT_TYPE_DAILY): Promise<DistributionReport[]> {
     try {
       const results: DistributionReport[] = await this.collection.aggregate<DistributionReport>([
         { 

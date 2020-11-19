@@ -1,5 +1,5 @@
 import { loadAppConfigFromEnv, bootstrap } from './core';
-import { runDistributionWorker, runVettedBeneficiaryDistributionWorker, runStatsComputationWorker, runDistributionReportingWorker } from './worker';
+import { runDistributionWorker, runVettedBeneficiaryDistributionWorker, runStatsComputationWorker, runDistributionReportingWorker, runMonthlyDistributionReportingWorker } from './worker';
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 
@@ -11,6 +11,7 @@ export async function startWorker() {
     runVettedBeneficiaryDistributionWorker(app, config.vettedDistributionInterval);
     runStatsComputationWorker(app, config.statsComputationInterval * MILLISECONDS_PER_MINUTE);
     runDistributionReportingWorker(app, config.distributionReportingInterval);
+    runMonthlyDistributionReportingWorker(app, config.monthlyDistributionReportingInterval);
   }
   catch (e) {
     console.error(e);

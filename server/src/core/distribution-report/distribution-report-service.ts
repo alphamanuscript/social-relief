@@ -39,14 +39,18 @@ export class DistributionReports implements DistributionReportService {
 
   private async sendDistributionReportMessages(reportDocs: DistributionReport[], reportType: ReportType = REPORT_TYPE_DAILY): Promise<void> {
     try {
+      console.log('reportType: ', reportType);
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
         const amount = report.totalDistributedAmount < 2000 ? 2000 : report.totalDistributedAmount;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
+        console.log('donate: ', donateLink);
         const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+        console.log('smsMessage: ', smsMessage);
         const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink, reportType);
+        console.log('emailMessage: ', emailMessage);
 
         await Promise.all([
           this.args.smsProvider.sendSms(donor.phone, smsMessage),
@@ -80,11 +84,11 @@ export class DistributionReports implements DistributionReportService {
       return reports[0].createdAt;
     }
 
-    if (reportType === 'daily') {
+    if (reportType === REPORT_TYPE_DAILY) {
       return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
     }
 
-    if (reportType === 'monthly') {
+    if (reportType === REPORT_TYPE_MONTHLY) {
       const currentDate: Date = new Date();
       return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     }
