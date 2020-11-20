@@ -131,15 +131,15 @@ export class DistributionReports implements DistributionReportService {
   }
 
   private async getLastDailyDistributionReportDate(): Promise<Date> {
-    const reports = await this.collection.aggregate([
-      { $match: { reportType: REPORT_TYPE_DAILY }},
-      { $sort: { createdAt : -1} }
-    ]).toArray();
+    // const reports = await this.collection.aggregate([
+    //   { $match: { reportType: REPORT_TYPE_DAILY }},
+    //   { $sort: { createdAt : -1} }
+    // ]).toArray();
 
-    if (reports.length) {
-      return reports[0].createdAt;
-    }
+    // if (reports.length) {
+    //   return reports[0].createdAt;
+    // }
 
-    return new Date(new Date().getTime() - (1 * 24 * 3600 * 1000));
+    return new Date(new Date().getTime() - (19 * 24 * 3600 * 1000));
   }
 }

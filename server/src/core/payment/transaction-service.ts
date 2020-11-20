@@ -426,7 +426,7 @@ export class Transactions implements TransactionService {
                 $match: { 
                   type: 'distribution', 
                   status: 'success',
-                  updatedAt: { $gt: lastReportDate }
+                  updatedAt: { $gt: lastMonthlyReportDate }
                 } 
               },
               { 
@@ -443,7 +443,7 @@ export class Transactions implements TransactionService {
                 $match: { 
                   type: 'distribution', 
                   status: 'success',
-                  updatedAt: { $gt: lastReportDate }
+                  updatedAt: { $gt: lastMonthlyReportDate }
                 } 
               },
               { 
