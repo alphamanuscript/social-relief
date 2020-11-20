@@ -6,7 +6,7 @@ import { User } from '../user';
 import * as messages from '../messages';
 import * as validators from './validator';
 import { EventBus } from '../event';
-import { ReportType, REPORT_TYPE_DAILY } from '../distribution-report';
+import { ReportType, REPORT_TYPE_DAILY, REPORT_TYPE_MONTHLY } from '../distribution-report';
 
 export const COLLECTION = 'transactions';
 
@@ -391,7 +391,7 @@ export class Transactions implements TransactionService {
             receivedAmount: {
               $push: "$receivedAmount"
             },
-            totalDistributedAmount: {
+            totalDistributedAmountFromDonor: {
               $sum: "$receivedAmount"
             }
           }
@@ -402,7 +402,7 @@ export class Transactions implements TransactionService {
             donor: "$_id",
             beneficiaries: 1,
             receivedAmount: 1,
-            totalDistributedAmount: 1,
+            totalDistributedAmountFromDonor: 1,
             reportType,
             createdAt: new Date()
           }
@@ -410,6 +410,93 @@ export class Transactions implements TransactionService {
       ]).toArray();
 
       return results;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async generateMonthlyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]> {
+    try {
+      const res: any[] = await this.collection.aggregate([
+        {
+          $facet: {
+            totalDonationsLastMonthPipeline: [
+              { 
+                $match: { 
+                  type: 'distribution', 
+                  status: 'success',
+                  updatedAt: { $gt: lastReportDate }
+                } 
+              },
+              { 
+                $group: {
+                  _id: null,
+                  totalDonationsLastMonth: {
+                    $sum: "$amount"
+                  }
+                }
+              }
+            ],
+            monthlyDistributionReportDocsPipeline: [
+              { 
+                $match: { 
+                  type: 'distribution', 
+                  status: 'success',
+                  updatedAt: { $gt: lastReportDate }
+                } 
+              },
+              { 
+                $group: {
+                  _id: {
+                    from: "$from",
+                    to: "$to"
+                  },
+                  receivedAmount: {
+                    $sum: "$amount"
+                  }
+                }
+              },
+              { 
+                $group: {
+                  _id: "$_id.from",
+                  beneficiaries: {
+                    $push: "$_id.to"
+                  },
+                  receivedAmount: {
+                    $push: "$receivedAmount"
+                  },
+                  totalDistributedAmountFromDonor: {
+                    $sum: "$receivedAmount"
+                  }
+                }
+              },
+              { 
+                $project: {
+                  _id: 0,
+                  donor: "$_id",
+                  beneficiaries: 1,
+                  receivedAmount: 1,
+                  totalDistributedAmountFromDonor: 1,
+                  reportType: REPORT_TYPE_MONTHLY,
+                  createdAt: new Date()
+                }
+              }
+            ]
+          }
+        }
+      ]).toArray();
+
+      let monthlyDistributionReportDocs: DistributionReport[] = [];
+      if (res.length) {
+        const totalDonationsLastMonth: number = res[0].totalDonationsLastMonthPipeline.length ? res[0].totalDonationsLastMonthPipeline[0].totalDonationsLastMonth : 0;
+        res[0].monthlyDistributionReportDocsPipeline.forEach((report: DistributionReport) => {
+          const monthlyDistributionReport: DistributionReport = { ...report, totalDistributedAmountFromAllDonors: totalDonationsLastMonth };
+          monthlyDistributionReportDocs.push(monthlyDistributionReport);
+        });
+      }
+
+      return monthlyDistributionReportDocs;
     }
     catch (e) {
       throw createDbOpFailedError(e.message);
