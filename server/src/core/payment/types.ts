@@ -109,13 +109,13 @@ export interface TransactionService {
    */
   getUserBalance(userId: string): Promise<number>;
   /**
-   * Generates a distribution report doc for every donor, 
-   * indicating who benefited from such distributions, 
+   * Generates a daily distribution report doc for every donor, 
+   * indicating who benefited from their donation distributions, 
    * how much they received, and how much was distributed in total
    * since the last report
    */
-  generateDistributionReportDocs(lastReportDate: Date, reportType?: ReportType): Promise<DistributionReport[]>;
-  generateMonthlyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]> 
+  generateDailyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]>;
+  generateMonthlyDistributionReportDocs(lastMonthlyReportDate: Date): Promise<DistributionReport[]> 
 }
 
 export interface PaymentRequestResult {

@@ -3,7 +3,7 @@ import { DistributionReportService, DistributionReportArgs, ReportType } from '.
 import { rethrowIfAppError, createDbOpFailedError } from '../error';
 import { User } from '../user';
 import { DistributionReport } from '../payment';
-import { createDistributionReportSmsMessage, createDistributionReportEmailMessage } from '../message';
+import { createDailyDistributionReportSmsMessage, createMonthlyDistributionReportSmsMessage, createDailyDistributionReportEmailMessage, createMonthlyDistributionReportEmailMessage } from '../message';
 
 const COLLECTION = 'distribution_reports';
 export const REPORT_TYPE_DAILY = 'daily';
@@ -24,8 +24,8 @@ export class DistributionReports implements DistributionReportService {
     try {
       const lastDailyReportDate = await this.getLastDailyDistributionReportDate();
       console.log('last daily report date: ', lastDailyReportDate);
-      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastDailyReportDate);
-      await this.sendDistributionReportMessages(reports);
+      const reports: DistributionReport[] = await this.args.transactions.generateDailyDistributionReportDocs(lastDailyReportDate);
+      await this.sendDailyDistributionReportMessages(reports);
       if (reports.length) {
         await this.collection.insertMany(reports);
       }
@@ -41,9 +41,9 @@ export class DistributionReports implements DistributionReportService {
     try {
       const lastMonthlyReportDate = await this.getLastMonthlyDistributionReportDate();
       console.log('last monthly report date: ', lastMonthlyReportDate);
-      const reports: DistributionReport[] = await this.args.transactions.generateDistributionReportDocs(lastMonthlyReportDate, REPORT_TYPE_MONTHLY);
+      const reports: DistributionReport[] = await this.args.transactions.generateMonthlyDistributionReportDocs(lastMonthlyReportDate);
       console.log('reports: ', reports);
-      await this.sendDistributionReportMessages(reports, REPORT_TYPE_MONTHLY);
+      await this.sendMonthlyDistributionReportMessages(reports);
       if (reports.length) {
         await this.collection.insertMany(reports);
       }
@@ -55,19 +55,43 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private async sendDistributionReportMessages(reportDocs: DistributionReport[], reportType: ReportType = REPORT_TYPE_DAILY): Promise<void> {
+  private async sendDailyDistributionReportMessages(reportDocs: DistributionReport[]) {
     try {
-      console.log('reportType: ', reportType);
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
-        const amount = report.totalDistributedAmount < 2000 ? 2000 : report.totalDistributedAmount;
+        const amount = report.totalDistributedAmountFromDonor < 2000 ? 2000 : report.totalDistributedAmountFromDonor;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
         console.log('donate: ', donateLink);
-        const smsMessage = createDistributionReportSmsMessage(report, donor, beneficiaries, donateLink, reportType);
+        const smsMessage = createDailyDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
         console.log('smsMessage: ', smsMessage);
-        const emailMessage = createDistributionReportEmailMessage(report, donor, beneficiaries, donateLink, reportType);
+        const emailMessage = createDailyDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
+        console.log('emailMessage: ', emailMessage);
+
+        await Promise.all([
+          this.args.smsProvider.sendSms(donor.phone, smsMessage),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
+        ]);                 
+      });
+    }
+    catch(error) {
+      console.error('Error occurred when handling event', error);
+    }
+  }
+
+  private async sendMonthlyDistributionReportMessages(reportDocs: DistributionReport[]) {
+    try {
+      reportDocs.forEach(async (report: DistributionReport) => {
+        const donor = await this.args.users.getById(report.donor);
+        const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
+
+        const amount = report.totalDistributedAmountFromDonor < 2000 ? 2000 : report.totalDistributedAmountFromDonor;
+        const donateLink = await this.args.links.getUserDonateLink(donor, amount);
+        console.log('donate: ', donateLink);
+        const smsMessage = createMonthlyDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
+        console.log('smsMessage: ', smsMessage);
+        const emailMessage = createMonthlyDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
         console.log('emailMessage: ', emailMessage);
 
         await Promise.all([

@@ -361,7 +361,7 @@ export class Transactions implements TransactionService {
     return this.providers.getPreferredForSending();
   }
 
-  async generateDistributionReportDocs(lastReportDate: Date, reportType: ReportType = REPORT_TYPE_DAILY): Promise<DistributionReport[]> {
+  async generateDailyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]> {
     try {
       const results: DistributionReport[] = await this.collection.aggregate<DistributionReport>([
         { 
@@ -403,7 +403,7 @@ export class Transactions implements TransactionService {
             beneficiaries: 1,
             receivedAmount: 1,
             totalDistributedAmountFromDonor: 1,
-            reportType,
+            reportType: REPORT_TYPE_DAILY,
             createdAt: new Date()
           }
         }
@@ -416,7 +416,7 @@ export class Transactions implements TransactionService {
     }
   }
 
-  async generateMonthlyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]> {
+  async generateMonthlyDistributionReportDocs(lastMonthlyReportDate: Date): Promise<DistributionReport[]> {
     try {
       const res: any[] = await this.collection.aggregate([
         {
