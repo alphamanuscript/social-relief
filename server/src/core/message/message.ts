@@ -10,7 +10,7 @@ export function createDailyDistributionReportSmsMessage(report: DistributionRepo
 }
 
 export function createMonthlyDistributionReportSmsMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
-  return `Hello ${extractFirstName(donor.name)}, A total of Ksh ${report.totalDistributedAmountFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
+  return `Hello ${extractFirstName(donor.name)}, A total of Ksh ${report.totalDistributedAmountFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to ${report.beneficiaries.length} beneficiaries, including ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
 export function createDailyDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
@@ -28,7 +28,7 @@ export function createDailyDistributionReportEmailMessage(report: DistributionRe
 export function createMonthlyDistributionReportEmailMessage(report: DistributionReport, donor: User, beneficiaries: User[], donateLink: string): string {
   return `<p>
             Hello ${extractFirstName(donor.name)}, <br><br>
-            A total of Ksh ${report.totalDistributedAmountFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to:<br>
+            A total of Ksh ${report.totalDistributedAmountFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to ${report.beneficiaries.length} beneficiaries, including:<br>
             ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'email')}.<br>
             Thank you for your contribution.<br>
             To donate again, click <a href='${donateLink}' target="_blank">here</a><br><br>
