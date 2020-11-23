@@ -71,12 +71,21 @@ export class DistributionReports implements DistributionReportService {
         ]);                 
       });
     }
-    catch(error) {
-      console.error('Error occurred when handling event', error);
+    catch (e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
     }
   }
 
   private async sendMonthlyDistributionReportMessages(reportDocs: DistributionReport[]) {
+    await Promise.all([
+      this.sendMonthlyDistributionReportMessagesToContributingDonors(reportDocs),
+      this.sendMonthlyDistributionReportMessagesToOccasionalDonors(reportDocs)
+    ]);
+  }
+
+  private async sendMonthlyDistributionReportMessagesToContributingDonors(reportDocs: DistributionReport[]): Promise<void> {
     try {
       reportDocs.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
@@ -93,8 +102,22 @@ export class DistributionReports implements DistributionReportService {
         ]);                 
       });
     }
-    catch(error) {
-      console.error('Error occurred when handling event', error);
+    catch (e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  private async sendMonthlyDistributionReportMessagesToOccasionalDonors(reportDocs: DistributionReport[]): Promise<void> {
+    try {
+      const donorsWithNoConstributions = await this.getDonorsWithNoContributionsInPreviousMonth(reportDocs);
+
+    }
+    catch (e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -109,11 +132,21 @@ export class DistributionReports implements DistributionReportService {
     return beneficiaries;
   }
 
-  private async getLastMonthsDonorsWithNoContributions(reports: DistributionReport[]): Promise<User[]> {
-    const donorsWithoutContributions: User[] = [];
+  private async getDonorsWithNoContributionsInPreviousMonth(reports: DistributionReport[]): Promise<User[]> {
+    let donorsWithoutContributions: User[] = [];
 
     try {
-      const donors = await this.args.users.getAll
+      const donors = await this.args.users.getAllDonors();
+      donorsWithoutContributions = donors.filter(donor => {
+        let isNotIncluded = true;
+        reports.forEach(report => {
+          if (report.donor === donor._id) {
+            isNotIncluded = false;
+          }
+        });
+        return isNotIncluded;
+      });
+      return donorsWithoutContributions;
     }
     catch (e) {
       console.error("Error occured: ", e.message);
