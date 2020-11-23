@@ -293,7 +293,11 @@ export interface UserService {
    * Returns user with the specified phone number
    * @param phone 
    */
-  getByPhone(phone: string): Promise<User>
+  getByPhone(phone: string): Promise<User>;
+  /**
+   * Returns all users with the role donor
+   */
+  getAllDonors(): Promise<User[]>
 };
 
 export interface UserCreateAnonymousArgs {

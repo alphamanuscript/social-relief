@@ -113,7 +113,7 @@ export class DistributionReports implements DistributionReportService {
     const donorsWithoutContributions: User[] = [];
 
     try {
-      const donors = await this.args.users.
+      const donors = await this.args.users.getAll
     }
     catch (e) {
       console.error("Error occured: ", e.message);
