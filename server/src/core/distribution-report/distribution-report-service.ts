@@ -109,6 +109,19 @@ export class DistributionReports implements DistributionReportService {
     return beneficiaries;
   }
 
+  private async getLastMonthsDonorsWithNoContributions(reports: DistributionReport[]): Promise<User[]> {
+    const donorsWithoutContributions: User[] = [];
+
+    try {
+      const donors = await this.args.users.
+    }
+    catch (e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
   private async getLastMonthlyDistributionReportDate(): Promise<Date> {
     const reports = await this.collection.aggregate([
       { $match: { reportType: REPORT_TYPE_MONTHLY } },
@@ -120,7 +133,7 @@ export class DistributionReports implements DistributionReportService {
     }
 
     const currentDate: Date = new Date();
-    return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
   }
 
   private async getLastDailyDistributionReportDate(): Promise<Date> {
