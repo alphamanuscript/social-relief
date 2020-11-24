@@ -438,6 +438,25 @@ export class Transactions implements TransactionService {
                 }
               }
             ],
+            totalBeneficiariesLastMonthPipeline: [
+              { 
+                $match: { 
+                  type: 'distribution', 
+                  status: 'success',
+                  updatedAt: { $gt: lastMonthlyReportDate }
+                } 
+              },
+              { 
+                $group: {
+                  _id: { 
+                    to: "$to" 
+                  }
+                }
+              },
+              {
+                $count: 'totalBeneficiariesInPreviousMonth'
+              }
+            ],
             monthlyDistributionReportDocsPipeline: [
               { 
                 $match: { 
@@ -490,8 +509,13 @@ export class Transactions implements TransactionService {
       let monthlyDistributionReportDocs: DistributionReport[] = [];
       if (res.length) {
         const totalDonationsLastMonth: number = res[0].totalDonationsLastMonthPipeline.length ? res[0].totalDonationsLastMonthPipeline[0].totalDonationsLastMonth : 0;
+        const totalBeneficiariesLastMonth: number = res[0].totalBeneficiariesLastMonthPipeline.length ? res[0].totalDonationsLastMonthPipeline[0].totalBeneficiariesLastMonth : 0;
         res[0].monthlyDistributionReportDocsPipeline.forEach((report: DistributionReport) => {
-          const monthlyDistributionReport: DistributionReport = { ...report, totalDistributedAmountFromAllDonors: totalDonationsLastMonth };
+          const monthlyDistributionReport: DistributionReport = { 
+            ...report, 
+            totalDistributedAmountFromAllDonors: totalDonationsLastMonth,
+            totalBeneficiaries: totalBeneficiariesLastMonth
+          };
           monthlyDistributionReportDocs.push(monthlyDistributionReport);
         });
       }

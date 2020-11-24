@@ -48,6 +48,7 @@ export interface DistributionReport {
   reportType: ReportType,
   totalDistributedAmountFromDonor: number,
   totalDistributedAmountFromAllDonors?: number,
+  totalBeneficiaries?: number,
   createdAt: Date
 }
 
