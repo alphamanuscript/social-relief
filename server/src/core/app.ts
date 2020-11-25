@@ -154,7 +154,7 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL) || `0 */2 * * * *`,
     vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL) || `0 */5 * * * *`,
-    dailyDistributionReportingInterval: (env.DAILY_DISTRIBUTION_REPORTING_INTERVAL) || `0 18 * * * *`,
+    dailyDistributionReportingInterval: (env.DAILY_DISTRIBUTION_REPORTING_INTERVAL) || `0 */1 * * * *`,
     monthlyDistributionReportingInterval: (env.MONTHLY_DISTRIBUTION_REPORTING_INTERVAL) || `0 6 1 * * *`,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,

@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry, DistributionReport } from './types';
+import { Transaction, TransactionStatus, TransactionCreateArgs, TransactionService, PaymentProvider, InitiateDonationArgs, SendDonationArgs, PaymentProviderRegistry, DistributionReport, MonthlyDistributionReport } from './types';
 import { generateId, validateId } from '../util';
 import { createDbOpFailedError, AppError, createResourceNotFoundError, rethrowIfAppError, createInsufficientFundsError } from '../error';
 import { User } from '../user';
@@ -416,34 +416,34 @@ export class Transactions implements TransactionService {
     }
   }
 
-  async generateMonthlyDistributionReportDocs(lastMonthlyReportDate: Date): Promise<DistributionReport[]> {
+  async generateMonthlyDistributionReport(dateOfLastReport: Date): Promise<MonthlyDistributionReport> {
     try {
       const res: any[] = await this.collection.aggregate([
         {
           $facet: {
-            totalDonationsLastMonthPipeline: [
+            totalDonationsPipeline: [
               { 
                 $match: { 
                   type: 'distribution', 
                   status: 'success',
-                  updatedAt: { $gt: lastMonthlyReportDate }
+                  updatedAt: { $gt: dateOfLastReport }
                 } 
               },
               { 
                 $group: {
                   _id: null,
-                  totalDonationsLastMonth: {
+                  totalDonations: {
                     $sum: "$amount"
                   }
                 }
               }
             ],
-            totalBeneficiariesLastMonthPipeline: [
+            totalBeneficiariesPipeline: [
               { 
                 $match: { 
                   type: 'distribution', 
                   status: 'success',
-                  updatedAt: { $gt: lastMonthlyReportDate }
+                  updatedAt: { $gt: dateOfLastReport }
                 } 
               },
               { 
@@ -454,7 +454,7 @@ export class Transactions implements TransactionService {
                 }
               },
               {
-                $count: 'totalBeneficiariesInPreviousMonth'
+                $count: 'totalBeneficiaries'
               }
             ],
             monthlyDistributionReportDocsPipeline: [
@@ -462,7 +462,7 @@ export class Transactions implements TransactionService {
                 $match: { 
                   type: 'distribution', 
                   status: 'success',
-                  updatedAt: { $gt: lastMonthlyReportDate }
+                  updatedAt: { $gt: dateOfLastReport }
                 } 
               },
               { 
@@ -506,21 +506,24 @@ export class Transactions implements TransactionService {
         }
       ]).toArray();
 
-      let monthlyDistributionReportDocs: DistributionReport[] = [];
+      let results: MonthlyDistributionReport = { 
+        totalDonations: 0,
+        totalBeneficiaries: 0, 
+        distributionReports: []
+      };
+
       if (res.length) {
-        const totalDonationsLastMonth: number = res[0].totalDonationsLastMonthPipeline.length ? res[0].totalDonationsLastMonthPipeline[0].totalDonationsLastMonth : 0;
-        const totalBeneficiariesLastMonth: number = res[0].totalBeneficiariesLastMonthPipeline.length ? res[0].totalDonationsLastMonthPipeline[0].totalBeneficiariesLastMonth : 0;
-        res[0].monthlyDistributionReportDocsPipeline.forEach((report: DistributionReport) => {
-          const monthlyDistributionReport: DistributionReport = { 
-            ...report, 
-            totalDistributedAmountFromAllDonors: totalDonationsLastMonth,
-            totalBeneficiaries: totalBeneficiariesLastMonth
-          };
-          monthlyDistributionReportDocs.push(monthlyDistributionReport);
-        });
+        const totalDonations: number = res[0].totalDonationsPipeline.length ? res[0].totalDonationsPipeline[0].totalDonations : 0;
+        const totalBeneficiaries: number = res[0].totalBeneficiariesPipeline.length ? res[0].totalBeneficiariesPipeline[0].totalBeneficiaries : 0;
+        const distributionReports = res[0].monthlyDistributionReportDocsPipeline;
+        results = {
+          totalDonations,
+          totalBeneficiaries,
+          distributionReports
+        }
       }
 
-      return monthlyDistributionReportDocs;
+      return results;
     }
     catch (e) {
       throw createDbOpFailedError(e.message);

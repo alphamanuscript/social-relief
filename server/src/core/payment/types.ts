@@ -47,9 +47,13 @@ export interface DistributionReport {
   receivedAmount: number[],
   reportType: ReportType,
   totalDistributedAmountFromDonor: number,
-  totalDistributedAmountFromAllDonors?: number,
-  totalBeneficiaries?: number,
   createdAt: Date
+}
+
+export interface MonthlyDistributionReport {
+  totalDonations: number,
+  totalBeneficiaries: number,
+  distributionReports: DistributionReport[];
 }
 
 export interface InitiateDonationArgs {
@@ -116,7 +120,7 @@ export interface TransactionService {
    * since the last report
    */
   generateDailyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]>;
-  generateMonthlyDistributionReportDocs(lastMonthlyReportDate: Date): Promise<DistributionReport[]> 
+  generateMonthlyDistributionReport(dateOfLastReport: Date): Promise<MonthlyDistributionReport> 
 }
 
 export interface PaymentRequestResult {

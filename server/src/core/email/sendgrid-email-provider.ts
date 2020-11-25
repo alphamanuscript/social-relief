@@ -17,15 +17,17 @@ export class SendGridEmailProvider implements EmailProvider{
 
   async sendEmail(to: string, message: string, subject: string = 'Social Relief Notification'): Promise<void> {
     try {
-      const res = await sgMail.send({
-        to,
-        from: this.emailSender,
-        subject,
-        html: message,
-      });
-
-      if (res[0].statusCode !== 202) {
-        throw createEmailDeliveryFailedError('Failed to send email');
+      if (to) {
+        const res = await sgMail.send({
+          to,
+          from: this.emailSender,
+          subject,
+          html: message,
+        });
+  
+        if (res[0].statusCode !== 202) {
+          throw createEmailDeliveryFailedError('Failed to send email');
+        }
       }
     }
     catch (e) {
