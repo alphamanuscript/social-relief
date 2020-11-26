@@ -1,2 +1,2 @@
 export * from './types';
-export { SendGridEmailProvider } from './sendgrid-email-provider';
+export { DEFAULT_EMAIL_SUBJECT, EMAIL_SUBJECT_DONATION_REPORT, SendGridEmailProvider } from './sendgrid-email-provider';

@@ -857,4 +857,14 @@ export class Users implements UserService {
       rethrowIfAppError(e);
     }
   }
+
+  async getAllDonors(): Promise<User[]> {
+    try {
+      const donors = await this.collection.find({ roles: { $in: ['donor'] } }, { projection: NOMINATED_USER_PROJECTION }).toArray();
+      return donors;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
 }
