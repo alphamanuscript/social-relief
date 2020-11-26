@@ -3,6 +3,7 @@ import { TransactionService } from './payment';
 import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
 import { StatsService } from './stat';
+import { DistributionReportService } from './distribution-report';
 
 export interface App {
   users: UserService;
@@ -10,6 +11,7 @@ export interface App {
   invitations: InvitationService;
   donationDistributions: DonationDistributionService;
   stats: StatsService;
+  distributionReports: DistributionReportService;
 };
 
 export interface AppConfig {
@@ -99,6 +101,11 @@ export interface AppConfig {
    */
   distributionInterval: string;
   /**
+   * Interval delay in CronTime syntax/format between two distribution
+   * reporting processes
+   */
+  distributionReportingInterval: string;
+  /**
    * Interval delay in CronTime syntax/format between two distribution 
    * processes for vetted beneficiaires
    */
@@ -113,6 +120,8 @@ export interface AppConfig {
    */
   googleClientId: string;
   sendgridApiKey: string;
+  bitlyApiKey: string;
+  bitlyApiLink: string;
   emailSender: string;
 };
 
@@ -140,9 +149,12 @@ export function loadAppConfigFromEnv(env: { [key: string]: string }): AppConfig 
     distributionPeriodLength: (env.DISTRIBUTION_PERIOD_LENGTH && Number(env.DISTRIBUTION_PERIOD_LENGTH)) || 30,
     distributionInterval: (env.DISTRIBUTION_INTERVAL) || `0 */2 * * * *`,
     vettedDistributionInterval: (env.VETTED_DISTRIBUTION_INTERVAL) || `0 */5 * * * *`,
+    distributionReportingInterval: (env.DISTRIBUTION_REPORTING_INTERVAL) || `0 18 * * * *`,
     statsComputationInterval: (env.STATS_COMPUTATION_INTERVAL && Number(env.STATS_COMPUTATION_INTERVAL)) || 1,
     googleClientId: env.GOOGLE_CLIENT_ID,
     sendgridApiKey: env.SENDGRID_API_KEY || '',
+    bitlyApiKey: env.BITLY_API_KEY || '',
+    bitlyApiLink: env.BITLY_API_LINK || 'https://api-ssl.bitly.com/v4/shorten',
     emailSender: env.EMAIL_SENDER || 's'
   };
 }

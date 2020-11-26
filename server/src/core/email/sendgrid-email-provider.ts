@@ -15,13 +15,13 @@ export class SendGridEmailProvider implements EmailProvider{
     this.emailSender = args.emailSender;
   }
 
-  async sendEmail(to: string, message: string): Promise<void> {
+  async sendEmail(to: string, message: string, subject: string = 'Social Relief Notification'): Promise<void> {
     try {
       const res = await sgMail.send({
         to,
         from: this.emailSender,
-        subject: 'Social Relief Notification',
-        text: message,
+        subject,
+        html: message,
       });
 
       if (res[0].statusCode !== 202) {

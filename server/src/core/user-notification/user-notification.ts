@@ -1,9 +1,8 @@
 import { SmsProvider } from '../sms';
 import { EmailProvider } from '../email';
 import { EventBus, Event} from '../event';
-import { UserService, UserInvitationEventData } from '../user';
+import { UserService, UserInvitationEventData, User } from '../user';
 import { TransactionCompletedEventData, Transaction } from '../payment';
-import { extractFirstName } from '../util';
 
 export interface UserNotificationsArgs {
   smsProvider: SmsProvider;
@@ -38,11 +37,16 @@ export class UserNotifications {
   async handleUserInvitation(event: Event<UserInvitationEventData>) {
     const { data } = event;
     const inviteUrl = `${this.webappBaseUrl}/invitations/${data.invitationId}`;
-    const message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${inviteUrl}`;
+    let message = `Hello ${data.recipientName}, ${data.senderName} has invited you to join SocialRelief as a ${data.role}. Follow this link to accept ${inviteUrl}`;
     
     try {
       await this.smsProvider.sendSms(data.recipientPhone, message);
       if (data.recipientEmail) {
+        message = `<p>
+                      Hello ${data.recipientName},<br><br>
+                      ${data.senderName} has invited you to join SocialRelief as a ${data.role}.<br>
+                      Click <a href='${inviteUrl}' target="_blank">here</a> to accept
+                   </p>`;
         await this.emailProvider.sendEmail(data.recipientEmail, message);
       }
     }
@@ -69,29 +73,19 @@ export class UserNotifications {
     }
   }
 
-  async sendSuccessfulDistributionMessages(transaction: Transaction) {
-    const donor = await this.users.getById(transaction.from);
+  private async sendSuccessfulDistributionMessages(transaction: Transaction) {
     const beneficiary = await this.users.getById(transaction.to);
 
-    // Do not reveal beneficiary's full name to the donor
-    const donorMessage = `Hello ${donor.name}, Ksh ${transaction.amount} has been transferred from your SocialRelief donation to your beneficiary ${extractFirstName(beneficiary.name)}.`;
     const beneficiaryMessage = `Hello ${beneficiary.name}, you have received Ksh ${transaction.amount} from your SocialRelief donors.`;
 
-    await Promise.all([
-      this.smsProvider.sendSms(donor.phone, donorMessage),
-      this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage)
-    ]);
-
-    if (donor.email) {
-      await this.emailProvider.sendEmail(donor.email, donorMessage);
-    }
+    await this.smsProvider.sendSms(beneficiary.phone, beneficiaryMessage);
 
     if (beneficiary.email) {
       await this.emailProvider.sendEmail(beneficiary.email, beneficiaryMessage);
     }
   }
 
-  async sendSuccessfulRefundMessage(transaction: Transaction) {
+  private async sendSuccessfulRefundMessage(transaction: Transaction) {
     const user = await this.users.getById(transaction.to);
     const message = `Hello ${user.name}, your refund of Ksh ${transaction.amount} from SocialRelief has been issued.`;
     await this.smsProvider.sendSms(user.phone, message);

@@ -1,5 +1,5 @@
 import { Db, Collection } from 'mongodb';
-import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs, BeneficiaryFilter } from './types';
+import { DonationDistributionService, DonationDistributionResults, DonationDistributionArgs } from './types';
 import { runDonationDistribution } from './run-distribution';
 import { generateId } from '../util';
 import { AppError, createAppError } from '../error';
