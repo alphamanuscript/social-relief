@@ -1,5 +1,5 @@
-import { ReportType, REPORT_TYPE_DAILY, REPORT_TYPE_MONTHLY } from '../distribution-report';
-import { DistributionReport } from '../payment';
+import { DISTRIBUTION_REPORT_ENHANCED } from '../distribution-report';
+import { DistributionReport, MonthlyDistributionReport } from '../payment';
 import { User } from '../user';
 import { extractFirstName } from '../util';
 
@@ -21,15 +21,15 @@ export function createDailyDistributionReportEmailMessage(report: DistributionRe
           </p>`;
 } 
 
-export function createMonthlyDistributionReportSmsMessageForContributingDonor(report: DistributionReport, donor: User, beneficiaries: User[], totalDonationsFromAllDonors: number, donateLink: string): string {
-  return `Hello ${extractFirstName(donor.name)}, A total of Ksh ${totalDonationsFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to ${report.beneficiaries.length} beneficiaries, including ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
+export function createMonthlyDistributionReportSmsMessageForContributingDonor(donorsReport: DISTRIBUTION_REPORT_ENHANCED, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
+  return `Hello ${extractFirstName(donorsReport.donor.name)}, last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries. Ksh ${donorsReport.totalDistributedAmountFromDonor} was sent from your donations to ${beneficiariesAndAmountReceived(donorsReport.beneficiaries, donorsReport.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
-export function createMonthlyDistributionReportEmailMessageForContributingDonor(report: DistributionReport, donor: User, beneficiaries: User[], totalDonationsFromAllDonors: number, donateLink: string): string {
+export function createMonthlyDistributionReportEmailMessageForContributingDonor(donorsReport: DISTRIBUTION_REPORT_ENHANCED, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
   return `<p>
-            Hello ${extractFirstName(donor.name)}, <br><br>
-            A total of Ksh ${totalDonationsFromAllDonors} was transferred last month, of which Ksh ${report.totalDistributedAmountFromDonor} came from your SocialRelief donation and went to ${report.beneficiaries.length} beneficiaries, including:<br>
-            ${beneficiariesAndAmountReceived(beneficiaries, report.receivedAmount, 'email')}.<br>
+            Hello ${extractFirstName(donorsReport.donor.name)}, <br><br>
+            Last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries. Ksh ${donorsReport.totalDistributedAmountFromDonor} was sent from your donations to:<br>
+            ${beneficiariesAndAmountReceived(donorsReport.beneficiaries, donorsReport.receivedAmount, 'email')}.<br>
             Thank you for your contribution.<br>
             To donate again, click <a href='${donateLink}' target="_blank">here</a><br><br>
             Regards,<br>
@@ -37,15 +37,15 @@ export function createMonthlyDistributionReportEmailMessageForContributingDonor(
           </p>`;
 }
 
-export function createMonthlyDistributionReportSmsMessageForOccasionalDonor(donor: User, totalDonationsFromAllDonors: number, totalNumberOfContributingDonors: number, totalNumberOfBeneficiaries: number, donateLink: string) {
-  return `Hello ${extractFirstName(donor.name)}, A total of Ksh ${totalDonationsFromAllDonors} was transferred last month from ${totalNumberOfContributingDonors} donors to ${totalNumberOfBeneficiaries} beneficiaries. If you would like to donate, click ${donateLink}`;
+export function createMonthlyDistributionReportSmsMessageForOccasionalDonor(donor: User, systemWideReport: MonthlyDistributionReport, donateLink: string) {
+  return `Hello ${extractFirstName(donor.name)}, last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries. To donate again, click ${donateLink}`;
 }
 
-export function createMonthlyDistributionReportEmailMessageForOccasionalDonor(donor: User, totalDonationsFromAllDonors: number, totalNumberOfContributingDonors: number, totalNumberOfBeneficiaries: number, donateLink: string) {
+export function createMonthlyDistributionReportEmailMessageForOccasionalDonor(donor: User, systemWideReport: MonthlyDistributionReport, donateLink: string) {
   return `<p>
             Hello ${extractFirstName(donor.name)}, <br><br>
-            A total of Ksh ${totalDonationsFromAllDonors} was transferred last month from ${totalNumberOfContributingDonors} donors to ${totalNumberOfBeneficiaries} beneficiaries.<br> 
-            If you would like to donate, click <a href='${donateLink}' target="_blank">here</a><br><br>
+            Last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries.<br>
+            To donate again, click <a href='${donateLink}' target="_blank">here</a><br><br>
             Regards,<br>
             Social Relief Team
           </p>`;

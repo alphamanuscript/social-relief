@@ -2,6 +2,9 @@ import { EmailProvider } from './types';
 import { rethrowIfAppError, createEmailDeliveryFailedError, createSendGridApiError } from '../error';
 import sgMail = require('@sendgrid/mail');
 
+export const DEFAULT_EMAIL_SUBJECT = 'Social Relief Notification';
+export const EMAIL_SUBJECT_DONATION_REPORT = 'SocialRelief Donation Report';
+
 export interface SendGridEmailProviderArgs {
   apiKey: string,
   emailSender: string
@@ -15,7 +18,7 @@ export class SendGridEmailProvider implements EmailProvider{
     this.emailSender = args.emailSender;
   }
 
-  async sendEmail(to: string, message: string, subject: string = 'Social Relief Notification'): Promise<void> {
+  async sendEmail(to: string, message: string, subject: string = DEFAULT_EMAIL_SUBJECT): Promise<void> {
     try {
       if (to) {
         const res = await sgMail.send({

@@ -6,10 +6,23 @@ import { DistributionReport, MonthlyDistributionReport } from '../payment';
 import { createDailyDistributionReportSmsMessage, createMonthlyDistributionReportSmsMessageForContributingDonor, 
          createDailyDistributionReportEmailMessage, createMonthlyDistributionReportEmailMessageForContributingDonor,
          createMonthlyDistributionReportSmsMessageForOccasionalDonor, createMonthlyDistributionReportEmailMessageForOccasionalDonor } from '../message';
+import { EMAIL_SUBJECT_DONATION_REPORT } from '../email';
 
 const COLLECTION = 'distribution_reports';
 export const REPORT_TYPE_DAILY = 'daily';
 export const REPORT_TYPE_MONTHLY = 'monthly';
+const DEFAULT_DONATION_AMOUNT = 2000;
+
+export interface DISTRIBUTION_REPORT_ENHANCED {
+  donorId: string,
+  donor: User,
+  beneficiaryIds: string[],
+  beneficiaries: User[],
+  receivedAmount: number[],
+  reportType: ReportType,
+  totalDistributedAmountFromDonor: number,
+  createdAt: Date
+}
 
 export class DistributionReports implements DistributionReportService {
   private db: Db;
@@ -62,14 +75,14 @@ export class DistributionReports implements DistributionReportService {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
-        const amount = report.totalDistributedAmountFromDonor < 2000 ? 2000 : report.totalDistributedAmountFromDonor;
+        const amount = report.totalDistributedAmountFromDonor < DEFAULT_DONATION_AMOUNT ? DEFAULT_DONATION_AMOUNT : report.totalDistributedAmountFromDonor;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
         const smsMessage = createDailyDistributionReportSmsMessage(report, donor, beneficiaries, donateLink);
         const emailMessage = createDailyDistributionReportEmailMessage(report, donor, beneficiaries, donateLink);
 
         await Promise.all([
           this.args.smsProvider.sendSms(donor.phone, smsMessage),
-          this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage, EMAIL_SUBJECT_DONATION_REPORT)
         ]);                 
       });
     }
@@ -94,22 +107,29 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private async sendMonthlyDistributionReportMessagesToContributingDonors(report: MonthlyDistributionReport): Promise<void> {
+  private async sendMonthlyDistributionReportMessagesToContributingDonors(systemWideReport: MonthlyDistributionReport): Promise<void> {
     try {
-      const { totalDonations, distributionReports } = report;
+      const { distributionReports } = systemWideReport;
       distributionReports.forEach(async (report: DistributionReport) => {
         const donor = await this.args.users.getById(report.donor);
         const beneficiaries = await this.getBeneficiaries(report.beneficiaries);
 
-        const amount = report.totalDistributedAmountFromDonor < 2000 ? 2000 : report.totalDistributedAmountFromDonor;
+        const amount = report.totalDistributedAmountFromDonor < DEFAULT_DONATION_AMOUNT ? DEFAULT_DONATION_AMOUNT : report.totalDistributedAmountFromDonor;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
-        console.log('donateLink: ', donateLink);
-        const smsMessage = createMonthlyDistributionReportSmsMessageForContributingDonor(report, donor, beneficiaries, totalDonations, donateLink);
-        const emailMessage = createMonthlyDistributionReportEmailMessageForContributingDonor(report, donor, beneficiaries, totalDonations, donateLink);
+        const reportEnhanced: DISTRIBUTION_REPORT_ENHANCED = { 
+          ...report,
+          donorId: report.donor,
+          donor,
+          beneficiaryIds: report.beneficiaries,
+          beneficiaries,
+        }
+
+        const smsMessage = createMonthlyDistributionReportSmsMessageForContributingDonor(reportEnhanced, systemWideReport, donateLink);
+        const emailMessage = createMonthlyDistributionReportEmailMessageForContributingDonor(reportEnhanced, systemWideReport, donateLink);
 
         await Promise.all([
           this.args.smsProvider.sendSms(donor.phone, smsMessage),
-          this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
+          this.args.emailProvider.sendEmail(donor.email, emailMessage, EMAIL_SUBJECT_DONATION_REPORT),
         ]);                 
       });
     }
@@ -120,21 +140,19 @@ export class DistributionReports implements DistributionReportService {
     }
   }
 
-  private async sendMonthlyDistributionReportMessagesToOccasionalDonors(report: MonthlyDistributionReport): Promise<void> {
+  private async sendMonthlyDistributionReportMessagesToOccasionalDonors(systemWideReport: MonthlyDistributionReport): Promise<void> {
     try {
-      const { totalDonations, totalBeneficiaries, distributionReports } = report;
+      const { distributionReports } = systemWideReport;
       if (distributionReports.length) {
         const donorsWithNoConstributions = await this.getDonorsWithNoContributions(distributionReports);
-        console.log('donorsWithNoConstributions: ', donorsWithNoConstributions);
-        const totalNumberOfContributingDonors = distributionReports.length;
         donorsWithNoConstributions.forEach(async (donor) => {
-          const donateLink = await this.args.links.getUserDonateLink(donor, 2000);
-          const smsMessage = createMonthlyDistributionReportSmsMessageForOccasionalDonor(donor, totalDonations, totalNumberOfContributingDonors, totalBeneficiaries, donateLink);
-          const emailMessage = createMonthlyDistributionReportEmailMessageForOccasionalDonor(donor, totalDonations, totalNumberOfContributingDonors, totalBeneficiaries, donateLink);
+          const donateLink = await this.args.links.getUserDonateLink(donor, DEFAULT_DONATION_AMOUNT);
+          const smsMessage = createMonthlyDistributionReportSmsMessageForOccasionalDonor(donor, systemWideReport, donateLink);
+          const emailMessage = createMonthlyDistributionReportEmailMessageForOccasionalDonor(donor, systemWideReport, donateLink);
 
           await Promise.all([
             this.args.smsProvider.sendSms(donor.phone, smsMessage),
-            this.args.emailProvider.sendEmail(donor.email, emailMessage, 'SocialRelief Donation Report'),
+            this.args.emailProvider.sendEmail(donor.email, emailMessage, EMAIL_SUBJECT_DONATION_REPORT),
           ]); 
         });
       }
