@@ -1,1 +1,1 @@
-export { createDistributionReportSmsMessage, createDistributionReportEmailMessage } from './message';
+export * from './message';

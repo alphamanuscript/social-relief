@@ -41,6 +41,7 @@ const SAFE_USER_PROJECTION = {
 };
 
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1, createdAt: 1 };
+const ALL_DONORS_PROJECTION = { _id: 1, phone: 1, name: 1, email: 1, createdAt: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1, addedBy: 1, createdAt: 1};
 
 /**
@@ -855,6 +856,16 @@ export class Users implements UserService {
     }
     catch (e) {
       rethrowIfAppError(e);
+    }
+  }
+
+  async getAllDonors(): Promise<User[]> {
+    try {
+      const donors = await this.collection.find({ roles: { $in: ['donor'] } }, { projection: ALL_DONORS_PROJECTION }).toArray();
+      return donors;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
     }
   }
 }

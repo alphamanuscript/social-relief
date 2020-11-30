@@ -1,5 +1,6 @@
 
 import { User } from '../user/types';
+import { ReportType } from '../distribution-report';
 export type TransactionStatus = 'pending' | 'paymentRequested' | 'paymentQueued' |'failed' | 'success';
 export type TransactionType = 'donation' | 'distribution' | 'refund';
 
@@ -44,8 +45,15 @@ export interface DistributionReport {
   donor: string,
   beneficiaries: string[],
   receivedAmount: number[],
-  totalDistributedAmount: number,
+  reportType: ReportType,
+  totalDistributedAmountFromDonor: number,
   createdAt: Date
+}
+
+export interface MonthlyDistributionReport {
+  totalDonations: number,
+  totalBeneficiaries: number,
+  distributionReports: DistributionReport[];
 }
 
 export interface InitiateDonationArgs {
@@ -106,12 +114,13 @@ export interface TransactionService {
    */
   getUserBalance(userId: string): Promise<number>;
   /**
-   * Generates a distribution report doc for every donor, 
-   * indicating who benefited from such distributions, 
+   * Generates a daily distribution report doc for every donor, 
+   * indicating who benefited from their donation distributions, 
    * how much they received, and how much was distributed in total
    * since the last report
    */
-  generateDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]>
+  generateDailyDistributionReportDocs(lastReportDate: Date): Promise<DistributionReport[]>;
+  generateMonthlyDistributionReport(dateOfLastReport: Date): Promise<MonthlyDistributionReport> 
 }
 
 export interface PaymentRequestResult {
