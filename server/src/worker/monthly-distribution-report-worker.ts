@@ -1,6 +1,5 @@
 import { App } from '../core';
 import { CronJob } from 'cron';
-import { REPORT_TYPE_MONTHLY } from '../core/distribution-report';
 
 export function runMonthlyDistributionReportingWorker(app: App, interval: string) {
   const job = new CronJob(interval, async () => {
