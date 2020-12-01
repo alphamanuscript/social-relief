@@ -1,4 +1,4 @@
-import { DISTRIBUTION_REPORT_ENHANCED } from '../distribution-report';
+import { EnhancedDistributionReport } from '../distribution-report';
 import { DistributionReport, MonthlyDistributionReport } from '../payment';
 import { User } from '../user';
 import { extractFirstName } from '../util';
@@ -21,11 +21,11 @@ export function createDailyDistributionReportEmailMessage(report: DistributionRe
           </p>`;
 } 
 
-export function createMonthlyDistributionReportSmsMessageForContributingDonor(donorsReport: DISTRIBUTION_REPORT_ENHANCED, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
+export function createMonthlyDistributionReportSmsMessageForContributingDonor(donorsReport: EnhancedDistributionReport, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
   return `Hello ${extractFirstName(donorsReport.donor.name)}, last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries. Ksh ${donorsReport.totalDistributedAmountFromDonor} was sent from your donations to ${beneficiariesAndAmountReceived(donorsReport.beneficiaries, donorsReport.receivedAmount, 'sms')}. Thank you for your contribution. To donate again, click ${donateLink}`;
 }
 
-export function createMonthlyDistributionReportEmailMessageForContributingDonor(donorsReport: DISTRIBUTION_REPORT_ENHANCED, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
+export function createMonthlyDistributionReportEmailMessageForContributingDonor(donorsReport: EnhancedDistributionReport, systemWideReport: MonthlyDistributionReport, donateLink: string): string {
   return `<p>
             Hello ${extractFirstName(donorsReport.donor.name)}, <br><br>
             Last month a total of Ksh ${systemWideReport.totalDonations} was donated by ${systemWideReport.distributionReports.length} Social Relief donors to ${systemWideReport.totalBeneficiaries} beneficiaries. Ksh ${donorsReport.totalDistributedAmountFromDonor} was sent from your donations to:<br>
