@@ -1,8 +1,8 @@
-import { LinkGeneratorService, DonateLinkArgs } from "./types";
-import { LinkShortener } from './bitly-link-shortener';
+import { LinkGeneratorService, DonateLinkArgs, LinkShortener } from './types';
 import { User } from '../user';
 import * as queryString from 'querystring';
 import { rethrowIfAppError } from '../error';
+import { removePhoneCountryCode } from '../util';
 
 interface LinksArgs { 
   baseUrl: string;
@@ -18,21 +18,43 @@ export class Links implements LinkGeneratorService {
 
   async getUserDonateLink(user: User, amount: number, shorten: boolean = true): Promise<string> {
     const { name, email, phone } = user;
+    const shortPhone = removePhoneCountryCode(phone);
+
     try {
-      const longLink = this.getDonateLink({ name, email, phone, amount });
-      if (shorten) {
-        const shortLink = await this.args.shortener.shortenLink(longLink);
-        return shortLink;
-      }
+      const longLink = await this.getDonateLink({ name, email, phone: shortPhone, amount }, shorten);
       return longLink;
     }
     catch (e) {
       rethrowIfAppError(e);
     }
   }
-  getDonateLink(args: DonateLinkArgs): string {
-    const { name, email, phone, amount } = args;
-    const nameQuery = queryString.stringify({ n: name}); // n=first%20last
-    return `${this.args.baseUrl}?donate=true&${nameQuery}&e=${email}&p=${phone}&a=${amount}`;
+
+  async getDonateLink(args: DonateLinkArgs, shorten: boolean = true): Promise<string> {
+    const query: any = {};
+
+    if (args.name) {
+      query.n = args.name;
+    }
+
+    if (args.email) {
+      query.e = args.email;
+    }
+
+    if (args.phone) {
+      query.p = args.phone;
+    }
+
+    if (args.amount) {
+      query.a = args.amount;
+    }
+
+    const encodedQuery = queryString.stringify(query);
+    const link = `${this.args.baseUrl}?donate=1&${encodedQuery}`;
+
+    if (shorten) {
+      return this.args.shortener.shortenLink(link);
+    }
+
+    return link;
   }
 }

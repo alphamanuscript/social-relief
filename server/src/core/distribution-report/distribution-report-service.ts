@@ -13,7 +13,7 @@ export const REPORT_TYPE_DAILY = 'daily';
 export const REPORT_TYPE_MONTHLY = 'monthly';
 const DEFAULT_DONATION_AMOUNT = 2000;
 
-export interface DISTRIBUTION_REPORT_ENHANCED {
+export interface EnhancedDistributionReport {
   donorId: string,
   donor: User,
   beneficiaryIds: string[],
@@ -116,7 +116,7 @@ export class DistributionReports implements DistributionReportService {
 
         const amount = report.totalDistributedAmountFromDonor < DEFAULT_DONATION_AMOUNT ? DEFAULT_DONATION_AMOUNT : report.totalDistributedAmountFromDonor;
         const donateLink = await this.args.links.getUserDonateLink(donor, amount);
-        const reportEnhanced: DISTRIBUTION_REPORT_ENHANCED = { 
+        const reportEnhanced: EnhancedDistributionReport = { 
           ...report,
           donorId: report.donor,
           donor,
