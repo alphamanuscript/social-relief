@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { LinkShortener } from './types';
 import { rethrowIfAppError, createBitlyApiError, createLinkShorteningFailedError } from '../error';
 
 export interface DeepLink {
@@ -32,10 +33,6 @@ export interface ShortenLinkRes {
 export interface BitlyArgs {
   apiKey: string;
   apiLink: string;
-}
-
-export interface LinkShortener {
-  shortenLink(link: string): Promise<string>;
 }
 
 export class BitlyLinkShortener implements LinkShortener {

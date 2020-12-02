@@ -73,3 +73,13 @@ export async function verifyGoogleIdToken(token: string): Promise<GoogleUserData
 export function extractFirstName(fullName: string) {
   return fullName && fullName.split(' ')[0];
 }
+
+/**
+ * Removes the leading country code from a phone number
+ * Assumes the first 3 digits make up the country code
+ * 254711222333 -> 711222333
+ * @param phone 
+ */
+export function removePhoneCountryCode(phone: string) {
+  return phone.substr(3);
+}
