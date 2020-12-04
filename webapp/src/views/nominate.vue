@@ -38,7 +38,7 @@
                 </b-input-group-prepend>
                 <b-form-input 
                   v-model="nomineeCreds.phone"
-                  type="text" 
+                  type="number" 
                   :state="validationResults.phone"
                   class="custom-input"  
                   placeholder="xxxxxxxxx"

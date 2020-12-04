@@ -58,7 +58,7 @@
           <label for="phone" class="sr-only">Phone Number (Required by payment provider)</label>
           <b-form-input
             v-model="donationInputs.phone" 
-            type="text" 
+            type="number" 
             :state="validationResults.phone"
             class="custom-dialog-input-phone"
             placeholder="Enter phone number"
