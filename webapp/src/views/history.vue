@@ -28,7 +28,7 @@
           <span class="font-weight-bold">{{ data.index + 1 }}.</span>
         </template>
         <template v-slot:cell(amount)="data">
-          <span v-if="data.item.isOutgoing" class="font-weight-bold text-secondary">- {{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
+          <span v-if="data.item.isOutgoing" class="font-weight-bold text-secondary">-{{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
           <span v-else class="font-weight-bold text-primary">+{{  data.item.status === 'Success' ? formatWithCommaSeparator(data.item.amount) : formatWithCommaSeparator(data.item.expectedAmount) }}</span>
         </template>
         <template v-slot:cell(type)="data">
@@ -157,6 +157,7 @@ export default {
       'totalAmountDistributed',
     ]),
     transactionItems() {
+      console.log('transactions: ', this.transactions);
       return this.transactions.map(t => {
         return {
           _id: t._id,
