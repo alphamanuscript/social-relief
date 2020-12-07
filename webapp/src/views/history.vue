@@ -157,7 +157,6 @@ export default {
       'totalAmountDistributed',
     ]),
     transactionItems() {
-      console.log('transactions: ', this.transactions);
       return this.transactions.map(t => {
         return {
           _id: t._id,
