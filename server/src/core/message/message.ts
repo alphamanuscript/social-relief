@@ -51,6 +51,10 @@ export function createMonthlyDistributionReportEmailMessageForOccasionalDonor(do
           </p>`;
 }
 
+export function createPhoneVerificationSms(user: User, verificationLink: string): string {
+  return `Hello ${extractFirstName(user.name)}, before you can start making donations, you need to confirm your phone number by clicking ${verificationLink}`
+}
+
 function beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[], type: MessageType): string {
   if (type === 'sms') {
     return beneficiariesAndAmountReceivedForSms(beneficiaries, receivedAmount);
