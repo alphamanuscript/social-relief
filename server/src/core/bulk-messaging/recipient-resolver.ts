@@ -101,7 +101,6 @@ export class PhoneRecipientResolver implements RecipientResolver {
 
   async resolve(recipient: string): Promise<User[]> {
     const user = await this.users.getByPhone(recipient);
-    // TODO throw error if user does not exist
     return [user];
   }
 
