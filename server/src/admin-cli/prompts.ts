@@ -62,7 +62,7 @@ export const prompts = {
   sendBulkMessage: [
     {
       type: 'input',
-      message: 'Enter recipients, separated by a comma. A recipient can \'donors\', \'beneficiaries\' or a phone number:\n',
+      message: 'Enter recipients, separated by commas. A recipient can be \'donors\', \'beneficiaries\' or a phone number:\n',
       name: 'recipients'
     },
     {
