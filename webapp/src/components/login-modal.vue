@@ -25,7 +25,7 @@
           <label for="phone" class="sr-only">Phone Number</label>
           <b-form-input 
             v-model="signInCreds.phone" 
-            type="text"
+            type="number"
             :state="signInValidationResults.phone"
             class="custom-dialog-input-phone"
             placeholder="Enter phone number"
