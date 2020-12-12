@@ -1,6 +1,6 @@
 import { createAppError } from '../error';
 import { User, UserService } from '../user';
-import { validatePhone } from '../util';
+import { isValid, validatePhone } from '../util';
 import { RecipientResolver } from './types';
 
 const DONORS_RECIPIENT_GROUP = 'donors';
@@ -90,13 +90,7 @@ export class PhoneRecipientResolver implements RecipientResolver {
   }
   
   canResolve(recipient: string): boolean {
-    try {
-      validatePhone(recipient);
-      return true;
-    }
-    catch (e) {
-      return false;
-    }
+    return isValid(recipient, validatePhone);
   }
 
   async resolve(recipient: string): Promise<User[]> {
