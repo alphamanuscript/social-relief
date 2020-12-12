@@ -28,9 +28,6 @@ describe('BulkMessages', () => {
   let service: BulkMessages;
   let users: UserService;
   let contextFactory: TestContextFactory;
-  let transport: TestMessageTransport;
-
-  
 
   beforeEach(() => {
     users = {
@@ -60,7 +57,6 @@ describe('BulkMessages', () => {
     };
 
     contextFactory = new TestContextFactory();
-    transport = new TestMessageTransport();
 
     service = new BulkMessages({
       users,
@@ -113,6 +109,14 @@ describe('BulkMessages', () => {
           user: null
         }
       ]);
+    });
+  });
+
+  describe('previewMessage', () => {
+    test('should show return resolved template message based on a dummy user', async () => {
+      const template = 'Hi {firstName}, Click here to donate {donateLink}';
+      const preview = await service.previewMessage(template);
+      expect(preview).toBe('Hi John, Click here to donate https://donate?u=dummy_user');
     });
   });
 });
