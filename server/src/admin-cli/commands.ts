@@ -146,7 +146,7 @@ export async function sendBulkMessageCmd(app: App) {
 
     console.log('Messages sent');
     console.log('REPORT');
-    console.log(`Total recipients: ${report.numRecipients}`);
+    console.log(`Total sent: ${report.numRecipients}`);
     console.log();
     console.log('FAILURES');
     console.log(`Total failed: ${report.numFailed}`);
