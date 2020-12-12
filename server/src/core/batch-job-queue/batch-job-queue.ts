@@ -30,6 +30,7 @@ export interface BatchJobQueueHandler<T> {
 export class BatchJobQueue<T> extends EventEmitter {
   private eof = false;
   private busy = false;
+  private isDone = false;
   private buffer: T[];
   private batchSize: number;
   private handler: BatchJobQueueHandler<T>;
@@ -76,7 +77,7 @@ export class BatchJobQueue<T> extends EventEmitter {
    * processing all the jobs 
    */
   run (): Promise<void> {
-    if (this.eof) {
+    if (this.isDone) {
       return Promise.resolve();
     }
 
@@ -100,6 +101,7 @@ export class BatchJobQueue<T> extends EventEmitter {
       await Promise.all(batch.map(this.handler));
       this.busy = false;
       if (this.isEmpty && this.eof) {
+        this.isDone = true;
         this.emit('done');
         return;
       }
