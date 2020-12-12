@@ -71,6 +71,20 @@ export class BatchJobQueue<T> extends EventEmitter {
     }
   }
 
+  /**
+   * Returns a promise that is resolved when the queue has completed
+   * processing all the jobs 
+   */
+  run (): Promise<void> {
+    if (this.eof) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      this.on('done', () => resolve());
+    });
+  }
+
   private takeNextBatch () {
     const batch = this.buffer.splice(0, this.batchSize);
     return batch;
