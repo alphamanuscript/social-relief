@@ -121,7 +121,7 @@ export class BulkMessages implements BulkMessageService {
     catch (e) {
       report.errors.push({
         message: e.message,
-        user: recipient._id,
+        user: recipient._id
       });
 
       report.numFailed += 1;

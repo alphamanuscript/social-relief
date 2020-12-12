@@ -65,3 +65,18 @@ export const isAnonymousSchema = joi.boolean()
   })
 
 export const validateEmail = makeValidatorFromJoiSchema(emailValidationSchema);
+
+/**
+ * checks whether the specified input is valid
+ * @param input 
+ * @param validator 
+ */
+export function isValid(input: any, validator: Function): boolean {
+  try {
+    validator(input);
+    return true;
+  }
+  catch (e) {
+    return false;
+  }
+}

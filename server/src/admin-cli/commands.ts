@@ -1,8 +1,8 @@
-import { App } from '../core';
-import { User } from '../core/user';
-import { prompts } from './prompts';
 import { prompt } from 'inquirer';
-import { UserAddVettedBeneficiaryArgs } from '../core/user/types';
+import { App } from '../core';
+import { isValid, validatePhone } from '../core/util';
+import { User, UserAddVettedBeneficiaryArgs } from '../core/user';
+import { prompts } from './prompts';
 import { SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE } from './command-names';
 
 export async function addVettedBeneficiaryCmd(app: App) {
@@ -137,7 +137,9 @@ export async function sendBulkMessageCmd(app: App) {
       return;
     }
 
-    const parsedRecipients = (<string>recipients).split(',').map(r => r.trim());
+    // trim and remove empty recipients
+    const parsedRecipients = (<string>recipients).split(',').map(r => r.trim()).filter(r => r);
+    console.log('Recipients', parsedRecipients);
     console.log('Sending messages, please wait...');
     const report = await app.bulkMessages.send(parsedRecipients, message);
 
@@ -152,6 +154,19 @@ export async function sendBulkMessageCmd(app: App) {
       console.log(`Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
     });
 
+  }
+  catch (e) {
+    console.error(e.message);
+  }
+}
+
+export async function showUserInfoCmd(app: App) {
+  try {
+    const { identifier } = await prompt(prompts.showUserInfo);
+    const user = isValid(identifier, validatePhone) ?
+      await app.users.getByPhone(identifier) : await app.users.getById(identifier);
+
+    console.log(user);
   }
   catch (e) {
     console.error(e.message);

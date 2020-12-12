@@ -1,6 +1,6 @@
 import {
   ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY, SEND_BULK_MESSAGE,
-  SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE
+  SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE, SHOW_USER_INFO
 } from './command-names';
 
 export const prompts = {
@@ -9,7 +9,7 @@ export const prompts = {
       type: 'list',
       message: 'Select a command to continue:',
       name: 'command',
-      choices: [ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY, SEND_BULK_MESSAGE]
+      choices: [SHOW_USER_INFO, ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY, SEND_BULK_MESSAGE]
     }
   ],
   addVettedBeneficiary: [
@@ -69,6 +69,13 @@ export const prompts = {
       type: 'input',
       message: 'Enter message to send. You can include placeholders like {firstName}, {donateLink} or {baseUrl}',
       name: 'message'
+    }
+  ],
+  showUserInfo: [
+    {
+      type: 'input',
+      message: 'Enter user\'s id or phone number',
+      name: 'identifier'
     }
   ],
   confirmCommand: [
