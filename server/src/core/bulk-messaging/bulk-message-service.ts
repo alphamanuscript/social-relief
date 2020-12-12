@@ -1,11 +1,12 @@
 import { BatchJobQueue } from '../batch-job-queue';
 import { User } from '../user';
+import { DefaultMessageTemplateResolver } from './template-resolver';
 import { BulkMessageService, MessageContextFactory, MessageSender, MessageTemplateResolver, RecipientResolver } from './types';
 
 export interface BulkMessagesArgs {
   recipientResolver: RecipientResolver;
   contextFactory: MessageContextFactory;
-  templateResolver: MessageTemplateResolver;
+  templateResolver?: MessageTemplateResolver;
   sender: MessageSender;
 }
 
@@ -18,7 +19,7 @@ export class BulkMessages implements BulkMessageService {
   constructor(args: BulkMessagesArgs) {
     this.recipientResolver = args.recipientResolver;
     this.contextFactory = args.contextFactory;
-    this.templateResolver = args.templateResolver;
+    this.templateResolver = args.templateResolver || new DefaultMessageTemplateResolver();
     this.sender = args.sender;
   }
 

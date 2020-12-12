@@ -5,6 +5,7 @@ export interface BulkMessageService {
 }
 
 export interface MessageTemplateContext {
+  [placeholder: string]: string;
   firstName: string;
   donateLink: string;
   baseUrl: string;
