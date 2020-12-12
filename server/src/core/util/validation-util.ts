@@ -1,6 +1,5 @@
 import * as joi from '@hapi/joi';
 import { createValidationError } from '../error';
-import { messages } from '..';
 
 export function makeValidatorFromJoiSchema<TArgs = any>(schema: joi.Schema) {
   return (args: TArgs) => {
@@ -30,6 +29,8 @@ export const phoneValidationSchema = joi.string()
     'string.empty': 'Please enter your phone number',
     'string.pattern.base': 'Invalid phone number. Must start with 254 and be 12 digit long'
   });
+
+export const validatePhone = makeValidatorFromJoiSchema(phoneValidationSchema);
 
 export const passwordValidationSchema = joi.string()
   .required()
@@ -64,3 +65,18 @@ export const isAnonymousSchema = joi.boolean()
   })
 
 export const validateEmail = makeValidatorFromJoiSchema(emailValidationSchema);
+
+/**
+ * checks whether the specified input is valid
+ * @param input 
+ * @param validator 
+ */
+export function isValid(input: any, validator: Function): boolean {
+  try {
+    validator(input);
+    return true;
+  }
+  catch (e) {
+    return false;
+  }
+}

@@ -42,8 +42,10 @@ export function isMongoDuplicateKeyError(error: MongoError, key?: any): boolean 
 
 // Our error codes
 export type ErrorCode = 
+  // generic app error
+  'appError'
   // database error occurred when performing db operation
-  'dbOpFailed'
+  | 'dbOpFailed'
   // database error occurred when connecting to db
   | 'dbConnectionFailed'
   | 'loginFailed'
@@ -75,7 +77,7 @@ export type ErrorCode =
   | 'transactionRejected'
   | 'insufficientFunds';
 
-export function createAppError(message: string, code: ErrorCode): AppError {
+export function createAppError(message: string, code: ErrorCode = 'appError'): AppError {
   return new AppError(message, code);
 }
 

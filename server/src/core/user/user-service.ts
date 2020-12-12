@@ -868,4 +868,14 @@ export class Users implements UserService {
       throw createDbOpFailedError(e.message);
     }
   }
+
+  async getAllBeneficiaries(): Promise<User[]> {
+    try {
+      const donors = await this.collection.find({ roles: { $in: ['beneficiary'] } }, { projection: SAFE_USER_PROJECTION }).toArray();
+      return donors;
+    }
+    catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
 }

@@ -1,8 +1,8 @@
 import { App } from '../core';
 import { prompt } from 'inquirer';
 import { prompts } from './prompts';
-import { addVettedBeneficiaryCmd, upgradeUnvettedBeneficiaryCmd, verifyVettedBeneficiaryCmd } from './commands';
-import { ADD_VETTED_BENEFICIARY, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY } from './command-names';
+import { addVettedBeneficiaryCmd, sendBulkMessageCmd, showUserInfoCmd, upgradeUnvettedBeneficiaryCmd, verifyVettedBeneficiaryCmd } from './commands';
+import { ADD_VETTED_BENEFICIARY, SEND_BULK_MESSAGE, SHOW_USER_INFO, UPGRADE_UNVETTED_BENEFICIARY, VERIFY_VETTED_BENEFICIARY } from './command-names';
 
 export async function runAdminCLI(app: App) {
   async function cliLoop() {
@@ -19,6 +19,12 @@ export async function runAdminCLI(app: App) {
           break;
         case VERIFY_VETTED_BENEFICIARY:
           await verifyVettedBeneficiaryCmd(app);
+          break;
+        case SEND_BULK_MESSAGE:
+          await sendBulkMessageCmd(app);
+          break;
+        case SHOW_USER_INFO:
+          await showUserInfoCmd(app);
           break;
       }
     }

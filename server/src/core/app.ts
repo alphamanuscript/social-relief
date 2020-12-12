@@ -4,6 +4,7 @@ import { InvitationService } from './invitation';
 import { DonationDistributionService } from './distribution';
 import { StatsService } from './stat';
 import { DistributionReportService } from './distribution-report';
+import { BulkMessageService } from './bulk-messaging';
 
 export interface App {
   users: UserService;
@@ -12,6 +13,7 @@ export interface App {
   donationDistributions: DonationDistributionService;
   stats: StatsService;
   distributionReports: DistributionReportService;
+  bulkMessages: BulkMessageService;
 };
 
 export interface AppConfig {
