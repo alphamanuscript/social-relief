@@ -83,9 +83,13 @@ export interface BulkMessagesTransport {
  */
 export interface BulkMessageReport {
   /**
-   * The number of users to whom a message was successfuly sent
+   * The number of users to whom a message was successfully sent
    */
   numRecipients: number;
+  /**
+   * The ids of recipients to whom messages were sent successfully
+   */
+  recipients: BulkMessageReportRecipient[];
   /**
    * The number of errors that occurred
    */
@@ -94,6 +98,11 @@ export interface BulkMessageReport {
    * Information about each error
    */
   errors: BulkMessageReportError[];
+}
+
+export interface BulkMessageReportRecipient {
+  name: string;
+  user: string;
 }
 
 export interface BulkMessageReportError {
@@ -106,9 +115,13 @@ export interface BulkMessageReportError {
    */
   recipientGroup?: string;
   /**
-   * The error that a message was being sent to when this error occurred
+   * The user that a message was being sent to when this error occurred
    */
   user?: string;
+  /**
+   * The name of the user that a message was being sent to when this error occurred
+   */
+  name?: string;
 }
 
 /**

@@ -74,6 +74,12 @@ describe('BulkMessages', () => {
       
       expect(report.errors.length).toBe(0);
       expect(report.numRecipients).toEqual(4);
+      expect(report.recipients).toEqual([
+        { user: 'd1', name: 'Fizz Buzz' },
+        { user: 'd2', name: 'What What' },
+        { user: 'u1', name: 'Xy Zw' },
+        { user: 'u2', name: 'Op Fa' }
+      ])
       expect(report.numFailed).toEqual(0);
       expect(service.transport.sendMessage).toHaveBeenCalledTimes(4);
       const expectedArgs = [
@@ -106,7 +112,8 @@ describe('BulkMessages', () => {
         {
           message: 'User not found',
           recipientGroup: '254700111444',
-          user: null
+          user: null,
+          name: null
         }
       ]);
     });

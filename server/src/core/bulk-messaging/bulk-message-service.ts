@@ -47,7 +47,8 @@ export class BulkMessages implements BulkMessageService {
     const report: BulkMessageReport = {
       errors: [],
       numFailed: 0,
-      numRecipients: 0
+      numRecipients: 0,
+      recipients: []
     };
 
     const allRecipients = await this.getRecipients(recipientGroups, report);
@@ -97,6 +98,7 @@ export class BulkMessages implements BulkMessageService {
       report.errors.push({
         recipientGroup: group,
         user: null,
+        name: null,
         message: e.message
       });
 
@@ -117,11 +119,16 @@ export class BulkMessages implements BulkMessageService {
       const message = await this.createMessageForUser(recipient, template);
       await this.transport.sendMessage(recipient, message);
       report.numRecipients += 1;
+      report.recipients.push({
+        user: recipient._id,
+        name: recipient.name
+      });
     }
     catch (e) {
       report.errors.push({
         message: e.message,
-        user: recipient._id
+        user: recipient._id,
+        name: recipient.name
       });
 
       report.numFailed += 1;

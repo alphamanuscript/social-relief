@@ -144,15 +144,16 @@ export async function sendBulkMessageCmd(app: App) {
     const report = await app.bulkMessages.send(parsedRecipients, message);
 
     console.log('Messages sent');
+    console.log('REPORT');
     console.log(`Total recipients: ${report.numRecipients}`);
+    console.log(report.recipients.map(r => `${r.name} (${r.user})`).join(', '));
+    console.log();
+    console.log('FAILURES');
     console.log(`Total failed: ${report.numFailed}`);
-    if (report.errors.length) {
-      
-    }
-
     report.errors.forEach(e => {
       console.log(`Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
     });
+    console.log();
 
   }
   catch (e) {

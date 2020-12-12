@@ -62,19 +62,19 @@ export const prompts = {
   sendBulkMessage: [
     {
       type: 'input',
-      message: 'Enter recipients, separated by a comma. A recipient can \'donors\', \'beneficiaries\' or a phone number',
+      message: 'Enter recipients, separated by a comma. A recipient can \'donors\', \'beneficiaries\' or a phone number:\n',
       name: 'recipients'
     },
     {
       type: 'input',
-      message: 'Enter message to send. You can include placeholders like {firstName}, {donateLink} or {baseUrl}',
+      message: 'Enter message to send. You can include placeholders like {firstName}, {donateLink} or {baseUrl}:\n',
       name: 'message'
     }
   ],
   showUserInfo: [
     {
       type: 'input',
-      message: 'Enter user\'s id or phone number',
+      message: 'Enter user\'s id or phone number:',
       name: 'identifier'
     }
   ],
