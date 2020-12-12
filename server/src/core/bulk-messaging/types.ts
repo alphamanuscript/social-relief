@@ -1,14 +1,8 @@
 import { User } from '../user';
 
 export interface BulkMessageService {
-  send(recipients: string[], messageTemplate: string): Promise<void>;
-}
-
-export interface MessageTemplateContext {
-  [placeholder: string]: string;
-  firstName: string;
-  donateLink: string;
-  baseUrl: string;
+  send(recipients: string[], messageTemplate: string): Promise<BulkMessageReport>;
+  previewMessage(messageTemplate: string): Promise<string>;
 }
 
 export interface MessageContextFactory {
@@ -24,15 +18,25 @@ export interface RecipientResolver {
   resolve(recipient: string): Promise<User[]>;
 }
 
-export interface MessagePlaceholderResolver {
-  canResolve(placeholder: string): boolean;
-  resolve(placeholder: string): Promise<string>;
-}
-
-export interface TemplateValidator {
-  validate(messageTemplate: string): boolean;
-}
-
-export interface MessageSender {
+export interface BulkMessagesTransport {
   sendMessage(recipient: User, message: string): Promise<void>
+}
+
+export interface BulkMessageReport {
+  numRecipients: number;
+  numFailed: number;
+  errors: BulkMessageReportError[];
+}
+
+export interface BulkMessageReportError {
+  message: string;
+  recipientGroup?: string;
+  user?: string;
+}
+
+export interface MessageTemplateContext {
+  [placeholder: string]: string;
+  firstName: string;
+  donateLink: string;
+  baseUrl: string;
 }

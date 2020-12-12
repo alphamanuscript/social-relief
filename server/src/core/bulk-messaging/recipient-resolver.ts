@@ -1,3 +1,4 @@
+import { createAppError } from '../error';
 import { User, UserService } from '../user';
 import { validatePhone } from '../util';
 import { RecipientResolver } from './types';
@@ -10,26 +11,43 @@ export interface DefaultRecipientResolverArgs {
 }
 
 export class DefaultRecipientResolver implements RecipientResolver {
-  resolvers: RecipientResolver[];
+  private innerResolver: CombinedRecipientResolver;
 
   constructor(args: DefaultRecipientResolverArgs) {
-    this.resolvers = [
+    this.innerResolver = new CombinedRecipientResolver(
       new DonorGroupRecipientResolver(args.users),
       new BeneficiaryGroupRecipientResolver(args.users),
       new PhoneRecipientResolver(args.users)
-    ]
+    );
+  }
+
+  canResolve(recipient: string): boolean {
+    return this.innerResolver.canResolve(recipient);
+  }
+
+  resolve(recipient: string): Promise<User[]> {
+    return this.innerResolver.resolve(recipient);
+  }
+
+}
+
+export class CombinedRecipientResolver implements RecipientResolver {
+  private resolvers: RecipientResolver[];
+
+  constructor(...resolvers: RecipientResolver[]) {
+    this.resolvers = resolvers;
   }
 
   canResolve(recipient: string): boolean {
     return this.resolvers.some(resolver => resolver.canResolve(recipient));
   }
-
+  
   resolve(recipient: string): Promise<User[]> {
     const resolver = this.resolvers.find(candidate => candidate.canResolve(recipient));
-    // TODO: throw error if resolver not found
+    if (!resolver) throw createAppError(`Recipient resolver not found for recipient ${resolver}`);
+
     return resolver.resolve(recipient);
   }
-
 }
 
 export class DonorGroupRecipientResolver implements RecipientResolver {
@@ -42,6 +60,7 @@ export class DonorGroupRecipientResolver implements RecipientResolver {
   canResolve(recipient: string): boolean {
     return recipient === DONORS_RECIPIENT_GROUP;
   }
+
   resolve(recipient: string): Promise<User[]> {
     return this.users.getAllDonors();
   }

@@ -1,6 +1,6 @@
 import { SmsProvider } from '../sms';
 import { User } from '../user';
-import { MessageSender as BulkMessageTransport } from './types';
+import { BulkMessagesTransport as BulkMessageTransport } from './types';
 
 export interface DefaultBulkMessageSenderArgs {
   smsProvider: SmsProvider;
