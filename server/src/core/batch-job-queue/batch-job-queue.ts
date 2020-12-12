@@ -30,6 +30,7 @@ export interface BatchJobQueueHandler<T> {
 export class BatchJobQueue<T> extends EventEmitter {
   private eof = false;
   private busy = false;
+  private isDone = false;
   private buffer: T[];
   private batchSize: number;
   private handler: BatchJobQueueHandler<T>;
@@ -71,6 +72,20 @@ export class BatchJobQueue<T> extends EventEmitter {
     }
   }
 
+  /**
+   * Returns a promise that is resolved when the queue has completed
+   * processing all the jobs 
+   */
+  run (): Promise<void> {
+    if (this.isDone) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      this.on('done', () => resolve());
+    });
+  }
+
   private takeNextBatch () {
     const batch = this.buffer.splice(0, this.batchSize);
     return batch;
@@ -86,6 +101,7 @@ export class BatchJobQueue<T> extends EventEmitter {
       await Promise.all(batch.map(this.handler));
       this.busy = false;
       if (this.isEmpty && this.eof) {
+        this.isDone = true;
         this.emit('done');
         return;
       }

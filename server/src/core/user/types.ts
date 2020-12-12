@@ -298,6 +298,10 @@ export interface UserService {
    * Returns all users with the role donor
    */
   getAllDonors(): Promise<User[]>
+  /**
+   * Returns all beneficiaries
+   */
+  getAllBeneficiaries(): Promise<User[]>
 };
 
 export interface UserCreateAnonymousArgs {
