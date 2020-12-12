@@ -123,6 +123,41 @@ export async function verifyVettedBeneficiaryCmd(app: App) {
   }
 }
 
+export async function sendBulkMessageCmd(app: App) {
+  try {
+    const { recipients, message } = await prompt(prompts.sendBulkMessage);
+    const preview = await app.bulkMessages.previewMessage(message);
+    console.log('Here is a preview of the message that will be sent:');
+    console.log(preview);
+    prompts.confirmCommand[0].message = `Are you sure you want proceed sending the message?`;
+    const { confirmation } = await prompt(prompts.confirmCommand);
+
+    if (!confirmation) {
+      console.log('Command aborted!');
+      return;
+    }
+
+    const parsedRecipients = (<string>recipients).split(',').map(r => r.trim());
+    console.log('Sending messages, please wait...');
+    const report = await app.bulkMessages.send(parsedRecipients, message);
+
+    console.log('Messages sent');
+    console.log(`Total recipients: ${report.numRecipients}`);
+    console.log(`Total failed: ${report.numFailed}`);
+    if (report.errors.length) {
+      
+    }
+
+    report.errors.forEach(e => {
+      console.log(`Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
+    });
+
+  }
+  catch (e) {
+    console.error(e.message);
+  }
+}
+
 async function verifyVettedBeneficiaryByProperty(property: string, value: string, app: App) {
   let verifiedVettedBeneficiary;
   try {

@@ -1,6 +1,8 @@
 import { BatchJobQueue } from '../batch-job-queue';
 import { createAppError, createValidationError } from '../error';
+import { SmsProvider } from '../sms';
 import { User, UserService } from '../user';
+import { DefaultBulkMessageTransport } from './message-transport';
 import { DefaultRecipientResolver } from './recipient-resolver';
 import { DefaultMessageTemplateResolver } from './template-resolver';
 import { BulkMessageReport, BulkMessageService, MessageContextFactory, BulkMessagesTransport, MessageTemplateResolver, RecipientResolver } from './types';
@@ -8,7 +10,8 @@ import { BulkMessageReport, BulkMessageService, MessageContextFactory, BulkMessa
 export interface BulkMessagesArgs {
   contextFactory: MessageContextFactory;
   templateResolver?: MessageTemplateResolver;
-  transport: BulkMessagesTransport;
+  transport?: BulkMessagesTransport;
+  smsProvider?: SmsProvider;
   recipientResolver?: RecipientResolver;
   users?: UserService
 }
@@ -21,13 +24,17 @@ export class BulkMessages implements BulkMessageService {
 
   constructor(args: BulkMessagesArgs) {
     if (!args.recipientResolver && !args.users) {
-      throw createAppError('Bulk message args must provide either recipientsResolver or users')
+      throw createAppError('Bulk message args must provide either recipientsResolver or users');
+    }
+
+    if (!args.transport && !args.smsProvider) {
+      throw createAppError('Bulk message args must provide either transport or smsProvider');
     }
 
     this.contextFactory = args.contextFactory;
     this.templateResolver = args.templateResolver || new DefaultMessageTemplateResolver();
     this.recipientResolver = args.recipientResolver || new DefaultRecipientResolver({ users: args.users });
-    this.transport = args.transport;
+    this.transport = args.transport || new DefaultBulkMessageTransport({ smsProvider: args.smsProvider });
   }
 
   async send(recipientGroups: string[], messageTemplate: string): Promise<BulkMessageReport> {
