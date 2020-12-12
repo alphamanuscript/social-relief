@@ -128,6 +128,7 @@ export async function sendBulkMessageCmd(app: App) {
     const { recipients, message } = await prompt(prompts.sendBulkMessage);
     const preview = await app.bulkMessages.previewMessage(message);
     console.log('Here is a preview of the message that will be sent:');
+    console.log();
     console.log(preview);
     prompts.confirmCommand[0].message = `Are you sure you want proceed sending the message?`;
     const { confirmation } = await prompt(prompts.confirmCommand);
@@ -146,12 +147,11 @@ export async function sendBulkMessageCmd(app: App) {
     console.log('Messages sent');
     console.log('REPORT');
     console.log(`Total recipients: ${report.numRecipients}`);
-    console.log(report.recipients.map(r => `${r.name} (${r.user})`).join(', '));
     console.log();
     console.log('FAILURES');
     console.log(`Total failed: ${report.numFailed}`);
     report.errors.forEach(e => {
-      console.log(`Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
+      console.log(`- Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
     });
     console.log();
 
