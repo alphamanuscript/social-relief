@@ -2,11 +2,25 @@ import { BatchJobQueue } from '../batch-job-queue';
 import { User } from '../user';
 import { BulkMessageService, MessageContextFactory, MessageSender, MessageTemplateResolver, RecipientResolver } from './types';
 
+export interface BulkMessagesArgs {
+  recipientResolver: RecipientResolver;
+  contextFactory: MessageContextFactory;
+  templateResolver: MessageTemplateResolver;
+  sender: MessageSender;
+}
+
 export class BulkMessages implements BulkMessageService {
   recipientResolver: RecipientResolver;
   contextFactory: MessageContextFactory;
   templateResolver: MessageTemplateResolver;
   sender: MessageSender;
+
+  constructor(args: BulkMessagesArgs) {
+    this.recipientResolver = args.recipientResolver;
+    this.contextFactory = args.contextFactory;
+    this.templateResolver = args.templateResolver;
+    this.sender = args.sender;
+  }
 
   async send(recipientGroups: string[], messageTemplate: string): Promise<void> {
     // we assume we'll have a few recipient groups, but a single group might
