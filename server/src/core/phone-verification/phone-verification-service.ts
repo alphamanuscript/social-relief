@@ -5,7 +5,7 @@ import { UserService, User } from '../user';
 import { SmsProvider } from '../sms';
 import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
-import { createDbOpFailedError, rethrowIfAppError, createPhoneVerificationRecordNotFound } from '../error';
+import { createDbOpFailedError, rethrowIfAppError, createPhoneVerificationRecordNotFoundError, createPhoneAlreadyVerifiedError } from '../error';
 import * as messages from '../messages';
 
 const COLLECTION = 'phone-verifications';
@@ -13,6 +13,7 @@ const COLLECTION = 'phone-verifications';
 export interface PhoneVerificationRecord {
   _id: string,
   phone: string,
+  isVerified: boolean,
   createdAt: Date,
   updatedAt: Date,
 }
@@ -66,14 +67,15 @@ export class PhoneVerification implements VerificationService {
 
   async confirmVerificationCode(code: string): Promise<void> {
     try { 
-      const record = await this.collection.findOne({
-        _id: code
-      });
+      const record = await this.collection.findOne({ _id: code });
       if (!record) {
-        throw createPhoneVerificationRecordNotFound(messages.ERROR_INVITATION_NOT_FOUND);
+        throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
+      }
+      else if (record.isVerified) {
+        throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
       }
       else {
-        
+        const user = await this.args.users.getByPhone(record.phone);
       }
     }
     catch(e) {

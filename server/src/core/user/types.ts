@@ -16,6 +16,11 @@ export interface User {
   name: string,
   isAnonymous?: boolean,
   /**
+   * indicates whether or not the phone 
+   * of the corresponding donor has been verified.
+   */
+  isPhoneVerified?: boolean,
+  /**
    * indicates whether or not the added beneficiary user 
    * has been approved to receive funds from any donor.
    */

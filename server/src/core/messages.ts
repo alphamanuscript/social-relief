@@ -29,4 +29,5 @@ export const ERROR_USER_BLOCKED_FROM_TRANSACTIONS = 'User is blocked from making
 export const ERROR_NO_BALANCE_FOR_REFUNDS = 'No available balance to request for refund.';
 export const ERROR_TRANSACTION_REJECTED = 'Transaction rejected';
 export const ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND = 'Phone verification record not found';
+export const ERROR_PHONE_ALREADY_VERIFIED = 'Phone already verified'
 

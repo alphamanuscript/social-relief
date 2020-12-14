@@ -69,6 +69,7 @@ export type ErrorCode =
   | 'messageDeliveryFailed'
   | 'emailDeliveryFailed'
   | 'linkShorteningFailed'
+  | 'phoneAlreadyVerified'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -181,6 +182,10 @@ export function createInsufficientFundsError(message: string) {
   return createAppError(message, 'insufficientFunds');
 }
 
-export function createPhoneVerificationRecordNotFound(message: string) {
+export function createPhoneVerificationRecordNotFoundError(message: string) {
   return createAppError(message, 'phoneVerificationRecordNotFound');
+}
+
+export function createPhoneAlreadyVerifiedError(message: string) {
+  return createAppError(message, 'phoneAlreadyVerified');
 }
