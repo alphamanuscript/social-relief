@@ -884,7 +884,7 @@ export class Users implements UserService {
       return verifiedDonor.value;
     }
     catch(e) {
-
+      throw createDbOpFailedError(e.message);
     }
   }
 }
