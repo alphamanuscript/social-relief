@@ -49,7 +49,7 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async sendSms(user: User): Promise<void> {
+  async sendVerificationSms(user: User): Promise<void> {
     try {
       const code = generateId();
       const link = await this.args.links.getPhoneVerificationLink(code);
@@ -63,7 +63,7 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async confirmSms(): Promise<void> {
+  async confirmVerificationSms(): Promise<void> {
     // TODO
   }
 }
