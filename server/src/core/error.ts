@@ -49,6 +49,7 @@ export type ErrorCode =
   | 'loginFailed'
   | 'invalidToken'
   | 'resourceNotFound'
+  | 'phoneVerificationRecordNotFound'
   | 'uniquenessFailed'
   | 'paymentRequestFailed'
   | 'b2cRequestFailed'
@@ -178,4 +179,8 @@ export function createTransactionRejectedError(message: string = messages.ERROR_
 
 export function createInsufficientFundsError(message: string) {
   return createAppError(message, 'insufficientFunds');
+}
+
+export function createPhoneVerificationRecordNotFound(message: string) {
+  return createAppError(message, 'phoneVerificationRecordNotFound');
 }

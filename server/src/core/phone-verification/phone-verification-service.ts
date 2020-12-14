@@ -5,7 +5,8 @@ import { UserService, User } from '../user';
 import { SmsProvider } from '../sms';
 import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
-import { createDbOpFailedError, rethrowIfAppError } from '../error';
+import { createDbOpFailedError, rethrowIfAppError, createPhoneVerificationRecordNotFound } from '../error';
+import * as messages from '../messages';
 
 const COLLECTION = 'phone-verifications';
 
@@ -63,7 +64,22 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async confirmVerificationSms(): Promise<void> {
-    // TODO
+  async confirmVerificationCode(code: string): Promise<void> {
+    try { 
+      const record = await this.collection.findOne({
+        _id: code
+      });
+      if (!record) {
+        throw createPhoneVerificationRecordNotFound(messages.ERROR_INVITATION_NOT_FOUND);
+      }
+      else {
+        
+      }
+    }
+    catch(e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
   }
 }
