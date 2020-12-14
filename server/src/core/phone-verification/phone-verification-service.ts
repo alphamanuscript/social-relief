@@ -76,6 +76,7 @@ export class PhoneVerification implements VerificationService {
       }
       else {
         const user = await this.args.users.getByPhone(record.phone);
+        await this.args.users.verifyUser(user);
       }
     }
     catch(e) {

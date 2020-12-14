@@ -871,17 +871,17 @@ export class Users implements UserService {
     }
   }
 
-  async verifyDonor(donor: User): Promise<User> {
+  public async verifyUser(user: User): Promise<User> {
     try {
-      const verifiedDonor = await this.collection.findOneAndUpdate(
-        { _id: donor._id },
+      const verifiedUser = await this.collection.findOneAndUpdate(
+        { _id: user._id },
         {
           $set: { isPhoneVerified: true },
         },
         { upsert: true, returnOriginal: false, projection: VERIFIED_DONOR_PROTECTION }
       );
 
-      return verifiedDonor.value;
+      return verifiedUser.value;
     }
     catch(e) {
       throw createDbOpFailedError(e.message);
