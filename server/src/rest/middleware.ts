@@ -28,6 +28,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'loginFailed':
         return sendErrorResponse(res, statusCodes.STATUS_UNAUTHORIZED, error);
       case 'resourceNotFound':
+      case 'phoneVerificationRecordNotFound':
         return sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, error);
       case 'uniquenessFailed':
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);

@@ -320,3 +320,9 @@ export interface UserCreateAnonymousArgs {
 export interface UserDonateAnonymouslyArgs extends UserCreateAnonymousArgs {
   amount: number
 }
+
+export interface UserCreatedEventData {
+  user: User;
+}
+
+export interface UserActivatedEventData extends UserCreatedEventData {}

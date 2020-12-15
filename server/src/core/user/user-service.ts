@@ -139,6 +139,7 @@ export class Users implements UserService {
       _id: generateId(),
       phone: args.phone,
       name: args.name,
+      isPhoneVerified: false,
       addedBy: '',
       donors: [],
       roles: ['donor'],
@@ -162,6 +163,7 @@ export class Users implements UserService {
       }
 
       const res = await this.collection.insertOne(user);
+      this.eventBus.emitUserCreated({ user: getSafeUser(res.ops[0]) });
       return getSafeUser(res.ops[0]);
     }
     catch (e) {
@@ -274,6 +276,7 @@ export class Users implements UserService {
         _id: generateId(), 
         password: '', 
         phone,
+        isPhoneVerified: false,
         name,
         addedBy: nominatorId, 
         createdAt: new Date(),
@@ -288,6 +291,8 @@ export class Users implements UserService {
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
+
+      this.eventBus.emitUserActivated({ user: getSafeUser(result.value) });
       return getSafeUser(result.value);
     }
     catch (e) {
@@ -331,6 +336,7 @@ export class Users implements UserService {
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
+      this.eventBus.emitUserActivated({ user: getSafeUser(result.value) });
       return getSafeUser(result.value);
     }
     catch (e) {

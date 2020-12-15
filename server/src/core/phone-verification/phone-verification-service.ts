@@ -7,6 +7,8 @@ import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
 import { createDbOpFailedError, rethrowIfAppError, createPhoneVerificationRecordNotFoundError, createPhoneAlreadyVerifiedError } from '../error';
 import * as messages from '../messages';
+import { EventBus, Event } from '../event';
+import { UserCreatedEventData, UserActivatedEventData } from '../user';
 
 const COLLECTION = 'phone-verifications';
 
@@ -21,7 +23,8 @@ export interface PhoneVerificationRecord {
 export interface PhoneVerificationArgs {
   smsProvider: SmsProvider;
   users: UserService;
-  links: Links
+  links: Links;
+  eventBus: EventBus;
 }
 
 export class PhoneVerification implements VerificationService {
@@ -35,6 +38,34 @@ export class PhoneVerification implements VerificationService {
     this.collection = this.db.collection(COLLECTION);
     this.args = args;
     this.indexesCreated = false;
+
+    this.registerEventHandlers();
+  }
+
+  private registerEventHandlers() {
+    this.args.eventBus.onUserCreated(event => this.handleUserCreated(event));
+    this.args.eventBus.onUserActivated(event => this.handleUserActivated(event));
+  }
+
+  async handleUserCreated(event: Event<UserCreatedEventData>) {
+    console.log('Calling handleUserCreated...');
+    return await this.handleUserCreatedOrActivated(event);
+  }
+
+  async handleUserActivated(event: Event<UserActivatedEventData>) {
+    console.log('Calling handleUserActivated...');
+    return await this.handleUserCreatedOrActivated(event);
+  }
+
+  async handleUserCreatedOrActivated(event: Event<UserCreatedEventData | UserActivatedEventData>) {
+    const { data: { user } } = event;
+
+    try {
+      await this.sendVerificationSms(user);
+    }
+    catch(e) {
+      console.error('Error occurred when handling event', event, e);
+    }
   }
 
   async createIndexes(): Promise<void> {

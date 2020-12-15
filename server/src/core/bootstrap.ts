@@ -14,6 +14,7 @@ import { Statistics } from './stat';
 import { DistributionReports } from './distribution-report';
 import { Links, BitlyLinkShortener } from './link-generator';
 import { BulkMessages, DefaultMessageContextFactory } from './bulk-messaging';
+import { PhoneVerification } from './phone-verification';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -66,6 +67,7 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     apiKey: config.atApiKey,
     sender: config.atSmsSender
   });
+  
   const emailProvider = new SendGridEmailProvider({
     apiKey: config.sendgridApiKey,
     emailSender: config.emailSender
@@ -94,6 +96,13 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     links
   });
 
+  const phoneVerification = new PhoneVerification(db, { 
+    smsProvider,
+    users,
+    links,
+    eventBus
+  });
+
   const messageContextFactory = new DefaultMessageContextFactory({
     baseUrl: config.webappBaseUrl,
     linkGenerator: links
@@ -108,12 +117,14 @@ export async function bootstrap(config: AppConfig): Promise<App> {
   await users.createIndexes();
   await transactions.createIndexes();
   await invitations.createIndexes();
+  await phoneVerification.createIndexes();
 
   return {
     users,
     transactions,
     invitations,
     donationDistributions,
+    phoneVerification,
     stats,
     distributionReports,
     bulkMessages
