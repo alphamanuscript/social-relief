@@ -31,6 +31,7 @@ export const errorHandler = (): ErrorRequestHandler =>
       case 'phoneVerificationRecordNotFound':
         return sendErrorResponse(res, statusCodes.STATUS_NOT_FOUND, error);
       case 'uniquenessFailed':
+      case 'phoneAlreadyVerified':
         return sendErrorResponse(res, statusCodes.STATUS_CONFLICT, error);
       case 'paymentRequestFailed':
       case 'activationFailed':
