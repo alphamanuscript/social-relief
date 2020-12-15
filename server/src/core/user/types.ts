@@ -307,7 +307,11 @@ export interface UserService {
    * Sets the isPhoneVerified field in user
    * to true
    */
-  verifyUser(user: User): Promise<User>
+  verifyUser(user: User): Promise<User>;
+  /**
+   * Returns all beneficiaries
+   */
+  getAllBeneficiaries(): Promise<User[]>
 };
 
 export interface UserCreateAnonymousArgs {
