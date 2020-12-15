@@ -302,20 +302,12 @@ export interface UserService {
   /**
    * Returns all users with the role donor
    */
-<<<<<<< HEAD
   getAllDonors(): Promise<User[]>;
   /**
    * Sets the isPhoneVerified field in user
    * to true
    */
   verifyUser(user: User): Promise<User>
-=======
-  getAllDonors(): Promise<User[]>
-  /**
-   * Returns all beneficiaries
-   */
-  getAllBeneficiaries(): Promise<User[]>
->>>>>>> master
 };
 
 export interface UserCreateAnonymousArgs {
