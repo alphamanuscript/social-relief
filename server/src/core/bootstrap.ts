@@ -13,6 +13,7 @@ import { UserNotifications } from './user-notification';
 import { Statistics } from './stat';
 import { DistributionReports } from './distribution-report';
 import { Links, BitlyLinkShortener } from './link-generator';
+import { BulkMessages, DefaultMessageContextFactory } from './bulk-messaging';
 
 export async function bootstrap(config: AppConfig): Promise<App> {
   const client = await getDbConnection(config.dbUri);
@@ -93,6 +94,17 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     links
   });
 
+  const messageContextFactory = new DefaultMessageContextFactory({
+    baseUrl: config.webappBaseUrl,
+    linkGenerator: links
+  });
+
+  const bulkMessages = new BulkMessages({
+    users,
+    smsProvider,
+    contextFactory: messageContextFactory
+  });
+
   await users.createIndexes();
   await transactions.createIndexes();
   await invitations.createIndexes();
@@ -103,7 +115,8 @@ export async function bootstrap(config: AppConfig): Promise<App> {
     invitations,
     donationDistributions,
     stats,
-    distributionReports
+    distributionReports,
+    bulkMessages
   };
 }
 

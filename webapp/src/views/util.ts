@@ -46,7 +46,7 @@ export const validationMessages = {
 
 export const validationRules = {
   name: { test: (creds: any) => !!creds.name.trim().length },
-  phone: { test: (creds: any) => creds.phone[0] !== '0' && /^(?=.*\d)(?=.{9,9}$)/.test(creds.phone) },
+  phone: { test: (creds: any) => creds.phone[0] !== '0' && creds.phone.length === 9 },
   password: { test: (creds: any) => creds.password.length > 0 },
   confirmedPassword: { test: (creds: any) => creds.confirmedPassword === creds.password },
   email: { test: (creds: any) => /\S+@\S+\.\S+/.test(String(creds.email))},

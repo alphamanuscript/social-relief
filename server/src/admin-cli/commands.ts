@@ -1,8 +1,8 @@
-import { App } from '../core';
-import { User } from '../core/user';
-import { prompts } from './prompts';
 import { prompt } from 'inquirer';
-import { UserAddVettedBeneficiaryArgs } from '../core/user/types';
+import { App } from '../core';
+import { isValid, validatePhone } from '../core/util';
+import { User, UserAddVettedBeneficiaryArgs } from '../core/user';
+import { prompts } from './prompts';
 import { SPECIFY_BENEFICIARY_BY_ID, SPECIFY_BENEFICIARY_BY_PHONE } from './command-names';
 
 export async function addVettedBeneficiaryCmd(app: App) {
@@ -119,6 +119,57 @@ export async function verifyVettedBeneficiaryCmd(app: App) {
     }
   }
   catch(e) {
+    console.error(e.message);
+  }
+}
+
+export async function sendBulkMessageCmd(app: App) {
+  try {
+    const { recipients, message } = await prompt(prompts.sendBulkMessage);
+    const preview = await app.bulkMessages.previewMessage(message);
+    console.log('Here is a preview of the message that will be sent:');
+    console.log();
+    console.log(preview);
+    prompts.confirmCommand[0].message = `Are you sure you want proceed sending the message?`;
+    const { confirmation } = await prompt(prompts.confirmCommand);
+
+    if (!confirmation) {
+      console.log('Command aborted!');
+      return;
+    }
+
+    // trim and remove empty recipients
+    const parsedRecipients = (<string>recipients).split(',').map(r => r.trim()).filter(r => r);
+    console.log('Recipients', parsedRecipients);
+    console.log('Sending messages, please wait...');
+    const report = await app.bulkMessages.send(parsedRecipients, message);
+
+    console.log('Messages sent');
+    console.log('REPORT');
+    console.log(`Total sent: ${report.numRecipients}`);
+    console.log();
+    console.log('FAILURES');
+    console.log(`Total failed: ${report.numFailed}`);
+    report.errors.forEach(e => {
+      console.log(`- Error for recipient '${e.recipientGroup}', user '${e.user}': ${e.message}`);
+    });
+    console.log();
+
+  }
+  catch (e) {
+    console.error(e.message);
+  }
+}
+
+export async function showUserInfoCmd(app: App) {
+  try {
+    const { identifier } = await prompt(prompts.showUserInfo);
+    const user = isValid(identifier, validatePhone) ?
+      await app.users.getByPhone(identifier) : await app.users.getById(identifier);
+
+    console.log(user);
+  }
+  catch (e) {
     console.error(e.message);
   }
 }

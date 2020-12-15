@@ -25,6 +25,23 @@ describe('BatchJobQueue', () => {
     queue.signalEof();
   });
 
+  test('should return promise that is resolved after completion when run is called', async () => {
+    queue.push(1);
+    queue.push(2);
+    queue.push(3);
+    queue.push(4);
+    queue.push(5);
+    queue.push(6);
+    queue.signalEof();
+    await queue.run();
+    expect(handler).toHaveBeenCalledWith(1);
+    expect(handler).toHaveBeenCalledWith(2);
+    expect(handler).toHaveBeenCalledWith(3);
+    expect(handler).toHaveBeenCalledWith(4);
+    expect(handler).toHaveBeenCalledWith(5);
+    expect(handler).toHaveBeenCalledWith(6);
+  });
+
   test('should not run new jobs until it has enough tasks in queue (as determined by batchSize)', (done) => {
     queue.push(1);
     process.nextTick(() => {
