@@ -1,6 +1,6 @@
-import { Db, Collection } from 'mongodb';
+import { Db, Collection, FindAndModifyWriteOpResultObject } from 'mongodb';
 import { generateId } from '../util';
-import { VerificationService } from './types';
+import { VerificationRecord, VerificationService } from './types';
 import { UserService, User } from '../user';
 import { SmsProvider } from '../sms';
 import { Links } from '../link-generator';
@@ -12,7 +12,7 @@ import { UserCreatedEventData, UserActivatedEventData } from '../user';
 
 const COLLECTION = 'phone-verifications';
 
-export interface PhoneVerificationRecord {
+export interface PhoneVerificationRecord extends VerificationRecord {
   _id: string,
   phone: string,
   isVerified: boolean,
@@ -86,6 +86,7 @@ export class PhoneVerification implements VerificationService {
     try {
       const code = generateId();
       const link = await this.args.links.getPhoneVerificationLink(code);
+      console.log('generated link: ', link);
       const smsMessage = createPhoneVerificationSms(user, link);
       await this.args.smsProvider.sendSms(user.phone, smsMessage);
     }
@@ -96,7 +97,7 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async confirmVerificationCode(code: string): Promise<void> {
+  async confirmVerificationCode(code: string): Promise<PhoneVerificationRecord> {
     try { 
       const record = await this.collection.findOne({ _id: code });
       if (!record) {
@@ -106,8 +107,19 @@ export class PhoneVerification implements VerificationService {
         throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
       }
       else {
-        const user = await this.args.users.getByPhone(record.phone);
+        const result = await this.collection.findOneAndUpdate(
+          { _id: code }, 
+          {
+            $set: { isVerified: true },
+            $currentDate: { updatedAt: true }, 
+          },
+          { upsert: true, returnOriginal: false }
+        );
+
+        const user = await this.args.users.getByPhone(result.value.phone);
         await this.args.users.verifyUser(user);
+        return result.value;
+        
       }
     }
     catch(e) {

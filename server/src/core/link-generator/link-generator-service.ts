@@ -59,11 +59,11 @@ export class Links implements LinkGeneratorService {
   }
 
   async getPhoneVerificationLink(code: string, shorten: boolean = true): Promise<string> {
-    const link: string = `${this.args.baseUrl}/confirm/phone/${code}`;
+    const link: string = `${this.args.baseUrl}/verifications/phone/${code}`;
     if (shorten) {
       return this.args.shortener.shortenLink(link);
     }
-
+    
     return link;
   }
 }
