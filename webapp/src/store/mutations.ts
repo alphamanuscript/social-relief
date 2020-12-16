@@ -79,6 +79,12 @@ const mutations: MutationTree<AppState> = {
   unsetCurrentInvitation(state) {
     state.currentInvitation = undefined
   },
+  setPhoneVerificationRecord(state, record) {
+    state.phoneVerificationRecord = record;
+  },
+  unsetPhoneVerificationRecord(state) {
+    state.phoneVerificationRecord = undefined
+  },
   setBeneficiaries(state, beneficiaries) {
     state.beneficiaries = beneficiaries
   },

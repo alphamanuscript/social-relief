@@ -1,5 +1,5 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations, Refunds, Invitations, Statistics } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations, Verifications, Statistics } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
@@ -80,6 +80,10 @@ const actions = wrapActions({
     const invitation = await Invitations.getInvitation(id);
     commit('updateInvitation', invitation);
     commit('setCurrentInvitation', invitation);
+  },
+  async verifyPhone({ commit }, recordId: string) {
+    const record = await Verifications.verifyPhone(recordId);
+    commit('setPhoneVerificationRecord', record);
   },
   async donate({ commit, state }, { amount }: { amount: number }) {
     if (state.user) {
@@ -177,6 +181,7 @@ const actions = wrapActions({
       'unsetTransactions',
       'unsetInvitations',
       'unsetCurrentInvitation',
+      'unsetPhoneVerificationRecord',
       'unsetLastPaymentRequest',
       'unsetMessage',
       'unsetStats',

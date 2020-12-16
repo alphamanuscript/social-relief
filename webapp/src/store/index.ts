@@ -13,6 +13,7 @@ const state: AppState = {
   anonymousUser: undefined,
   newUser: undefined,
   anonymousDonationDetails: undefined,
+  phoneVerificationRecord: undefined,
   beneficiaries: [],
   middlemen: [],
   transactions: [],

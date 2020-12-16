@@ -163,10 +163,19 @@ export interface FAQ {
   answer: string;
 };
 
+export interface PhoneVerificationRecord {
+  _id: string,
+  phone: string,
+  isVerified: boolean,
+  createdAt: Date,
+  updatedAt: Date,
+}
+
 export interface AppState {
   user?: User;
   anonymousUser?: User;
   anonymousDonationDetails?: AnonymousDonateArgs;
+  phoneVerificationRecord?: PhoneVerificationRecord;
   newUser?: User;
   beneficiaries: User[];
   middlemen: User[];
