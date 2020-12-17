@@ -6,6 +6,11 @@
         Your phone number {{ phoneVerificationRecord.phone }} has been verified
       </span>
     </b-card>
+    <b-card v-else-if="error">
+      <span class="text-failure">
+        {{ errorMessage }}
+      </span>
+    </b-card>
     <div v-if="displayReturnHomeButton" class="py-3 text-center">
       <b-button pill variant="primary" class="px-5" @click="handleBtnClick()">Return Home</b-button>
     </div> 
@@ -17,11 +22,13 @@ export default {
   name: 'verify-phone',
   data() {
     return {
-      verifying: true
+      verifying: true,
+      errorOccurred: false,
+      errorMessage: '',
     };
   },
   computed: {
-    ...mapState(['phoneVerificationRecord']),
+    ...mapState(['phoneVerificationRecord', 'message']),
   },
   methods: {
     ...mapActions(['verifyPhone']),
@@ -33,6 +40,13 @@ export default {
     async phoneVerificationRecord(record) {
       if (record && this.verifying) {
         this.verifying = false;
+      }
+    },
+    async message(newMessage) {
+      if (newMessage && newMessage.type === 'error') {
+        this.verifying = false;
+        this.errorOccurred = true;
+        this.errorMessage = newMessage.message;
       }
     }
   }
