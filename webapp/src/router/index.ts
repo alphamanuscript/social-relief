@@ -49,6 +49,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "invitations" */ '../views/accept-invitation.vue')
   },
   {
+    path: '/verifications/phone/:id',
+    name: 'verify-phone', 
+    component: () => import(/* webpackChunkName: "verifications" */ '../views/verify-phone.vue')
+  },
+  {
     path: '/account',
     name: 'account',
     component: () => import(/* webpackChunkName: "account" */ '../views/account.vue')

@@ -42,6 +42,7 @@ export default {
     showLoggedInNavigation () {
       if (this.$route.name === DEFAULT_SIGNED_OUT_PAGE ||
           this.$route.name === 'accept-invitation' ||
+          this.$route.name === 'verify-phone' ||
           this.$route.name === 'signup-new-user' ||
           (this.$route.name === 'post-payment-flutterwave' && AnonymousUser.isSet())) {
         return false
