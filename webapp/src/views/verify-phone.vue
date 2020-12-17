@@ -32,6 +32,9 @@ export default {
   },
   methods: {
     ...mapActions(['verifyPhone']),
+    handleBtnClick() {
+      this.$router.push({ name: 'home' });
+    }
   },
   async mounted() {
     await this.verifyPhone(this.$route.params.id);
