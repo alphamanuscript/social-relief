@@ -52,7 +52,7 @@ export class Links implements LinkGeneratorService {
     const link = `${this.args.baseUrl}?donate=1&${encodedQuery}`;
 
     if (shorten) {
-      return this.args.shortener.shortenLink(link);
+      return await this.args.shortener.shortenLink(link);
     }
 
     return link;
@@ -61,7 +61,7 @@ export class Links implements LinkGeneratorService {
   async getPhoneVerificationLink(code: string, shorten: boolean = true): Promise<string> {
     const link: string = `${this.args.baseUrl}/verifications/phone/${code}`;
     if (shorten) {
-      return this.args.shortener.shortenLink(link);
+      return await this.args.shortener.shortenLink(link);
     }
     
     return link;
