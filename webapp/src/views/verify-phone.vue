@@ -2,22 +2,24 @@
   <b-container class="custom-container">
     <b-card v-if="verifying">Your phone number is being verified...</b-card>
     <b-card v-else-if="phoneVerificationRecord">
-      <span v-if="phoneVerificationRecord.isVerified === 'true'" class="text-success">
+      <span v-if="phoneVerificationRecord.isVerified" class="text-success">
         Your phone number {{ phoneVerificationRecord.phone }} has been verified
       </span>
     </b-card>
-    <b-card v-else-if="error">
+    <b-card v-else-if="errorOccurred">
       <span class="text-failure">
         {{ errorMessage }}
       </span>
     </b-card>
-    <div v-if="displayReturnHomeButton" class="py-3 text-center">
+    <div class="py-3 text-center">
       <b-button pill variant="primary" class="px-5" @click="handleBtnClick()">Return Home</b-button>
     </div> 
   </b-container>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex';
+import store from '@/store';
+
 export default {
   name: 'verify-phone',
   data() {
@@ -28,11 +30,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(['phoneVerificationRecord', 'message']),
+    ...mapState(['phoneVerificationRecord', 'phoneVerificationErrorMessage', 'message']),
   },
   methods: {
     ...mapActions(['verifyPhone']),
     handleBtnClick() {
+      store.commit('unsetPhoneVerificationErrorMessage');
       this.$router.push({ name: 'home' });
     }
   },
@@ -45,11 +48,11 @@ export default {
         this.verifying = false;
       }
     },
-    async message(newMessage) {
-      if (newMessage && newMessage.type === 'error') {
+    async phoneVerificationErrorMessage(message) {
+      if (message.length) {
         this.verifying = false;
         this.errorOccurred = true;
-        this.errorMessage = newMessage.message;
+        this.errorMessage = message;
       }
     }
   }

@@ -184,6 +184,7 @@ const actions = wrapActions({
       'unsetPhoneVerificationRecord',
       'unsetLastPaymentRequest',
       'unsetMessage',
+      'unsetPhoneVerificationErrorMessage',
       'unsetStats',
     ].forEach((mutation) => commit(mutation));
   }

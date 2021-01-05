@@ -5,6 +5,9 @@ import { DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { AppState } from '../types';
 import Vue from 'vue';
 
+const PHONE_VERIFICATION_RECORD_NOT_FOUND_MESSAGE = 'Phone verification record not found';
+const PHONE_ALREADY_VERIFIED_MESSAGE = 'Phone already verified';
+
 /* eslint-disable */
 function setErrorMessage (e: any, commit: any) {
   const message = (e.response && e.response.data && e.response.data.message) || e.message;
@@ -12,6 +15,14 @@ function setErrorMessage (e: any, commit: any) {
     type: 'error',
     message
   });
+
+  if (message === PHONE_VERIFICATION_RECORD_NOT_FOUND_MESSAGE) {
+    commit('setPhoneVerificationErrorMessage', PHONE_VERIFICATION_RECORD_NOT_FOUND_MESSAGE);
+  }
+
+  else if (message === PHONE_ALREADY_VERIFIED_MESSAGE) {
+    commit('setPhoneVerificationErrorMessage', PHONE_ALREADY_VERIFIED_MESSAGE);
+  }
 }
 
 /**

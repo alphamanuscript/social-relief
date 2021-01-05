@@ -20,6 +20,7 @@ const state: AppState = {
   invitations: [],
   currentInvitation: undefined,
   message: { type: '', message: '' },
+  phoneVerificationErrorMessage: '',
   lastPaymentRequest: undefined,
   stats: undefined,
   testimonials,

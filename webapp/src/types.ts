@@ -183,6 +183,7 @@ export interface AppState {
   invitations: Invitation[];
   currentInvitation?: Invitation;
   message: AppMessage;
+  phoneVerificationErrorMessage: string,
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;
   stats?: Stats;
