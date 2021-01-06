@@ -21,8 +21,8 @@ export async function verifyPassword(hashed: string, plain: string): Promise<boo
   }
 }
 
-export function generateId(): string {
-  return randomBytes(16).toString('hex');
+export function generateId(size: number = 16): string {
+  return randomBytes(size).toString('hex');
 }
 
 export function generateToken(): string {
