@@ -1,5 +1,5 @@
 import { Db, Collection, FindAndModifyWriteOpResultObject } from 'mongodb';
-import { generateId } from '../util';
+import { generateId, generatePhoneVerificationCode } from '../util';
 import { VerificationRecord, VerificationService } from './types';
 import { UserService, User } from '../user';
 import { SmsProvider } from '../sms';
@@ -7,8 +7,8 @@ import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
 import { createDbOpFailedError, rethrowIfAppError, 
         createPhoneVerificationRecordNotFoundError, 
-        createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError, 
-        createUniquenessFailedError  } from '../error';
+        createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError,
+        createPhoneVerificationRecordNotFoundOrPhoneAlreadyVerifiedError, createUniquenessFailedError  } from '../error';
 import * as messages from '../messages';
 import { EventBus, Event } from '../event';
 import { UserCreatedEventData, UserActivatedEventData } from '../user';
@@ -26,7 +26,7 @@ export interface PhoneVerificationRecord extends VerificationRecord {
   /**
    * A 6-digit unique code
    */ 
-  code: string, 
+  code: number,
   phone: string,
 }
 
@@ -38,7 +38,8 @@ export interface PhoneVerificationArgs {
 }
 
 export interface PhoneVerificationRecordCreateArgs {
-  code: string;
+  id: string,
+  code: number;
   phone: string;
 }
 
@@ -74,9 +75,10 @@ export class PhoneVerification implements VerificationService {
     const { data: { user } } = event;
 
     try {
-      const code = generateId();
-      await this.sendVerificationSms(user, code);
-      const record = await this.create({ code, phone: user.phone });
+      const id = generateId(); // id to be given to the phone verification record
+      const code = generatePhoneVerificationCode();
+      await this.sendVerificationSms(user, id, code);
+      const record = await this.create({ id, code, phone: user.phone });
     }
     catch(e) {
       console.error('Error occurred when handling event', event, e);
@@ -84,11 +86,11 @@ export class PhoneVerification implements VerificationService {
   }
 
   async create(args: PhoneVerificationRecordCreateArgs): Promise<PhoneVerificationRecord> {
-    const { code, phone } = args;
+    const { id, code, phone } = args;
     try {
       const now = new Date();
       const record = { 
-        _id: generateId(),
+        _id: id,
         code,
         phone,
         isVerified: false,
@@ -116,7 +118,7 @@ export class PhoneVerification implements VerificationService {
         { _id: id }, 
         { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
       );
-      
+
       if (!record) {
         throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
       } 
@@ -143,11 +145,10 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async sendVerificationSms(user: User, code:  string): Promise<void> {
+  async sendVerificationSms(user: User, id: string, code:  number): Promise<void> {
     try {
-      const code = generateId();
-      const link = await this.args.links.getPhoneVerificationLink(code);
-      const smsMessage = createPhoneVerificationSms(user, link);
+      const link = await this.args.links.getPhoneVerificationLink(id);
+      const smsMessage = createPhoneVerificationSms(user, code, link);
       await this.args.smsProvider.sendSms(user.phone, smsMessage);
       this.createIndexes();
     }
@@ -158,29 +159,24 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  public async confirmVerificationCode(code: string): Promise<PhoneVerificationRecord> {
-    try { 
-      const record = await this.collection.findOne({ _id: code });
-      if (!record) {
-        throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
-      }
-      else if (record.isVerified) {
-        throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
+  public async confirmVerificationCode(id: string, code: number): Promise<PhoneVerificationRecord> {
+    try {
+      const result = await this.collection.findOneAndUpdate(
+        { _id: id, code, isVerified: false },
+        {
+          $set: { isVerified: true },
+          $currentDate: { updatedAt: true }, 
+        },
+        { upsert: true, returnOriginal: false }
+      );
+
+      if (!result) {
+        throw createPhoneVerificationRecordNotFoundOrPhoneAlreadyVerifiedError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND_OR_PHONE_ALREADY_VERIFIED);
       }
       else {
-        const result = await this.collection.findOneAndUpdate(
-          { _id: code }, 
-          {
-            $set: { isVerified: true },
-            $currentDate: { updatedAt: true }, 
-          },
-          { upsert: true, returnOriginal: false }
-        );
-
         const user = await this.args.users.getByPhone(result.value.phone);
         await this.args.users.verifyUser(user);
         return result.value;
-        
       }
     }
     catch(e) {

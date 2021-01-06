@@ -9,7 +9,7 @@ export interface VerificationRecord {
 
 export interface VerificationService {
   createIndexes(): Promise<void>;
-  sendVerificationSms(user: User, code: string): Promise<void>;
-  confirmVerificationCode(code: string): Promise<VerificationRecord>;
+  sendVerificationSms(user: User, id: string, code:  number): Promise<void>;
+  confirmVerificationCode(id: string, code: number): Promise<VerificationRecord>;
   getById(id: string): Promise<VerificationRecord>;
 }
