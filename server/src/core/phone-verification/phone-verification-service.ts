@@ -5,19 +5,29 @@ import { UserService, User } from '../user';
 import { SmsProvider } from '../sms';
 import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
-import { createDbOpFailedError, rethrowIfAppError, createPhoneVerificationRecordNotFoundError, createPhoneAlreadyVerifiedError } from '../error';
+import { createDbOpFailedError, rethrowIfAppError, 
+        createPhoneVerificationRecordNotFoundError, 
+        createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError, 
+        createUniquenessFailedError  } from '../error';
 import * as messages from '../messages';
 import { EventBus, Event } from '../event';
 import { UserCreatedEventData, UserActivatedEventData } from '../user';
 
 const COLLECTION = 'phone-verifications';
+const SAFE_PHONE_VERIFICATION_RECORD_PROJECTION = { 
+  _id: 1,
+  phone: 1,
+  isVerified: 1,
+  createdAt: 1,
+  updatedAt: 1
+};
 
 export interface PhoneVerificationRecord extends VerificationRecord {
-  _id: string,
+  /**
+   * A 6-digit unique code
+   */ 
+  code: string, 
   phone: string,
-  isVerified: boolean,
-  createdAt: Date,
-  updatedAt: Date,
 }
 
 export interface PhoneVerificationArgs {
@@ -25,6 +35,11 @@ export interface PhoneVerificationArgs {
   users: UserService;
   links: Links;
   eventBus: EventBus;
+}
+
+export interface PhoneVerificationRecordCreateArgs {
+  code: string;
+  phone: string;
 }
 
 export class PhoneVerification implements VerificationService {
@@ -48,12 +63,10 @@ export class PhoneVerification implements VerificationService {
   }
 
   async handleUserCreated(event: Event<UserCreatedEventData>) {
-    console.log('Calling handleUserCreated...');
     return await this.handleUserCreatedOrActivated(event);
   }
 
   async handleUserActivated(event: Event<UserActivatedEventData>) {
-    console.log('Calling handleUserActivated...');
     return await this.handleUserCreatedOrActivated(event);
   }
 
@@ -61,10 +74,58 @@ export class PhoneVerification implements VerificationService {
     const { data: { user } } = event;
 
     try {
-      await this.sendVerificationSms(user);
+      const code = generateId();
+      await this.sendVerificationSms(user, code);
+      const record = await this.create({ code, phone: user.phone });
     }
     catch(e) {
       console.error('Error occurred when handling event', event, e);
+    }
+  }
+
+  async create(args: PhoneVerificationRecordCreateArgs): Promise<PhoneVerificationRecord> {
+    const { code, phone } = args;
+    try {
+      const now = new Date();
+      const record = { 
+        _id: generateId(),
+        code,
+        phone,
+        isVerified: false,
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      const res = await this.collection.insertOne(record);
+      return res.ops[0];
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+
+      if (isMongoDuplicateKeyError(e, args.phone)) {
+        throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+      }
+
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async getById(id: string): Promise<PhoneVerificationRecord> {
+    try {
+      const record = await this.collection.findOne(
+        { _id: id }, 
+        { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
+      );
+      
+      if (!record) {
+        throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
+      } 
+
+      return record;
+    }
+    catch (e) {
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
     }
   }
 
@@ -82,13 +143,13 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async sendVerificationSms(user: User): Promise<void> {
+  async sendVerificationSms(user: User, code:  string): Promise<void> {
     try {
       const code = generateId();
       const link = await this.args.links.getPhoneVerificationLink(code);
-      console.log('generated link: ', link);
       const smsMessage = createPhoneVerificationSms(user, link);
       await this.args.smsProvider.sendSms(user.phone, smsMessage);
+      this.createIndexes();
     }
     catch(e) {
       console.error("Error occured: ", e.message);
@@ -97,7 +158,7 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async confirmVerificationCode(code: string): Promise<PhoneVerificationRecord> {
+  public async confirmVerificationCode(code: string): Promise<PhoneVerificationRecord> {
     try { 
       const record = await this.collection.findOne({ _id: code });
       if (!record) {
