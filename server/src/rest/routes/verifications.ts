@@ -5,3 +5,6 @@ export const verifications = Router();
 
 verifications.put('/phone/:id', wrapResponse(
   req => req.core.phoneVerification.confirmVerificationCode(req.params.id)));
+
+verifications.get('/phone/:id', wrapResponse(
+  req => req.core.phoneVerification.getById(req.params.id)));
