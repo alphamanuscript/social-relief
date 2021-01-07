@@ -81,7 +81,7 @@ const actions = wrapActions({
     commit('updateInvitation', invitation);
     commit('setCurrentInvitation', invitation);
   },
-  async verifyPhone({ commit }, { id, code }: {id: string; code: number }) {
+  async verifyPhone({ commit }, { id, code }: { id: string; code: number }) {
     const record = await Verifications.verifyPhone({id, code});
     commit('setPhoneVerificationRecord', record);
   },

@@ -41,7 +41,8 @@ export const validationMessages = {
   password: 'Password required',
   confirmedPassword: 'Confirmed password does not match with password',
   email: 'Invalid email',
-  amount: 'Insufficient amount. Donations must be 100 or higher'
+  amount: 'Insufficient amount. Donations must be 100 or higher',
+  code: 'Invalid code. Must be 6 digits long'
 }
 
 export const validationRules = {
@@ -50,5 +51,6 @@ export const validationRules = {
   password: { test: (creds: any) => creds.password.length > 0 },
   confirmedPassword: { test: (creds: any) => creds.confirmedPassword === creds.password },
   email: { test: (creds: any) => /\S+@\S+\.\S+/.test(String(creds.email))},
-  amount: { test: (creds: any) => creds.amount >= 100 }
+  amount: { test: (creds: any) => creds.amount >= 100 },
+  code: { test: (creds: any) => creds.code.length === 6 }
 }
