@@ -171,6 +171,11 @@ export interface PhoneVerificationRecord {
   updatedAt: Date,
 }
 
+export interface PhoneVerificationArgs {
+  id: string, 
+  code:  number
+}
+
 export interface AppState {
   user?: User;
   anonymousUser?: User;
