@@ -161,19 +161,29 @@ export class PhoneVerification implements VerificationService {
 
   public async confirmVerificationCode(id: string, code: number): Promise<PhoneVerificationRecord> {
     try {
-      const result = await this.collection.findOneAndUpdate(
-        { _id: id, code, isVerified: false },
-        {
-          $set: { isVerified: true },
-          $currentDate: { updatedAt: true }, 
-        },
-        { upsert: true, returnOriginal: false }
+      const record = await this.collection.findOne(
+        { _id: id, code }, 
+        { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
       );
 
-      if (!result) {
-        throw createPhoneVerificationRecordNotFoundOrPhoneAlreadyVerifiedError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND_OR_PHONE_ALREADY_VERIFIED);
+      if (!record) {
+        throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
       }
+
+      else if (record.isVerified) {
+        throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
+      }
+
       else {
+        const result = await this.collection.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: { isVerified: true },
+            $currentDate: { updatedAt: true }, 
+          },
+          { upsert: true, returnOriginal: false }
+        );
+
         const user = await this.args.users.getByPhone(result.value.phone);
         await this.args.users.verifyUser(user);
         return result.value;
