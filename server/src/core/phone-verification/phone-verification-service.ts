@@ -6,9 +6,9 @@ import { SmsProvider } from '../sms';
 import { Links } from '../link-generator';
 import { createPhoneVerificationSms } from '../message';
 import { createDbOpFailedError, rethrowIfAppError, 
-        createPhoneVerificationRecordNotFoundError, 
-        createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError,
-        createPhoneVerificationRecordNotFoundOrPhoneAlreadyVerifiedError, createUniquenessFailedError  } from '../error';
+         createPhoneVerificationRecordNotFoundError, 
+         createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError,
+         createUniquenessFailedError  } from '../error';
 import * as messages from '../messages';
 import { EventBus, Event } from '../event';
 import { UserCreatedEventData, UserActivatedEventData } from '../user';

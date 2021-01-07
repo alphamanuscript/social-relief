@@ -3,7 +3,7 @@ import { wrapResponse } from '../middleware';
 
 export const verifications = Router();
 
-verifications.post('/phone/', wrapResponse(
+verifications.put('/phone/', wrapResponse(
   req => req.core.phoneVerification.confirmVerificationCode(req.body.id, req.body.code)));
 
 verifications.get('/phone/:id', wrapResponse(
