@@ -6,7 +6,7 @@
           <b-form-text class="pb-3">
             <span class="h5 text-secondary">Phone Verification</span>
           </b-form-text>
-          <div v-if="verifying">
+          <div v-if="phoneVerificationRecord && !phoneVerificationRecord.isVerified">
             <b-form-row class="py-3">
               <span>Please enter the 6-digit phone verification code sent to 254...</span>
             </b-form-row>
@@ -16,9 +16,13 @@
               </b-col>
               <b-col>
                 <b-form-input
+                  v-model="input.code" 
                   type="number"
+                  :state="validationResults.code"
                   class="custom-input"
+                  placeholder="xxxxxx"
                   size="2px"
+                  id="code"
                 />
                 <b-form-invalid-feedback>
                   {{ validationMessages.code }}
@@ -27,25 +31,24 @@
             </b-form-row>
             <b-form-row class="pt-3">
               <b-col>
-                <b-button variant="secondary" class="custom-submit-button float-right" @click.prevent="submitNomination">Submit</b-button>
+                <b-button variant="secondary" class="custom-submit-button float-right" @click.prevent="submitCode">Submit</b-button>
               </b-col>
             </b-form-row>
           </div>
-          <div v-else-if="phoneVerificationRecord">
+          <div v-else-if="formSubmitted && phoneVerificationRecord && phoneVerificationRecord.isVerified">
             <b-card>
               <span v-if="phoneVerificationRecord.isVerified" class="text-success">
                 Your phone number {{ phoneVerificationRecord.phone }} has been verified
               </span>
             </b-card>
           </div>
-          <div v-else-if="errorOccurred">
+          <div v-else-if="!formSubmitted && !phoneVerificationRecord">
             <b-card>
               <span class="text-failure">
-                {{ errorMessage }}
+                {{ phoneVerificationErrorMessage }}
               </span>
             </b-card>
           </div>
-
         </b-form>
       </div>
     </div>
@@ -62,9 +65,7 @@ export default {
   name: 'verify-phone',
   data() {
     return {
-      verifying: true,
-      errorOccurred: false,
-      errorMessage: '',
+      formSubmitted: false,
       input: {
         code: ''
       },
@@ -78,7 +79,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['phoneVerificationRecord', 'phoneVerificationErrorMessage', 'message']),
+    ...mapState(['phoneVerificationRecord', 'phoneVerificationErrorMessage']),
   },
   methods: {
     ...mapActions(['getPhoneVerificationRecord', 'verifyPhone']),
@@ -93,26 +94,20 @@ export default {
       }
       this.validationResults = await this.validateNamedRules(this.input, this.validationRules);
       if (!Object.values(this.validationResults).includes(false)) {
-        await this.verifyPhone({id: this.phoneVerificationRecord._id, code: this.input.code });
+        await this.verifyPhone({id: this.phoneVerificationRecord._id, code: Number.parseInt(this.input.code) });
       }
     }
   },
   async mounted() {
-    // await this.getPhoneVerificationRecord(this.$route.params.id);
+    await this.getPhoneVerificationRecord(this.$route.params.id);
   },
   watch: {
     async phoneVerificationRecord(record) {
-      if (record && this.verifying) {
-        this.verifying = false;
+      if (record && record.isVerified) {
+        this.validationResults = { code: true };
+        this.formSubmitted = true;
       }
     },
-    async phoneVerificationErrorMessage(message) {
-      if (message.length) {
-        this.verifying = false;
-        this.errorOccurred = true;
-        this.errorMessage = message;
-      }
-    }
   }
 }
 </script>

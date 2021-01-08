@@ -8,7 +8,7 @@ export const Verifications = {
     return res.data;
   },
   async getPhoneVerificationRecord(recordId: string) {
-    const res = await axios.get<PhoneVerificationRecord>(`/verifications/${recordId}`);
+    const res = await axios.get<PhoneVerificationRecord>(`/verifications/phone/${recordId}`);
     return res.data;
   },
 }
