@@ -121,7 +121,11 @@ export class PhoneVerification implements VerificationService {
 
       if (!record) {
         throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
-      } 
+      }
+
+      else if (record.isVerified) {
+        throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
+      }
 
       return record;
     }
@@ -165,6 +169,8 @@ export class PhoneVerification implements VerificationService {
         { _id: id, code }, 
         { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
       );
+
+      console.log('record: ', record);
 
       if (!record) {
         throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
