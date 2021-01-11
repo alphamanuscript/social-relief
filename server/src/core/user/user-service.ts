@@ -333,7 +333,6 @@ export class Users implements UserService {
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
-      this.eventBus.emitUserActivated({ user: getSafeUser(result.value) });
       return getSafeUser(result.value);
     }
     catch (e) {
