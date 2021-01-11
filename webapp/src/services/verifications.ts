@@ -1,9 +1,9 @@
-import { PhoneVerificationRecord, PhoneVerificationArgs } from '../types';
+import { PhoneVerificationRecord, PhoneVerificationArgs, User } from '../types';
 import axios from 'axios';
 
 export const Verifications = {
-  async createPhoneVerificationRecord(phone: string) {
-    const res = await axios.post<PhoneVerificationRecord>(`/verifications/phone`, {phone});
+  async createPhoneVerificationRecord(user: User) {
+    const res = await axios.post<PhoneVerificationRecord>(`/verifications/phone`, { user });
   },
   async verifyPhone(args: PhoneVerificationArgs) {
     const { id, code } = args;
