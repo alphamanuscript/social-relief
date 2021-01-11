@@ -10,4 +10,4 @@ verifications.get('/phone/:id', wrapResponse(
   req => req.core.phoneVerification.getById(req.params.id)));
 
 verifications.post('/phone', wrapResponse(
-  req => req.core.phoneVerification.create(req.body.phone)));
+  req => req.core.phoneVerification.create(req.body.user)));

@@ -32,11 +32,6 @@ export class EventBus extends EventEmitter {
     this.on(EventName.USER_INVITATION_CREATED, listener);
   }
 
-  onUserCreated(listener: Listener<UserCreatedEventData>): void {
-    console.log('In onUserCreated...');
-    this.on(EventName.USER_CREATED, listener);
-  }
-
   onUserActivated(listener: Listener<UserActivatedEventData>): void {
     this.on(EventName.USER_ACTIVATED, listener);
   }

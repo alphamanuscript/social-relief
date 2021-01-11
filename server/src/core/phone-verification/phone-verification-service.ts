@@ -58,44 +58,20 @@ export class PhoneVerification implements VerificationService {
     this.collection = this.db.collection(COLLECTION);
     this.args = args;
     this.indexesCreated = false;
-
-    this.registerEventHandlers();
-  }
-
-  private registerEventHandlers() {
-    this.args.eventBus.onUserCreated(event => this.handleUserCreated(event));
-    this.args.eventBus.onUserActivated(event => this.handleUserActivated(event));
-  }
-
-  async handleUserCreated(event: Event<UserCreatedEventData>) {
-    return await this.handleUserCreatedOrActivated(event);
-  }
-
-  async handleUserActivated(event: Event<UserActivatedEventData>) {
-    return await this.handleUserCreatedOrActivated(event);
-  }
-
-  async handleUserCreatedOrActivated(event: Event<UserCreatedEventData | UserActivatedEventData>) {
-    const { data: { user } } = event;
-
-    try {
-      const id = generateId(); // id to be given to the phone verification record
-      const code = generatePhoneVerificationCode();
-      await this.sendVerificationSms(user, id, code);
-      const record = await this.create({ id, code, phone: user.phone });
-    }
-    catch(e) {
-      console.error('Error occurred when handling event', event, e);
-    }
   }
 
   async create(phone: string): Promise<PhoneVerificationRecord> {
     validators.validatesCreate(phone);
     try {
+      const user = await this.args.users.getByPhone(phone);
+      const id = generateId(); // id to be given to the phone verification record
+      const code = generatePhoneVerificationCode();
+      await this.sendVerificationSms(user, id, code);
+
       const now = new Date();
       const record: DbPhoneVerificationRecord = { 
-        _id: generateId(),
-        code: generatePhoneVerificationCode(),
+        _id: id,
+        code,
         phone,
         isVerified: false,
         createdAt: now,

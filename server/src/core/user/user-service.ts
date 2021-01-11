@@ -162,7 +162,6 @@ export class Users implements UserService {
       }
 
       const res = await this.collection.insertOne(user);
-      this.eventBus.emitUserCreated({ user: getSafeUser(res.ops[0]) });
       return getSafeUser(res.ops[0]);
     }
     catch (e) {
