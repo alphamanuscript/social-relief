@@ -131,11 +131,9 @@ const actions = wrapActions({
    */
   async createUser({ commit }, { name, phone, password, email, googleIdToken }: { name: string; phone: string; password: string; email: string; googleIdToken: string }) {
     const user = await Users.createUser({ name, phone, password, email, googleIdToken });
-    await Users.login({ phone, password, googleIdToken });
-    commit('setUser', user);
-
-    if (user) {
-      router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+    const record = await Verifications.createPhoneVerificationRecord(user.phone);
+    if (record) {
+      router.push({ path: `/verifications/phone/${record._id}` });
     }
   },
    /**
