@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { UserCreatedEventData, UserActivatedEventData, UserInvitationEventData } from '../user';
+import { UserInvitationEventData } from '../user';
 import { TransactionCompletedEventData } from '../payment';
 import * as EventName from './event-name';
 
@@ -32,21 +32,8 @@ export class EventBus extends EventEmitter {
     this.on(EventName.USER_INVITATION_CREATED, listener);
   }
 
-  onUserActivated(listener: Listener<UserActivatedEventData>): void {
-    this.on(EventName.USER_ACTIVATED, listener);
-  }
-
   emitTransactionCompleted(eventData: TransactionCompletedEventData): void {
     this.innerEmit(EventName.TRANSACTION_COMPLETED, eventData);
-  }
-
-  emitUserCreated(eventData: UserCreatedEventData): void {
-    console.log('In emitUserCreated...');
-    this.innerEmit(EventName.USER_CREATED, eventData);
-  }
-
-  emitUserActivated(eventData: UserActivatedEventData): void {
-    this.innerEmit(EventName.USER_ACTIVATED, eventData);
   }
 
   onTransactionCompleted(listener: Listener<TransactionCompletedEventData>): void {
