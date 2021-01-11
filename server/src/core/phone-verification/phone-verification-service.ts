@@ -11,7 +11,6 @@ import { createDbOpFailedError, rethrowIfAppError,
          createUniquenessFailedError  } from '../error';
 import * as messages from '../messages';
 import { EventBus, Event } from '../event';
-import { UserCreatedEventData, UserActivatedEventData } from '../user';
 import * as validators from './validator';
 
 const COLLECTION = 'phone-verifications';
@@ -63,10 +62,9 @@ export class PhoneVerification implements VerificationService {
   async create(phone: string): Promise<PhoneVerificationRecord> {
     validators.validatesCreate(phone);
     try {
-      const user = await this.args.users.getByPhone(phone);
       const id = generateId(); // id to be given to the phone verification record
       const code = generatePhoneVerificationCode();
-      await this.sendVerificationSms(user, id, code);
+      await this.sendVerificationSms(phone, id, code);
 
       const now = new Date();
       const record: DbPhoneVerificationRecord = { 
@@ -129,11 +127,11 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async sendVerificationSms(user: User, id: string, code:  number): Promise<void> {
+  async sendVerificationSms(phone: string, id: string, code:  number): Promise<void> {
     try {
       const link = await this.args.links.getPhoneVerificationLink(id);
-      const smsMessage = createPhoneVerificationSms(user, code, link);
-      await this.args.smsProvider.sendSms(user.phone, smsMessage);
+      const smsMessage = createPhoneVerificationSms(code, link);
+      await this.args.smsProvider.sendSms(phone, smsMessage);
       this.createIndexes();
     }
     catch(e) {
