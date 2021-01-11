@@ -99,7 +99,9 @@ export default {
     }
   },
   async mounted() {
-    await this.getPhoneVerificationRecord(this.$route.params.id);
+    if (!this.phoneVerificationRecord) {
+      await this.getPhoneVerificationRecord(this.$route.params.id);
+    }
   },
   watch: {
     async phoneVerificationRecord(record) {
