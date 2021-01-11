@@ -170,7 +170,7 @@ export default {
     GoogleButton
   },
   computed: {
-    ...mapState(['user', 'newUser']),
+    ...mapState(['user', 'newUser', 'phoneVerificationRecord']),
     imageUrl () {
       return require(`@/assets/Social Relief Logo_1.svg`);
     },
@@ -267,10 +267,8 @@ export default {
         }
       }
     },
-    phoneVerificationRecord(record) {
-      if (record) {
-        this.hideDialog();
-      }
+    phoneVerificationRecord() {
+      this.$bvModal.hide('sign-up');
     }
   }
 }
