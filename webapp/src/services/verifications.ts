@@ -2,6 +2,9 @@ import { PhoneVerificationRecord, PhoneVerificationArgs } from '../types';
 import axios from 'axios';
 
 export const Verifications = {
+  async createPhoneVerificationRecord(phone: string) {
+    const res = await axios.post<PhoneVerificationRecord>(`/verifications/phone`, {phone});
+  },
   async verifyPhone(args: PhoneVerificationArgs) {
     const { id, code } = args;
     const res = await axios.put<PhoneVerificationRecord>(`/verifications/phone/${id}`, {code});
