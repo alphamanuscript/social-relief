@@ -22,12 +22,27 @@ const SAFE_PHONE_VERIFICATION_RECORD_PROJECTION = {
   updatedAt: 1
 };
 
+function getSafePhoneVerificationRecord(record: DbPhoneVerificationRecord): PhoneVerificationRecord {
+  const recordDict: any = record;
+  return Object.keys(SAFE_PHONE_VERIFICATION_RECORD_PROJECTION)
+    .reduce<any>((safeRecord, field) => {
+      if (field in record) {
+        safeRecord[field] = recordDict[field];
+      }
+
+      return safeRecord;
+    }, {});
+}
+
 export interface PhoneVerificationRecord extends VerificationRecord {
+  phone: string,
+}
+
+export interface DbPhoneVerificationRecord extends PhoneVerificationRecord {
   /**
    * A 6-digit unique code
    */ 
   code: number,
-  phone: string,
 }
 
 export interface PhoneVerificationArgs {
@@ -85,13 +100,12 @@ export class PhoneVerification implements VerificationService {
     }
   }
 
-  async create(args: PhoneVerificationRecordCreateArgs): Promise<PhoneVerificationRecord> {
-    const { id, code, phone } = args;
+  async create(phone: string): Promise<PhoneVerificationRecord> {
     try {
       const now = new Date();
       const record = { 
-        _id: id,
-        code,
+        _id: generateId(),
+        code: generatePhoneVerificationCode(),
         phone,
         isVerified: false,
         createdAt: now,
@@ -111,6 +125,33 @@ export class PhoneVerification implements VerificationService {
       throw createDbOpFailedError(e.message);
     }
   }
+
+  // async create(args: PhoneVerificationRecordCreateArgs): Promise<PhoneVerificationRecord> {
+  //   const { id, code, phone } = args;
+  //   try {
+  //     const now = new Date();
+  //     const record = { 
+  //       _id: id,
+  //       code,
+  //       phone,
+  //       isVerified: false,
+  //       createdAt: now,
+  //       updatedAt: now,
+  //     }
+
+  //     const res = await this.collection.insertOne(record);
+  //     return res.ops[0];
+  //   }
+  //   catch (e) {
+  //     rethrowIfAppError(e);
+
+  //     if (isMongoDuplicateKeyError(e, args.phone)) {
+  //       throw createUniquenessFailedError(messages.ERROR_PHONE_ALREADY_IN_USE);
+  //     }
+
+  //     throw createDbOpFailedError(e.message);
+  //   }
+  // }
 
   public async getById(id: string): Promise<PhoneVerificationRecord> {
     try {

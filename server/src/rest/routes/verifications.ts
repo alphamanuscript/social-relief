@@ -8,3 +8,6 @@ verifications.put('/phone/:id', wrapResponse(
 
 verifications.get('/phone/:id', wrapResponse(
   req => req.core.phoneVerification.getById(req.params.id)));
+
+verifications.post('/phone', wrapResponse(
+  req => req.core.phoneVerification.create(req.body.phone)));

@@ -12,4 +12,5 @@ export interface VerificationService {
   sendVerificationSms(user: User, id: string, code:  number): Promise<void>;
   confirmVerificationCode(id: string, code: number): Promise<VerificationRecord>;
   getById(id: string): Promise<VerificationRecord>;
+  create(phone: string): Promise<VerificationRecord>;
 }

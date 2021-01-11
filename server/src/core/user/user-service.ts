@@ -61,7 +61,6 @@ function getSafeUser(user: DbUser): User {
 
       return safeUser;
     }, {});
-      
 }
 
 function hasRole(user: User, role: UserRole): boolean {
