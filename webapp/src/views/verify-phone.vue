@@ -8,7 +8,7 @@
           </b-form-text>
           <div v-if="phoneVerificationRecord && !phoneVerificationRecord.isVerified">
             <b-form-row class="py-3">
-              <span>Please enter the 6-digit phone verification code sent to 254...</span>
+              <span>Please enter the 6-digit phone verification code sent to {{phoneVerificationRecord.phone}}</span>
             </b-form-row>
             <b-form-row class="py-3">
               <b-col sm="12" md="4" class="text-md-right font-weight-bold">

@@ -133,6 +133,7 @@ const actions = wrapActions({
     const user = await Users.createUser({ name, phone, password, email, googleIdToken });
     const record = await Verifications.createPhoneVerificationRecord(user.phone);
     if (record) {
+      commit('setPhoneVerificationRecord', record);
       router.push({ path: `/verifications/phone/${record._id}` });
     }
   },

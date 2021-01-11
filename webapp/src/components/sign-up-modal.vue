@@ -266,6 +266,11 @@ export default {
           role: roles[0]
         }
       }
+    },
+    phoneVerificationRecord(record) {
+      if (record) {
+        this.hideDialog();
+      }
     }
   }
 }
