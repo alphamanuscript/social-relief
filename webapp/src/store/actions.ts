@@ -85,6 +85,10 @@ const actions = wrapActions({
     const record = await Verifications.verifyPhone({id, code});
     commit('setPhoneVerificationRecord', record);
   },
+  async resendPhoneVerificationCode({ commit }, id: string) {
+    const record = await Verifications.resendPhoneVerificationCode(id);
+    commit('setPhoneVerificationRecord', record);
+  },
   async getPhoneVerificationRecord({commit}, id: string) {
     const record = await Verifications.getPhoneVerificationRecord(id);
     commit('setPhoneVerificationRecord', record);

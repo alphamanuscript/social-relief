@@ -1,4 +1,4 @@
-import { PhoneVerificationRecord, PhoneVerificationArgs, User } from '../types';
+import { PhoneVerificationRecord, PhoneVerificationArgs } from '../types';
 import axios from 'axios';
 
 export const Verifications = {
@@ -15,4 +15,8 @@ export const Verifications = {
     const res = await axios.get<PhoneVerificationRecord>(`/verifications/phone/${recordId}`);
     return res.data;
   },
+  async resendPhoneVerificationCode(recordId: string) {
+    const res = await axios.put<PhoneVerificationRecord>(`/verifications/phone/resend/code/${recordId}`);
+    return res.data;
+  }
 }

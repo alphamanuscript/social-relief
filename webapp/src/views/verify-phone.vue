@@ -1,6 +1,6 @@
 <template>
   <b-container class="custom-container">
-    <div class="ml-lg-5">
+    <div class="ml-lg-5 pb-5">
       <div class="bg-white rounded p-5 shadow-sm">
         <b-form class="mx-md-2 px-md-2 mx-lg-3 px-lg-3 mx-xl-5 px-xl-5">
           <b-form-text class="pb-3">
@@ -33,6 +33,9 @@
               <b-col>
                 <b-button variant="secondary" class="custom-submit-button float-right" @click.prevent="submitCode">Submit</b-button>
               </b-col>
+            </b-form-row>
+            <b-form-row class="pt-3 pb-5 float-right">
+              <a href="#" style="text-decoration: underline" @click.prevent="resendCode">Resend code</a>
             </b-form-row>
           </div>
           <div v-else-if="formSubmitted && phoneVerificationRecord && phoneVerificationRecord.isVerified">
@@ -82,7 +85,7 @@ export default {
     ...mapState(['phoneVerificationRecord', 'phoneVerificationErrorMessage']),
   },
   methods: {
-    ...mapActions(['getPhoneVerificationRecord', 'verifyPhone']),
+    ...mapActions(['getPhoneVerificationRecord', 'verifyPhone', 'resendPhoneVerificationCode']),
     validateNamedRules,
     handleBtnClick() {
       store.commit('unsetPhoneVerificationErrorMessage');
@@ -96,6 +99,9 @@ export default {
       if (!Object.values(this.validationResults).includes(false)) {
         await this.verifyPhone({id: this.phoneVerificationRecord._id, code: Number.parseInt(this.input.code) });
       }
+    },
+    async resendCode() {
+      await this.resendPhoneVerificationCode(this.phoneVerificationRecord._id);
     }
   },
   async mounted() {
