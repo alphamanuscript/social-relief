@@ -28,7 +28,7 @@ export const createInputSchema = joi.object().keys({
 
 export const confirmVerificationCodeInputSchema = joi.object().keys({
   recordId: recordIdSchema,
-
+  code: codeSchema
 });
 
 export const resendVerificationCodeInputSchema = joi.object().keys({
