@@ -13,4 +13,5 @@ export interface VerificationService {
   confirmVerificationCode(id: string, code: number): Promise<VerificationRecord>;
   getById(id: string): Promise<VerificationRecord>;
   create(phone: string): Promise<VerificationRecord>;
+  resendVerificationCode(id: string): Promise<VerificationRecord>
 }

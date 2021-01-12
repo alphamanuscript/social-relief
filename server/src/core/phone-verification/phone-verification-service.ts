@@ -142,6 +142,7 @@ export class PhoneVerification implements VerificationService {
   }
 
   public async confirmVerificationCode(id: string, code: number): Promise<PhoneVerificationRecord> {
+    validators.validatesConfirmVerificationCode({ recordId: id, code});
     try {
       const record = await this.collection.findOne(
         { _id: id, code }, 
@@ -170,6 +171,45 @@ export class PhoneVerification implements VerificationService {
 
         const user = await this.args.users.getByPhone(result.value.phone);
         await this.args.users.verifyUser(user);
+        return result.value;
+      }
+    }
+    catch(e) {
+      console.error("Error occured: ", e.message);
+      rethrowIfAppError(e);
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async resendVerificationCode(id: string): Promise<PhoneVerificationRecord> {
+    validators.validatesResendVerificationCode(id);
+    try {
+      const record = await this.collection.findOne(
+        { _id: id, isVerified: false }, 
+        { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
+      );
+
+      if (!record) {
+        throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
+      }
+
+      else if (record.isVerified) {
+        throw createPhoneAlreadyVerifiedError(messages.ERROR_PHONE_ALREADY_VERIFIED);
+      }
+
+      else {
+        const newCode = generatePhoneVerificationCode();
+        await this.sendVerificationSms(record.phone, id, newCode);
+
+        const result = await this.collection.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: { code: newCode },
+            $currentDate: { updatedAt: true }, 
+          },
+          { upsert: true, returnOriginal: false }
+        );
+
         return result.value;
       }
     }
