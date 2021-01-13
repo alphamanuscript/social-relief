@@ -1,4 +1,4 @@
-import { Db, Collection, FindAndModifyWriteOpResultObject } from 'mongodb';
+import { Db, Collection } from 'mongodb';
 import { generateId, generatePhoneVerificationCode } from '../util';
 import { VerificationRecord, VerificationService } from './types';
 import { UserService, User } from '../user';
@@ -8,7 +8,7 @@ import { createPhoneVerificationSms } from '../message';
 import { createDbOpFailedError, rethrowIfAppError, 
          createPhoneVerificationRecordNotFoundError, 
          createPhoneAlreadyVerifiedError, isMongoDuplicateKeyError,
-         createUniquenessFailedError  } from '../error';
+         createUniquenessFailedError, createInvalidPhoneVerificationCodeError  } from '../error';
 import * as messages from '../messages';
 import { EventBus, Event } from '../event';
 import * as validators from './validator';
@@ -144,12 +144,10 @@ export class PhoneVerification implements VerificationService {
   public async confirmVerificationCode(id: string, code: number): Promise<PhoneVerificationRecord> {
     validators.validatesConfirmVerificationCode({ recordId: id, code});
     try {
-      const record = await this.collection.findOne(
-        { _id: id, code }, 
+      let record = await this.collection.findOne(
+        { _id: id }, 
         { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
       );
-
-      console.log('record: ', record);
 
       if (!record) {
         throw createPhoneVerificationRecordNotFoundError(messages.ERROR_PHONE_VERIFICATION_RECORD_NOT_FOUND);
@@ -160,6 +158,15 @@ export class PhoneVerification implements VerificationService {
       }
 
       else {
+        record = await this.collection.findOne(
+          { _id: id, code }, 
+          { projection: SAFE_PHONE_VERIFICATION_RECORD_PROJECTION }
+        );
+
+        if (!record) {
+          throw createInvalidPhoneVerificationCodeError(messages.ERROR_INVALID_PHONE_VERIFICATION_CODE);
+        }
+
         const result = await this.collection.findOneAndUpdate(
           { _id: id },
           {

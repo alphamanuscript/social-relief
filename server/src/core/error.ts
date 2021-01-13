@@ -191,3 +191,7 @@ export function createPhoneVerificationRecordNotFoundError(message: string) {
 export function createPhoneAlreadyVerifiedError(message: string) {
   return createAppError(message, 'phoneAlreadyVerified');
 }
+
+export function createInvalidPhoneVerificationCodeError(message: string) {
+  return createAppError(message, );
+}
