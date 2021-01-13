@@ -72,6 +72,7 @@ export type ErrorCode =
   | 'emailDeliveryFailed'
   | 'linkShorteningFailed'
   | 'phoneAlreadyVerified'
+  | 'invalidPhoneVerificationCode'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -193,5 +194,5 @@ export function createPhoneAlreadyVerifiedError(message: string) {
 }
 
 export function createInvalidPhoneVerificationCodeError(message: string) {
-  return createAppError(message, );
+  return createAppError(message, 'invalidPhoneVerificationCode');
 }
