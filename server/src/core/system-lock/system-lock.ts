@@ -74,9 +74,7 @@ export class SystemLockHandle implements SystemLock {
         { $set: { enabled: false, updatedAt: new Date() } },
         { upsert: true });
 
-      if (!res.ok) {
-        throw createSystemLockBusyError();
-      }
+      if (!res.ok) { throw createSystemLockBusyError(); }
     }
     catch (e) {
       if (e instanceof AppError) throw e;
