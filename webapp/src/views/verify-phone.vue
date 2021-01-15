@@ -7,7 +7,10 @@
             <span class="h5 text-secondary">Phone Verification</span>
           </b-form-text>
           <div v-if="phoneVerificationRecord && !phoneVerificationRecord.isVerified">
-            <b-form-row class="py-3">
+            <b-form-row v-if="resendCodeLinkClicked">
+              <span style="color: green; font-weight: bold">Code was successfully resent.</span>
+            </b-form-row>
+            <b-form-row class="pt-2 pb-3">
               <span>Please enter the 6-digit phone verification code sent to {{phoneVerificationRecord.phone}}</span>
             </b-form-row>
             <b-form-row class="py-3">
@@ -69,6 +72,7 @@ export default {
   data() {
     return {
       formSubmitted: false,
+      resendCodeLinkClicked: false,
       input: {
         code: ''
       },
@@ -92,6 +96,7 @@ export default {
       this.$router.push({ name: 'home' });
     },
     async submitCode() {
+      this.resendCodeLinkClicked = false;
       this.validationMessages = { 
         code: validationMessages.code
       }
@@ -101,6 +106,7 @@ export default {
       }
     },
     async resendCode() {
+      this.resendCodeLinkClicked = true;
       await this.resendPhoneVerificationCode(this.phoneVerificationRecord._id);
     }
   },
@@ -111,11 +117,11 @@ export default {
   },
   watch: {
     async phoneVerificationRecord(record) {
-      if (record && record.isVerified) {
+      if (record && record.isVerified && !this.resendCodeLinkClicked) {
         this.validationResults = { code: true };
         this.formSubmitted = true;
       }
-    },
+    }
   }
 }
 </script>

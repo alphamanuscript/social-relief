@@ -7,6 +7,7 @@ import Vue from 'vue';
 
 const PHONE_VERIFICATION_RECORD_NOT_FOUND_MESSAGE = 'Phone verification record not found';
 const PHONE_ALREADY_VERIFIED_MESSAGE = 'Phone already verified';
+const INVALID_PHONE_VERIFICATION_CODE_MESSAGE = 'Invalid phone verification code';
 
 /* eslint-disable */
 function setErrorMessage (e: any, commit: any) {
@@ -22,6 +23,10 @@ function setErrorMessage (e: any, commit: any) {
 
   else if (message === PHONE_ALREADY_VERIFIED_MESSAGE) {
     commit('setPhoneVerificationErrorMessage', PHONE_ALREADY_VERIFIED_MESSAGE);
+  }
+
+  else if (message === INVALID_PHONE_VERIFICATION_CODE_MESSAGE) {
+    commit('setPhoneVerificationErrorMessage', INVALID_PHONE_VERIFICATION_CODE_MESSAGE);
   }
 }
 

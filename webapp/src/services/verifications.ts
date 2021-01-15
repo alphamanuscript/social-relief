@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const Verifications = {
   async createPhoneVerificationRecord(phone: string) {
-    const res = await axios.post<PhoneVerificationRecord>(`/verifications/phone`, { phone });
+    const res = await axios.post<PhoneVerificationRecord>(`/verifications/phone`, {phone});
     return res.data;
   },
   async verifyPhone(args: PhoneVerificationArgs) {
