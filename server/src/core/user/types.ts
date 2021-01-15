@@ -16,6 +16,11 @@ export interface User {
   name: string,
   isAnonymous?: boolean,
   /**
+   * indicates whether or not the phone 
+   * of the corresponding donor has been verified.
+   */
+  isPhoneVerified?: boolean,
+  /**
    * indicates whether or not the added beneficiary user 
    * has been approved to receive funds from any donor.
    */
@@ -297,7 +302,12 @@ export interface UserService {
   /**
    * Returns all users with the role donor
    */
-  getAllDonors(): Promise<User[]>
+  getAllDonors(): Promise<User[]>;
+  /**
+   * Sets the isPhoneVerified field in user
+   * to true
+   */
+  verifyUser(user: User): Promise<User>;
   /**
    * Returns all beneficiaries
    */
@@ -314,3 +324,9 @@ export interface UserCreateAnonymousArgs {
 export interface UserDonateAnonymouslyArgs extends UserCreateAnonymousArgs {
   amount: number
 }
+
+export interface UserCreatedEventData {
+  user: User;
+}
+
+export interface UserActivatedEventData extends UserCreatedEventData {}

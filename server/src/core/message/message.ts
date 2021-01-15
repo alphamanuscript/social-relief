@@ -51,6 +51,10 @@ export function createMonthlyDistributionReportEmailMessageForOccasionalDonor(do
           </p>`;
 }
 
+export function createPhoneVerificationSms(code: number, verificationLink: string): string {
+  return `Social Relief verification code: ${code}.`
+}
+
 function beneficiariesAndAmountReceived(beneficiaries: User[], receivedAmount: number[], type: MessageType): string {
   if (type === 'sms') {
     return beneficiariesAndAmountReceivedForSms(beneficiaries, receivedAmount);

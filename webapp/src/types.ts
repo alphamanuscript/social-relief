@@ -163,10 +163,24 @@ export interface FAQ {
   answer: string;
 };
 
+export interface PhoneVerificationRecord {
+  _id: string,
+  phone: string,
+  isVerified: boolean,
+  createdAt: Date,
+  updatedAt: Date,
+}
+
+export interface PhoneVerificationArgs {
+  id: string, 
+  code:  number
+}
+
 export interface AppState {
   user?: User;
   anonymousUser?: User;
   anonymousDonationDetails?: AnonymousDonateArgs;
+  phoneVerificationRecord?: PhoneVerificationRecord;
   newUser?: User;
   beneficiaries: User[];
   middlemen: User[];
@@ -174,6 +188,7 @@ export interface AppState {
   invitations: Invitation[];
   currentInvitation?: Invitation;
   message: AppMessage;
+  phoneVerificationErrorMessage: string,
   // keeps track of payment request that has just been created
   lastPaymentRequest?: Transaction;
   stats?: Stats;

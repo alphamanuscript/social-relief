@@ -1,5 +1,5 @@
 import { wrapActions, googleSignOut } from './util';
-import { Users, Transactions, Donations, Refunds, Invitations, Statistics } from '../services';
+import { Users, Transactions, Donations, Refunds, Invitations, Verifications, Statistics } from '../services';
 import router from '../router';
 import { DEFAULT_SIGNED_IN_PAGE, DEFAULT_SIGNED_OUT_PAGE } from '../router/defaults';
 import { NominationRole } from '@/types';
@@ -81,6 +81,18 @@ const actions = wrapActions({
     commit('updateInvitation', invitation);
     commit('setCurrentInvitation', invitation);
   },
+  async verifyPhone({ commit }, { id, code }: { id: string; code: number }) {
+    const record = await Verifications.verifyPhone({id, code});
+    commit('setPhoneVerificationRecord', record);
+  },
+  async resendPhoneVerificationCode({ commit }, id: string) {
+    const record = await Verifications.resendPhoneVerificationCode(id);
+    commit('setPhoneVerificationRecord', record);
+  },
+  async getPhoneVerificationRecord({commit}, id: string) {
+    const record = await Verifications.getPhoneVerificationRecord(id);
+    commit('setPhoneVerificationRecord', record);
+  },
   async donate({ commit, state }, { amount }: { amount: number }) {
     if (state.user) {
       const trx = await Donations.initiateDonation({ amount });
@@ -123,11 +135,10 @@ const actions = wrapActions({
    */
   async createUser({ commit }, { name, phone, password, email, googleIdToken }: { name: string; phone: string; password: string; email: string; googleIdToken: string }) {
     const user = await Users.createUser({ name, phone, password, email, googleIdToken });
-    await Users.login({ phone, password, googleIdToken });
-    commit('setUser', user);
-
-    if (user) {
-      router.push({ name: DEFAULT_SIGNED_IN_PAGE });
+    const record = await Verifications.createPhoneVerificationRecord(user.phone);
+    if (record) {
+      commit('setPhoneVerificationRecord', record);
+      router.push({ path: `/verifications/phone/${record._id}` });
     }
   },
    /**
@@ -177,8 +188,10 @@ const actions = wrapActions({
       'unsetTransactions',
       'unsetInvitations',
       'unsetCurrentInvitation',
+      'unsetPhoneVerificationRecord',
       'unsetLastPaymentRequest',
       'unsetMessage',
+      'unsetPhoneVerificationErrorMessage',
       'unsetStats',
     ].forEach((mutation) => commit(mutation));
   }

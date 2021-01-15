@@ -1,7 +1,7 @@
 import { Db, Collection } from 'mongodb';
 import { generateId } from '../util';
 import { Invitation, DbInvitation, InvitationCreateArgs, InvitationService, InvitationStatus } from './types';
-import { createDbOpFailedError, rethrowIfAppError, createResourceNotFoundError, AppError } from '../error';
+import { createDbOpFailedError, rethrowIfAppError, createResourceNotFoundError } from '../error';
 import * as validators from './validator';
 import * as messages from '../messages';
 

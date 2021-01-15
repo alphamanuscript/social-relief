@@ -5,6 +5,7 @@ import { DonationDistributionService } from './distribution';
 import { StatsService } from './stat';
 import { DistributionReportService } from './distribution-report';
 import { BulkMessageService } from './bulk-messaging';
+import { VerificationService } from './phone-verification';
 
 export interface App {
   users: UserService;
@@ -13,6 +14,7 @@ export interface App {
   donationDistributions: DonationDistributionService;
   stats: StatsService;
   distributionReports: DistributionReportService;
+  phoneVerification: VerificationService;
   bulkMessages: BulkMessageService;
 };
 

@@ -29,6 +29,7 @@ const SAFE_USER_PROJECTION = {
   phone: 1,
   email: 1,
   name: 1,
+  isPhoneVerified: 1,
   isVetted: 1,
   beneficiaryStatus: 1,
   addedBy: 1,
@@ -43,6 +44,7 @@ const SAFE_USER_PROJECTION = {
 const NOMINATED_USER_PROJECTION = { _id: 1, phone: 1, name: 1, createdAt: 1 };
 const ALL_DONORS_PROJECTION = { _id: 1, phone: 1, name: 1, email: 1, createdAt: 1 };
 const RELATED_BENEFICIARY_PROJECTION = { _id: 1, name: 1, addedBy: 1, createdAt: 1};
+const VERIFIED_USER_PROTECTION = { _id: 1, phone: 1, name: 1, isPhoneVerified: 1, createdAt: 1, updatedAt: 1 };
 
 /**
  * removes fields that should
@@ -59,7 +61,6 @@ function getSafeUser(user: DbUser): User {
 
       return safeUser;
     }, {});
-      
 }
 
 function hasRole(user: User, role: UserRole): boolean {
@@ -137,6 +138,7 @@ export class Users implements UserService {
       _id: generateId(),
       phone: args.phone,
       name: args.name,
+      isPhoneVerified: false,
       addedBy: '',
       donors: [],
       roles: ['donor'],
@@ -272,6 +274,7 @@ export class Users implements UserService {
         _id: generateId(), 
         password: '', 
         phone,
+        isPhoneVerified: false,
         name,
         addedBy: nominatorId, 
         createdAt: new Date(),
@@ -286,6 +289,7 @@ export class Users implements UserService {
         },
         { upsert: true, returnOriginal: false, projection: NOMINATED_USER_PROJECTION }
       );
+
       return getSafeUser(result.value);
     }
     catch (e) {
@@ -865,6 +869,23 @@ export class Users implements UserService {
       return donors;
     }
     catch (e) {
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  public async verifyUser(user: User): Promise<User> {
+    try {
+      const verifiedUser = await this.collection.findOneAndUpdate(
+        { _id: user._id },
+        {
+          $set: { isPhoneVerified: true },
+        },
+        { upsert: true, returnOriginal: false, projection: VERIFIED_USER_PROTECTION }
+      );
+
+      return verifiedUser.value;
+    }
+    catch(e) {
       throw createDbOpFailedError(e.message);
     }
   }

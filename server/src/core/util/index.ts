@@ -83,3 +83,12 @@ export function extractFirstName(fullName: string) {
 export function removePhoneCountryCode(phone: string) {
   return phone.substr(3);
 }
+
+/**
+ * Generates a 6-digit unique code
+ * to be used by user when verifying
+ * their phone number
+ */
+export function generatePhoneVerificationCode() {
+  return Math.floor(100000 + Math.random() * 900000);
+}

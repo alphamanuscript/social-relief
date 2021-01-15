@@ -51,6 +51,7 @@ export type ErrorCode =
   | 'loginFailed'
   | 'invalidToken'
   | 'resourceNotFound'
+  | 'phoneVerificationRecordNotFound'
   | 'uniquenessFailed'
   | 'paymentRequestFailed'
   | 'b2cRequestFailed'
@@ -70,6 +71,8 @@ export type ErrorCode =
   | 'messageDeliveryFailed'
   | 'emailDeliveryFailed'
   | 'linkShorteningFailed'
+  | 'phoneAlreadyVerified'
+  | 'invalidPhoneVerificationCode'
   /**
    * This error should only be thrown when a transaction fails
    * because the user's transactions are blocked (based on the transactionsBlockedReason field)
@@ -180,4 +183,16 @@ export function createTransactionRejectedError(message: string = messages.ERROR_
 
 export function createInsufficientFundsError(message: string) {
   return createAppError(message, 'insufficientFunds');
+}
+
+export function createPhoneVerificationRecordNotFoundError(message: string) {
+  return createAppError(message, 'phoneVerificationRecordNotFound');
+}
+
+export function createPhoneAlreadyVerifiedError(message: string) {
+  return createAppError(message, 'phoneAlreadyVerified');
+}
+
+export function createInvalidPhoneVerificationCodeError(message: string) {
+  return createAppError(message, 'invalidPhoneVerificationCode');
 }
