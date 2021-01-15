@@ -69,8 +69,14 @@ export class SystemLockHandle implements SystemLock {
 
   async disable(): Promise<void> {
     try {
-      const res = await this.collection.findOne({ _id: this.id, locked: true });
-      if (res) throw createSystemLockBusyError();
+      const res = await this.collection.findOneAndUpdate(
+        { _id: this.id, locked: false },
+        { $set: { enabled: false, updatedAt: new Date() } },
+        { upsert: true });
+
+      if (!res.ok) {
+        throw createSystemLockBusyError();
+      }
     }
     catch (e) {
       if (e instanceof AppError) throw e;
