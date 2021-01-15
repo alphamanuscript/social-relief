@@ -1,6 +1,7 @@
 import { Collection } from 'mongodb';
 import { SystemLock, SystemLockRecord } from './types';
-import { createSystemLockBusyError, AppError, createDbOpFailedError, isMongoDuplicateKeyError } from '../error';
+import { createSystemLockBusyError, AppError, createDbOpFailedError, 
+         isMongoDuplicateKeyError, createSystemLockDisabledError } from '../error';
 import { generateId } from '../util';
 
 
@@ -31,6 +32,9 @@ export class SystemLockHandle implements SystemLock {
       if (!res.ok) {
         throw createSystemLockBusyError();
       }
+      else if (!res.value.enabled) {
+        throw createSystemLockDisabledError();
+      }
     }
     catch (e) {
       if (e instanceof AppError) throw e;
@@ -53,6 +57,17 @@ export class SystemLockHandle implements SystemLock {
   }
 
   async ensureUnlocked() {
+    try {
+      const res = await this.collection.findOne({ _id: this.id, locked: true });
+      if (res) throw createSystemLockBusyError();
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async disable(): Promise<void> {
     try {
       const res = await this.collection.findOne({ _id: this.id, locked: true });
       if (res) throw createSystemLockBusyError();

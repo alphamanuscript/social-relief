@@ -66,6 +66,7 @@ export type ErrorCode =
   | 'validationError'
   | 'batchQueueError'
   | 'systemLockLocked'
+  | 'systemLockDisabled'
   | 'systemLockInvalidState'
   | 'messageDeliveryFailed'
   | 'emailDeliveryFailed'
@@ -143,6 +144,10 @@ export function createMiddlemanActivationFailedError(message: string = messages.
 
 export function createSystemLockBusyError(message: string = messages.ERROR_CONFLICTING_OPERATION_IN_PROGRESS) {
   return createAppError(message, 'systemLockLocked');
+}
+
+export function createSystemLockDisabledError(message: string = messages.ERROR_SYSTEM_LOCK_DISABLED) {
+  return createAppError(message, 'systemLockDisabled');
 }
 
 export function createSystemLockInvalidStateError(message: string) {

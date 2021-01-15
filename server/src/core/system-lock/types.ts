@@ -1,6 +1,7 @@
 export interface SystemLockRecord {
   _id: string;
   locked: boolean;
+  enabled: boolean;
   lockedWithKey: string;
   updatedAt: Date;
 }
@@ -10,6 +11,8 @@ export interface SystemLock {
   unlock(): Promise<void>;
   ensureUnlocked(): Promise<void>;
   getKey(): string;
+  disable(): Promise<void>;
+  enable(): Promise<void>;
 }
 
 export interface SystemLockService {
