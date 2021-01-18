@@ -115,6 +115,13 @@ describe('SystemLock tests', () => {
       expect(record.locked).toBe(false);
     });
 
+    test('should succeed if lock is not locked and is disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.ensureUnlocked();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.locked).toBe(false);
+    });
+
     test('should succeed if lock does not exist', async () => {
       await dbUtils.dropCollection();
       const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
@@ -131,6 +138,62 @@ describe('SystemLock tests', () => {
       catch (e) {
         expect(e.code).toBe('systemLockLocked');
       }
-    })
+    });
+  });
+
+  describe('enabled', () => {
+    test('should succeed if lock is disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is enabled', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is locked', async () => {
+      const lock = new SystemLockHandle('lock4', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock4' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is unlocked', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(true);
+    });
+  });
+
+  describe('disable', () => {
+    test('should succeed if lock is unlocked and enabled', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.disable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(false);
+    });
+
+    test('should succeed if lock is unlocked and disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.disable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.enabled).toBe(false);
+    });
+
+    test('should throw error if lock is locked', async () => {
+      const lock = new SystemLockHandle('lock1', dbUtils.getCollection());
+      try {
+        await lock.disable();
+      }
+      catch (e) {
+        expect(e.code).toBe('systemLockLocked');
+      }
+    });
   });
 });

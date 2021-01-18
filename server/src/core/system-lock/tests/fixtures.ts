@@ -18,5 +18,12 @@ export const systemLocks = [
     enabled: false,
     updatedAt: new Date(),
     lockedWithKey: 'lock3Key'
+  },
+  {
+    _id: 'lock4',
+    locked: true,
+    enabled: false,
+    updatedAt: new Date(),
+    lockedWithKey: 'lock4Key'
   }
 ]
