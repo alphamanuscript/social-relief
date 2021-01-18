@@ -24,16 +24,21 @@ export class SystemLockHandle implements SystemLock {
   
   async lock() {
     try {
-      const res = await this.collection.findOneAndUpdate(
-        { _id: this.id, locked: { $ne: true } },
-        { $set: { locked: true, updatedAt: new Date(), lockedWithKey: this.key } },
-        { upsert: true });
+      let res = await this.collection.findOne({ _id: this.id, locked: { $ne: true } });
 
-      if (!res.ok) {
+      if (!res) {
         throw createSystemLockBusyError();
       }
-      else if (!res.value.enabled) {
+      else if (!res.enabled) {
         throw createSystemLockDisabledError();
+      }
+
+      else {
+        await this.collection.findOneAndUpdate(
+          { _id: this.id },
+          { $set: { locked: true, updatedAt: new Date(), lockedWithKey: this.key } },
+          { upsert: true }
+        );
       }
     }
     catch (e) {

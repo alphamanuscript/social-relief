@@ -1,6 +1,7 @@
 import { createDbUtils } from '../../test-util';
 import { systemLocks } from './fixtures';
 import { SystemLockHandle } from '../system-lock';
+import { generateId } from '../../util';
 
 const DB = '_crowd_relief_system_lock_tests_';
 const COLLECTION = 'system_locks';
@@ -26,6 +27,12 @@ describe('SystemLock tests', () => {
       const lock2 = new SystemLockHandle('someLock', dbUtils.getCollection());
       expect(lock1.getKey()).not.toEqual(lock2.getKey());
     });
+
+    test('creates lock with specified key', async () => {
+      const key = generateId();
+      const lock = new SystemLockHandle('someLock', dbUtils.getCollection(), key);
+      expect(lock.getKey).toEqual(key);
+    });
   });
 
   describe('lock', () => {
@@ -46,13 +53,23 @@ describe('SystemLock tests', () => {
       expect(record.lockedWithKey).toBe('anotherKey');
     });
 
-    test('should throw error if already locked', async () => {
+    test('should throw error if already locked and enabled', async () => {
       const lock = new SystemLockHandle('lock1', dbUtils.getCollection());
       try {
         await lock.lock();
       }
       catch (e) {
         expect(e.code).toBe('systemLockLocked');
+      }
+    });
+
+    test('should throw error if unlocked but disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      try {
+        await lock.lock();
+      }
+      catch (e) {
+        expect(e.code).toBe('systemLockDisabled');
       }
     });
   });
