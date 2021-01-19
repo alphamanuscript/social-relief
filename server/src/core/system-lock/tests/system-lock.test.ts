@@ -53,7 +53,7 @@ describe('SystemLock tests', () => {
       expect(record.lockedWithKey).toBe('anotherKey');
     });
 
-    test('should throw error if already locked and enabled', async () => {
+    test('should throw error if already locked', async () => {
       const lock = new SystemLockHandle('lock1', dbUtils.getCollection());
       try {
         await lock.lock();
