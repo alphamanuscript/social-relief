@@ -92,8 +92,7 @@ export class SystemLockHandle implements SystemLock {
     try {
       const res = await this.collection.findOneAndUpdate(
         { _id: this.id, locked: false },
-        { $set: { enabled: false, updatedAt: new Date() } }
-      );
+        { $set: { enabled: false, updatedAt: new Date() } });
 
       if (!res.ok) { throw createSystemLockBusyError(); }
     }
