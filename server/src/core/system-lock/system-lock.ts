@@ -24,26 +24,29 @@ export class SystemLockHandle implements SystemLock {
   
   async lock() {
     try {
-      let res = await this.collection.findOne({ _id: this.id, locked: { $ne: true } });
+      let res = await this.collection.findOne({ _id: this.id });
 
       if (!res) {
-        throw createSystemLockBusyError();
+        const now = new Date();
+        await this.collection.insertOne({ 
+          _id: this.id, 
+          enabled: true, 
+          locked: true, 
+          lockedWithKey: this.key,
+          updatedAt: now 
+        });
       }
+
       else if (!res.enabled) {
         throw createSystemLockDisabledError();
       }
 
-      else {
-        await this.collection.findOneAndUpdate(
-          { _id: this.id },
-          { $set: { locked: true, updatedAt: new Date(), lockedWithKey: this.key } },
-          { upsert: true }
-        );
+      else if (res.locked) {
+        throw createSystemLockBusyError();
       }
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (isMongoDuplicateKeyError(e, this.id)) throw createSystemLockBusyError();
       throw createDbOpFailedError(e.message);
     }
   }

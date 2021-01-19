@@ -31,7 +31,7 @@ describe('SystemLock tests', () => {
     test('creates lock with specified key', async () => {
       const key = generateId();
       const lock = new SystemLockHandle('someLock', dbUtils.getCollection(), key);
-      expect(lock.getKey).toEqual(key);
+      expect(lock.getKey()).toEqual(key);
     });
   });
 
