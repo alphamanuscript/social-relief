@@ -27,13 +27,12 @@ export class SystemLockHandle implements SystemLock {
       let res = await this.collection.findOne({ _id: this.id });
 
       if (!res) {
-        const now = new Date();
         await this.collection.insertOne({ 
           _id: this.id, 
           enabled: true, 
           locked: true, 
           lockedWithKey: this.key,
-          updatedAt: now 
+          updatedAt: new Date() 
         });
       }
 
@@ -43,6 +42,13 @@ export class SystemLockHandle implements SystemLock {
 
       else if (res.locked) {
         throw createSystemLockBusyError();
+      }
+
+      else {
+        await this.collection.findOneAndUpdate(
+          { _id: this.id },
+          { $set: { locked: false, updated: new Date(), lockedWithKey: this.key } }
+        );
       }
     }
     catch (e) {
