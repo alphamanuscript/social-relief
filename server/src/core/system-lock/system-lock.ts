@@ -47,7 +47,7 @@ export class SystemLockHandle implements SystemLock {
       else {
         await this.collection.findOneAndUpdate(
           { _id: this.id },
-          { $set: { locked: false, updated: new Date(), lockedWithKey: this.key } }
+          { $set: { locked: true, updated: new Date(), lockedWithKey: this.key } }
         );
       }
     }
