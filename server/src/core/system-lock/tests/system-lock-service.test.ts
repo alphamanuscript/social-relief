@@ -77,7 +77,7 @@ describe('SystemLockService tests', () => {
       await distLock1.disable();
 
       // locking a handle that's disabled
-      await distLock1.lock();
+      await expectAsyncAppError(() => distLock1.lock(), 'systemLockLocked');
 
       // disabling a handle that's locked
       await expectAsyncAppError(() => distLock1.disable(), 'systemLockDisabled');
