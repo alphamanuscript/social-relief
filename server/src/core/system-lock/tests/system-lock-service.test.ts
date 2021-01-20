@@ -69,6 +69,21 @@ describe('SystemLockService tests', () => {
       await expectAsyncAppError(() => distLock1.ensureUnlocked(), 'systemLockLocked');
       await expectAsyncAppError(() => distLock1.lock(), 'systemLockLocked');
       await distLock2.unlock();
+
+      // disabling a handle that's unlocked
+      await distLock1.disable();
+
+      // disabling a handle that's already disabled
+      await distLock1.disable();
+
+      // locking a handle that's disabled
+      await expectAsyncAppError(() => distLock1.lock(), 'systemLockDisabled');
+
+      // enabling a disabled handle
+      await distLock1.enable();
+
+      // locking an enabled handle
+      await distLock1.lock();
     });
   });
 });

@@ -1,6 +1,7 @@
 import { createDbUtils } from '../../test-util';
 import { systemLocks } from './fixtures';
 import { SystemLockHandle } from '../system-lock';
+import { generateId } from '../../util';
 
 const DB = '_crowd_relief_system_lock_tests_';
 const COLLECTION = 'system_locks';
@@ -25,6 +26,12 @@ describe('SystemLock tests', () => {
       const lock1 = new SystemLockHandle('someLock', dbUtils.getCollection());
       const lock2 = new SystemLockHandle('someLock', dbUtils.getCollection());
       expect(lock1.getKey()).not.toEqual(lock2.getKey());
+    });
+
+    test('creates lock with specified key', async () => {
+      const key = generateId();
+      const lock = new SystemLockHandle('someLock', dbUtils.getCollection(), key);
+      expect(lock.getKey()).toEqual(key);
     });
   });
 
@@ -53,6 +60,16 @@ describe('SystemLock tests', () => {
       }
       catch (e) {
         expect(e.code).toBe('systemLockLocked');
+      }
+    });
+
+    test('should throw error if unlocked but disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      try {
+        await lock.lock();
+      }
+      catch (e) {
+        expect(e.code).toBe('systemLockDisabled');
       }
     });
   });
@@ -98,6 +115,13 @@ describe('SystemLock tests', () => {
       expect(record.locked).toBe(false);
     });
 
+    test('should succeed if lock is not locked and is disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.ensureUnlocked();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.locked).toBe(false);
+    });
+
     test('should succeed if lock does not exist', async () => {
       await dbUtils.dropCollection();
       const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
@@ -114,6 +138,62 @@ describe('SystemLock tests', () => {
       catch (e) {
         expect(e.code).toBe('systemLockLocked');
       }
-    })
+    });
+  });
+
+  describe('enabled', () => {
+    test('should succeed if lock is disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is enabled', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is locked', async () => {
+      const lock = new SystemLockHandle('lock4', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock4' });
+      expect(record.enabled).toBe(true);
+    });
+
+    test('should succeed if lock is unlocked', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.enable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(true);
+    });
+  });
+
+  describe('disable', () => {
+    test('should succeed if lock is unlocked and enabled', async () => {
+      const lock = new SystemLockHandle('lock2', dbUtils.getCollection());
+      await lock.disable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock2' });
+      expect(record.enabled).toBe(false);
+    });
+
+    test('should succeed if lock is unlocked and disabled', async () => {
+      const lock = new SystemLockHandle('lock3', dbUtils.getCollection());
+      await lock.disable();
+      const record = await dbUtils.getCollection().findOne({ _id: 'lock3' });
+      expect(record.enabled).toBe(false);
+    });
+
+    test('should throw error if lock is locked', async () => {
+      const lock = new SystemLockHandle('lock1', dbUtils.getCollection());
+      try {
+        await lock.disable();
+      }
+      catch (e) {
+        expect(e.code).toBe('systemLockLocked');
+      }
+    });
   });
 });

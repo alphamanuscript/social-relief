@@ -162,6 +162,8 @@ describe('DonationDistributionService tests', () => {
         lock: jest.fn().mockResolvedValue({}),
         unlock: jest.fn().mockResolvedValue({}),
         ensureUnlocked: jest.fn().mockResolvedValue({}),
+        enable: jest.fn().mockResolvedValue({}),
+        disable: jest.fn().mockResolvedValue({}),
         getKey: jest.fn().mockReturnValue('')
       });
       

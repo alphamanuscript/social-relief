@@ -1,6 +1,7 @@
 import { Collection } from 'mongodb';
 import { SystemLock, SystemLockRecord } from './types';
-import { createSystemLockBusyError, AppError, createDbOpFailedError, isMongoDuplicateKeyError } from '../error';
+import { createSystemLockBusyError, AppError, createDbOpFailedError, 
+         isMongoDuplicateKeyError, createSystemLockDisabledError } from '../error';
 import { generateId } from '../util';
 
 
@@ -23,18 +24,35 @@ export class SystemLockHandle implements SystemLock {
   
   async lock() {
     try {
-      const res = await this.collection.findOneAndUpdate(
-        { _id: this.id, locked: { $ne: true } },
-        { $set: { locked: true, updatedAt: new Date(), lockedWithKey: this.key } },
-        { upsert: true });
+      let res = await this.collection.findOne({ _id: this.id });
 
-      if (!res.ok) {
+      if (!res) {
+        await this.collection.insertOne({ 
+          _id: this.id, 
+          enabled: true, 
+          locked: true, 
+          lockedWithKey: this.key,
+          updatedAt: new Date() 
+        });
+      }
+
+      else if (!res.enabled) {
+        throw createSystemLockDisabledError();
+      }
+
+      else if (res.locked) {
         throw createSystemLockBusyError();
+      }
+
+      else {
+        await this.collection.findOneAndUpdate(
+          { _id: this.id },
+          { $set: { locked: true, updated: new Date(), lockedWithKey: this.key } }
+        );
       }
     }
     catch (e) {
       if (e instanceof AppError) throw e;
-      if (isMongoDuplicateKeyError(e, this.id)) throw createSystemLockBusyError();
       throw createDbOpFailedError(e.message);
     }
   }
@@ -56,6 +74,33 @@ export class SystemLockHandle implements SystemLock {
     try {
       const res = await this.collection.findOne({ _id: this.id, locked: true });
       if (res) throw createSystemLockBusyError();
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async enable(): Promise<void> {
+    try {
+      await this.collection.findOneAndUpdate(
+        { _id: this.id },
+        { $set: { enabled: true, updatedAt: new Date() } },
+        { upsert: true });
+    }
+    catch (e) {
+      if (e instanceof AppError) throw e;
+      throw createDbOpFailedError(e.message);
+    }
+  }
+
+  async disable(): Promise<void> {
+    try {
+      const res = await this.collection.findOneAndUpdate(
+        { _id: this.id, locked: false },
+        { $set: { enabled: false, updatedAt: new Date() } });
+
+      if (!res.ok) { throw createSystemLockBusyError(); }
     }
     catch (e) {
       if (e instanceof AppError) throw e;

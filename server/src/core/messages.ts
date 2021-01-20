@@ -21,6 +21,7 @@ export const ERROR_ADD_TO_BATCH_QUEUE_AFTER_EOF = 'Cannot add data to queue afte
 export const ERROR_CONFLICTING_OPERATION_IN_PROGRESS = 'The operation failed because a conflicting operation is in progress. Please try again later.'
 export const ERROR_ATTEMPT_TO_RELEASE_FREE_LOCK = 'Attempting to release a lock that is not locked';
 export const ERROR_DISTRIBUTION_LOCK_IN_USE = 'The system is currently distributing donations. Please try again later.';
+export const ERROR_SYSTEM_LOCK_DISABLED = 'The system is currently disabled. Please enable to continue.';
 export const ERROR_INVALID_ARGUMENTS = 'Invalid arguments';
 export const ERROR_DB_CONNECTION_FAILED = 'Failed to connect to the database';
 export const ERROR_INVITATION_NOT_FOUND = 'Invitation not found';
