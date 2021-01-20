@@ -76,10 +76,11 @@ describe('SystemLockService tests', () => {
       // disabling a handle that's already disabled
       await distLock1.disable();
 
+      // locking a handle that's disabled
       await distLock1.lock();
 
       // disabling a handle that's locked
-      await expectAsyncAppError(() => distLock1.disable(), 'systemLockLocked');
+      await expectAsyncAppError(() => distLock1.disable(), 'systemLockDisabled');
     });
   });
 });
