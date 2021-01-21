@@ -39,6 +39,9 @@
 
             <b-collapse id="nav-collapse" is-nav>
               <b-nav class="h6 w-100 text-center" pills>
+                <div class="col-sm-12 text-center d-md-none">
+                  <div class="font-weight-bold">Current balance: KSH {{ formatWithCommaSeparator(accountBalance) }}</div>
+                </div>
                 <b-nav-item v-if="user && (user.roles.length > 1 || user.roles[0] !== 'beneficiary')" to="/nominate" exact exact-active-class="active" class="col-sm-12 col-md-4 col-xl-3">Nominate people</b-nav-item>
                 <div class="col-sm-12 text-center d-md-none">
                   <b-nav-item to="/beneficiaries" exact exact-active-class="active">Beneficiaries</b-nav-item>
@@ -52,7 +55,12 @@
                   v-if="isEligibleDonor"
                   variant="primary" class="custom-submit-button m-auto m-md-0"
                   @click="handleDonateBtn"
-                  >Donate</b-button>
+                  >
+                  Donate
+                </b-button>
+                <div class="col-sm-12 d-md-none" style="margin: auto">
+                  <RefundButton class="col-sm-6 d-md-none" style="margin: auto; align: center"/>
+                </div>
               </b-nav>
               <b-nav class="ml-auto d-none d-md-block">
                 <b-nav-item-dropdown dropleft no-caret>
